@@ -835,25 +835,37 @@ The MCP `remember` exposes `key` (deterministic supersession) plus `object` / `r
 runs with **`echo_guard` ON by default** (0.6.11) so a corrected fact stays corrected even if the old value
 is re-stated later — the failure mode a plain keyed/add-based store shows on RAMR's ECHO-RESISTANCE
 (keyed-without-guard 0.00, a real add-based system 0.57, guard 1.00). Set `MNEMO_ECHO_GUARD=0` to disable.
-`mnemo.py` stays zero-dependency; only the server needs the SDK:
+Install and run the server straight from PyPI (the `[mcp]` extra pulls the MCP SDK; the core library stays
+dependency-free):
 
 ```bash
-pip install "mcp[cli]"
-curl -O https://raw.githubusercontent.com/DanceNitra/mnemo/main/mnemo/mnemo.py
-curl -O https://raw.githubusercontent.com/DanceNitra/mnemo/main/mnemo/mnemo_mcp.py
-MNEMO_PATH=./agent_memory.json python mnemo_mcp.py      # speaks MCP over stdio
+pip install "agora-mnemo[mcp]"     # the library + the MCP server SDK
+mnemo-mcp                          # speaks MCP over stdio
 ```
 
-Register it with a client — e.g. Claude Code (`.mcp.json`) or Claude Desktop
-(`claude_desktop_config.json`):
+Register it with any MCP client — Claude Code (`.mcp.json`), Claude Desktop
+(`claude_desktop_config.json`), Cursor, Windsurf, Codex, Gemini. Zero-setup with `uvx` (installs on first run):
 
 ```json
 {
   "mcpServers": {
     "mnemo": {
-      "command": "python",
-      "args": ["/abs/path/to/mnemo/mnemo_mcp.py"],
-      "env": { "MNEMO_PATH": "/abs/path/to/agent_memory.json" }
+      "command": "uvx",
+      "args": ["--from", "agora-mnemo[mcp]", "mnemo-mcp"],
+      "env": { "MNEMO_PATH": "./mnemo_memory.json" }
+    }
+  }
+}
+```
+
+Or, after `pip install "agora-mnemo[mcp]"`, with the console script directly:
+
+```json
+{
+  "mcpServers": {
+    "mnemo": {
+      "command": "mnemo-mcp",
+      "env": { "MNEMO_PATH": "./mnemo_memory.json" }
     }
   }
 }
