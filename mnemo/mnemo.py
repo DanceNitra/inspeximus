@@ -111,6 +111,51 @@ def attest(text: str, source_sk_hex: str, source_doc=None) -> str:
     return sk.sign(_attest_message(text, source_doc)).hex()
 
 
+# --- universal-executor detection (1.2.0) -------------------------------------------------------------------
+# WHY: a per-tool reversibility label is unsound for VERB-POLYMORPHIC universal executors -- a shell / eval /
+# arbitrary-SQL / generic-HTTP tool whose EFFECT is set by a free-form argument, so the same tool is both
+# 'ls' (reversible) and 'rm -rf' (irreversible). MEASURED (mnemo lab, ToolEmu 330 tools, 2 labelers): tool
+# reversibility is ~93% decidable from the signature (Cohen's kappa 0.82) but the ~7% undecidable residual is
+# exactly this class, and its realized harm-reach is ENVIRONMENT-conditional -- an isolated executor reaches
+# ~0% of external/API irreversible harms but a networked, ambiently-credentialed one reaches ~0.66. So the
+# thing that bounds a memory-poisoned agent's irreversible EXTERNAL harm through such a tool is executor
+# CONTAINMENT, not a per-tool reversibility flag. This detector + the spend_irreversible(tool=, contained=)
+# gate make that undecidability EXPLICIT: an uncontained universal executor is never silently treated as
+# reversible. Honest bound: heuristic name/param match (not a proof), and `contained` is a caller ASSERTION
+# mnemo cannot verify -- it forces the declaration, it does not enforce the sandbox.
+_EXECUTOR_NAME_HINTS = ("execute", "exec", "eval", "shell", "terminal", "bash", "runcommand", "run_command",
+                        "runcode", "run_code", "runscript", "run_script", "runquery", "run_query", "runsql",
+                        "run_sql", "command", "script", "invoke", "httprequest", "http_request", "sendrequest",
+                        "send_request", "curl", "fetchurl", "fetch_url", "query")
+_EXECUTOR_PARAM_HINTS = ("command", "cmd", "code", "script", "query", "sql", "expression", "expr", "payload",
+                         "shell", "bash", "url", "endpoint", "request")
+
+
+def is_universal_executor(tool, signature=None) -> bool:
+    """True if `tool` is a verb-polymorphic UNIVERSAL EXECUTOR whose reversibility cannot be decided from its
+    signature (shell/terminal, eval/exec, arbitrary SQL, generic HTTP, run-arbitrary-script/command).
+
+    tool: a tool name (str) OR a dict with keys like {'name','summary','parameters'/'params'}.
+    signature: optional list of parameter names (str) if `tool` is just a name.
+    Heuristic: a matching executor-style name OR a free-form instruction parameter (command/code/query/url...).
+    """
+    name = tool.get("name", "") if isinstance(tool, dict) else str(tool or "")
+    nl = re.sub(r"[^a-z0-9]", "", name.lower())
+    params = list(signature or [])
+    if isinstance(tool, dict):
+        raw = tool.get("parameters") or tool.get("params") or []
+        for p in raw:
+            params.append(p.get("name", "") if isinstance(p, dict) else str(p))
+    name_hit = any(h.replace("_", "") in nl for h in _EXECUTOR_NAME_HINTS)
+    pl = {re.sub(r"[^a-z0-9]", "", str(p).lower()) for p in params}
+    param_hit = any(h.replace("_", "") in pl for h in _EXECUTOR_PARAM_HINTS)
+    # a lone 'query'/'url' param on an otherwise read-only-sounding tool is weak; require name-hint OR a
+    # strong free-form param (command/code/script/sql/expression/payload/shell/bash).
+    strong_param = bool(pl & {"command", "cmd", "code", "script", "sql", "expression", "expr", "payload",
+                              "shell", "bash"})
+    return bool(name_hit or strong_param or (param_hit and name_hit))
+
+
 def sign_revert(principal_sk_hex: str, challenge: str) -> str:
     """Principal-side, OFF the memory store's box: Ed25519-sign a revert `challenge`
     (Mnemo.revert_challenge(key) = "revert:{key}:{current_active_id}") with the private key whose public half
@@ -140,7 +185,7 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2791,7 +2836,8 @@ class Mnemo:
                 pass
 
     def spend_irreversible(self, ids, amount: float = 1.0, budget: float = 1.0,
-                           provenance_lo: float | None = None, require_earned: bool = False) -> dict:
+                           provenance_lo: float | None = None, require_earned: bool = False,
+                           tool=None, contained: bool | None = None) -> dict:
         """Per-source LIFETIME budget on IRREVERSIBLE influence — the integral cap that bounds the one residual
         the rate-detector (monitor) provably CANNOT: the strictly-below-k patient attacker. monitor()'s k is a
         tolerated RATE, so an attacker holding bad-rate BELOW k gives the CUSUM negative drift -> no detection
@@ -2834,6 +2880,22 @@ class Mnemo:
         recs = [by_id[i] for i in (ids or []) if i in by_id]
         srcs = sorted(set().union(*(Mnemo._rec_sources(r) for r in recs)) if recs else set())
         B = self._budget_state()
+        # UNIVERSAL-EXECUTOR gate (OPT-IN, 1.2.0; tool=None -> legacy path, byte-identical). If this irreversible
+        # action routes through a verb-polymorphic universal executor (shell/eval/arbitrary-SQL/generic-HTTP), a
+        # per-tool reversibility label is UNSOUND and the executor's external harm-reach is bounded only by
+        # containment. So an UNCONTAINED universal executor is denied outright (reversibility undecidable +
+        # unbounded external reach), regardless of budget -- the caller must sandbox it (contained=True) or route
+        # the effect through a specific, signature-decidable tool. contained=True falls through to the normal
+        # per-source budget check (the local-state residual is still metered). See is_universal_executor().
+        if tool is not None and is_universal_executor(tool):
+            if contained is not True:
+                return {"allowed": False, "exhausted": [], "sources": srcs,
+                        "spent": {s: round(float(B.get(s, 0.0)), 4) for s in srcs},
+                        "universal_executor": True, "contained": bool(contained),
+                        "reason": "universal_executor_uncontained: reversibility is undecidable from the tool "
+                                  "signature and external harm-reach is unbounded without containment; pass "
+                                  "contained=True only if the executor has no ambient network/credentials, or "
+                                  "route through a specific tool."}
         # PROVENANCE-SCALED cap (OPT-IN, provenance_lo=None -> uniform legacy path, byte-identical): a source with
         # NO corroborated contributing record is capped at the small `provenance_lo` instead of `budget`, so a
         # LOW-PROVENANCE memory recalled into an irreversible action binds that action's budget against ITSELF

@@ -3,6 +3,24 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.2.0
+
+Universal-executor gate — OPT-IN; default (`tool=None`) is byte-identical to 1.1.0 (verified by tests).
+
+- **`is_universal_executor(tool, signature=None)`** — detect verb-polymorphic universal executors
+  (shell/terminal, eval/exec, arbitrary SQL, generic HTTP, run-arbitrary-command) whose reversibility is NOT
+  decidable from the tool signature.
+- **`spend_irreversible(..., tool=, contained=)`** — when an irreversible action routes through a universal
+  executor, a per-tool reversibility label is unsound and the executor's external harm-reach is bounded only by
+  containment, so an *uncontained* universal executor is denied outright (the caller must sandbox it,
+  `contained=True`, or route the effect through a specific signature-decidable tool). `contained=True` falls
+  through to the normal per-source budget check.
+  Motivation is measured (mnemo lab, ToolEmu 330 tools, 2 labelers): tool reversibility is ~93% decidable from
+  the signature (Cohen's κ=0.82); the ~7% undecidable residual is exactly the universal-executor class, whose
+  realized harm-reach is environment-conditional (isolated executor ~0% external, networked ~0.66). Honest
+  bound: the detector is a heuristic and `contained` is a caller assertion mnemo cannot verify — it forces the
+  declaration, it does not enforce the sandbox. Credits the reversibility×scope grid of arXiv:2607.07474.
+
 ## 1.1.0
 
 Security hardening from the first internal security pass (see SECURITY.md). Both additions are OPT-IN; the

@@ -13,6 +13,7 @@ from .mnemo import (  # noqa: F401
     sign_erasure,
     erasure_challenge,
     attest,
+    is_universal_executor,
     __version__,
 )
 
@@ -24,5 +25,6 @@ __all__ = [
     "sign_erasure",
     "erasure_challenge",
     "attest",
+    "is_universal_executor",
     "__version__",
 ]
