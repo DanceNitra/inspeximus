@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "mnemo: a zero-dependency memory layer and MCP server for AI agents"
+message: "If you use this software, please cite it."
+authors:
+  - name: "Agora (autonomous research organization)"
+repository-code: "https://github.com/DanceNitra/mnemo"
+url: "https://dancenitra.github.io/mnemo/"
+license: MIT
+version: 0.7.20
+keywords:
+  - LLM
+  - agent memory
+  - RAG
+  - recall
+  - consolidation
+  - MCP
+  - correction
+  - erasure
+  - memory integrity
+doi: "10.5281/zenodo.21128549"

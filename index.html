@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mnemo — agent memory + MCP server that keeps a corrected fact corrected</title>
+<meta name="description" content="mnemo is a zero-dependency memory layer and MCP server for AI agents: value-ranked recall, consolidation, and a first-class correction + erasure channel — revert a value, cascade a lineage-aware retraction, and prove deletion with tamper-evident receipts. Measured against mem0 and Graphiti.">
+<meta property="og:title" content="mnemo — agent memory + MCP server">
+<meta property="og:description" content="The memory layer built to keep a corrected fact corrected. Zero dependencies, MCP server, measured integrity.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%A0%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#fbfbfd; --fg:#16161a; --muted:#5c5c6b; --line:#e6e6ee; --card:#ffffff;
+    --accent:#4f46e5; --accent-soft:#eef0ff; --code-bg:#f4f4f8; --good:#0a7c46;
+    --mono:'SFMono-Regular',ui-monospace,'JetBrains Mono',Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0c0c10;--fg:#ececf1;--muted:#9a9aab;--line:#26262f;--card:#141419;
+      --accent:#8b85ff;--accent-soft:#1b1a2e;--code-bg:#17171d;--good:#4ade80;}
+  }
+  :root[data-theme="dark"]{--bg:#0c0c10;--fg:#ececf1;--muted:#9a9aab;--line:#26262f;--card:#141419;
+    --accent:#8b85ff;--accent-soft:#1b1a2e;--code-bg:#17171d;--good:#4ade80;}
+  :root[data-theme="light"]{--bg:#fbfbfd;--fg:#16161a;--muted:#5c5c6b;--line:#e6e6ee;--card:#ffffff;
+    --accent:#4f46e5;--accent-soft:#eef0ff;--code-bg:#f4f4f8;--good:#0a7c46;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:860px;margin:0 auto;padding:0 22px;}
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  code{font-family:var(--mono);font-size:.9em;background:var(--code-bg);padding:.12em .38em;border-radius:5px;}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.5;}
+  header{padding:64px 0 40px;text-align:center;border-bottom:1px solid var(--line);}
+  .logo{font-size:3.4rem;font-weight:800;letter-spacing:-.03em;margin:0;}
+  .logo .brain{font-weight:400;}
+  .tag{font-size:1.22rem;color:var(--muted);max-width:640px;margin:14px auto 0;}
+  .badges{margin:26px 0 6px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .badge{font-size:.8rem;border:1px solid var(--line);background:var(--card);border-radius:999px;
+    padding:5px 13px;color:var(--muted);}
+  .badge b{color:var(--fg);font-weight:600;}
+  .cta{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-block;padding:11px 20px;border-radius:9px;font-weight:600;font-size:.94rem;}
+  .btn.primary{background:var(--accent);color:#fff;}
+  .btn.primary:hover{text-decoration:none;opacity:.92;}
+  .btn.ghost{border:1px solid var(--line);color:var(--fg);background:var(--card);}
+  section{padding:44px 0;border-bottom:1px solid var(--line);}
+  h2{font-size:1.5rem;letter-spacing:-.02em;margin:0 0 6px;}
+  .lead{color:var(--muted);margin:0 0 22px;}
+  .install pre{margin:0;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+  @media(max-width:640px){.grid{grid-template-columns:1fr;}}
+  .feat{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:18px 20px;}
+  .feat h3{margin:0 0 6px;font-size:1.02rem;}
+  .feat p{margin:0;color:var(--muted);font-size:.92rem;}
+  .feat code{font-size:.82em;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem;}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;}
+  th{background:var(--accent-soft);font-weight:600;}
+  td.win{color:var(--good);font-weight:700;}
+  .note{font-size:.86rem;color:var(--muted);margin-top:12px;}
+  .tools{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
+  .tool{font-family:var(--mono);font-size:.8rem;background:var(--code-bg);border:1px solid var(--line);
+    border-radius:6px;padding:4px 9px;}
+  footer{padding:38px 0 60px;text-align:center;color:var(--muted);font-size:.9rem;}
+  footer a{margin:0 8px;}
+  .theme-toggle{position:fixed;top:14px;right:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--muted);font-size:.85rem;}
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var d=(r.getAttribute('data-theme')|| (matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));r.setAttribute('data-theme',d==='dark'?'light':'dark');})()">◐ theme</button>
+
+<header>
+  <div class="wrap">
+    <h1 class="logo">mnemo<span class="brain"> 🧠</span></h1>
+    <p class="tag">A zero-dependency memory layer <b>and MCP server</b> for AI agents — the one built to keep a <b>corrected fact corrected</b>.</p>
+    <div class="badges">
+      <span class="badge"><b>pip install</b> agora-mnemo</span>
+      <span class="badge">MCP server · <b>12 tools</b></span>
+      <span class="badge"><b>0</b> dependencies</span>
+      <span class="badge">MIT</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/DanceNitra/mnemo">GitHub</a>
+      <a class="btn ghost" href="https://pypi.org/project/agora-mnemo/">PyPI</a>
+      <a class="btn ghost" href="https://doi.org/10.5281/zenodo.21128549">DOI</a>
+    </div>
+  </div>
+</header>
+
+<section class="install">
+  <div class="wrap">
+    <h2>Install &amp; run</h2>
+    <p class="lead">One file, no required dependencies. Or run it as an MCP server for any MCP host (Claude Code, Cursor, Windsurf, Codex, Gemini).</p>
+    <pre>pip install agora-mnemo        <span style="color:var(--muted)"># the library + the MCP server</span>
+mnemo-mcp                      <span style="color:var(--muted)"># start the stdio MCP server</span></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Correction is a first-class operation — measured across systems</h2>
+    <p class="lead">Any memory layer can store and retrieve. The harder, less-benchmarked property is <b>integrity</b>: when a fact is corrected, can the store undo the correction on command? Measured against mem0 and Graphiti in their native configs, with a shared ground-truth-blind judge.</p>
+    <table>
+      <tr><th>value-obscuring revert · undo a correction from an unmarked "go back" (n=20)</th><th>success</th><th>95% CI</th></tr>
+      <tr><td><b>mnemo</b> (route / revert)</td><td class="win">0.75</td><td>[0.53, 0.89]</td></tr>
+      <tr><td>mem0 2.0.11 (native, gpt-4o-mini)</td><td>0.20</td><td>[0.08, 0.42]</td></tr>
+      <tr><td>Graphiti (native, live neo4j)</td><td>0.00</td><td>[0.00, 0.16]</td></tr>
+    </table>
+    <p class="note">Only mnemo exposes a channel to undo a correction on command; the CIs against mem0 do not overlap. We lead with the cell we <i>don't</i> win: echo-resurrection is a tie — all three defend a restated stale value. A narrow, adversarial, command-driven cut, not a general "mnemo is better" claim. Run it yourself: <a href="https://github.com/DanceNitra/mnemo/blob/main/probes/INTEGRITY_BENCHMARK.md">the open harness</a>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What it does</h2>
+    <div class="grid">
+      <div class="feat"><h3>Value-ranked recall</h3><p>Retrieval by relevance × accrued value, per-type decay, and a lexical+semantic auto-mode (BM25 + embeddings fused by RRF). Zero-dep by default.</p></div>
+      <div class="feat"><h3>Correction &amp; erasure channel</h3><p><code>revert()</code>, <code>retract_lineage()</code>, <code>echo_guard</code>, and <code>forget_subject()</code> — undo, cascade a lineage-aware retraction, and prove deletion with a signed tombstone.</p></div>
+      <div class="feat"><h3>Tamper-evident receipts</h3><p><code>verify_writes()</code> over a hash-chained, optionally Ed25519-signed write log — prove the memory wasn't edited out of band.</p></div>
+      <div class="feat"><h3>Poison-resistant influence</h3><p><code>recall(influence_only=True)</code> restricts what may drive an action to corroborated memories — drops a single-instance retrieval-poisoning hijack to ~0%.</p></div>
+      <div class="feat"><h3>Consolidation</h3><p>Capacity-aware clustering, contradiction flagging, and a self-maintaining second brain (dead-link / orphan / stale repair).</p></div>
+      <div class="feat"><h3>Framework adapters</h3><p>Drop-in backends for OpenAI Agents, AutoGen, LangGraph, LlamaIndex, Google ADK, and Pydantic AI — each carrying the current-truth recall differentiator.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The MCP server</h2>
+    <p class="lead">A Model Context Protocol server over stdio, published to the official MCP registry as <code>io.github.DanceNitra/mnemo</code>. Twelve tools:</p>
+    <div class="tools">
+      <span class="tool">remember</span><span class="tool">recall</span><span class="tool">route</span>
+      <span class="tool">revert</span><span class="tool">forget</span><span class="tool">consolidate</span>
+      <span class="tool">check_conflict</span><span class="tool">contradictions</span><span class="tool">credit</span>
+      <span class="tool">value_by_cohort</span><span class="tool">consolidate_clusters</span><span class="tool">sleep</span>
+    </div>
+    <p class="note">Config: <code>MNEMO_PATH</code> (the memory file), <code>MNEMO_ECHO_GUARD</code> (block a restated retired value from resurrecting a corrected fact).</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Measured, not assumed — every design rule ships with a runnable probe.</p>
+    <p>
+      <a href="https://github.com/DanceNitra/mnemo">GitHub</a> ·
+      <a href="https://pypi.org/project/agora-mnemo/">PyPI</a> ·
+      <a href="https://doi.org/10.5281/zenodo.21128549">Zenodo DOI</a> ·
+      <a href="https://github.com/DanceNitra/mnemo/blob/main/README.md">Docs</a>
+    </p>
+    <p style="margin-top:14px;opacity:.7">MIT · part of <a href="https://dancenitra.github.io/agora/">Agora</a>, an autonomous research organization.</p>
+  </div>
+</footer>
+</body>
+</html>
