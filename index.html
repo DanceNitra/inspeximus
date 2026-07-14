@@ -30,7 +30,7 @@
           "name": "mnemo",
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Windows, macOS, Linux",
-          "softwareVersion": "1.6.0",
+          "softwareVersion": "1.7.0",
           "description": "A zero-dependency memory layer and MCP server for AI agents. Value-ranked recall, consolidation, and a first-class correction and erasure channel.",
           "license": "https://opensource.org/licenses/MIT",
           "url": "https://dancenitra.github.io/mnemo/",
@@ -61,10 +61,10 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect x='4' y='18.4' width='12' height='3' rx='1.5' fill='%238892a0'/%3E%3Crect x='4' y='12.9' width='15.5' height='3' rx='1.5' fill='%23c9d1dc'/%3E%3Crect x='4' y='7' width='20' height='3.4' rx='1.7' fill='%2338f2d6'/%3E%3C/svg%3E"
     />
-    <script type="module" crossorigin src="./assets/index-B015VZFQ.js"></script>
+    <script type="module" crossorigin src="./assets/index-D7ygK78B.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/three-Bkb2dqNl.js">
     <link rel="modulepreload" crossorigin href="./assets/motion-B8OfwHgZ.js">
-    <link rel="stylesheet" crossorigin href="./assets/index-BmqqY9FU.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-B6yfpjLI.css">
   </head>
   <body>
     <!-- Texture overlays -->
@@ -105,7 +105,7 @@
         <!-- Beat 0 — hero -->
         <section class="panel panel--hero" data-beat="0">
           <div class="panel__inner reveal">
-            <p class="eyebrow">v1.5 · MIT · zero dependencies</p>
+            <p class="eyebrow">v1.7 · MIT · zero dependencies</p>
             <h1 class="hero__title">
               Agent memory that keeps a<br />
               <span class="glow-text">corrected fact corrected.</span>
@@ -175,7 +175,7 @@
           <li><b class="count" data-count="6">0</b><span>framework adapters</span></li>
           <li><b class="count" data-count="0.75" data-decimals="2">0</b><span>revert success (vs 0.20, n=20)</span></li>
           <li><b>A</b><span>Glama quality</span></li>
-          <li><b>v1.5</b><span>current release</span></li>
+          <li><b>v1.7</b><span>current release</span></li>
           <li><b>0</b><span>runtime dependencies</span></li>
         </ul>
       </section>
@@ -312,7 +312,7 @@
           <p class="eyebrow">governance</p>
           <h2 class="section__title">Deletion you can actually verify</h2>
         </div>
-        <div class="grid grid--3 reveal">
+        <div class="grid grid--2 reveal">
           <article class="card spotlight">
             <h3>CT-style anchor</h3>
             <p>An RFC 6962 signed tree head over the write log. <code>anchor()</code> plus <code>verify_consistency()</code> catches a key-holder who rewrites history.</p>
@@ -324,6 +324,10 @@
           <article class="card spotlight">
             <h3>Reconstruction audit</h3>
             <p>The <code>ErasureAuditor</code> asks the adversarial question: after deletion, is the content still reconstructible? It catches the soft-delete residue a <code>200 OK</code> leaves behind — Qdrant points under the optimizer threshold, pgvector dead tuples, an S3 delete-marker over a live version.</p>
+          </article>
+          <article class="card spotlight">
+            <h3>Crypto-shred erasure</h3>
+            <p>Store encrypted at rest with opt-in <code>AES-256-GCM</code> (standard crypto, key never persisted), so <code>shred()</code> destroys the key and makes the store — and every backup of it — provably unrecoverable. NIST SP 800-88 cryptographic-erase, beside the tombstone and reconstruction proofs.</p>
           </article>
         </div>
         <p class="bench__caveat reveal">

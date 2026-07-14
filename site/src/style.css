@@ -606,6 +606,9 @@ main {
 .grid--3 {
   grid-template-columns: repeat(3, 1fr);
 }
+.grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
 .card {
   position: relative;
   padding: 30px 28px;
@@ -808,7 +811,7 @@ main {
   .nav__links { display: none; }
   .strip__grid { grid-template-columns: repeat(3, 1fr); }
   .strip__grid li:nth-child(4) { border-left: none; }
-  .grid, .grid--3 { grid-template-columns: 1fr; }
+  .grid, .grid--3, .grid--2 { grid-template-columns: 1fr; }
   .mcp__grid { grid-template-columns: 1fr; }
   .mcp__orbit { max-width: 340px; margin: 0 auto; }
   .panel--right, .panel--left { justify-content: center; }
