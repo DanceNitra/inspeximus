@@ -30,7 +30,7 @@
           "name": "mnemo",
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Windows, macOS, Linux",
-          "softwareVersion": "1.1.0",
+          "softwareVersion": "1.4.0",
           "description": "A zero-dependency memory layer and MCP server for AI agents. Value-ranked recall, consolidation, and a first-class correction and erasure channel.",
           "license": "https://opensource.org/licenses/MIT",
           "url": "https://dancenitra.github.io/mnemo/",
@@ -105,7 +105,7 @@
         <!-- Beat 0 — hero -->
         <section class="panel panel--hero" data-beat="0">
           <div class="panel__inner reveal">
-            <p class="eyebrow">v1.1 · MIT · zero dependencies</p>
+            <p class="eyebrow">v1.4 · MIT · zero dependencies</p>
             <h1 class="hero__title">
               Agent memory that keeps a<br />
               <span class="glow-text">corrected fact corrected.</span>
@@ -175,7 +175,7 @@
           <li><b class="count" data-count="6">0</b><span>framework adapters</span></li>
           <li><b class="count" data-count="0.75" data-decimals="2">0</b><span>revert success (vs 0.20, n=20)</span></li>
           <li><b>A</b><span>Glama quality</span></li>
-          <li><b>v1.1</b><span>current release</span></li>
+          <li><b>v1.4</b><span>current release</span></li>
           <li><b>0</b><span>runtime dependencies</span></li>
         </ul>
       </section>
@@ -207,7 +207,7 @@
         </div>
         <div class="bench reveal" id="bench">
           <div class="bench__row" data-value="0.75" data-lo="0.53" data-hi="0.89" data-self="1">
-            <div class="bench__label">mnemo <span>1.1</span></div>
+            <div class="bench__label">mnemo <span>1.4</span></div>
             <div class="bench__track"><div class="bench__fill"></div><div class="bench__ci"></div></div>
             <div class="bench__num">0.75</div>
           </div>
@@ -238,8 +238,8 @@
         <div class="grid reveal" id="feature-grid">
           <article class="card spotlight">
             <div class="card__icon" data-i="recall"></div>
-            <h3>Value-ranked recall</h3>
-            <p>Retrieval ordered by earned value, not just recency or cosine distance. Consolidation folds duplicates; decay is per-type.</p>
+            <h3>Clean, value-ranked recall</h3>
+            <p>Retrieval ordered by earned value, not just recency or cosine. A write-admission gate (<code>admit</code>) rejects junk and near-duplicates before they bloat the store, and <code>why_recalled</code> shows exactly why a memory surfaced.</p>
           </article>
           <article class="card spotlight">
             <div class="card__icon" data-i="correct"></div>
@@ -259,7 +259,7 @@
           <article class="card spotlight">
             <div class="card__icon" data-i="audit"></div>
             <h3>Cross-store erasure audit</h3>
-            <p><code>DeletionManifest</code> plus <code>ErasureAuditor</code>: an honest, adversarial check that erased content isn't reconstructible across the fan-out.</p>
+            <p><code>DeletionManifest</code> plus <code>ErasureAuditor</code>: an adversarial check that erased content isn't reconstructible across the fan-out — including the soft-delete residue a <code>200 OK</code> leaves in Qdrant, pgvector, and S3.</p>
           </article>
           <article class="card spotlight">
             <div class="card__icon" data-i="adapter"></div>
@@ -323,7 +323,7 @@
           </article>
           <article class="card spotlight">
             <h3>Reconstruction audit</h3>
-            <p>The <code>ErasureAuditor</code> asks the adversarial question: after deletion, is the content still reconstructible from neighbors? It reports what it finds.</p>
+            <p>The <code>ErasureAuditor</code> asks the adversarial question: after deletion, is the content still reconstructible? It catches the soft-delete residue a <code>200 OK</code> leaves behind — Qdrant points under the optimizer threshold, pgvector dead tuples, an S3 delete-marker over a live version.</p>
           </article>
         </div>
         <p class="bench__caveat reveal">
