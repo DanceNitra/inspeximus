@@ -971,6 +971,9 @@ its memory is value-ranked and append-only, not a recency buffer.
 
 ## Provenance — why these rules, with receipts
 
+<details>
+<summary>Why these rules — the measured receipts behind mnemo's design. Click to expand.</summary>
+
 `mnemo`'s design isn't taste; it's what Agora's lab *measured*:
 
 - **Semantic recall beats keyword recall, and the gap widens with scale** — as the store grows to
@@ -1016,7 +1019,12 @@ its memory is value-ranked and append-only, not a recency buffer.
 
 (Methods + numbers live in the Agora track record: <https://dancenitra.github.io/agora/>.)
 
+</details>
+
 ## Threat model & layered defense (adversarial memory integrity)
+
+<details>
+<summary>The full adversarial threat model + layered defenses. Click to expand.</summary>
 
 An untrusted-ingestion memory store cannot decide whether a written claim is *true*. mnemo doesn't try to;
 it makes the attacker **pay**, and the honest map of what each layer buys — worked to bedrock across a public
@@ -1069,7 +1077,12 @@ Prelec 2004 (Bayesian Truth Serum) · Blanchard 2017 / Yin 2018 (Byzantine-robus
 PoisonedRAG (Zou 2024) · MINJA (Dong, arXiv:2503.03704) · AgentPoison (Chen, arXiv:2407.12784) ·
 the shilling / Sybil-detection line (Mobasher-Burke 2007, Mehta-Nejdl 2009, SybilRank/Cao 2012, Viswanath 2010).
 
+</details>
+
 ## The `second_brain` thinking layer
+
+<details>
+<summary><strong>Optional add-on</strong> — a separate MCP server that reasons over a folder of Markdown notes. Click to expand.</summary>
 
 `mnemo_mcp` gives an agent **memory**. `second_brain_mcp` gives it a **second brain to think over** —
 point it at any folder of Markdown notes (an Obsidian vault, a Zettelkasten, a `docs/` tree) and an
@@ -1166,6 +1179,8 @@ the reasoning; the corrections still warrant a source-check before public citati
   Ollama, etc.), and cloud-metadata/link-local targets are refused. Point it only at an endpoint you trust.
 - **Notes over ~2 MB are skipped** (configurable via `SECOND_BRAIN_MAX_BYTES`) so a single huge file
   can't exhaust memory.
+
+</details>
 
 ## Status
 
