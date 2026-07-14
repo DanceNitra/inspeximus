@@ -190,7 +190,7 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1670,7 +1670,7 @@ class Mnemo:
         return {"intent": "echo", "action": "blocked", "key": key, "id": rid,
                 "policy": policy, "note": "unmarked restatement of a superseded value; not restored"}
 
-    def as_of(self, key: str, when: float) -> dict | None:
+    def as_of(self, key: str, when: float, as_recorded: float | None = None) -> dict | None:
         """POINT-IN-TIME query: the value that was CURRENT for `key` at event-time `when` (a UTC
         epoch float). This is the bi-temporal 'as-of' / time-travel read — reconstruct history, not
         just the latest value. No graph DB: keyed supersession already stamps every record with a
@@ -1684,21 +1684,54 @@ class Mnemo:
 
         Returns {object, text, valid_from, invalidated_at, id} for the record valid at `when`, or
         None if nothing was known for `key` yet at that time. Ties (overlapping intervals from an
-        unclean history) resolve to the latest valid_from <= when."""
-        best = None
-        for r in self.items:
-            if r.get("key") != key:
-                continue
-            vf = r.get("valid_from", r["ts"])
-            inv = r.get("invalidated_at")
-            if vf <= when and (inv is None or inv > when):
-                if best is None or vf > best.get("valid_from", best["ts"]):
-                    best = r
+        unclean history) resolve to the latest valid_from <= when.
+
+        BITEMPORAL (1.5.0): pass `as_recorded` (a transaction-time epoch) to reconstruct the KNOWLEDGE STATE as
+        of that recording time — "what did we BELIEVE, at tx-time `as_recorded`, was true at valid-time `when`" —
+        using only records written by then (ts <= as_recorded) with supersession recomputed within that set, so a
+        correction recorded LATER cannot leak into the earlier belief. This is the second clock: valid-time
+        (`when`, world truth) x transaction-time (`as_recorded`, what the store knew). Audit/replay: "what did the
+        agent believe when it acted", provably, without the later correction contaminating the reconstruction."""
+        if as_recorded is None:
+            best = None
+            for r in self.items:
+                if r.get("key") != key:
+                    continue
+                vf = r.get("valid_from", r["ts"])
+                inv = r.get("invalidated_at")
+                if vf <= when and (inv is None or inv > when):
+                    if best is None or vf > best.get("valid_from", best["ts"]):
+                        best = r
+        else:
+            # transaction-time filter: only records written by `as_recorded`; supersession recomputed within it
+            # (a record is superseded only by a LATER-valid_from record that was itself already recorded by then).
+            cands = [r for r in self.items if r.get("key") == key
+                     and r.get("valid_from", r["ts"]) <= when and r["ts"] <= as_recorded]
+            best = max(cands, key=lambda r: (r.get("valid_from", r["ts"]), r["ts"]), default=None)
+        if best is None:
+            return None
+        out = {"object": best.get("object"), "text": best.get("text"),
+               "valid_from": best.get("valid_from", best["ts"]),
+               "invalidated_at": best.get("invalidated_at"), "id": best["id"]}
+        if as_recorded is not None:
+            nxt = [r.get("valid_from", r["ts"]) for r in self.items
+                   if r.get("key") == key and r["ts"] <= as_recorded
+                   and r.get("valid_from", r["ts"]) > out["valid_from"]]
+            out["invalidated_at"] = min(nxt) if nxt else None   # invalidation AS KNOWN at as_recorded
+            out["as_recorded"] = as_recorded
+        return out
+
+    def believed_at(self, key: str, as_recorded: float) -> dict | None:
+        """The value the store would have returned as CURRENT for `key` if frozen at transaction-time
+        `as_recorded` — the latest-asserted value known by then, ignoring any correction recorded AFTER. Answers
+        'what did the agent believe when it acted at time T', for replay and audit. Returns
+        {object, text, valid_from, id, as_recorded} or None."""
+        cands = [r for r in self.items if r.get("key") == key and r["ts"] <= as_recorded]
+        best = max(cands, key=lambda r: (r.get("valid_from", r["ts"]), r["ts"]), default=None)
         if best is None:
             return None
         return {"object": best.get("object"), "text": best.get("text"),
-                "valid_from": best.get("valid_from", best["ts"]),
-                "invalidated_at": best.get("invalidated_at"), "id": best["id"]}
+                "valid_from": best.get("valid_from", best["ts"]), "id": best["id"], "as_recorded": as_recorded}
 
     def history(self, key: str) -> list[dict]:
         """The full validity timeline for `key`: every value it has held, in event-time order, each

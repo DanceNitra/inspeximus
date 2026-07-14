@@ -3,6 +3,26 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.5.0
+
+Provable forget + bitemporal audit — the governance/temporal pillar.
+
+- **`ErasureAuditor.compliance_receipt(subject, values, sign=, pubkey=, request_id=, basis=)`** — runs the audit
+  and packages it as a shareable, optionally-SIGNED proof-of-erasure receipt (the artifact a DPO hands a
+  regulator under GDPR Art. 17 / EU AI Act record-keeping): which stores were checked, the per-store verdict,
+  the request/basis, a timestamp, tamper-evident under your key. `verify_compliance_receipt(receipt, verify,
+  expected_pubkey=)` re-checks it; `ed25519_signer(sk)` / `ed25519_verify` are BYO-key helpers (or plug an
+  HSM/KMS). Crypto is a lazy import — the auditor framework stays dependency-free until you sign.
+- **Bitemporal query** — `as_of(key, when, as_recorded=)` gains a second clock: pass a transaction-time
+  `as_recorded` to reconstruct "what did we BELIEVE, at that recording time, was true at valid-time `when`",
+  using only records written by then, so a correction recorded LATER can't leak into the earlier belief.
+  **`believed_at(key, as_recorded)`** returns the value the agent would have acted on if frozen at that time —
+  replay/audit without contamination. `as_recorded=None` is byte-identical to the prior valid-time `as_of`.
+- **`probes/forget_verification_bench.py`** — an open benchmark for a capability no recall leaderboard scores:
+  after a right-to-erasure deletion, does the value provably stop being recoverable across the 6-store fan-out
+  (primary log, vector index, cache, Qdrant/pgvector/S3 soft-delete residue)? Scores soft-delete (the common
+  "delete the row" bug: ~0.17 — five stores still leak) vs hard-delete (1.00, verified) and emits a signed receipt.
+
 ## 1.4.0
 
 Soft-delete residual probes for the `ErasureAuditor` — from an r/RAG thread: a store reports a delete as DONE

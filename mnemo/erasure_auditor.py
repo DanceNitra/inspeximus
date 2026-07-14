@@ -19,7 +19,9 @@ key, not the row — EDPB 05/2019; NIST SP 800-88 cryptographic erase).
 Zero external deps for the framework; the VectorIndexProbe needs an embedder you pass in (e.g. local nomic).
 """
 from __future__ import annotations
+import json
 import re
+import time
 
 
 class StoreProbe:
@@ -199,6 +201,32 @@ class ErasureAuditor:
         self._probes.append(probe)
         return self
 
+    def compliance_receipt(self, subject: str, values, sign=None, pubkey=None, request_id=None,
+                           basis=None, now=None, **probe_kwargs) -> dict:
+        """Run the audit and package it as a shareable, optionally-SIGNED proof-of-erasure receipt — the artifact
+        a DPO/auditor hands a regulator under GDPR Art. 17 or EU AI Act record-keeping. It records which stores
+        were checked, the adversarial-recovery verdict per store, the subject/request/basis, and a timestamp;
+        sign it with YOUR key so it is tamper-evident and verifiable (BYO: pass `sign(message_bytes)->hex` + the
+        `pubkey`, e.g. `ed25519_signer(sk)` below, or an HSM/KMS signer). Honest scope (same as audit()): it
+        attests the AUDIT OUTCOME at audit time — not physical destruction, not unregistered stores or backups."""
+        audit = self.audit(subject, values, **probe_kwargs)
+        receipt = {
+            "receipt_version": 1,
+            "subject": subject,
+            "request_id": request_id,
+            "basis": basis,
+            "generated_unix": float(now if now is not None else time.time()),
+            "erasure_verified": audit["erasure_verified"],
+            "leaking_stores": audit["leaking_stores"],
+            "stores_audited": audit["stores_audited"],
+            "results": audit["results"],
+            "scope": audit["scope"],
+        }
+        if sign is not None:
+            receipt["signature"] = sign(_receipt_message(receipt))
+            receipt["pubkey"] = pubkey
+        return receipt
+
     def audit(self, subject: str, values, **probe_kwargs) -> dict:
         """After the app has run its deletion, adversarially probe every registered store for the subject's
         `values`. Returns a report; erasure_verified is True only if NO store recovered anything."""
@@ -227,6 +255,47 @@ class ErasureAuditor:
                       "cover unregistered stores or backups, and the vector check is a LOWER BOUND on embedding "
                       "inversion (Morris 2023). When a store leaks, hard-delete+reindex or crypto-shred the key."),
         }
+
+
+def _receipt_message(receipt: dict) -> bytes:
+    """Canonical bytes a compliance receipt signs over — the receipt minus the signature envelope, so signing
+    and verification agree byte-for-byte regardless of key order."""
+    body = {k: v for k, v in receipt.items() if k not in ("signature", "pubkey")}
+    return json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def verify_compliance_receipt(receipt: dict, verify, expected_pubkey: str | None = None) -> tuple:
+    """Verify a signed compliance receipt: recompute the canonical bytes and check the signature with
+    `verify(message_bytes, sig_hex, pubkey)->bool`. Pin `expected_pubkey` to reject a receipt re-signed by a
+    swapped key. Returns (ok, reason)."""
+    sig, pk = receipt.get("signature"), receipt.get("pubkey")
+    if not sig:
+        return False, "unsigned receipt"
+    if expected_pubkey is not None and pk != expected_pubkey:
+        return False, "pubkey does not match expected_pubkey (a swapped-key re-sign)"
+    try:
+        ok = bool(verify(_receipt_message(receipt), sig, pk))
+    except Exception as e:
+        return False, "verify error: " + str(e)[:120]
+    return (ok, "ok") if ok else (False, "signature does not verify (receipt was altered or wrong key)")
+
+
+def ed25519_signer(sk_hex: str):
+    """A `sign(message_bytes)->hex` closure over an Ed25519 secret key, for compliance_receipt(sign=...).
+    Lazy cryptography import — the auditor framework itself stays dependency-free until you sign."""
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    sk = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(sk_hex))
+    return lambda msg: sk.sign(msg).hex()
+
+
+def ed25519_verify(message_bytes: bytes, sig_hex: str, pubkey_hex: str) -> bool:
+    """Verify an Ed25519 signature (for verify_compliance_receipt(verify=ed25519_verify))."""
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    try:
+        Ed25519PublicKey.from_public_bytes(bytes.fromhex(pubkey_hex)).verify(bytes.fromhex(sig_hex), message_bytes)
+        return True
+    except Exception:
+        return False
 
 
 def _dig(obj, *names):
