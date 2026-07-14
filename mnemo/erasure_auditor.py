@@ -98,6 +98,99 @@ class KVCacheProbe(StoreProbe):
         return {"recoverable": bool(hits), "method": "cache-value-scan", "recovered": hits}
 
 
+class SoftDeleteProbe(StoreProbe):
+    """The gap a Reddit r/RAG thread (2026-07) surfaced: a store reports a delete as DONE (HTTP 200) while the
+    data physically SURVIVES until a background process runs — the '200' and 'it's gone' are separated by a
+    compaction/vacuum/GC that may never trigger. Generic escape hatch for any such store (an uncompacted Chroma
+    segment, an observability span carrying full chunk text, a CDC/Kafka topic with long retention, an
+    embedding-provider request log): supply `residual(subject, values) -> (present: bool, detail)` that queries
+    THIS store's PHYSICAL state. Recovery = logically deleted yet physically present."""
+    kind = "soft-delete"
+
+    def __init__(self, name: str, residual):
+        self.name = name
+        self._residual = residual
+
+    def recover(self, subject, values):
+        present, detail = self._residual(subject, values)
+        return {"recoverable": bool(present), "method": "soft-delete-residual",
+                "recovered": (list(values) if present else []), "detail": detail}
+
+
+class QdrantSoftDeleteProbe(StoreProbe):
+    """Qdrant marks deleted points in a bitmask and only physically drops them once a segment crosses the
+    optimizer's `deleted_threshold` (default 0.2, with a 1000-vector minimum) — so scattered deletes on a
+    mid-size collection can sit on disk below that line indefinitely. Recovery = deleted vectors are still
+    physically present with compaction not yet triggered. Pass your qdrant client + collection; mnemo has NO
+    qdrant dependency — the probe only calls `get_collection` on the client you pass."""
+    kind = "vector-soft-delete"
+
+    def __init__(self, name: str, client, collection, deleted_threshold: float = 0.2, min_vectors: int = 1000):
+        self.name = name
+        self.client = client
+        self.collection = collection
+        self.deleted_threshold = deleted_threshold
+        self.min_vectors = min_vectors
+
+    def recover(self, subject, values):
+        info = self.client.get_collection(self.collection)
+        deleted = int(_dig(info, "deleted_vectors_count", "num_deleted_vectors", "deleted") or 0)
+        alive = int(_dig(info, "points_count", "vectors_count") or 0)
+        total = deleted + alive
+        frac = (deleted / total) if total else 0.0
+        # the optimizer compacts only once frac >= threshold AND total >= min_vectors; until then residue persists
+        pending = deleted > 0 and (frac < self.deleted_threshold or total < self.min_vectors)
+        return {"recoverable": bool(pending), "method": "qdrant-optimizer-pending",
+                "recovered": (list(values) if pending else []),
+                "detail": {"deleted_present": deleted, "deleted_frac": round(frac, 4),
+                           "threshold": self.deleted_threshold, "compaction_pending": bool(pending)}}
+
+
+class PgVectorSoftDeleteProbe(StoreProbe):
+    """pgvector inherits Postgres MVCC: a deleted row's tuple is dead but stays ON DISK until VACUUM runs, and the
+    HNSW graph is only repaired at vacuum time — so 'DELETE returned' is not 'gone from disk/index'. Recovery =
+    dead tuples exist for the table (VACUUM pending). Pass a DB-API connection + table name; mnemo has NO psycopg
+    dependency — the probe runs one read-only query on the cursor you pass."""
+    kind = "vector-soft-delete"
+
+    def __init__(self, name: str, conn, table):
+        self.name = name
+        self.conn = conn
+        self.table = table
+
+    def recover(self, subject, values):
+        cur = self.conn.cursor()
+        cur.execute("SELECT n_dead_tup FROM pg_stat_user_tables WHERE relname = %s", (self.table,))
+        row = cur.fetchone()
+        dead = int(row[0]) if row and row[0] is not None else 0
+        return {"recoverable": dead > 0, "method": "pgvector-vacuum-pending",
+                "recovered": (list(values) if dead > 0 else []),
+                "detail": {"n_dead_tup": dead, "vacuum_pending": dead > 0}}
+
+
+class S3VersioningProbe(StoreProbe):
+    """A versioned object store (S3 + most snapshot stores): a 'delete' on a versioned bucket just writes a DELETE
+    MARKER — the prior object version stays and is one list-versions call away. Recovery = object versions (or
+    delete markers hiding live versions) still exist for the subject's prefix. Pass a boto3-style client + bucket
+    + prefix; mnemo has NO boto3 dependency — the probe only calls `list_object_versions` on the client you pass."""
+    kind = "object-store-soft-delete"
+
+    def __init__(self, name: str, s3, bucket, prefix: str = ""):
+        self.name = name
+        self.s3 = s3
+        self.bucket = bucket
+        self.prefix = prefix
+
+    def recover(self, subject, values):
+        resp = self.s3.list_object_versions(Bucket=self.bucket, Prefix=self.prefix) or {}
+        versions = resp.get("Versions") or []
+        markers = resp.get("DeleteMarkers") or []
+        recoverable = len(versions) > 0                  # any surviving physical version = data recoverable
+        return {"recoverable": recoverable, "method": "s3-version-residual",
+                "recovered": (list(values) if recoverable else []),
+                "detail": {"object_versions_present": len(versions), "delete_markers": len(markers)}}
+
+
 class ErasureAuditor:
     def __init__(self):
         self._probes: list[StoreProbe] = []
@@ -134,6 +227,19 @@ class ErasureAuditor:
                       "cover unregistered stores or backups, and the vector check is a LOWER BOUND on embedding "
                       "inversion (Morris 2023). When a store leaks, hard-delete+reindex or crypto-shred the key."),
         }
+
+
+def _dig(obj, *names):
+    """Read the first present field from a client response that may be a dict OR an object (client APIs vary)."""
+    for n in names:
+        if isinstance(obj, dict):
+            if obj.get(n) is not None:
+                return obj[n]
+        else:
+            v = getattr(obj, n, None)
+            if v is not None:
+                return v
+    return None
 
 
 def _cosine(a, b):

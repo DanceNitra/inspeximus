@@ -3,6 +3,22 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.4.0
+
+Soft-delete residual probes for the `ErasureAuditor` — from an r/RAG thread: a store reports a delete as DONE
+(HTTP 200) while the data physically survives until a background compaction/vacuum/GC that may never trigger, so
+"the API returned 200" and "it's gone" are two different things. Each probe calls only the client you pass —
+mnemo keeps ZERO external dependencies (no qdrant/psycopg/boto3 import).
+
+- **`QdrantSoftDeleteProbe`** — deleted points sit in the bitmask until a segment crosses the optimizer's
+  `deleted_threshold` (default 0.2, 1000-vector min); flags residue with compaction pending.
+- **`PgVectorSoftDeleteProbe`** — MVCC dead tuples stay on disk (and the HNSW graph unrepaired) until VACUUM;
+  reads `n_dead_tup` from `pg_stat_user_tables`.
+- **`S3VersioningProbe`** — a "delete" on a versioned bucket is just a delete marker; the prior version is one
+  `list_object_versions` call away.
+- **`SoftDeleteProbe`** — generic escape hatch for the long tail (uncompacted Chroma segment, observability
+  spans carrying full chunk text, CDC/Kafka topics, embedding-provider request logs): supply a `residual()` check.
+
 ## 1.3.0
 
 Clean memory — a write-admission gate and an inspector, aimed at agent memory's #1 real-world failure:
