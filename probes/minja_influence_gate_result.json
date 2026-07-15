@@ -1,0 +1,18 @@
+[
+ {
+  "retriever": "all-MiniLM-L6-v2",
+  "A0_naive_cosine_rank1_asr": 0.8,
+  "A0_naive_cosine_top5_contamination": 1.0,
+  "A_mnemo_raw_asr": 0.0,
+  "B_influence_asr": 0.0,
+  "C_influence_selfgrade_asr": 0.8,
+  "D_influence_selfgrade_WARRANT_GUARD_asr": 0.0,
+  "E_adaptive_FORGED_warrant_asr": 0.7,
+  "F_adaptive_forged_vs_WARRANT_AUTHORITIES_asr": 0.0,
+  "utility_legit_influence": 1.0,
+  "utility_legit_influence_under_guard": 1.0,
+  "utility_legit_under_authorities": 1.0,
+  "n_victims": 10,
+  "bridges_per_victim": 3
+ }
+]

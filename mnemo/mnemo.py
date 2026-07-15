@@ -311,7 +311,7 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.9.0"
+__version__ = "1.9.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -466,6 +466,14 @@ class Mnemo:
         # and is rejected, while a genuinely sustained value change is adopted once `supersede_persistence`
         # corroborating records exist. The integer IS the Adaptation-Corruption law's detection-latency floor
         # d* made explicit — set it to your stream's corruption-vs-change ratio. Unlike
+        # WARRANT AUTHORITIES (OPT-IN, default None -> any exogenous warrant string counts). When set to a
+        # collection of trusted outcome-channel identifiers, credit_requires_warrant counts a warrant only if
+        # it names one of them — so an ADAPTIVE MINJA attacker who forges a plausible warrant STRING (measured
+        # to revert self-graded ASR from 0% back to ~70% when any string is accepted, probes/minja_influence_
+        # gate.py cond. E) is rejected unless it can also name a declared trusted channel. This is the
+        # set-membership tier; the UNFORGEABLE tier is an Ed25519-attested warrant (remember(attestation=...)
+        # / strict_corroboration verified keys), which forces the attacker to forge a trusted key, not a string.
+        self.warrant_authorities = None
         # supersede_requires_corroboration this needs NO external credit(): it adopts a genuine change purely
         # from repeated independent assertions, where the corroboration guard would lag one forever. MEASURED
         # (lab fea933, mnemo's real consolidate() path): isolated-poison false-supersede 1 -> 0 while a
@@ -503,6 +511,13 @@ class Mnemo:
         # "independence" rail to the "origin-signed" rail; it does NOT make a claim TRUE (an attested source
         # can still sign a false claim), only makes manufactured independence expensive. Reversible: OFF.
         self.strict_corroboration = False
+        # EXOGENOUS-WARRANT credit (OPT-IN, default False -> identical legacy behavior). Closes the MINJA
+        # self-graded-outcome hole (arXiv:2503.03704): the influence gate's earned-outcome path counts only
+        # good credited with an exogenous `warrant` (an outcome the record did not author itself), so an
+        # agent that self-grades its own recalled reasoning cannot corroborate a poisoned bridge into the
+        # influence set. MEASURED (mnemo/probes/minja_influence_gate.py): self-graded MINJA ASR 80% -> 0%
+        # with this on, legit utility preserved when the app passes a real warrant. Reversible: False = legacy.
+        self.credit_requires_warrant = False
         # SEED-ANCHORED FLOW TRUST (OPT-IN, default empty set -> OFF -> zero behavior change). The one axis
         # strict_corroboration does NOT close: distinct Ed25519 keys prove DISTINCTNESS, not COST -- a Sybil
         # mints N keypairs for free, so ">=2 distinct verified keys" is still forgeable by a determined
@@ -2620,11 +2635,17 @@ class Mnemo:
             # Canonicalizing source identifiers before counting collapses those to one; a link whose record
             # has no source counts as its own id, so genuinely source-less corroboration is unchanged.
             _good = float(r.get("good", 0) or 0); _bad = float(r.get("bad", 0) or 0)
+            # graduation shares the influence-gate bar, incl. the exogenous-warrant rule: when
+            # credit_requires_warrant is on, only warranted good can graduate an episodic memory to the
+            # durable semantic tier — else a MINJA self-graded bridge would graduate and then pass the gate
+            # unconditionally via its 'semantic' mtype (the graduation bypass this closes).
+            _good_earned = (float(r.get("good_warranted", 0) or 0)
+                            if getattr(self, "credit_requires_warrant", False) else _good)
             _links = (self._gated_links(r, _by_id)
                       if (self.coherence_gate is not None or self.temporal_gate is not None) else r.get("links"))
             _distinct = (self._distinct_verified_keys(_links, _by_id) if self.strict_corroboration
                          else self._distinct_sources(_links, _by_id))
-            corroborated = ((_good > 0 and _good >= _bad) or _distinct >= 2) \
+            corroborated = ((_good_earned > 0 and _good >= _bad) or _distinct >= 2) \
                 and not (r.get("meta") or {}).get("slashed") \
                 and not r.get("orphan")   # landed retraction OR orphan (no lineage) blocks (re-)graduation too
             if r.get("mtype") == "episodic" and r["value"] >= _GRADUATE_VALUE and corroborated:
@@ -2730,13 +2751,18 @@ class Mnemo:
         return len(keys)
 
     @staticmethod
-    def _is_corroborated(rec: dict, by_id: dict, strict: bool = False) -> bool:
+    def _is_corroborated(rec: dict, by_id: dict, strict: bool = False, require_warrant: bool = False) -> bool:
         """The corroboration bar shared by episodic->semantic graduation and the recall influence gate:
         an EARNED net-positive outcome (good>0 and good>=bad — set by credit() on real work, not
         self-assertable), OR an already-graduated 'semantic' memory, OR >=2 corroborating links from
         distinct sources. `strict` selects the independence measure for that last path: distinct VERIFIED
         KEYS (unforgeable) when True, distinct canonical-source STRINGS (spoofable but zero-setup) when
         False. A single fresh self-asserted memory (the AgentPoison single-instance poison) meets none.
+        `require_warrant` (set by the store flag credit_requires_warrant) closes the MINJA self-graded-
+        outcome hole: the earned-outcome path then counts only EXOGENOUSLY-WARRANTED good (credit() called
+        with a warrant naming an outcome source outside the record's own lineage), so an agent that credits
+        its OWN recalled reasoning as a success cannot self-corroborate a poisoned bridge into the influence
+        set. Measured: mnemo/probes/minja_influence_gate.py (self-graded ASR 80% -> 0% with the flag on).
         A LANDED RETRACTION WINS: a record slash()'d (meta['slashed']) is not corroborated on ANY path — incl.
         distinct-link corroboration — so a caught poison cannot stay load-bearing via independent-looking links
         (jacksonxly's invariant: nothing false stays load-bearing past the correctness signal). restore() clears
@@ -2748,10 +2774,18 @@ class Mnemo:
             return False
         good = float(rec.get("good", 0) or 0)
         bad = float(rec.get("bad", 0) or 0)
-        if good > 0 and good >= bad:
+        good_earned = float(rec.get("good_warranted", 0) or 0) if require_warrant else good
+        if good_earned > 0 and good >= bad:
             return True
         if rec.get("mtype") == "semantic":
-            return True
+            # A 'semantic' mtype counts as corroborated because it is normally an EARNED, graduated-durable
+            # memory. But remember() also auto-classifies short declarative statements as semantic AT WRITE
+            # TIME — and MINJA's progressive-shortening bridges are exactly such query-shaped declaratives, so
+            # they would be born semantic and bypass the gate with zero corroboration. Under require_warrant
+            # only EARNED semantic (graduated_from_episodic through the corroboration bar) passes; a write-time
+            # semantic classification is treated as an unproven episodic claim.
+            if not require_warrant or (rec.get("meta") or {}).get("graduated_from_episodic"):
+                return True
         if strict:
             return Mnemo._distinct_verified_keys(rec.get("links"), by_id) >= 2
         return Mnemo._distinct_sources(rec.get("links"), by_id) >= 2
@@ -2852,7 +2886,8 @@ class Mnemo:
                    and self._canon_of(by_id[lid]) in trusted]
             if eff != links:
                 rec = {**rec, "links": eff}
-        return Mnemo._is_corroborated(rec, by_id, self.strict_corroboration)
+        return Mnemo._is_corroborated(rec, by_id, self.strict_corroboration,
+                                      require_warrant=getattr(self, "credit_requires_warrant", False))
 
     def influence_gate_report(self) -> dict:
         """Report the LIVE COST of the influence gate (recall(influence_only=True)) on THIS store, so you can
@@ -2948,13 +2983,24 @@ class Mnemo:
             return outcome > 0
         return str(outcome).strip().lower() in ("good", "right", "correct", "reproduced", "hit", "true", "win", "+")
 
-    def credit(self, ids, outcome, weight: float = 1.0) -> dict:
+    def credit(self, ids, outcome, weight: float = 1.0, warrant=None) -> dict:
         """Close the accuracy loop onto the substrate. When the work a set of memories was recalled into
         gets a real verdict (a forecast resolves, a replication is ruled REPRODUCED/FAILED, a hypothesis is
         severe-tested), call credit(recalled_ids, outcome): each memory's Beta(good,bad) track record is
         nudged so future recall ranks by WAS-IT-RIGHT, not merely was-it-recalled. Append-only to the
         counts; never edits raw text. `outcome` may be a bool, a sign (>0 good), or a verdict string
-        (good/right/correct/reproduced/hit vs bad/wrong/failed/miss)."""
+        (good/right/correct/reproduced/hit vs bad/wrong/failed/miss).
+
+        `warrant` (OPT-IN, matters only when the store flag credit_requires_warrant is on): a token/string
+        naming the EXOGENOUS outcome source that vouches for this credit — a resolved ticket, a graded
+        forecast, an external verdict — i.e. ground truth the recalled memory did NOT produce itself. A good
+        credit whose warrant is exogenous to the record (not None, and not the record's own source/lineage)
+        also increments `good_warranted`; the influence gate then counts only warranted good. This
+        structurally breaks the MINJA self-graded-outcome loop (an agent crediting its own recalled poison as
+        a success): with no exogenous outcome to name, the self-grade raises good but never good_warranted, so
+        it cannot promote the poison into the influence set. HONEST RESIDUAL: a warrant STRING is spoofable
+        the same way a source string is (an attacker who can forge an outcome token can still warrant) — it
+        raises attacker cost and is meant to be paired with verifiable provenance, not a proof of truth."""
         good = Mnemo._outcome_good(outcome)
         by_id = {x["id"]: x for x in self.items}
         key, updated = ("good" if good else "bad"), []
@@ -2963,10 +3009,31 @@ class Mnemo:
             if rec is None:
                 continue
             rec[key] = float(rec.get(key, 0) or 0) + float(weight)
+            if good and self._warrant_is_exogenous(rec, warrant):
+                rec["good_warranted"] = float(rec.get("good_warranted", 0) or 0) + float(weight)
             updated.append(i)
         if updated:
             self._save()
         return {"updated": updated, "outcome": key, "weight": weight}
+
+    def _warrant_is_exogenous(self, rec: dict, warrant) -> bool:
+        """A warrant vouches for an outcome the record did NOT author itself. Exogenous = a non-empty token
+        that is neither the record's own canonical source nor any tenant/source in its transitive lineage.
+        Conservative by design: an absent warrant is never exogenous, so self-graded credit (the MINJA path)
+        earns no warranted-good."""
+        if not warrant:
+            return False
+        w = str(warrant).strip().lower()
+        if not w:
+            return False
+        own = {str(s).strip().lower() for s in Mnemo._rec_sources(rec) if s}
+        own.discard("")
+        if w in own:
+            return False
+        auth = getattr(self, "warrant_authorities", None)
+        if auth is not None and w not in {str(a).strip().lower() for a in auth}:
+            return False              # forged string that names no declared trusted channel does not count
+        return True
 
     def propagate_outcome(self, outcome, ids=None, weight: float = 1.0,
                           driving_only: bool = True) -> dict:
