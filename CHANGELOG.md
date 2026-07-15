@@ -3,6 +3,36 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.9.0
+
+Identity-confidence gate on supersession, with a candidate reconciliation queue. Prompted by a sharp reader
+(marintkael): a keyed store supersedes on `(entity, field)`, but that is only correct if the identity the new
+value attaches to is right. When identity is resolved fuzzily (an extractor / embedding match, not a caller
+asserted key), a wrong match silently promotes into the authoritative record: a confident-but-WRONG ledger,
+harder to catch than a set. Nobody in agent memory gates this: mem0, Zep/Graphiti and Letta all auto-commit an
+ungated update.
+
+**Not a new idea** (credited, not claimed): this is the record-linkage clerical-review zone (Fellegi & Sunter,
+"A Theory for Record Linkage", JASA 1969: match / non-match / *possible match → review*) and MDM match-merge
+stewardship (auto-merge above a threshold, route the intermediate band to a steward queue). The contribution is
+the port into an agent-memory write path plus the measured prevention vs an ungated baseline.
+
+- **`remember(..., identity_confidence=c)`** — `c` in [0,1] from your entity-resolution step. `c >= fork_below`
+  (default 0.7, `Mnemo.fork_below`) supersedes as before; **below it the write forks a CANDIDATE**
+  (`status='candidate'`) that does NOT supersede and is excluded from authoritative resolution. Passing no
+  `identity_confidence` = caller asserts identity = supersede, byte-identical legacy.
+- **`candidates(key=None)`** — the reconciliation queue: each pending fork with its proposed key, value,
+  confidence, and the current authoritative value it would replace.
+- **`promote_candidate(id, capability=)`** — steward accepts: candidate becomes authoritative and supersedes the
+  prior value. Takes the same capability as `revert()` when a revert authority is set (promoting a fuzzy match
+  into authority is exactly the write to protect).
+- **`discard_candidate(id, basis=)`** — steward rejects; authority never touched.
+- Measured (probes/identity_gate_supersession_probe.py, deterministic, E=40, p_miss=0.2, 5 seeds): under noisy
+  identity resolution an ungated auto-commit corrupts the authoritative ledger 13.5% of the time; the gate cuts
+  that to **1.0% (a 93% reduction)** at the cost of a steward review queue (~65 candidates/run). Residual = mis
+  resolutions that scored above the threshold (the gate is only as good as the confidence signal). Tenant-scoped;
+  10 new tests; suite 99/99.
+
 ## 1.8.0
 
 Cross-store erasure becomes a first-class operation. Motivated by a measured gap (audit report, July 2026):

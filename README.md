@@ -99,6 +99,13 @@ well-known primitive, credited below.
   first) verified the value no longer recoverable, leaking stores NAMED. Measured: unwired 8/8 leak → wired
   0/8 with verifying chains; a broken wiring cannot produce a clean receipt (0/8 falsely complete).
   `DeletionManifest` (`mnemo.deletion_manifest`) remains usable standalone.
+- **Identity-confidence gate on supersession (1.9.0)** — a keyed correction supersedes on `(entity, field)`,
+  which is only right if the identity is right. When identity is resolved fuzzily, `remember(..., identity_confidence=c)`
+  gates the write: `c` below `fork_below` (0.7) forks a **candidate** instead of overwriting the authoritative
+  value, and `candidates()` / `promote_candidate()` / `discard_candidate()` are the steward path. Measured: under
+  noisy identity resolution an ungated auto-commit corrupts the ledger 13.5% of the time; the gate cuts it to 1.0%
+  (93%) at the cost of a review queue. *Not a new idea, credited: record linkage's clerical-review zone (Fellegi &
+  Sunter 1969) and MDM match-merge stewardship, ported to an agent-memory write path where nobody gates it.*
 - **`ErasureAuditor`** (`mnemo.erasure_auditor`) — after your app runs its deletion, adversarially re-attempts
   **recovery** of the subject's values from each store (verbatim scan for text/caches; **NN-inversion** for a
   vector index whose embeddings may survive). Answers "is the content still *reconstructible*?" — the check DSAR

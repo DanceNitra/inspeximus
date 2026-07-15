@@ -311,7 +311,7 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.8.0"
+__version__ = "1.9.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -398,6 +398,11 @@ class Mnemo:
         # verified two-tier policy (value-protected + recency-aged, Lab 29992a). Lets mnemo run in
         # production without unbounded growth — a gap vs bounded competitors (mem0/Letta).
         self.capacity = capacity
+        # IDENTITY-CONFIDENCE FORK THRESHOLD (record-linkage clerical-review boundary / MDM steward-queue cut,
+        # Fellegi-Sunter 1969). A keyed remember() carrying identity_confidence BELOW this forks a candidate
+        # instead of superseding (see remember + candidates/promote_candidate). Default 0.7; only active when a
+        # caller actually passes identity_confidence, so byte-identical legacy otherwise.
+        self.fork_below = 0.7
         # Per-record input cap (OPT-IN, default None = unbounded, byte-identical legacy). When set, remember()
         # truncates text longer than max_text chars and stamps meta["truncated_from"] with the original length —
         # an availability guard so a single malicious/runaway write can't exhaust memory. See SECURITY.md.
@@ -637,7 +642,7 @@ class Mnemo:
                  source: dict | None = None, key: str | None = None,
                  derived_from: list | None = None, attestation=None, derived: bool = False,
                  object: str | None = None, reaffirm: bool = False, capability: str | None = None,
-                 pii=None) -> str:
+                 pii=None, identity_confidence: float | None = None) -> str:
         """Append-only raw capture. Stamped with an absolute UTC time; never edited afterward.
         mtype in {episodic, semantic, procedural} sets the decay prior (episodic fades fast,
         semantic slow, procedural barely); inferred from the text if not given. Pass it explicitly
@@ -754,6 +759,26 @@ class Mnemo:
             rec["orphan"] = True
         if key is not None:
             rec["key"] = str(key)
+        # IDENTITY-CONFIDENCE GATE ON SUPERSESSION (Fellegi-Sunter 1969 clerical-review zone / MDM match-merge
+        # stewardship, ported to agent memory). A keyed write SUPERSEDES every active same-key record with no
+        # threshold -- correct only if the (entity, field) IDENTITY the value attaches to is right. When that
+        # identity was resolved fuzzily (an extractor / embedding match, not a caller-asserted key), a wrong
+        # match silently promotes into the authoritative interval => a confident-but-WRONG ledger, harder to
+        # catch than a set. `identity_confidence` in [0,1] gates the write: >= fork_below supersedes as before;
+        # BELOW it the record is forked as a CANDIDATE (status='candidate', key stashed as candidate_key) that
+        # does NOT supersede and is excluded from authoritative resolution until reconciled (promote_candidate /
+        # discard_candidate). None (default) = caller asserts identity => supersede, byte-identical legacy.
+        # Not a new idea (record linkage's "possible match -> review", 50+ yrs); the contribution is the port +
+        # the measured prevention of confident-wrong writes vs an ungated LLM baseline.
+        _is_candidate = (key is not None and identity_confidence is not None
+                         and identity_confidence < self.fork_below)
+        if _is_candidate:
+            rec["status"] = "candidate"
+            rec["candidate_key"] = str(key)
+            rec.pop("key", None)                       # a candidate never occupies the authoritative key
+            rec["identity_confidence"] = float(identity_confidence)
+        elif identity_confidence is not None:
+            rec["identity_confidence"] = float(identity_confidence)
         # OBJECT (OPT-IN): the asserted VALUE for keyed supersession + the echo guard. Value-preserving
         # paraphrases share it, so echo detection is object-identity (not similarity, which provably can't
         # separate same-value paraphrase from different-value correction). Falls back to normalized text.
@@ -790,8 +815,9 @@ class Mnemo:
             except Exception:
                 rec["vec"] = None
         self.items.append(rec)
-        if key is not None:
+        if key is not None and not _is_candidate:
             self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
+            #                                                  a candidate (low identity_confidence) never supersedes
         if self.capacity is not None:
             self._evict_to_capacity()                        # bounded working set (opt-in) BEFORE persisting
         self._save(force=True)        # a new memory is real content - persist immediately, not throttled
@@ -1055,6 +1081,77 @@ class Mnemo:
                 rm = rec.setdefault("meta", {})
                 rm["superseded_by_toggle"] = r["id"]
                 rm["superseded_by_policy"] = "keyed_lww_backfill"
+
+    # ── candidate reconciliation queue (identity-confidence gate; Fellegi-Sunter clerical review / MDM steward
+    #    queue, ported to agent memory). A fuzzy-identity keyed write forks a candidate instead of superseding;
+    #    these three methods are the steward path that promotes or discards it. ────────────────────────────────
+    def candidates(self, key: str | None = None) -> list:
+        """The reconciliation queue: forked candidate records awaiting an identity decision (writes whose
+        identity_confidence fell below fork_below, so they did NOT supersede). Each entry shows what it WOULD
+        change: the proposed key, the candidate's value/text, its confidence, and the CURRENT authoritative
+        value it would replace if promoted. Tenant-scoped when bound. Read-only.
+
+        Returns a list of {id, candidate_key, object, text, identity_confidence, current: {id, object, text} | None}."""
+        tv = self.tenant
+        out = []
+        for r in self.items:
+            if r.get("status") != "candidate":
+                continue
+            if self.tenant is not None and r.get("tenant") != tv:
+                continue
+            ck = r.get("candidate_key")
+            if key is not None and ck != str(key):
+                continue
+            cur = next((a for a in self.items if a.get("key") == ck and a.get("status") == "active"
+                        and a.get("tenant") == r.get("tenant")), None)
+            out.append({"id": r["id"], "candidate_key": ck, "object": r.get("object"),
+                        "text": r.get("text"), "identity_confidence": r.get("identity_confidence"),
+                        "current": ({"id": cur["id"], "object": cur.get("object"), "text": cur.get("text")}
+                                    if cur else None)})
+        return out
+
+    def promote_candidate(self, cid: str, capability: str | None = None) -> dict:
+        """STEWARD DECISION: accept a candidate's identity. It becomes the authoritative value for its key and
+        supersedes the prior active same-key value (a confirmed correction). Because promoting a fuzzy match
+        INTO the authoritative interval is exactly the write the gate was protecting, it takes the same
+        capability as revert()/reaffirm when a revert authority is configured (else the content path could
+        launder a fuzzy match to authority by promoting it). Returns {promoted, key, superseded:[ids]}."""
+        rec = next((r for r in self.items if r["id"] == cid and r.get("status") == "candidate"), None)
+        if rec is None:
+            raise KeyError(f"no candidate with id {cid}")
+        if self.tenant is not None and rec.get("tenant") != self.tenant:
+            raise KeyError(f"no candidate with id {cid}")     # tenant isolation
+        ck = rec.get("candidate_key")
+        if (self.revert_authority is not None or self.revert_pubkey is not None) \
+                and capability is not _SANCTIONED and not self._revert_authorized(ck, capability):
+            raise PermissionError("promote_candidate requires a valid capability (revert authority is set)")
+        before = [r["id"] for r in self.items if r.get("key") == ck and r.get("status") == "active"
+                  and r.get("tenant") == rec.get("tenant")]
+        rec["status"] = "active"
+        rec["key"] = ck
+        rec.pop("candidate_key", None)
+        rec.setdefault("meta", {})["promoted_from_candidate"] = True
+        self._supersede_by_key(rec)                            # now retires the prior authoritative value
+        self._save(force=True)
+        after = {r["id"] for r in self.items if r.get("key") == ck and r.get("status") == "active"}
+        return {"promoted": cid, "key": ck, "superseded": [i for i in before if i not in after]}
+
+    def discard_candidate(self, cid: str, basis: str | None = None) -> dict:
+        """STEWARD DECISION: reject a candidate (wrong identity / spurious). It is retired without ever touching
+        the authoritative value. Returns {discarded}."""
+        rec = next((r for r in self.items if r["id"] == cid and r.get("status") == "candidate"), None)
+        if rec is None:
+            raise KeyError(f"no candidate with id {cid}")
+        if self.tenant is not None and rec.get("tenant") != self.tenant:
+            raise KeyError(f"no candidate with id {cid}")
+        rec["status"] = "superseded"
+        rec["superseded_ts"] = time.time()
+        m = rec.setdefault("meta", {})
+        m["superseded_by_policy"] = "candidate_discarded"
+        if basis:
+            m["discard_basis"] = basis
+        self._save(force=True)
+        return {"discarded": cid}
 
     def remember_dedup(self, text: str, tags=None, value: float = 1.0, meta: dict | None = None,
                        mtype: str | None = None, dup_threshold: float = 0.95) -> str:
@@ -3963,6 +4060,9 @@ class _TenantView:
     def check_conflict(self, *a, **k):  return Mnemo.check_conflict(self, *a, **k)
     def _cluster_active(self, *a, **k): return Mnemo._cluster_active(self, *a, **k)
     def _supersede_by_key(self, *a, **k): return Mnemo._supersede_by_key(self, *a, **k)
+    def candidates(self, *a, **k):      return Mnemo.candidates(self, *a, **k)
+    def promote_candidate(self, *a, **k): return Mnemo.promote_candidate(self, *a, **k)
+    def discard_candidate(self, *a, **k): return Mnemo.discard_candidate(self, *a, **k)
     def _tenant_rows(self, *a, **k):    return Mnemo._tenant_rows(self, *a, **k)
 
 
