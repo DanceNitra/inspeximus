@@ -1,4 +1,4 @@
-"""Read-path review trigger (mnemo 1.9.2-1.9.4) — the mirror of a write-time hold-for-review.
+"""Read-path review trigger (mnemo 1.9.2-1.9.7) — the mirror of a write-time hold-for-review.
 
 A store can be confidently WRONG: a correction lands, the record settles, and later a contradicting observation
 arrives. You do not want to silently trust every contradiction (an attacker or a stray transcript line can
@@ -37,14 +37,22 @@ def main():
         print(f"  key={item['key']}  reason={item['reason']}  contradiction={item.get('contradiction')!r}  "
               f"still-current-value stays in recall until a steward decides")
 
-    # recall STILL returns the current value while the record is under review (an agent left with nothing is worse)
-    print("recall during review still returns current:", "Ohio" in m.recall("svc/region", k=3)[0]["text"])
+    # recall STILL returns the current value while the record is under review (an agent left with nothing is
+    # worse) — but the hit now CARRIES the review signal, so the agent can branch instead of trusting blindly.
+    hit = m.recall("svc/region", k=3)[0]
+    print("recall during review still returns current:", "Ohio" in hit["text"])
+    print(f"...and the hit is marked: under_review={hit.get('under_review')}, "
+          f"reason={hit.get('review_reason')!r}, prior={hit.get('review_prior')!r}")
+    if hit.get("under_review"):
+        print("an agent seeing this should hedge or defer, e.g.: "
+              f"'my records say {hit['text'].split()[-1]}, but that value is under review'")
 
     # Steward closes it. keep_current = false alarm; reaffirm_prior = restore the surfaced prior via the
     # authorized revert path. Here we judge it a false alarm and keep Ohio.
     rid = m.reopened()[0]["id"]
     out = m.resolve_reopened(rid, "keep_current")
-    print(f"\nsteward resolves {out['decision']}          -> review queue now empty: {m.reopened() == []}")
+    print(f"\nsteward resolves {out['decision']}          -> review queue now empty: {m.reopened() == []}, "
+          f"recall hit clean again: {'under_review' not in m.recall('svc/region', k=1)[0]}")
 
     print("\nHonest scope: observe() FLAGS, it never decides. Distinguishing a legitimate contradiction from an\n"
           "injected one is an authority call, not a content call. Pass Mnemo(support_authorities=[...]) to\n"

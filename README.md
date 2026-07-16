@@ -77,7 +77,7 @@ capability gap survives at n=20. We lead with the cell we *don't* win: **echo-re
 three defend against a restated stale value. This is a narrow, adversarial, command-driven cut, not a general
 "mnemo is better" claim; run it yourself or add your system.
 
-### After the write: a read-path review trigger (1.9.2–1.9.4)
+### After the write: a read-path review trigger (1.9.2–1.9.7)
 
 Supersession and revert handle correction at *write* time. But a store can also be *confidently wrong* — a
 value settles, and later a contradicting observation arrives that write-time gating already accepted or
@@ -95,8 +95,14 @@ m.observe("Berlin again",        key="svc/region", object="Berlin", support=["sl
 m.observe("Berlin, per audit",   key="svc/region", object="Berlin", support=["audit-Q3"])    # 2nd ground -> REOPEN
 
 m.reopened()                       # the review queue; recall() still returns Ohio meanwhile
+m.recall("region", k=1)[0]         # ... but the hit now carries under_review=True + review_reason + review_prior
 m.resolve_reopened(id, "keep_current")   # steward: false alarm  (or "reaffirm_prior" to restore via revert)
 ```
+
+The review signal reaches the **agent**, not just the steward: while a record is reopened, `recall()` hits for
+it carry `under_review: True`, `review_reason`, and `review_prior` (the value the contradiction points back
+to), so a consumer can branch — defer, ask, or hedge — instead of acting on a contested value with full
+confidence. The fields disappear once the steward resolves; a record that was never reopened has none.
 
 Corroboration counts **distinct novel grounds** in `support`, so replaying one ground is an echo, not a vote.
 `observe()` only *flags* — it never supersedes; the steward decides. Distinguishing a legitimate contradiction
