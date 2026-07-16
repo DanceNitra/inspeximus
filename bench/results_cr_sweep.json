@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "model": "deepseek-v4-flash",
+  "hops": 2,
+  "k": 15,
+  "rows": [
+    {
+      "row": 0,
+      "facts": 455,
+      "n": 50,
+      "base_full": 0.8,
+      "mnemo_single": 0.28,
+      "mnemo_iterative": 0.66
+    },
+    {
+      "row": 1,
+      "facts": 2310,
+      "n": 50,
+      "base_full": 0.34,
+      "mnemo_single": 0.08,
+      "mnemo_iterative": 0.44
+    },
+    {
+      "row": 2,
+      "facts": 4580,
+      "n": 50,
+      "base_full": 0.3,
+      "mnemo_single": 0.04,
+      "mnemo_iterative": 0.5
+    },
+    {
+      "row": 3,
+      "facts": 18332,
+      "n": 50,
+      "base_full": "N/A (context exceeds window)",
+      "mnemo_single": 0.1,
+      "mnemo_iterative": 0.36
+    }
+  ]
+}
