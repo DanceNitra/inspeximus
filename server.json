@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.DanceNitra/mnemo",
-  "description": "Zero-dependency agent memory: recall, consolidation, and a first-class correction + erasure channel.",
+  "description": "Zero-dependency agent memory + MCP server: recall, correction (supersede/revert/review) and erasure.",
   "repository": {
     "url": "https://github.com/DanceNitra/mnemo",
     "source": "github"
   },
-  "version": "1.7.0",
+  "version": "1.9.5",
   "websiteUrl": "https://pypi.org/project/agora-mnemo/",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "agora-mnemo",
-      "version": "1.7.0",
+      "version": "1.9.5",
       "transport": {
         "type": "stdio"
       },
