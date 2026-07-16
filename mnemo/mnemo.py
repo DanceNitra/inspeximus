@@ -324,7 +324,7 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.9.6"
+__version__ = "1.9.7"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2933,6 +2933,16 @@ class Mnemo:
                   "reliability": round(self._reliability(r), 3),
                   "source": r.get("source"),    # re-checkable origin (provenance), surfaced so a recalled fact can be traced back
                   "stale_derived": bool(r.get("_stale_derived"))}
+            if r.get("reopened"):
+                # A read-path review-trigger (observe()) reopened this settled record on a corroborated
+                # contradiction: recall still returns it as the current best guess, but the CONSUMER must know
+                # it is contested — otherwise the agent acts on a value a steward has flagged, with full
+                # confidence. Surface the flag + the surfaced prior so a caller can branch (defer, ask, hedge).
+                _m = r.get("meta", {})
+                _o["under_review"] = True
+                _o["review_reason"] = _m.get("reopened_reason")
+                if _m.get("reopened_surfaced_prior") is not None:
+                    _o["review_prior"] = _m.get("reopened_surfaced_prior")
             if with_status:     # OPT-IN: carry the honest truth-status at the point of use (convergence-backed
                 cr = self.convergence_report(r, _by_id=_by_id)   # vs adjudicated), never let convergence read as truth
                 _o["convergence"] = cr["status"]

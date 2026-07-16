@@ -101,3 +101,28 @@ def test_legacy_unaffected_no_observe(tmp_path):
     m.remember("a is 2", key="k/a", object="2")
     assert all("reopened" not in r for r in m.items)
     assert m.reopened() == []
+
+
+def test_recall_surfaces_under_review_after_reopen(tmp_path):
+    """The read-path review-trigger must reach the AGENT: once observe() reopens a settled record, recall()
+    hits for it carry `under_review` + the surfaced prior, so the consumer can branch instead of acting on a
+    contested value with full confidence."""
+    m = _store(tmp_path)
+    m.remember("the region is Frankfurt", key="a/region", object="Frankfurt")
+    m.remember("correction: the region is now Ohio", key="a/region", object="Ohio")
+    assert "under_review" not in m.recall("region", k=3)[0]            # clean before any contradiction
+    m.observe("Ohio? no, Berlin", key="a/region", object="Berlin")
+    m.observe("Berlin, again", key="a/region", object="Berlin")        # corroborated -> reopen
+    hit = next(h for h in m.recall("region", k=5) if "Ohio" in h["text"])
+    assert hit["under_review"] is True
+    assert hit["review_reason"] == "corroborated_contradiction"
+    assert hit["review_prior"] == "Frankfurt"
+
+
+def test_recall_under_review_clears_after_resolve(tmp_path):
+    m = _store(tmp_path)
+    m.remember("the width is narrow", key="k/width", object="narrow")
+    m.observe("wide", key="k/width", object="wide"); m.observe("wide", key="k/width", object="wide")
+    assert any(h.get("under_review") for h in m.recall("width", k=5))
+    m.resolve_reopened(m.reopened()[0]["id"], "keep_current")
+    assert not any(h.get("under_review") for h in m.recall("width", k=5))   # steward closed it -> no longer contested
