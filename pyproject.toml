@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agora-mnemo"
-version = "1.9.2"
+version = "1.9.3"
 description = "mnemo - a zero-dependency memory layer and MCP server for AI agents: value-ranked recall, per-type decay, consolidation, and a first-class correction + erasure channel (revert, lineage-aware retraction, tamper-evident receipts)."
 readme = "README.md"
 requires-python = ">=3.8"

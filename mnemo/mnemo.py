@@ -311,7 +311,7 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.9.2"
+__version__ = "1.9.3"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1181,38 +1181,81 @@ class Mnemo:
         return next((r for r in self.items if r.get("key") == str(key) and r.get("status") == "active"
                      and (tv is None or r.get("tenant") == tv)), None)
 
-    def observe(self, text: str, key: str, object: str | None = None, meta: dict | None = None) -> dict:
+    @staticmethod
+    def _support_sig(s) -> str:
+        return re.sub(r"[^a-z0-9]+", " ", str(s).lower()).strip()
+
+    @staticmethod
+    def _as_list(x):
+        return list(x) if isinstance(x, (list, tuple, set)) else [x]
+
+    def observe(self, text: str, key: str, object: str | None = None, support=None,
+                meta: dict | None = None) -> dict:
         """READ-PATH contradiction check (marintkael's mirror of the Fellegi-Sunter clerical-review band, r/RAG
-        2026-07-16). Ingest an OBSERVATION (evidence, NOT an authoritative write) about `key`. If it CONTRADICTS
-        the current high-confidence settled value — a different `object`, or object=None for a value-obscuring
-        revert ('go back', names nothing) — then, once the contradiction is corroborated by >=
-        reopen_corroboration independent observations (a single stray restatement stays below threshold and is
-        ignored), REOPEN the interval: the authoritative record is flagged status->'reopened' (still returned by
-        recall, but surfaced by reopened() for steward review) with the prior superseded value offered to
-        reaffirm. Unlike remember(), observe() NEVER supersedes or writes an authoritative value — it can only
-        open a settled record to review; resolution stays with resolve_reopened()/an authoritative write. This
-        catches the confident wrong-merge LATE (write-time never catches it) and finally gives the
-        value-obscuring revert something to key on. Returns {reopened, key, pending, need, surfaced_prior,
-        review_id}. NOTE: it does NOT decide the reopened case — legit-vs-injected still needs authority."""
+        2026-07-16). Ingest an OBSERVATION (evidence, NOT an authoritative write) about `key` that CONTRADICTS the
+        current high-confidence settled value. It NEVER writes an authoritative value — it can only REOPEN a
+        settled record for steward review (reopened()/resolve_reopened); the record stays 'active' so recall()
+        still returns it. Catches the confident wrong-merge write-time can't, and gives the value-obscuring revert
+        something to key on. It does NOT decide the reopened case — legit-vs-injected still needs authority.
+
+        TWO keying modes:
+        * SUPPORT-KEYED (pass `support`, marintkael's fix 2026-07-16) — this is justification-based truth
+          maintenance (Doyle 1979 JTMS: a node's belief is a function of its SUPPORT set, not the proposition, and
+          a relabel fires when a NEW justification arrives; de Kleer 1986 ATMS: distinct minimal-environment
+          labels = 'distinct novel supports'; Dung 1995 reinstatement: an argument reopens only when a NEW
+          attacker/defender enters). Key reopen on NOVELTY-OF-SUPPORT, not on
+          value. A restatement whose grounds the ledger has already seen (or that carries no support) is an ECHO
+          -> silenced, even though it contradicts the current value; only a contradiction resting on grounds NOT
+          in the record's justification set reopens. So replay collapses into the echo case BY CONSTRUCTION (same
+          value, same stale support) and the value-disagreement DoS lever falls off, while an honest late
+          correction that brings NEW ground still gets through. Corroboration counts DISTINCT novel support
+          signatures (splitting one intent into two emissions shares support -> one sig -> does not corroborate),
+          which is independence measured at the support level. HONEST LIMIT: novelty-of-support is itself a
+          provenance judgement pushed one level down, not certified — reopened() stays a queue, not a resolution.
+        * VALUE-KEYED (omit `support`, legacy 1.9.2): reopen on a value-contradiction corroborated by >=
+          reopen_corroboration observations. Kept byte-identical for existing callers.
+
+        Returns {reopened, key, pending, need, surfaced_prior, review_id, ...}."""
         cur = self._current_active(key)
         if cur is None:
             return {"reopened": False, "key": str(key), "pending": 0, "need": self.reopen_corroboration,
                     "surfaced_prior": None, "review_id": None, "no_current": True}
-        # only HIGH-confidence settled records are guarded (a low-confidence record's disagreement is expected)
-        ic = cur.get("identity_confidence")
+        ic = cur.get("identity_confidence")            # only HIGH-confidence settled records are guarded
         if not (ic is None or ic >= self.fork_below):
             return {"reopened": False, "key": str(key), "pending": 0, "need": self.reopen_corroboration,
                     "surfaced_prior": None, "review_id": None, "low_confidence": True}
+        m = cur.setdefault("meta", {})
         agrees = object is not None and self._obj_sig({"object": object, "text": text}) == self._obj_sig(cur)
         if agrees:
+            if support is not None:                     # an agreeing observation's grounds are now 'seen'
+                seen = set(m.get("_support_seen", []))
+                m["_support_seen"] = list(seen | {self._support_sig(s) for s in self._as_list(support)})
+                self._save(force=True)
             return {"reopened": False, "key": str(key), "pending": 0, "need": self.reopen_corroboration,
                     "surfaced_prior": None, "review_id": None, "agreed": True}
-        m = cur.setdefault("meta", {})
         prior = self._latest_superseded_object(key, cur)
-        # value-obscuring revert (object=None): explicit action, reopen on first sight
+        if support is not None:
+            # SUPPORT-KEYED: an echo (no novel grounds) is silenced even though it disagrees on value.
+            seen = set(m.get("_support_seen", []))
+            sigs = {self._support_sig(s) for s in self._as_list(support) if self._support_sig(s)}
+            novel = sigs - seen
+            m["_support_seen"] = list(seen | sigs)      # discount all grounds now seen
+            if not novel:
+                self._save(force=True)
+                return {"reopened": False, "key": str(key), "pending": 0, "need": self.reopen_corroboration,
+                        "surfaced_prior": prior, "review_id": None, "echo": True}
+            vsig = self._obj_sig({"object": object, "text": text}) if object is not None else "__revert__"
+            nov = m.setdefault("_reopen_support", {})
+            accrued = set(nov.get(vsig, [])) | novel    # DISTINCT novel grounds only (independence at support level)
+            nov[vsig] = list(accrued)
+            self._save(force=True)
+            if len(accrued) >= self.reopen_corroboration:
+                return self._do_reopen(cur, prior, "novel_support_contradiction", object, meta)
+            return {"reopened": False, "key": str(key), "pending": len(accrued),
+                    "need": self.reopen_corroboration, "surfaced_prior": prior, "review_id": None}
+        # VALUE-KEYED (legacy 1.9.2): value-obscuring revert reopens on first sight; named contradiction is gated
         if object is None:
             return self._do_reopen(cur, prior, "value_obscuring_revert", None, meta)
-        # named contradiction: corroboration-gate
         sig = self._obj_sig({"object": object, "text": text})
         contra = m.setdefault("_reopen_contra", {})
         contra[sig] = int(contra.get(sig, 0)) + 1
@@ -1242,6 +1285,7 @@ class Mnemo:
         if meta:
             m.setdefault("reopened_meta", {}).update(meta)
         m.pop("_reopen_contra", None)
+        m.pop("_reopen_support", None)
         self._save(force=True)
         return {"reopened": True, "key": cur.get("key"), "pending": self.reopen_corroboration,
                 "need": self.reopen_corroboration, "surfaced_prior": prior, "review_id": cur["id"]}
