@@ -938,6 +938,9 @@ stolen private key or authenticate a human. Adversarial receipt: `mnemo/probes/a
 `mnemo` ships an [MCP](https://modelcontextprotocol.io) stdio server so any MCP-compatible agent can
 use it as long-term memory — `remember` (with a per-type decay prior), value-ranked `recall`,
 `consolidate`, `consolidate_clusters`, `contradictions`, `value_by_cohort`, `forget` (verified erasure).
+Correction is first-class over MCP too: `revert` / `route` undo a correction on an unmarked "go back", and the
+read-path review layer `observe` / `reopened` / `resolve_reopened` (1.9.2–1.9.5) reopens a settled record for
+steward review on a *corroborated* contradiction (a lone restatement stays an echo, never an auto-change).
 The MCP `remember` exposes `key` (deterministic supersession) plus `object` / `reaffirm`, and the server
 runs with **`echo_guard` ON by default** (0.6.11) so a corrected fact stays corrected even if the old value
 is re-stated later — the failure mode a plain keyed/add-based store shows on RAMR's ECHO-RESISTANCE
