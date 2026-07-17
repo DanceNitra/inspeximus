@@ -1,0 +1,83 @@
+{
+  "name": "AI agent with self-correcting memory (mnemo)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## AI agent with self-correcting memory (mnemo)\n\nThis agent remembers user facts through **mnemo** — a zero-dependency memory layer whose job is that **a corrected fact stays corrected**: when a value is superseded, a later restatement of the old value cannot resurrect it (echo guard), and the full value history stays auditable.\n\n**Try this conversation:**\n1. \"Remember: the deploy region is Frankfurt\"\n2. \"Correction — the deploy region is Ohio now\"\n3. \"Reminder: the deploy region is Frankfurt\"  *(a stale echo)*\n4. \"What is the deploy region?\" → **Ohio** (the echo landed retired, it did not win)",
+        "height": 360,
+        "width": 420
+      },
+      "id": "note-about",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-780, -160]
+    },
+    {
+      "parameters": {
+        "content": "## Setup (2 minutes)\n\n1. Start mnemo's MCP server behind an SSE bridge (one command; [uv](https://docs.astral.sh/uv/) + Node required):\n\n```\nnpx -y supergateway \\\n  --stdio \"uvx --from agora-mnemo[mcp] mnemo-mcp\" \\\n  --port 8808\n```\n\n2. Set your OpenAI (or other chat model) credential on the model node.\n3. Chat with the agent. Memory persists in `mnemo_memory.json` next to where the bridge runs (set `MNEMO_PATH` to change it).\n\nmnemo: https://github.com/DanceNitra/mnemo · `pip install agora-mnemo`",
+        "height": 360,
+        "width": 400
+      },
+      "id": "note-setup",
+      "name": "Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-340, -160]
+    },
+    {
+      "parameters": {"options": {}},
+      "id": "chat-trigger",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [-600, 260],
+      "webhookId": "mnemo-chat-demo"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an assistant with persistent, self-correcting memory provided by the mnemo tools.\n\nRules:\n- When the user states a durable fact or preference, store it with the `remember` tool. Use a stable key of the form `subject/attribute` (e.g. `deploy/region`, `user/timezone`) and pass the current value as `object`.\n- When the user corrects a fact, call `remember` again with the SAME key and the new value — mnemo supersedes the old value; do not delete anything.\n- Before answering questions about stored facts, call `recall` and answer from the current value it returns. mnemo serves the corrected value even if the old one was restated later.\n- For 'undo / go back to what we had' requests, use the `route` tool and follow its verdict rather than guessing."
+        }
+      },
+      "id": "agent",
+      "name": "Memory Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [-260, 260]
+    },
+    {
+      "parameters": {"options": {}},
+      "id": "model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [-360, 480]
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://localhost:8808/sse",
+        "options": {}
+      },
+      "id": "mnemo-mcp",
+      "name": "mnemo memory (MCP)",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [-140, 480]
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [[{"node": "Memory Agent", "type": "main", "index": 0}]]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [[{"node": "Memory Agent", "type": "ai_languageModel", "index": 0}]]
+    },
+    "mnemo memory (MCP)": {
+      "ai_tool": [[{"node": "Memory Agent", "type": "ai_tool", "index": 0}]]
+    }
+  },
+  "settings": {"executionOrder": "v1"},
+  "pinData": {},
+  "meta": {"templateCredsSetupCompleted": false}
+}
