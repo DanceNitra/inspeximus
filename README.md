@@ -749,7 +749,7 @@ zero-dependency, and the framework is imported lazily only when you use its adap
 |---|---|---|
 | [OpenAI Agents SDK](#drop-in-memory-for-the-openai-agents-sdk-mnemosession-0620) | `MnemoSession` | `pip install "agora-mnemo[openai-agents]"` |
 | [AutoGen](#current-truth-memory-for-autogen-mnemomemory-070) | `MnemoMemory` | `pip install "agora-mnemo[autogen]"` |
-| [LangGraph / LangMem](#langgraph-store-with-queryable-history-mnemostore-071) | `MnemoStore` | `pip install "agora-mnemo[langgraph]"` |
+| [LangGraph / LangMem](#langgraph-store-with-queryable-history-mnemostore-071) | `MnemoStore` | `pip install "agora-mnemo[langgraph]"` · [runnable example](examples/07_langgraph_memory.py) |
 | [LlamaIndex](#current-truth-long-term-memory-for-llamaindex-mnemomemoryblock-073) | `MnemoMemoryBlock` | `pip install "agora-mnemo[llamaindex]"` |
 | [Google ADK](#persistent-memory-for-google-adk-mnemomemoryservice-074) | `MnemoMemoryService` | `pip install "agora-mnemo[google-adk]"` |
 | [Pydantic AI](#memory-as-tools-for-pydantic-ai-mnemo_toolset-078) | `mnemo_toolset` | `pip install "agora-mnemo[pydantic-ai]"` |
