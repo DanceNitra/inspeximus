@@ -50,6 +50,32 @@ bitemporal, multi-tenancy) you can reach for when you need it.
 Runnable examples live in [`examples/`](examples/): [basics](examples/01_basics.py) ·
 [correction & erasure](examples/02_correction_and_erasure.py) · [semantic recall](examples/03_semantic_recall.py).
 
+## Give your agent this memory in 60 seconds (MCP)
+
+Using **Claude Code**? One command registers mnemo as your agent's memory ([uv](https://docs.astral.sh/uv/) fetches it, nothing else to install):
+
+```bash
+claude mcp add mnemo -e MNEMO_PATH=~/.mnemo_memory.json -- uvx --from "agora-mnemo[mcp]" mnemo-mcp
+```
+
+**Claude Desktop / Cursor / any MCP client** — add to your MCP config (`claude_desktop_config.json`, `.cursor/mcp.json`, …):
+
+```json
+{
+  "mcpServers": {
+    "mnemo": {
+      "command": "uvx",
+      "args": ["--from", "agora-mnemo[mcp]", "mnemo-mcp"],
+      "env": { "MNEMO_PATH": "~/.mnemo_memory.json" }
+    }
+  }
+}
+```
+
+Your agent now has `remember` / `recall` / `history` — and corrections that stick: when a fact is superseded,
+recall serves the current value, a restated stale value can't resurrect it (`echo_guard`), and `revert` /
+`route` undo a correction on an unmarked "go back". Fifteen tools total; [details below](#use-it-as-an-mcp-server-any-claude--cursor--agent-client).
+
 **Jump to:** [Correction (measured)](#correction-is-a-first-class-operation-measured-across-systems) ·
 [Governance & erasure](#governance-erasure--audit) · [Install](#install) ·
 [MCP server](#use-it-as-an-mcp-server-any-claude--cursor--agent-client) ·

@@ -274,8 +274,14 @@
         <div class="mcp__grid">
           <div class="mcp__copy reveal">
             <p class="eyebrow">model context protocol</p>
-            <h2 class="section__title">12 tools any MCP host can call</h2>
+            <h2 class="section__title">15 tools any MCP host can call</h2>
             <p class="section__lede">Point Claude, Cursor, or any MCP agent at mnemo and it gets a real memory with a correction channel — no glue code.</p>
+            <div class="code-block scanlines">
+              <div class="code-block__bar"><span>Claude Code — one command</span>
+                <button class="copy-mini magnetic" data-copy='claude mcp add mnemo -e MNEMO_PATH=~/.mnemo_memory.json -- uvx --from "agora-mnemo[mcp]" mnemo-mcp' type="button">copy</button>
+              </div>
+<pre>claude mcp add mnemo <span class="k">-e</span> MNEMO_PATH=~/.mnemo_memory.json <span class="k">--</span> uvx --from <span class="s">"agora-mnemo[mcp]"</span> mnemo-mcp</pre>
+          </div>
             <div class="code-block scanlines">
               <div class="code-block__bar"><span>claude_desktop_config.json</span>
                 <button class="copy-mini magnetic" data-copy='{
