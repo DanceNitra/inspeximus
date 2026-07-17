@@ -2,11 +2,11 @@
 
 # Mnemosyne · `mnemo`
 
-**A memory layer for AI agents — the one that already runs an autonomous research OS over ~6,000 notes.**
+**The self-correcting memory layer for AI agents.**
 
-*Memory is the mother of the Muses. An agent with no memory has no ideas.*
+*When a fact changes, mnemo serves the correction — and won't let the stale value creep back in. Extracted from an autonomous research OS that has run it daily over ~6,000 notes.*
 
-`pip install agora-mnemo` · [PyPI](https://pypi.org/project/agora-mnemo/) · [Hugging Face](https://huggingface.co/Danchi17/mnemo) · [DOI 10.5281/zenodo.21128549](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/mnemo/) · MIT · v1.7.0
+`pip install agora-mnemo` · [PyPI](https://pypi.org/project/agora-mnemo/) · [Hugging Face](https://huggingface.co/Danchi17/mnemo) · [DOI 10.5281/zenodo.21128549](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/mnemo/) · MIT · v1.9.9
 
 </div>
 
