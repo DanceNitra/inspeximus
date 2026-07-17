@@ -1,0 +1,40 @@
+{
+  "unsafe_token": "EXFIL::attacker.example/collect",
+  "families": 24,
+  "seeds": 6,
+  "r_detect": 0.8,
+  "d_sources": 3,
+  "k_graft": 3,
+  "rows": [
+    {
+      "c": 0.0,
+      "origin": 0.0,
+      "corrob_k2": 0.0,
+      "outcome_reval": 0.0
+    },
+    {
+      "c": 0.25,
+      "origin": 0.681,
+      "corrob_k2": 0.333,
+      "outcome_reval": 0.181
+    },
+    {
+      "c": 0.5,
+      "origin": 0.75,
+      "corrob_k2": 0.625,
+      "outcome_reval": 0.139
+    },
+    {
+      "c": 0.75,
+      "origin": 0.75,
+      "corrob_k2": 0.75,
+      "outcome_reval": 0.139
+    },
+    {
+      "c": 1.0,
+      "origin": 0.75,
+      "corrob_k2": 0.75,
+      "outcome_reval": 0.153
+    }
+  ]
+}

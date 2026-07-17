@@ -1,0 +1,32 @@
+{
+ "ok": true,
+ "rows": [
+  {
+   "row": 0,
+   "facts": 455,
+   "n": 30,
+   "lex_single": 0.433,
+   "sem_single": 0.433,
+   "lex_iter": 0.433,
+   "sem_iter": 0.533
+  },
+  {
+   "row": 1,
+   "facts": 2310,
+   "n": 30,
+   "lex_single": 0.133,
+   "sem_single": 0.267,
+   "lex_iter": 0.167,
+   "sem_iter": 0.267
+  },
+  {
+   "row": 2,
+   "facts": 4580,
+   "n": 30,
+   "lex_single": 0.267,
+   "sem_single": 0.3,
+   "lex_iter": 0.3,
+   "sem_iter": 0.367
+  }
+ ]
+}

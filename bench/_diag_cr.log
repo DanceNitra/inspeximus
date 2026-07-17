@@ -1,0 +1,3 @@
+row 0 (455 facts): retrieval-CEILING (gold-in-ctx)  lex single=43% iter=43%  |  sem single=43% iter=53%
+row 1 (2310 facts): retrieval-CEILING (gold-in-ctx)  lex single=13% iter=17%  |  sem single=27% iter=27%
+row 2 (4580 facts): retrieval-CEILING (gold-in-ctx)  lex single=27% iter=30%  |  sem single=30% iter=37%

@@ -77,31 +77,6 @@ capability gap survives at n=20. We lead with the cell we *don't* win: **echo-re
 three defend against a restated stale value. This is a narrow, adversarial, command-driven cut, not a general
 "mnemo is better" claim; run it yourself or add your system.
 
-## Already on mem0? Change one import (`mnemo.mem0`)
-
-If you use mem0, you can get deterministic, echo-resistant correction without a rewrite — swap the import:
-
-```python
-# - from mem0 import Memory
-+ from mnemo.mem0 import Memory
-
-m = Memory()
-m.add("the deploy region is Frankfurt", user_id="ops")
-m.add("correction: the deploy region is Ohio", user_id="ops")   # a correction supersedes
-m.add("reminder: the deploy region is Frankfurt", user_id="ops") # the OLD value restated (newest write)
-m.search("region", filters={"user_id": "ops"})   # -> Ohio  (a similarity store revives Frankfurt ~47% of the time)
-```
-
-Same `add` / `search` / `get` / `get_all` / `update` / `delete` / `delete_all` / `history` / `reset` surface.
-`echo_guard` is on, so a corrected fact survives its old value being restated (measured: mem0 2.0.11 scored
-**0.53** echo-resistance, this drop-in **1.00** — [github.com/DanceNitra/ramr](https://github.com/DanceNitra/ramr)).
-It supersedes by an explicit **key** (subject-relation), not by cosine similarity: `"<subject> is <value>"`
-statements are auto-keyed, or pass `metadata={"mnemo_key": "user/region", "mnemo_object": "Ohio"}` for control.
-Statements it can't key are stored as ordinary memories (like mem0 without `infer`). **Honest scope:** this is a
-drop-in for the *storage + correction* layer, not mem0's LLM fact-extraction; recall is mnemo's (lexical unless
-you wire an embedder), so assume mem0/Zep lead on plain retrieval until shown otherwise — the edge here is
-integrity. Runnable: [`examples/06_mem0_dropin.py`](examples/06_mem0_dropin.py).
-
 ### After the write: a read-path review trigger (1.9.2–1.9.7)
 
 Supersession and revert handle correction at *write* time. But a store can also be *confidently wrong* — a

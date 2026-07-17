@@ -1,0 +1,110 @@
+{
+ "ok": true,
+ "store": "real mnemo",
+ "E": 200,
+ "agg": {
+  "wm_caught_base": 0.0,
+  "wm_caught_reopen": 1.0,
+  "revert_keyed_base": 0.0,
+  "revert_keyed_reopen": 1.0,
+  "false_reopen_rate": 0.0
+ },
+ "rows": [
+  {
+   "seed": 0,
+   "K": 2,
+   "wrong_merges": 27,
+   "reverts": 33,
+   "flood": 39,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  },
+  {
+   "seed": 1,
+   "K": 2,
+   "wrong_merges": 31,
+   "reverts": 34,
+   "flood": 44,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  },
+  {
+   "seed": 2,
+   "K": 2,
+   "wrong_merges": 30,
+   "reverts": 37,
+   "flood": 48,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  },
+  {
+   "seed": 3,
+   "K": 2,
+   "wrong_merges": 29,
+   "reverts": 45,
+   "flood": 38,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  },
+  {
+   "seed": 4,
+   "K": 2,
+   "wrong_merges": 26,
+   "reverts": 50,
+   "flood": 39,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  },
+  {
+   "seed": 5,
+   "K": 2,
+   "wrong_merges": 30,
+   "reverts": 39,
+   "flood": 50,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  },
+  {
+   "seed": 6,
+   "K": 2,
+   "wrong_merges": 27,
+   "reverts": 35,
+   "flood": 40,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  },
+  {
+   "seed": 7,
+   "K": 2,
+   "wrong_merges": 29,
+   "reverts": 39,
+   "flood": 45,
+   "wm_caught_reopen": 1.0,
+   "wm_caught_base": 0.0,
+   "revert_keyed_reopen": 1.0,
+   "revert_keyed_base": 0.0,
+   "false_reopen_rate": 0.0
+  }
+ ]
+}

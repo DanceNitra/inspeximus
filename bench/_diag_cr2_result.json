@@ -1,0 +1,35 @@
+{
+ "ok": true,
+ "rows": [
+  {
+   "row": 0,
+   "facts": 455,
+   "keyed_facts": 430,
+   "keys": 276,
+   "n": 30,
+   "keyed_top1": 0.0,
+   "keyed_top3": 0.133,
+   "gold_is_a_latest_value": 0.967
+  },
+  {
+   "row": 1,
+   "facts": 2310,
+   "keyed_facts": 2144,
+   "keys": 1360,
+   "n": 30,
+   "keyed_top1": 0.033,
+   "keyed_top3": 0.067,
+   "gold_is_a_latest_value": 0.9
+  },
+  {
+   "row": 2,
+   "facts": 4580,
+   "keyed_facts": 4243,
+   "keys": 2673,
+   "n": 30,
+   "keyed_top1": 0.033,
+   "keyed_top3": 0.1,
+   "gold_is_a_latest_value": 0.967
+  }
+ ]
+}

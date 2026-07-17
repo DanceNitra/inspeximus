@@ -111,7 +111,7 @@ def bridge_records(subject, malicious):
 TRUSTED_CHANNEL = "ticketing-system"   # the app's declared exogenous outcome authority
 
 
-def build_store(embed, self_grade, guard=False, forge_warrant=False, authorities=False):
+def build_store(embed, self_grade, guard=False, forge_warrant=False, authorities=False, cold_start=False):
     st = Mnemo(None, embed=embed)
     st.semantic_threshold = 1                              # force semantic recall from record 1
     if guard:
@@ -126,11 +126,16 @@ def build_store(embed, self_grade, guard=False, forge_warrant=False, authorities
     for i, (subj, ans, _mal) in enumerate(VICTIMS):
         mid = st.remember(true_mem(subj, ans), tags=["fact"], value=1.0)
         legit_ids.append((subj, mid))
+    # COLD START (condition G, the control the audit demanded): the legitimate victim memories have NOT yet
+    # earned any outcome — a fresh, single-source, first-witness fact is indistinguishable from an injection.
+    # We still credit the unrelated FILLER (a realistically-aged store around the fresh facts), but the target
+    # true memories carry no credit. This isolates the mechanism: A/B are no longer confounded by pre-credit.
     for j, f in enumerate(FILLER):
         fid = st.remember(f, tags=["fact"], value=1.0)
         st.credit([fid], "good", weight=random.choice([1, 2, 3]), warrant=legit_warrant(f"filler-{j}"))
-    for subj, mid in legit_ids:
-        st.credit([mid], "good", weight=random.choice([1, 2, 3]), warrant=legit_warrant(mid))
+    if not cold_start:
+        for subj, mid in legit_ids:
+            st.credit([mid], "good", weight=random.choice([1, 2, 3]), warrant=legit_warrant(mid))
     # ATTACK: plant MINJA bridges for every victim, all from ONE attacker query channel.
     bridge_ids = {}
     for subj, ans, mal in VICTIMS:
@@ -207,6 +212,9 @@ def run(hf, label):
     # condition F: guard + declared warrant_authorities; the adaptive attacker still forges a warrant string
     # but it names no trusted channel, so it is rejected.
     st4, legit4, br4 = build_store(embed, self_grade=True, guard=True, forge_warrant=True, authorities=True)
+    # condition G: COLD START — target true memories uncredited (fresh first-witness facts). Isolates the
+    # mechanism and exposes the corroboration gate's true cost (it filters the fresh legit fact too).
+    stg, legitg, brg = build_store(embed, self_grade=False, cold_start=True)
     naive_r1, naive_t5 = naive_cosine_baseline(embed, st0, br0)
     res = {
         "retriever": label,
@@ -221,6 +229,11 @@ def run(hf, label):
         "utility_legit_influence": round(utility(st0, legit0, influence_only=True), 3),
         "utility_legit_influence_under_guard": round(utility(st2, legit2, influence_only=True), 3),
         "utility_legit_under_authorities": round(utility(st4, legit4, influence_only=True), 3),
+        # COLD START control (audit-required): fresh uncredited target facts.
+        "G_coldstart_raw_asr": round(asr(stg, brg, influence_only=False), 3),
+        "G_coldstart_influence_asr": round(asr(stg, brg, influence_only=True), 3),
+        "G_coldstart_utility_raw": round(utility(stg, legitg, influence_only=False), 3),
+        "G_coldstart_utility_influence": round(utility(stg, legitg, influence_only=True), 3),
         "n_victims": len(VICTIMS), "bridges_per_victim": 3,
     }
     print(f"[{label}] MINJA ASR: naive={res['A0_naive_cosine_rank1_asr']:.0%} | raw={res['A_mnemo_raw_asr']:.0%} "
@@ -229,6 +242,9 @@ def run(hf, label):
           f"| +ADAPTIVE-forged={res['E_adaptive_FORGED_warrant_asr']:.0%} "
           f"| +AUTHORITIES={res['F_adaptive_forged_vs_WARRANT_AUTHORITIES_asr']:.0%} "
           f"| utility={res['utility_legit_influence']:.0%}/{res['utility_legit_influence_under_guard']:.0%}/{res['utility_legit_under_authorities']:.0%}")
+    print(f"[{label}] COLD-START (fresh uncredited facts): raw_asr={res['G_coldstart_raw_asr']:.0%} "
+          f"influence_asr={res['G_coldstart_influence_asr']:.0%} | utility raw={res['G_coldstart_utility_raw']:.0%} "
+          f"influence={res['G_coldstart_utility_influence']:.0%}  <- the gate's true cost")
     return res
 
 

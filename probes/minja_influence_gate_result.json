@@ -12,6 +12,10 @@
   "utility_legit_influence": 1.0,
   "utility_legit_influence_under_guard": 1.0,
   "utility_legit_under_authorities": 1.0,
+  "G_coldstart_raw_asr": 0.8,
+  "G_coldstart_influence_asr": 0.2,
+  "G_coldstart_utility_raw": 0.8,
+  "G_coldstart_utility_influence": 0.1,
   "n_victims": 10,
   "bridges_per_victim": 3
  }

@@ -1,0 +1,32 @@
+{
+ "ok": true,
+ "n_entities": 12,
+ "mnemo": {
+  "retain_ms_median": 0.012,
+  "retain_ms_p95": 0.022,
+  "recall_ms_median": 0.02,
+  "n_retain": 24,
+  "n_recall": 12,
+  "tokens": 0,
+  "llm_calls": 0,
+  "usd_total": 0.0
+ },
+ "mem0": {
+  "retain_ms_median": 2418.1,
+  "retain_ms_p95": 3638.7,
+  "recall_ms_median": 56.6,
+  "n_retain": 24,
+  "n_recall": 12,
+  "tokens": {
+   "chat_in": 188063,
+   "chat_out": 7591,
+   "emb": 0
+  },
+  "llm_calls": 60,
+  "usd_total": 0.03276
+ },
+ "headline": {
+  "retain_speedup_x": 201508,
+  "mem0_usd_per_1k_retains": 1.365
+ }
+}

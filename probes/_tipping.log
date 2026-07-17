@@ -1,0 +1,15 @@
+capacity      s0: collapse@40 q_end=0.00 tau_var=0.644 tau_ac=0.651 auc_var=0.82 cliff=0.39
+capacity      s1: collapse@39 q_end=0.04 tau_var=0.579 tau_ac=0.097 auc_var=0.81 cliff=0.31
+capacity      s2: collapse@31 q_end=0.00 tau_var=0.243 tau_ac=-0.518 auc_var=0.86 cliff=0.56
+capacity      s3: collapse@22 q_end=0.00 tau_var=-0.733 tau_ac=-0.644 auc_var= cliff=0.36
+  == capacity: mean tau_var=0.183 tau_ac=-0.104 auc_var=0.828 cliff=0.403 collapsed=4/4
+interference  s0: collapse@None q_end=0.88 tau_var=0.228 tau_ac=-0.256 auc_var= cliff=5.00
+interference  s1: collapse@None q_end=0.67 tau_var=-0.097 tau_ac=-0.23 auc_var= cliff=1.25
+interference  s2: collapse@None q_end=0.83 tau_var=0.113 tau_ac=-0.206 auc_var= cliff=5.00
+interference  s3: collapse@None q_end=0.62 tau_var=-0.005 tau_ac=-0.259 auc_var= cliff=0.62
+  == interference: mean tau_var=0.06 tau_ac=-0.238 auc_var=None cliff=2.969 collapsed=0/4
+poisoning     s0: collapse@None q_end=0.75 tau_var=-0.325 tau_ac=-0.413 auc_var= cliff=250000000.00
+poisoning     s1: collapse@None q_end=0.62 tau_var=0.101 tau_ac=0.28 auc_var= cliff=1.00
+poisoning     s2: collapse@None q_end=0.67 tau_var=-0.175 tau_ac=0.107 auc_var= cliff=1.50
+poisoning     s3: collapse@None q_end=0.83 tau_var=-0.086 tau_ac=-0.307 auc_var= cliff=2.50
+  == poisoning: mean tau_var=-0.121 tau_ac=-0.083 auc_var=None cliff=62500001.25 collapsed=0/4

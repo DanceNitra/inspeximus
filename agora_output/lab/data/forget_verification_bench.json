@@ -1,0 +1,20 @@
+{
+  "subject": "user:alice",
+  "stores": [
+    "primary-log",
+    "vector-index",
+    "embed-cache",
+    "qdrant",
+    "pgvector",
+    "s3-snapshots"
+  ],
+  "soft_delete_score": 0.167,
+  "soft_delete_leaks": [
+    "vector-index",
+    "embed-cache",
+    "qdrant",
+    "pgvector",
+    "s3-snapshots"
+  ],
+  "embedder": "nomic-embed-text"
+}

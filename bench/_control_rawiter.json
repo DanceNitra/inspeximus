@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "rows": [
+    {
+      "row": 0,
+      "facts": 455,
+      "n": 50,
+      "raw_iterative": 0.14
+    },
+    {
+      "row": 1,
+      "facts": 2310,
+      "n": 50,
+      "raw_iterative": 0.12
+    },
+    {
+      "row": 2,
+      "facts": 4580,
+      "n": 50,
+      "raw_iterative": 0.14
+    },
+    {
+      "row": 3,
+      "facts": 18332,
+      "n": 50,
+      "raw_iterative": 0.08
+    }
+  ]
+}

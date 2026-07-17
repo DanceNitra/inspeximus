@@ -1,0 +1,43 @@
+{
+ "ok": true,
+ "model": "deepseek-v4-flash",
+ "N": 30,
+ "rows": [
+  {
+   "hops": 1,
+   "n": 30,
+   "supersession": 1.0,
+   "accumulate_labeled": 1.0,
+   "accumulate_ordered": 1.0,
+   "distractor": 1.0,
+   "gap_super_minus_ordered": 0.0
+  },
+  {
+   "hops": 2,
+   "n": 30,
+   "supersession": 1.0,
+   "accumulate_labeled": 1.0,
+   "accumulate_ordered": 1.0,
+   "distractor": 1.0,
+   "gap_super_minus_ordered": 0.0
+  },
+  {
+   "hops": 3,
+   "n": 30,
+   "supersession": 1.0,
+   "accumulate_labeled": 0.967,
+   "accumulate_ordered": 1.0,
+   "distractor": 1.0,
+   "gap_super_minus_ordered": 0.0
+  },
+  {
+   "hops": 4,
+   "n": 30,
+   "supersession": 1.0,
+   "accumulate_labeled": 0.9,
+   "accumulate_ordered": 1.0,
+   "distractor": 1.0,
+   "gap_super_minus_ordered": 0.0
+  }
+ ]
+}

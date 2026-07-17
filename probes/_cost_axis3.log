@@ -1,0 +1,20 @@
+[PostHog] Multiple active PostHog clients detected for the same project API key and host. Reuse one Posthog instance per app or process when possible to avoid competing background queues and missed shutdown flushes. Multiple clients are supported when intentional.
+Failed to load spaCy lemma model: spaCy is not installed. Install it with: pip install mem0ai[nlp]
+fastembed not installed - BM25 keyword search disabled. Install it with: pip install "mem0ai[extras]"
+Failed to load spaCy full model: spaCy is not installed. Install it with: pip install mem0ai[nlp]
+=== integrity x cost: retain/recall, n=15 entities (2 retains + 1 recall each) ===
+mnemo : {"retain_ms_median": 0.012, "retain_ms_p95": 0.016, "recall_ms_median": 0.021, "n_retain": 30, "n_recall": 15, "tokens": 0, "llm_calls": 0, "usd_total": 0.0}
+Traceback (most recent call last):
+  File "C:\Users\Danculus\mnemo-repo\probes\integrity_cost_axis.py", line 139, in <module>
+    main()
+  File "C:\Users\Danculus\mnemo-repo\probes\integrity_cost_axis.py", line 127, in main
+    m0 = run_mem0()
+         ^^^^^^^^^^
+  File "C:\Users\Danculus\mnemo-repo\probes\integrity_cost_axis.py", line 112, in run_mem0
+    t0 = time.perf_counter(); mem.search(e, user_id=uid, top_k=5); rec_lat.append(time.perf_counter() - t0)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Danculus\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\mem0\memory\main.py", line 1388, in search
+    _reject_top_level_entity_params(kwargs, "search")
+  File "C:\Users\Danculus\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\mem0\memory\main.py", line 142, in _reject_top_level_entity_params
+    raise ValueError(
+ValueError: Top-level entity parameters frozenset({'user_id'}) are not supported in search(). Use filters={'user_id': '...'} instead.
