@@ -14,7 +14,7 @@ it daily over 10,000 notes.*
 
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/mnemo?style=social)](https://github.com/DanceNitra/mnemo)
 
-*If mnemo saves you a debugging session, a ⭐ helps other agent builders find it.*
+*If mnemo's saved you some time, a ⭐ would mean a lot — it's how other people find it. Thank you!*
 
 <img src="assets_readme/correction_demo.svg" alt="A fact is corrected; later the old value is restated, yet recall still serves the correction — the restatement lands retired via echo_guard" width="720">
 
