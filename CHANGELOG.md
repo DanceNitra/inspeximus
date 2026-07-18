@@ -3,6 +3,15 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.12.4
+
+**`mnemo` shell CLI.** A new console command to script the memory layer from the terminal — no Python and no
+MCP server needed: `mnemo remember "..." --key k`, `mnemo recall "..."` (current-truth, superseded values
+hidden), `mnemo revert <key>`, `mnemo forget --key/--id/--contains`, `mnemo list`, `mnemo stats`. Shares the
+store with `mnemo-mcp` (`--path` / `$MNEMO_PATH` / `./mnemo_memory.json`); `--json` for scripting; lexical by
+default, semantic when `$MNEMO_EMBED_URL` is set. Zero dependencies. Receipt: `mnemo/probes/mnemo_cli_probe.py`
+(6/6).
+
 ## 1.12.3
 
 **Optional reranker hook: `recall(rerank=callable, rerank_pool=N)`.** A retrieve-then-rerank extension point:
