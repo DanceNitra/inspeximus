@@ -324,7 +324,7 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.11.0"
+__version__ = "1.12.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -368,7 +368,7 @@ class Mnemo:
                  revert_pubkey: str | None = None, max_text: int | None = None,
                  tenant: str | None = None, pii_detect: bool = False,
                  encrypt_key: bytes | None = None, encrypt_passphrase: str | None = None,
-                 support_authorities: list | None = None):
+                 support_authorities: list | None = None, persist_vectors: bool = False):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies).
 
@@ -382,6 +382,12 @@ class Mnemo:
         so a third party can verify it with the public key only. (Standalone version: agora-agent-receipts.)"""
         self.path = Path(path) if path else None
         self.embed = embed
+        # OPT-IN vector persistence (default False -> legacy: vecs are a RAM-only cache, STRIPPED on save
+        # to keep the file small and dodge the frozen-world GIL stall on big stores). Set True for a SMALL
+        # store (e.g. the Claude Code coding memory, a few hundred items) whose process is short-lived and
+        # reloaded often, so semantic recall survives a reload WITHOUT re-embedding every item each start.
+        # Do NOT enable on large brain-scale stores — that is exactly the case the strip exists to protect.
+        self._persist_vectors = bool(persist_vectors)
         # HARD TENANT ISOLATION (OPT-IN, default None -> unbound -> byte-identical legacy). Binding a store to
         # a tenant (Mnemo(tenant="acme")) makes isolation a STORE PROPERTY, not a per-call argument a caller can
         # forget: every remember() is stamped with this tenant, and every read/supersession/erasure the store
@@ -4289,7 +4295,8 @@ class Mnemo:
             # GIL for many seconds - which froze the whole event loop even from a worker thread (the
             # frozen-world bug, 2026-06-20). Vectors stay in self.items (RAM) so recall is unaffected this
             # session; on reload they are re-embedded lazily. Keeps the store file small + the save fast.
-            slim = [{k: v for k, v in r.items() if k != "vec"} for r in self.items]
+            slim = self.items if self._persist_vectors else \
+                [{k: v for k, v in r.items() if k != "vec"} for r in self.items]
             # Atomic write: a partial/interleaved write can't corrupt the store (crash- and
             # concurrent-writer-safe — last writer wins, never a torn JSON file).
             data = json.dumps(slim, ensure_ascii=False, indent=1)

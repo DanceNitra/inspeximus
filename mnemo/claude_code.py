@@ -17,15 +17,70 @@ Hook events handled (dispatched by hook_event_name on stdin JSON):
   UserPromptSubmit  -> recall memory relevant to the prompt; print it (Claude Code injects stdout as context).
   SessionStart      -> print a short digest of the project's known files (latest state only).
 Fail-open: any error exits 0 with no output, so the hook never blocks the agent.
+
+Recall is deterministic LEXICAL by default (runs anywhere, no service). For SEMANTIC recall, point the plugin
+at any OpenAI-compatible /embeddings endpoint — e.g. local Ollama — via env (MNEMO_EMBED_URL / MNEMO_EMBED_MODEL)
+or a per-project .mnemo/config.json: {"embed": {"url": "http://localhost:11434/v1/embeddings",
+"model": "nomic-embed-text"}}. Writes stay verbatim, keyed and no-LLM; the embedder only builds a retrieval
+index and fails open (a down endpoint silently degrades to lexical, never drops a capture).
 """
 import sys, os, json, hashlib
+
+
+def _cfg(cwd):
+    """Per-project plugin config at <project>/.mnemo/config.json (optional)."""
+    try:
+        p = os.path.join(cwd or os.getcwd(), ".mnemo", "config.json")
+        if os.path.exists(p):
+            c = json.load(open(p, encoding="utf-8"))
+            return c if isinstance(c, dict) else {}
+    except Exception:
+        pass
+    return {}
+
+
+def _make_embedder(cwd):
+    """Optional embedder for SEMANTIC recall (zero extra deps — urllib against any OpenAI-compatible
+    /embeddings endpoint, e.g. local Ollama at http://localhost:11434/v1/embeddings). Configured by env
+    (MNEMO_EMBED_URL / MNEMO_EMBED_MODEL / MNEMO_EMBED_KEY) or .mnemo/config.json {"embed": {...}}.
+    Returns None when unconfigured -> deterministic LEXICAL recall (runs anywhere, no service needed).
+    Fail-open on the write path: mnemo stores the record with vec=None if a call raises, so a down
+    embedder degrades recall to lexical but never drops a capture."""
+    import urllib.request
+    ec = _cfg(cwd).get("embed", {})
+    if not isinstance(ec, dict):
+        ec = {}
+    url = (os.environ.get("MNEMO_EMBED_URL") or ec.get("url") or "").strip()
+    if not url:
+        return None
+    model = (os.environ.get("MNEMO_EMBED_MODEL") or ec.get("model") or "nomic-embed-text").strip()
+    key = (os.environ.get("MNEMO_EMBED_KEY") or ec.get("key") or "").strip()
+    try:
+        timeout = float(ec.get("timeout", 10))
+    except Exception:
+        timeout = 10.0
+
+    def embed(text: str):
+        body = json.dumps({"model": model, "input": text}).encode()
+        headers = {"Content-Type": "application/json"}
+        if key:
+            headers["Authorization"] = f"Bearer {key}"
+        req = urllib.request.Request(url, data=body, headers=headers)
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read())["data"][0]["embedding"]
+
+    return embed
 
 
 def _store(cwd):
     from mnemo import Mnemo
     d = os.path.join(cwd or os.getcwd(), ".mnemo")
     os.makedirs(d, exist_ok=True)
-    m = Mnemo(path=os.path.join(d, "coding_memory.json"))
+    emb = _make_embedder(cwd)
+    # persist_vectors only when an embedder is configured: a coding store is small and its process is
+    # short-lived (one per hook), so keeping vecs on disk lets semantic recall survive a reload without
+    # re-embedding every item on each start. With no embedder we keep the legacy vec-less (lexical) store.
+    m = Mnemo(path=os.path.join(d, "coding_memory.json"), embed=emb, persist_vectors=emb is not None)
     m.echo_guard = True
     return m
 

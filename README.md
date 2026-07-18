@@ -10,7 +10,11 @@
 back — deterministically, with no LLM on the write path. Extracted from an autonomous research OS that has run
 it daily over 10,000 notes.*
 
-`pip install agora-mnemo` · [PyPI](https://pypi.org/project/agora-mnemo/) · [Hugging Face](https://huggingface.co/Danchi17/mnemo) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/mnemo/) · MIT · v1.11.0
+`pip install agora-mnemo` · [PyPI](https://pypi.org/project/agora-mnemo/) · [Hugging Face](https://huggingface.co/Danchi17/mnemo) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/mnemo/) · MIT · v1.12.0
+
+[![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/mnemo?style=social)](https://github.com/DanceNitra/mnemo)
+
+*If mnemo saves you a debugging session, a ⭐ helps other agent builders find it.*
 
 <img src="assets_readme/correction_demo.svg" alt="A fact is corrected; later the old value is restated, yet recall still serves the correction — the restatement lands retired via echo_guard" width="720">
 
@@ -810,14 +814,35 @@ zero-dependency, and the framework is imported lazily only when you use its adap
 
 | framework | mnemo class | install |
 |---|---|---|
+| [LangChain](#current-truth-retriever-for-langchain-mnemoretriever-1110) | `MnemoRetriever` | `pip install "agora-mnemo[langchain]"` |
 | [OpenAI Agents SDK](#drop-in-memory-for-the-openai-agents-sdk-mnemosession-0620) | `MnemoSession` | `pip install "agora-mnemo[openai-agents]"` |
 | [AutoGen](#current-truth-memory-for-autogen-mnemomemory-070) | `MnemoMemory` | `pip install "agora-mnemo[autogen]"` |
 | [LangGraph / LangMem](#langgraph-store-with-queryable-history-mnemostore-071) | `MnemoStore` | `pip install "agora-mnemo[langgraph]"` · [runnable example](examples/07_langgraph_memory.py) |
 | [LlamaIndex](#current-truth-long-term-memory-for-llamaindex-mnemomemoryblock-073) | `MnemoMemoryBlock` | `pip install "agora-mnemo[llamaindex]"` |
 | [Google ADK](#persistent-memory-for-google-adk-mnemomemoryservice-074) | `MnemoMemoryService` | `pip install "agora-mnemo[google-adk]"` |
 | [Pydantic AI](#memory-as-tools-for-pydantic-ai-mnemo_toolset-078) | `mnemo_toolset` | `pip install "agora-mnemo[pydantic-ai]"` |
+| [CrewAI](#current-truth-storage-for-crewai-mnemostorage-1120) | `MnemoStorage` | `pip install "agora-mnemo[crewai]"` |
 
 Details for each below.
+
+### Current-truth retriever for LangChain: `MnemoRetriever` (1.11.0+)
+`mnemo.integrations.langchain.MnemoRetriever` is a LangChain [`BaseRetriever`](https://python.langchain.com/docs/concepts/retrievers/)
+— the same slot a vector-store retriever fills in a RAG chain — so you get value-ranked recall with
+correction-integrity built in. `MnemoChatMessageHistory` (a `BaseChatMessageHistory`) persists a conversation
+in the same store:
+
+```python
+from mnemo.integrations.langchain import MnemoRetriever
+r = MnemoRetriever(path="mem.json", k=5)
+r.add("the deploy channel is BLUE-9", key="deploy-channel")   # keyed write -> supersedable
+r.add("the deploy channel is RED-2",  key="deploy-channel")   # supersedes BLUE-9
+docs = r.invoke("what is the deploy channel?")                # returns RED-2, never BLUE-9
+```
+
+The differentiator vs a plain vector retriever: `invoke()` goes through mnemo's `recall()`, so a corrected
+fact is never handed back into your chain/prompt (write facts with a supersession `key=` for that to engage;
+plain text is stored append-only). Pass `embed=` for semantic recall, `extractor=` to auto-key free text.
+Duck-typed on `langchain-core` (imported lazily); `import mnemo` stays zero-dependency.
 
 ### Drop-in memory for the OpenAI Agents SDK: `MnemoSession` (0.6.20+)
 `mnemo.integrations.openai_agents.MnemoSession` is a persistent [`Session`](https://openai.github.io/openai-agents-python/sessions/)
@@ -955,6 +980,27 @@ without the model supplying a key). Verified end-to-end against real `pydantic-a
 API key): the agent invokes all four tools, and current-truth / conflict / erasure all hold
 (`mnemo/probes/mnemo_pydantic_ai_adapter_probe.py`). Importing this module imports Pydantic AI (opt-in
 extra); `import mnemo` stays zero-dependency.
+
+### Current-truth storage for CrewAI: `MnemoStorage` (1.12.0+)
+CrewAI's memory (short-term, long-term, entity, external) delegates persistence to a `Storage` object with
+`save(value, metadata)` / `search(query, limit, score_threshold)` / `reset()`. `mnemo.integrations.crewai.MnemoStorage`
+is a drop-in Storage you hand to `ExternalMemory` (or any custom-storage slot), so a crew gets value-ranked
+recall plus correction-integrity:
+
+```python
+from crewai import Crew
+from crewai.memory.external.external_memory import ExternalMemory
+from mnemo.integrations.crewai import MnemoStorage
+crew = Crew(agents=[...], tasks=[...],
+            external_memory=ExternalMemory(storage=MnemoStorage(path="crew_mem.json")))
+```
+
+The differentiator vs CrewAI's default RAG storage: `search()` retrieves through mnemo's `recall()`, which
+hides **superseded** values — once a fact is corrected the stale value never returns into the crew's context.
+For that to bite, carry a supersession key in the metadata (`storage.save(value, {"key": "user::tz"})`) or set
+an `extractor=` so plain `save()` calls auto-key. Duck-typed: CrewAI is matched structurally and never
+imported, so the zero-dependency core is untouched (`import mnemo` pulls nothing). Receipt:
+`mnemo/probes/mnemo_crewai_adapter_probe.py` (6/6, incl. "corrected value not returned").
 
 ### Make the governance layer key itself over free text: the `extractor` hook (0.7.5+)
 mnemo's supersession, `echo_guard`, `check_conflict`, and `forget_subject` all key on the `(key, object)` of a

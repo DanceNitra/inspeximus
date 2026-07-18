@@ -3,6 +3,31 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.12.0
+
+Additive only, no breaking changes.
+
+**CrewAI integration.** `mnemo.integrations.crewai` ships `MnemoStorage`, a drop-in CrewAI `Storage`
+(`save`/`search`/`reset`) you hand to `ExternalMemory` (or any custom-storage slot). `search()` retrieves
+through mnemo's supersession-filtered `recall()`, so a corrected fact never returns into the crew's context.
+Duck-typed — CrewAI is matched structurally and never imported, so the zero-dependency core is untouched.
+Opt-in extra: `pip install "agora-mnemo[crewai]"`. Receipt: `mnemo/probes/mnemo_crewai_adapter_probe.py` (6/6).
+
+**Claude Code plugin: optional semantic recall.** The auto-capture plugin (`mnemo.claude_code`) now supports
+SEMANTIC recall against any OpenAI-compatible `/embeddings` endpoint (e.g. local Ollama), configured by env
+(`MNEMO_EMBED_URL` / `MNEMO_EMBED_MODEL`) or a per-project `.mnemo/config.json`. Default stays deterministic
+LEXICAL (runs anywhere, no service). Writes remain verbatim, keyed and no-LLM; the embedder only builds a
+retrieval index and fails open (a down endpoint degrades to lexical, never drops a capture).
+
+**New `Mnemo(persist_vectors=True)` option.** By default embedding vectors are a RAM-only cache stripped on
+save (keeps the file small and dodges the frozen-world GIL stall on large stores). `persist_vectors=True`
+keeps them on disk — intended for a SMALL, frequently-reloaded store (the Claude Code plugin sets it when an
+embedder is configured) so semantic recall survives a reload without re-embedding every item on each start.
+Leave it off for large brain-scale stores.
+
+**Docs.** The LangChain adapter (shipped in 1.11.0) now has a full entry in the framework-integrations table
+and its own README section.
+
 ## 1.11.0
 
 Three additive features, no breaking changes.
