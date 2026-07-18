@@ -129,9 +129,29 @@ recall serves the current value, a restated stale value can't resurrect it (`ech
 **Jump to:** [Correction (measured)](#correction-is-a-first-class-operation-measured-across-systems) ·
 [Governance & erasure](#governance-erasure--audit) · [Install](#install) ·
 [MCP server](#use-it-as-an-mcp-server-any-claude--cursor--agent-client) ·
+[Shell CLI](#use-it-from-the-shell-the-mnemo-cli-1124) ·
 [Framework integrations](#framework-integrations) ·
 [The four operations](#the-four-operations) · [Five rules](#five-rules-it-wont-break-each-one-cost-us-to-learn) ·
 [Provenance & receipts](#provenance--why-these-rules-with-receipts) · [Threat model](#threat-model--layered-defense-adversarial-memory-integrity)
+
+## Use it from the shell: the `mnemo` CLI (1.12.4)
+
+`pip install agora-mnemo` also gives you a `mnemo` command — script the memory layer from the terminal, bash,
+or cron, with no Python and no MCP server:
+
+```bash
+mnemo remember "the deploy channel is BLUE-9" --key deploy-channel
+mnemo remember "the deploy channel is RED-2"  --key deploy-channel   # supersedes BLUE-9
+mnemo recall  "what is the deploy channel?"                          # -> RED-2 (current-truth)
+mnemo revert  deploy-channel                                         # roll back to BLUE-9
+mnemo list -n 10           # recent active memories
+mnemo forget --key deploy-channel        # or --id <id> / --contains <substr>
+mnemo stats               # store summary   ·   add --json to any command for scripting
+```
+
+It shares one store with the MCP server (`--path`, else `$MNEMO_PATH`, else `./mnemo_memory.json`). Recall is
+lexical by default; set `$MNEMO_EMBED_URL` (+ `$MNEMO_EMBED_MODEL`) to any OpenAI-compatible `/embeddings`
+endpoint (e.g. local Ollama) for semantic recall. Zero dependencies.
 
 ## Claude Code: deterministic auto-capture memory (1.10.0)
 
