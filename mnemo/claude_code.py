@@ -182,12 +182,22 @@ def recall(ev):
 
 
 def session_start(ev):
-    m = _store(ev.get("cwd") or os.getcwd())
+    cwd = ev.get("cwd") or os.getcwd()
+    m = _store(cwd)
     files = [it for it in getattr(m, "items", []) if "file" in (it.get("tags") or [])
              and it.get("status") != "superseded"][:8]
     if files:
         lines = "\n".join(f"- {it['text']}" for it in files)
         print(f"[mnemo] this project's current known files (latest state only):\n{lines}")
+    # once-a-day, opt-out "newer version exists" courtesy (stdout is injected as context here)
+    try:
+        from mnemo import __version__
+        from mnemo._update import check_for_update
+        note = check_for_update(__version__, cache_dir=os.path.join(cwd, ".mnemo"))
+        if note:
+            print(note)
+    except Exception:
+        pass
 
 
 _HOOK = {"hooks": [{"type": "command", "command": "python -m mnemo.claude_code"}]}

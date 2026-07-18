@@ -252,6 +252,15 @@ def forget(ids: list[str] | None = None, where_contains: str | None = None) -> d
 
 
 def main():
+    # once-a-day, opt-out "newer version exists" courtesy. MUST go to stderr — stdout is the JSON-RPC channel.
+    try:
+        from mnemo import __version__
+        from mnemo._update import check_for_update
+        note = check_for_update(__version__)
+        if note:
+            sys.stderr.write(note + "\n")
+    except Exception:
+        pass
     mcp.run()
 
 

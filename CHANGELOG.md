@@ -3,6 +3,14 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.12.2
+
+**Opt-out "a newer version is available" check.** When mnemo runs (Claude Code `SessionStart`, or the MCP
+server starting), it checks PyPI at most once per 24h and prints a single ASCII line if the installed version
+is behind — the standard pip/npm/gh courtesy, so users who installed weeks ago learn about new integrity
+features instead of silently staying on an old release. Fail-open (offline = silent), never blocks, and the
+MCP server routes it to stderr so the stdio JSON-RPC channel is untouched. Silence with `MNEMO_NO_UPDATE_CHECK=1`.
+
 ## 1.12.1
 
 **Claude Code plugin: a one-time, opt-out star nudge.** After mnemo has actually been useful — 25 captured
