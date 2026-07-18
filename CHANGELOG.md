@@ -3,6 +3,22 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.13.0
+
+**Auditor-grade erasure certificate — independently verifiable, no trust in the operator.** `m.erasure_certificate(request_id=...)`
+packages the signed deletion tombstones (full hash-chain), the request-scoped erased ids, the receipt public
+key, and a CT-style anchor into ONE portable, content-free JSON document. A third party runs the new module
+function `verify_erasure_certificate(cert, store_path=...)` — WITHOUT the private key and WITHOUT trusting the
+operator — and gets a machine-checkable verdict: the tombstone chain re-derives, every Ed25519 signature
+verifies (pinnable to an expected pubkey), the anchor commits to the chain tip, AND every erased id is genuinely
+ABSENT from the raw store (the "read the raw store" proof that soft-delete / history-keeping memory systems
+fail). Tampering a tombstone, faking an "erased" id that is still present, or pinning the wrong key all flip the
+verdict to INVALID. This is the erasure primitive built for a right-to-erasure demand (GDPR Art.17) with an
+Art.30-style auditable record — a governance capability most agent-memory libraries do not expose. Honest scope
+stays in-band (within this store; the ACT not the content; witness the anchor externally for an operator-
+adversarial audit). Pair with `shred()` for encrypted-at-rest crypto-erasure. Receipts:
+`mnemo/probes/erasure_certificate_probe.py` (9/9) + `mnemo/probes/erasure_raw_store_probe.py` (12/12).
+
 ## 1.12.4
 
 **`mnemo` shell CLI.** A new console command to script the memory layer from the terminal — no Python and no

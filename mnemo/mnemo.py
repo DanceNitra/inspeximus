@@ -324,7 +324,91 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     sk = _Ed25519SK.from_private_bytes(bytes.fromhex(principal_sk_hex))
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
-__version__ = "1.12.4"
+
+def verify_erasure_certificate(cert: dict, store_path: str | None = None,
+                               store_items: list | None = None,
+                               expected_pubkey: str | None = None) -> dict:
+    """Independently verify a mnemo erasure certificate (from Mnemo.erasure_certificate()). The AUDITOR's check:
+    needs NO private key and does NOT trust the operator. Confirms, in order:
+      1. tombstone hash-chain re-derives from genesis (append-only, untampered);
+      2. every tombstone Ed25519 signature verifies against the certificate's pubkey (pinned to
+         expected_pubkey if you pass one);
+      3. the anchor commits to the tombstone-chain tip (a rewrite that re-signs internally still fails this if
+         you pinned the anchor against an externally-witnessed one);
+      4. GIVEN the store (store_path to the JSON/encrypted file, or store_items as a decrypted list), every
+         erased memory id is genuinely ABSENT from it — the 'read the raw store' proof soft-delete systems fail.
+    Returns {valid, checks, problems}. Pure-stdlib + Ed25519; import it standalone: `from mnemo import
+    verify_erasure_certificate`. HONEST: signatures are load-bearing only against a party who does not hold
+    receipt_key; for operator-adversarial audit, pin the anchor against one you witnessed out of band."""
+    problems: list = []
+    checks: dict = {}
+    toms = cert.get("tombstones") or []
+    pub = expected_pubkey or cert.get("pubkey")
+
+    tprev = _GENESIS
+    chain_ok = True
+    sigs_ok = True
+    for j, t in enumerate(toms):
+        core = {k: t.get(k) for k in ("seq", "memory_id", "ts", "request_id", "prev")}
+        if t.get("auth"):                                       # optional committed AUTHORITY/BASIS block
+            core["auth"] = t["auth"]
+        if t.get("prev") != tprev:
+            problems.append(f"tombstone {j}: broken chain link (a prior tombstone was altered/removed)")
+            chain_ok = False
+        if _sha256_hex(_canon(core)) != t.get("hash"):
+            problems.append(f"tombstone {j}: hash mismatch (tampered)")
+            chain_ok = False
+        if "sig" in t:
+            if not _HAVE_ED:
+                problems.append("cannot verify signatures (cryptography not installed)")
+                sigs_ok = False
+            else:
+                try:
+                    _Ed25519PK.from_public_bytes(bytes.fromhex(t.get("pubkey") or pub or "")).verify(
+                        bytes.fromhex(t["sig"]), bytes.fromhex(t["hash"]))
+                    if pub and t.get("pubkey") and t.get("pubkey") != pub:
+                        problems.append(f"tombstone {j}: signed by an unexpected key")
+                        sigs_ok = False
+                except Exception:
+                    problems.append(f"tombstone {j}: invalid signature")
+                    sigs_ok = False
+        elif expected_pubkey:
+            problems.append(f"tombstone {j}: unsigned, but a signature was required")
+            sigs_ok = False
+        tprev = t.get("hash")
+    checks["chain_intact"] = chain_ok
+    checks["signatures_valid"] = sigs_ok
+
+    anc = cert.get("anchor") or {}
+    tip = toms[-1]["hash"] if toms else _GENESIS
+    checks["anchor_matches_tip"] = (anc.get("tombstones_tip") == tip)
+    if not checks["anchor_matches_tip"]:
+        problems.append("anchor tombstones_tip does not match the tombstone chain tip")
+
+    erased = set(cert.get("erased_memory_ids") or [])
+    checks["store_absent"] = None
+    if store_items is None and store_path:
+        try:
+            raw = Path(store_path).read_bytes()
+            if raw[:5] == _MNEMO_ENC_MAGIC:
+                problems.append("store is encrypted — supply decrypted store_items to check id-absence, "
+                                "or rely on shred() (crypto-erasure) for the encrypted case")
+            else:
+                store_items = json.loads(raw.decode("utf-8"))
+        except Exception as e:
+            problems.append(f"cannot read store at {store_path}: {repr(e)[:80]}")
+    if store_items is not None:
+        present = {r.get("id") for r in store_items}
+        leaked = sorted(erased & present)
+        checks["store_absent"] = (len(leaked) == 0)
+        if leaked:
+            problems.append(f"{len(leaked)} erased id(s) STILL PRESENT in the store: {leaked[:5]}")
+
+    valid = chain_ok and sigs_ok and checks["anchor_matches_tip"] and (checks["store_absent"] is not False)
+    return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
+
+
+__version__ = "1.13.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1724,6 +1808,41 @@ class Mnemo:
                 "erasures": [{"memory_id": t["memory_id"], "ts": t.get("ts"),
                               "request_id": t.get("request_id"), "signed": "sig" in t}
                              for t in self._tombstones]}
+
+    def erasure_certificate(self, request_id: str | None = None, expected_pubkey: str | None = None) -> dict:
+        """Portable, INDEPENDENTLY-VERIFIABLE erasure certificate — the auditor-grade receipt for a
+        right-to-erasure demand. Packages the signed deletion tombstones (the full hash-chain, so it can be
+        re-derived from genesis), the request-scoped erased ids, the receipt public key, and a CT-style
+        anchor() into ONE self-contained JSON document. A third party checks it with the module-level
+        `verify_erasure_certificate(cert, store_path=...)` WITHOUT the operator's private key and WITHOUT
+        trusting the operator: it re-derives the tombstone chain, verifies each Ed25519 signature, confirms the
+        anchor commits to the chain tip, and — given the store — confirms every erased id is genuinely ABSENT
+        from it (the 'read the raw store' proof that soft-delete / history-keeping systems fail). Content-free:
+        commits to surrogate ids + timestamps + opaque request, never PII. HONEST SCOPE = governance_report()'s
+        (within THIS store; the ACT not the content; the signature is load-bearing only against a non-holder of
+        receipt_key — witness the anchor externally). Pair with shred() for encrypted-at-rest crypto-erasure."""
+        toms = self._tombstones                                  # full chain (content-free) so it verifies from genesis
+        scoped = [t for t in toms if request_id is None or t.get("request_id") == request_id]
+        erased_ids = sorted({t.get("memory_id") for t in scoped if t.get("memory_id")})
+        ok, problems = self.verify_writes(expected_pubkey)
+        return {
+            "mnemo_erasure_certificate": "1.0",
+            "issued_ts": time.time(),
+            "issued_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "request_ids": sorted({t.get("request_id") for t in scoped if t.get("request_id") is not None}),
+            "erased_memory_ids": erased_ids,
+            "count": len(erased_ids),
+            "tombstones": toms,                                  # full signed chain for independent re-verification
+            "pubkey": self.receipt_pubkey,
+            "anchor": self.anchor(),
+            "self_check": {"verified": ok, "problems": problems},
+            "scope": ("Erasure is within THIS mnemo store only (not the app's vector store, prompt logs, or "
+                      "backups); covers the subject PLUS its derived_from lineage. Tamper-evident integrity "
+                      "primitive, NOT a compliance certification. The tombstone proves the ACT of deletion, "
+                      "never the content; its signature is load-bearing only against a non-holder of "
+                      "receipt_key — witness the anchor externally (see verify_consistency)."),
+            "verify_with": "mnemo.verify_erasure_certificate(cert, store_path=<file>)  # or store_items=<list>",
+        }
 
     def governance_report(self, expected_pubkey: str | None = None) -> dict:
         """ONE auditor-facing surface for erasure-with-proof — the compliance view of forget_subject, built for

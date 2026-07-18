@@ -769,6 +769,27 @@ who does **not** hold `receipt_key`; anchor the chain head externally for operat
 tamper-evident **integrity primitive, not a compliance certification**. Prior art: crypto-shredding, Cassandra
 / event-sourcing tombstones, Certificate Transparency.
 
+### The auditor's copy: a portable, independently-verifiable erasure certificate (1.13.0)
+`governance_report()` is the operator's view; `erasure_certificate()` is the **auditor's** — a portable,
+content-free document your DPO hands to a third party who then checks it **without your private key and without
+trusting you**:
+
+```python
+cert = m.erasure_certificate(request_id="dsr-2026-07-12-0001")   # operator issues it
+
+from mnemo import verify_erasure_certificate                     # auditor verifies, standalone
+verify_erasure_certificate(cert, store_path="mem.json", expected_pubkey=pk)
+# -> {"valid": True, "checks": {chain_intact, signatures_valid, anchor_matches_tip, store_absent}, ...}
+```
+
+The verifier re-derives the tombstone hash-chain, checks every Ed25519 signature (pinnable to `expected_pubkey`),
+confirms the anchor commits to the chain tip, and — reading the **raw store on disk** — confirms every erased id
+is genuinely absent. Tampering a tombstone, faking an "erased" id that is still present, or pinning the wrong key
+each flips the verdict to `valid: False`. Same honest scope as `governance_report()` (within this store; the act
+not the content; witness the anchor externally). For encrypted-at-rest stores, pair with `shred()`
+(crypto-erasure: destroy the key, the ciphertext and every backup die). Receipts:
+`mnemo/probes/erasure_certificate_probe.py`, `erasure_raw_store_probe.py`.
+
 ### Point-in-time / bi-temporal reads: `as_of()` + `history()` (0.6.14)
 Every keyed write already carries a `[valid_from, invalidated_at)` interval, so the timeline is
 reconstructable with **no graph DB**. `as_of(key, when)` returns the value that was current at event-time
