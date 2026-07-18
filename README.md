@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets_readme/hero_banner.png" alt="mnemo — a glowing digital memory layer resting on a robust machined-steel base" width="800">
+<img src="https://raw.githubusercontent.com/DanceNitra/mnemo/main/assets_readme/hero_banner.png" alt="mnemo — a glowing digital memory layer resting on a robust machined-steel base" width="800">
 
 # Mnemosyne · `mnemo`
 
