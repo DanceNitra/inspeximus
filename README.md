@@ -8,7 +8,7 @@
 
 *Correct a fact once and it stays corrected: mnemo serves the new value and refuses to let the old one creep
 back — deterministically, with no LLM on the write path. Extracted from an autonomous research OS that has run
-it daily over ~6,000 notes.*
+it daily over 10,000 notes.*
 
 `pip install agora-mnemo` · [PyPI](https://pypi.org/project/agora-mnemo/) · [Hugging Face](https://huggingface.co/Danchi17/mnemo) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/mnemo/) · MIT · v1.11.0
 
@@ -1146,7 +1146,7 @@ its memory is value-ranked and append-only, not a recency buffer.
 `mnemo`'s design isn't taste; it's what Agora's lab *measured*:
 
 - **Semantic recall beats keyword recall, and the gap widens with scale** — as the store grows to
-  the ~6,000-note full corpus, lexical `recall@5` decays from **0.94** (small store) to **0.25**,
+  a corpus of several thousand notes, lexical `recall@5` decays from **0.94** (small store) to **0.25**,
   while semantic **holds at ~0.65** — ≈**2.6×** at full scale (Agora Lab `b4c260`); on paraphrase
   queries semantic `recall@5` is **0.86 vs 0.20** lexical (`3501f1`). The embedder is the real lever
   at scale; the lexical overlap match is the zero-dependency *floor* that still runs anywhere on a
@@ -1183,7 +1183,7 @@ its memory is value-ranked and append-only, not a recency buffer.
 - **Cohort-level value** — per-memory outcome attribution is **statistically underpowered at n-of-1**
   (the best proxy reached only ~0.36 power at realistic sample sizes); the cohort is where the
   signal lives. Hence rule 4.
-- **Contradiction detection** runs in production over the 6,000-note vault; the lesson that it must
+- **Contradiction detection** runs in production over the 10,000-note vault; the lesson that it must
   *flag, not auto-edit* (rule 5) is why silent rewrites are forbidden.
 
 (Methods + numbers live in the Agora track record: <https://dancenitra.github.io/agora/>.)
@@ -1267,7 +1267,7 @@ No autonomous oracle.
 
 **Runs today, zero config.** It indexes your notes into an in-process `mnemo` store at startup; with
 no embedder it uses the lexical-overlap fallback. An embedder (`MNEMO_EMBED_URL/MODEL/KEY`) is optional
-and matters **at scale**: on a ~6,000-note vault, lexical recall@5 decays from 0.94 (small store) to
+and matters **at scale**: at several-thousand-note scale, lexical recall@5 decays from 0.94 (small store) to
 **0.25** at full corpus while semantic **holds ~0.65** — ≈2.6× (Agora Lab `b4c260`); on paraphrase
 queries semantic recall@5 is **0.86 vs 0.20** lexical (`3501f1`).
 
@@ -1332,7 +1332,7 @@ beside it, is found):
 | `extract_claims` | claim-like sentences from a note so the agent can ground or challenge them |
 | `idea_methods` | a toolkit of named idea-generation recipes, so generation is principled, not a vibe |
 
-Dogfood result, stated honestly: pointed at the maintainer's own ~6,000-note vault, an agent using
+Dogfood result, stated honestly: pointed at the maintainer's own 10,000-note vault, an agent using
 these tools caught a number in his *own* forecasting note inflated ~7× ("60-78%" vs the real ~6-11%),
 surfaced two silently-contradicting notes, and proposed ideas via `idea_methods` — two of which were
 then severe-tested **in Agora's separate research lab** (not inside this server) and held. The LLM did
