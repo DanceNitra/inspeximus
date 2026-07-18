@@ -6,13 +6,13 @@
     "url": "https://github.com/DanceNitra/mnemo",
     "source": "github"
   },
-  "version": "1.9.9",
+  "version": "1.12.1",
   "websiteUrl": "https://pypi.org/project/agora-mnemo/",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "agora-mnemo",
-      "version": "1.9.9",
+      "version": "1.12.1",
       "transport": {
         "type": "stdio"
       },
@@ -27,6 +27,20 @@
         {
           "name": "MNEMO_ECHO_GUARD",
           "description": "1 (default) blocks a restated retired value from resurrecting a corrected fact; 0 = legacy keyed supersession.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "MNEMO_EMBED_URL",
+          "description": "Optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall (e.g. http://localhost:11434/v1/embeddings for local Ollama). Unset = deterministic lexical recall.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "MNEMO_EMBED_MODEL",
+          "description": "Embedding model id used with MNEMO_EMBED_URL (default: text-embedding-3-small; for Ollama use e.g. nomic-embed-text).",
           "isRequired": false,
           "format": "string",
           "isSecret": false
