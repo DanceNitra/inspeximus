@@ -2,15 +2,15 @@
 
 <img src="https://raw.githubusercontent.com/DanceNitra/mnemo/main/assets_readme/hero_banner.png" alt="mnemo — a glowing digital memory layer resting on a robust machined-steel base" width="800">
 
-# Mnemosyne · `mnemo`
+# agora-mnemo
 
-**The self-correcting memory layer for AI agents.**
+*Mnemosyne — the self-correcting memory layer for AI agents.*
 
 *Correct a fact once and it stays corrected: mnemo serves the new value and refuses to let the old one creep
 back — deterministically, with no LLM on the write path. Extracted from an autonomous research OS that has run
 it daily over 10,000 notes.*
 
-`pip install agora-mnemo` · [PyPI](https://pypi.org/project/agora-mnemo/) · [Hugging Face](https://huggingface.co/Danchi17/mnemo) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/mnemo/) · MIT · v1.12.0
+`pip install agora-mnemo` → `import mnemo` · [PyPI](https://pypi.org/project/agora-mnemo/) · [Hugging Face](https://huggingface.co/Danchi17/mnemo) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/mnemo/) · MIT · v1.12.1
 
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/mnemo?style=social)](https://github.com/DanceNitra/mnemo)
 
