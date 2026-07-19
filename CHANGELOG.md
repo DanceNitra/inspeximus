@@ -16,11 +16,17 @@ deterministic, all 10 conversations, n=1536): **recall_any@1 0.193 → 0.294, @2
 plainly: this is a self-comparison bug-fix on a single dataset/embedder; `recall_any` (≥1 gold turn retrieved) is a
 retrieval upper bound, not end-to-end QA, and multi-hop full-recall barely moves. We make no cross-system claim here.
 
-> **Correction (post-release, honesty note).** These absolute figures were measured with `recall()`'s per-hit value
-> reinforcement active while sweeping many queries against one store, which is an order-dependent confound (later
-> queries see values shifted by earlier hits). The DIRECTION and the correctness of the fix stand (asymmetric
-> prefixing is required by Nomic's model card), but the exact absolute deltas should be treated as indicative only; a
-> reinforcement-controlled re-measure is in progress and clean numbers will be reported before any comparative claim.
+> **Correction (post-release, self-comparison only).** The `0.193 → 0.294` figures above were measured with a second
+> defect still active: `recall()` reinforces each hit's value, and sweeping many queries against one store makes the
+> ranking order-dependent (later queries see values shifted by earlier hits) — a confound that depresses benchmark
+> recall_any by up to ~0.10 at low k. With reinforcement disabled (a new `recall(reinforce=False)` kwarg returns a
+> non-mutating read — no value bump, decay-clock reset, or graduation; default `reinforce=True` is unchanged),
+> re-measured on the same LoCoMo config against our OWN plain-cosine baseline over the same nomic embeddings, mnemo is
+> **indistinguishable from that cosine baseline within measurement noise** (recall_any@1 0.397 vs 0.390; single run,
+> n≈1536, no confidence interval — read as "no measurable gap", not a proven win). So the integrity core adds no
+> detectable recall penalty *in this eval mode*; under the default reinforced path the number is lower (0.294), so that
+> statement is scoped to `reinforce=False`. The two fixes (prefixes + reinforcement) substantially account for the
+> earlier gap. We make no claim about any external system's retrieval — none was run here.
 
 **Migration guard (persisted vectors).** Because a query and its stored vectors must live in the SAME embedding
 space, changing the embed recipe (e.g. turning prefixes on) would silently mis-rank an existing `persist_vectors=True`
