@@ -5,6 +5,14 @@ All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Chan
 
 ## Unreleased
 
+**One-call `route()` now emits mem0-parity ADD / UPDATE / DELETE / NOOP.** The single-call write router decides the
+ledger op deterministically (zero-LLM): a new keyed fact -> ADD, a new value for a key -> UPDATE (keyed
+supersession), re-stating the current value -> **NOOP** (skips the duplicate write — directly attacks unbounded
+growth), a deletion utterance ("forget that", "no longer true") -> **DELETE** (capability-gated: content alone can't
+destroy memory, preserving the channel-separation moat), and a revert utterance -> REVERT. Each return carries an
+`event` field so mem0's add()-reconcile mental model maps 1:1 — a deterministic drop-in. Probe
+`route_add_update_delete_noop_probe.py` (6 checks incl. NOOP-writes-nothing + delete-moat).
+
 **Memory hierarchy — `user_id` / `agent_id` / `session_id` scoping (mem0/Letta-style).** `remember(...)` stamps a
 memory's scope; `recall(...)` filters by hierarchical visibility: a session query sees that session's memories PLUS
 the user/agent-level shared ones, but never a peer session's; users are isolated from each other; a user-only query

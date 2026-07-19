@@ -2549,6 +2549,9 @@ class Mnemo:
     _ROUTE_CORRECT = re.compile(r"\b(correction|actually|update|scratch that|is now|moved to"
                                 r"|was switched|changed to)\b")
     _ROUTE_CHANGE_AWARE = re.compile(r"\b(changed|moved|switched|updated|correction|went through)\b")
+    _ROUTE_DELETE = re.compile(r"\b(forget|delete|remove|erase|scrub|wipe|drop) (that|this|it|the|my|about)"
+                               r"|\bno longer (true|valid|the case|relevant|applies)"
+                               r"|\bdisregard (that|this|the)|\bthat'?s? (wrong|no longer)|\bnever ?mind\b")
 
     def _route_chain(self, key: str) -> list[str]:
         """values that were actually CURRENT at some point for `key`, oldest->newest — skips arrivals the
@@ -2614,6 +2617,24 @@ class Mnemo:
                     object = object if object is not None else ex[1]
             except Exception:
                 pass
+        # DELETE intent ("forget/delete/remove that", "no longer true"). Content alone must NOT be able to destroy
+        # memory (the channel-separation moat), so a routed delete is gated by the SAME capability as revert — an
+        # unauthorized utterance gets authorization_required, never silent deletion. This is the mem0 DELETE event,
+        # done safely: mem0 lets its LLM issue DELETE on the write path; mnemo requires an out-of-band capability.
+        if self._ROUTE_DELETE.search(low):
+            k = key or self._route_key(low)
+            if k is None:
+                rid = self.remember(text)
+                return {"intent": "delete", "action": "noted", "event": "NOOP", "key": None, "id": rid,
+                        "reason": "no ledger key resolved to delete"}
+            if not self._revert_authorized(k, capability):
+                return {"intent": "delete", "action": "authorization_required", "event": "DELETE", "key": k,
+                        "challenge": self.revert_challenge(k)}
+            ids = [r["id"] for r in self.items if r.get("key") == k and r.get("status") == "active"
+                   and r.get("tenant") == self.tenant]
+            res = self.forget(ids=ids) if ids else {"forgotten": 0}
+            return {"intent": "delete", "action": "deleted", "event": "DELETE", "key": k,
+                    "forgotten": res.get("forgotten", 0)}
         if self._ROUTE_REVERT.search(low):
             k = key or self._route_key(low)
             if k is None:
@@ -2645,13 +2666,17 @@ class Mnemo:
                     "key": k, **{kk: vv for kk, vv in res.items() if kk != "ok"}}
         if object is None or key is None:
             rid = self.remember(text, key=key, object=object)
-            return {"intent": "assert", "action": "remembered", "key": key, "id": rid}
+            return {"intent": "assert", "action": "remembered", "event": "ADD", "key": key, "id": rid}
         chain = self._route_chain(key)
         cur = chain[-1] if chain else None
-        if object == cur or object not in chain:
+        if object == cur:                                    # NOOP: value already current -> skip the duplicate write
+            return {"intent": "assert", "action": "noop", "event": "NOOP", "key": key,
+                    "note": "value already current; duplicate write skipped (dedup)"}
+        if object not in chain:
             rid = self.remember(text, key=key, object=object)
             intent = "correct" if (cur is not None and self._ROUTE_CORRECT.search(low)) else "assert"
-            return {"intent": intent, "action": "remembered", "key": key, "id": rid}
+            event = "UPDATE" if cur is not None else "ADD"   # supersedes a prior value vs first value for the key
+            return {"intent": intent, "action": "remembered", "event": event, "key": key, "id": rid}
         # unmarked assertion of a superseded value — the ambiguous echo-or-reaffirm case
         if policy == "trusting" or (
                 policy == "context" and context and self._ROUTE_CHANGE_AWARE.search(context.lower())
