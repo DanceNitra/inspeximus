@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.18.0"
+__version__ = "1.19.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -796,7 +796,8 @@ class Mnemo:
                     # minutes-to-hours (and every hook-style short-lived process would pay it again).
                     sys.stderr.write(f"[mnemo] embed recipe changed ({_prev!r} -> {_cur!r}); {len(_stale)} persisted "
                                      f"vectors exceed MNEMO_REALIGN_MAX={_cap} -> dropping them (recall degrades to "
-                                     f"lexical for those records; each is re-embedded on its next write)\n")
+                                     f"lexical for those records; each is re-embedded on its next write). Rebuild "
+                                     f"the space deliberately with reembed() / `mnemo reembed`, or raise the cap.\n")
                     for r in _stale:
                         r["vec"] = None
                 else:
@@ -2649,12 +2650,27 @@ class Mnemo:
         # memory (the channel-separation moat), so a routed delete is gated by the SAME capability as revert — an
         # unauthorized utterance gets authorization_required, never silent deletion. This is the mem0 DELETE event,
         # done safely: mem0 lets its LLM issue DELETE on the write path; mnemo requires an out-of-band capability.
-        if self._ROUTE_DELETE.search(low):
+        # ORDERING: only a delete utterance that carries NO value and NO revert marker reaches this branch.
+        # The delete vocabulary overlaps both of the branches below, and it used to run first, so
+        # "drop the beta flag; region is now us-east" (a correction) and "undo that, it's no longer valid"
+        # (a revert) were both swallowed as deletes and their writes never happened.
+        if self._ROUTE_DELETE.search(low) and object is None and not self._ROUTE_REVERT.search(low):
             k = key or self._route_key(low)
             if k is None:
                 rid = self.remember(text)
                 return {"intent": "delete", "action": "noted", "event": "NOOP", "key": None, "id": rid,
                         "reason": "no ledger key resolved to delete"}
+            # A routed delete is IRREVERSIBLE (forget() is a hard delete of every active record for the key),
+            # so it must NOT inherit _revert_authorized's "no authority configured -> allow (legacy)" rule.
+            # That rule is safe for revert, which only moves along the version graph, but on a DEFAULT store it
+            # hands plain content the power to destroy the ledger — exactly the moat this branch claims to hold.
+            # Deleting therefore requires an authority to be CONFIGURED, and then satisfied.
+            gated = self.revert_authority is not None or self.revert_pubkey is not None
+            if not gated:
+                return {"intent": "delete", "action": "authorization_required", "event": "DELETE", "key": k,
+                        "challenge": None, "reason": "routed deletion is refused on a store with no "
+                        "revert_authority/revert_pubkey configured — content alone must not destroy memory; "
+                        "delete out of band with forget()/forget_subject()"}
             if not self._revert_authorized(k, capability):
                 return {"intent": "delete", "action": "authorization_required", "event": "DELETE", "key": k,
                         "challenge": self.revert_challenge(k)}
@@ -2698,7 +2714,9 @@ class Mnemo:
         chain = self._route_chain(key)
         cur = chain[-1] if chain else None
         if object == cur:                                    # NOOP: value already current -> skip the duplicate write
-            return {"intent": "assert", "action": "noop", "event": "NOOP", "key": key,
+            # "id": None is explicit, not incidental — every other branch returns an id, and callers written
+            # against them (including the MCP route tool) would otherwise KeyError on a NOOP.
+            return {"intent": "assert", "action": "noop", "event": "NOOP", "key": key, "id": None,
                     "note": "value already current; duplicate write skipped (dedup)"}
         if object not in chain:
             rid = self.remember(text, key=key, object=object)
@@ -3098,11 +3116,18 @@ class Mnemo:
         # forged-provenance memory poisoning: an attacker can forge a warrant STRING and mint Sybil Ed25519 keys, but
         # cannot sign as a TRUSTED key, so its poison never enters the pool. Trust is a root set ONCE (CA-style), not
         # a per-query oracle. High-friction by design — anchor the facts that MATTER (bank, medication, instructions).
-        if trusted_only and self.trust_seeds:
-            _trusted = self._trusted_sources({it["id"]: it for it in self.items})
-            pool = [r for r in pool
-                    if ("key:" + str(r.get("attested_key"))) in self.trust_seeds
-                    or self._canon_of(r) in _trusted]
+        if trusted_only:
+            # FAIL CLOSED. With no trust_seeds there is no trust root, so NOTHING can be anchored to it and the
+            # honest answer is "no trusted memories" — not the whole untrusted pool. Skipping the filter here
+            # (the old `and self.trust_seeds`) silently returned exactly the poisoned records the caller asked
+            # to exclude, and looked identical to a successful trusted recall.
+            if not self.trust_seeds:
+                pool = []
+            else:
+                _trusted = self._trusted_sources({it["id"]: it for it in self.items})
+                pool = [r for r in pool
+                        if ("key:" + str(r.get("attested_key"))) in self.trust_seeds
+                        or self._canon_of(r) in _trusted]
         # Metadata pre-filter (the 'filter before you rank' lever): keep only records matching ALL `where`
         # conditions, matched against top-level fields then meta. Deterministic, no embedder, O(pool).
         if where:
@@ -3291,17 +3316,30 @@ class Mnemo:
                 a, b = _toks[i], _toks[j]
                 return (len(a & b) / len(a | b)) if (a and b) else 0.0
 
+            # Greedy MMR, bounded to the k items actually returned and memoized per pair. Selecting the WHOLE
+            # pool (and recomputing every cosine on each sweep) costs ~p^3/6 similarity calls: fine at the
+            # default p=50, but ~1.3M at k=50 and ~1e9 for a caller passing rerank_pool=2000 — a hang. Only the
+            # first k survive `scored[:k]` anyway; the unselected remainder keeps its relevance order.
+            _sim_memo: dict = {}
+
+            def _dsim_memo(i, c):
+                kk = (i, c) if i < c else (c, i)
+                v = _sim_memo.get(kk)
+                if v is None:
+                    v = _sim_memo[kk] = _dsim(i, c)
+                return v
+
             chosen, remaining = [], list(range(len(pool)))
-            while remaining:
+            while remaining and len(chosen) < k:
                 best_i, best_v = remaining[0], None
                 for i in remaining:
-                    div = max((_dsim(i, c) for c in chosen), default=0.0)
+                    div = max((_dsim_memo(i, c) for c in chosen), default=0.0)
                     val = lam * norm[i] - (1.0 - lam) * div
                     if best_v is None or val > best_v:
                         best_v, best_i = val, i
                 chosen.append(best_i)
                 remaining.remove(best_i)
-            scored = [pool[i] for i in chosen] + tail
+            scored = [pool[i] for i in chosen] + [pool[i] for i in remaining] + tail
         # OPT-IN NAMED RERANKER MENU (rerank_by): a discoverable set of deterministic, zero-LLM reorderings of the
         # top relevant pool — the "named reranker" depth a serious retrieval layer exposes (cf. Zep's menu), no LLM.
         # Complements the `mmr=` diversity knob and the `rerank=` cross-encoder hook:
@@ -4772,6 +4810,35 @@ class Mnemo:
         return {"shredded": True, "records_dropped": n, "ts": time.time(),
                 "note": "encryption key destroyed; the store at rest (and its backups) is now unrecoverable"}
 
+    def reembed(self, only_missing: bool = True, batch: int | None = None) -> dict:
+        """Re-embed records that carry no vector, then persist. The EXPLICIT counterpart to the bounded
+        embed-recipe guard: when a recipe change finds more than MNEMO_REALIGN_MAX stale vectors, the guard
+        DROPS them (those records fall back to lexical recall) rather than making every open pay one network
+        call per record. This is how you deliberately pay that cost once — a foreground call with a count you
+        can see — instead of implicitly on a load path that might be a short-lived hook process.
+        only_missing=False rebuilds the whole space. `batch` caps how many are done in this call, so a large
+        store can be worked through incrementally."""
+        if self.embed is None:
+            return {"reembedded": 0, "failed": 0, "remaining": 0, "error": "no embedder configured"}
+        todo = [r for r in self.items if r.get("text") is not None and (not only_missing or not r.get("vec"))]
+        if batch:
+            todo = todo[:int(batch)]
+        done = failed = 0
+        for r in todo:
+            try:
+                r["vec"] = list(self.embed(r["text"])); done += 1
+            except Exception:
+                r["vec"] = None; failed += 1
+        self._mat = None
+        self._save(force=True)
+        out = {"reembedded": done, "failed": failed,
+               "remaining": sum(1 for r in self.items if r.get("text") is not None and not r.get("vec"))}
+        if not self._persist_vectors:
+            # _save strips vectors on a RAM-only store, so this warmed the cache for THIS process only.
+            out["warning"] = ("persist_vectors=False: vectors are not written to disk, so the next open "
+                              "re-embeds again. Open the store with persist_vectors=True to keep them.")
+        return out
+
     def _save(self, force: bool = False):
         if not self.path:
             return
@@ -4886,8 +4953,8 @@ class _TenantView:
     Implementation: the handful of tenant-aware Mnemo methods are re-bound onto the view (so `self.tenant` inside
     them is the VIEW's tenant), and their tenant-aware internal helpers (_supersede_by_key, _tenant_rows) are
     re-bound too; everything else (`items`, `_save`, `_qvec`, `embed`, config flags, ...) resolves to the parent
-    via __getattr__, so reads/writes land on the shared store. Non-tenant methods (consolidate, credit, verify_*,
-    anchor, route, ...) are used as-is on the parent through __getattr__ and are unaffected by tenancy."""
+    via __getattr__, so reads/writes land on the shared store. Non-tenant methods (credit, verify_*, anchor, ...)
+    are used as-is on the parent through __getattr__ and are unaffected by tenancy."""
     __slots__ = ("_parent", "tenant")
 
     def __init__(self, parent: "Mnemo", tenant: str):
@@ -4928,6 +4995,15 @@ class _TenantView:
     def support_challenge_for(self, *a, **k): return Mnemo.support_challenge_for(self, *a, **k)
     def _current_active(self, *a, **k): return Mnemo._current_active(self, *a, **k)
     def _tenant_rows(self, *a, **k):    return Mnemo._tenant_rows(self, *a, **k)
+    # Later tenant-sensitive additions. Reached through __getattr__ these run PARENT-bound, so `self.tenant`
+    # is the parent's (normally None): remember_decision/distill_and_remember wrote records with NO tenant
+    # stamp (visible to every other view), graph/subgraph returned EVERY tenant's edges, and route()'s delete
+    # id-selection matched the parent's tenant. Any new tenant-aware method belongs in this list.
+    def remember_decision(self, *a, **k): return Mnemo.remember_decision(self, *a, **k)
+    def distill_and_remember(self, *a, **k): return Mnemo.distill_and_remember(self, *a, **k)
+    def graph(self, *a, **k):           return Mnemo.graph(self, *a, **k)
+    def subgraph(self, *a, **k):        return Mnemo.subgraph(self, *a, **k)
+    def route(self, *a, **k):           return Mnemo.route(self, *a, **k)
 
 
 # --------------------------------------------------------------------------------------------------------------

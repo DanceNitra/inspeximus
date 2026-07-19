@@ -3,6 +3,52 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.19.0
+
+Security and correctness pass over everything 1.16.0–1.18.0 shipped, from an audit of the whole unreleased
+range. Three of these contradicted guarantees this CHANGELOG had already made.
+
+**SECURITY — stored XSS in the memory browser.** `render_html()` inlines the rows into an inline `<script>`
+via `json.dumps`, which does not escape `<` `>` `&`. A memory containing `</script>` therefore closed the
+element and everything after it was parsed as live HTML in the opened `file://` document; the JS-side `esc()`
+never ran, because the breakout happens at parse time. Memory text is exactly what agents ingest from tools,
+web pages and MCP callers, so this was reachable through ordinary use. Now escaped as `\uXXXX` — transport
+only, text round-trips byte-identical.
+
+**SECURITY — `route()` could hard-delete on a default store, by content alone.** The routed DELETE gated on
+`_revert_authorized()`, which returns True when neither `revert_authority` nor `revert_pubkey` is configured
+(the "legacy" rule — safe for revert, which only moves along the version graph). On a default store that let
+`route("forget that address")` reach `forget()` and irreversibly destroy every active record for the key,
+directly contradicting 1.17.0's claim that DELETE is "capability-gated: content alone can't destroy memory".
+A routed delete now requires an authority to be **configured**, then satisfied; otherwise it returns
+`authorization_required` and points at out-of-band `forget()`/`forget_subject()`.
+
+**Delete no longer pre-empts corrections and reverts.** The delete vocabulary overlaps both, and was tested
+first, so `route("drop the beta flag; region is now us-east")` (a correction) and `route("undo that, it is no
+longer valid")` (a revert) were swallowed as deletes and their writes never happened. DELETE now requires the
+utterance to carry no value and no revert marker.
+
+**BEHAVIOR REVERSAL — `recall(trusted_only=True)` now fails CLOSED.** It previously skipped the filter
+entirely when no `trust_seeds` were configured and returned the whole untrusted pool — deliberate ("fail-open,
+not empty") but wrong for a security flag: it returned exactly the poisoned records the caller asked to
+exclude, indistinguishable from a successful trusted recall. With no trust root nothing can be anchored to it,
+so the honest answer is no trusted memories. Configure `trust_seeds` to get hits.
+
+**Cross-tenant leak through the newer surface.** `_TenantView` forwards unlisted methods to the parent, where
+they run parent-bound (`self.tenant` = None): `remember_decision()` and `distill_and_remember()` wrote records
+with **no tenant stamp** (visible to every other view), `graph()`/`subgraph()` returned **every** tenant's
+edges, and `route()`'s delete id-selection matched the wrong tenant. All five are now rebound.
+
+**MMR was cubic in the pool.** The greedy loop selected the entire pool (only the first `k` survive) and
+recomputed every pairwise cosine uncached: ~p³/6 similarity calls. Fine at the default p=50, ~1.3M at k=50,
+~1e9 for a caller passing `rerank_pool=2000` — an effective hang. Now bounded to `k` and memoized.
+
+**`reembed()` + `mnemo reembed`.** The explicit counterpart to 1.18.0's bounded embed-recipe guard: when a
+recipe change finds more than `MNEMO_REALIGN_MAX` stale vectors the guard drops them (lexical fallback) rather
+than making every open pay a network call per record. This is how you deliberately rebuild that space —
+foreground, with a count, `--batch`-able — instead of implicitly on a load path. `route()`'s NOOP now also
+carries an explicit `"id": None`, so callers reading `["id"]` no longer `KeyError` on a duplicate write.
+
 ## 1.18.0
 
 **Fix: the embed-recipe guard could re-embed the whole store on EVERY open.** With `persist_vectors=True` and a

@@ -57,8 +57,14 @@ only = m3.recall(Q, k=3, trusted_only=True)
 check("3 non-trusted-key attestation is excluded (trust != authorship)", all(h["text"] != POISON for h in only))
 
 # 4. fail-open: no trust_seeds -> trusted_only is a no-op, recall still returns hits
+# 4 REVERSED in 1.18.1 (was: "no-op when no trust_seeds (fail-open, not empty)"). trusted_only is a SECURITY
+# flag, and with no trust root nothing can be anchored to it — so the honest answer is "no trusted memories",
+# not the entire untrusted pool. Failing open returned exactly the poisoned records the caller asked to
+# exclude, and was indistinguishable from a successful trusted recall: the caller cannot tell the filter
+# never ran. An empty result is loud and safe; configure trust_seeds to get hits.
 m4 = build(trust_on=False)
-check("4 trusted_only no-op when no trust_seeds (fail-open, not empty)", len(m4.recall(Q, k=3, trusted_only=True)) > 0)
+check("4 trusted_only fails CLOSED with no trust_seeds (empty, not the untrusted pool)",
+      m4.recall(Q, k=3, trusted_only=True) == [])
 
 print(f"\n{'ALL PASS' if not FAILS else 'FAILED: ' + ', '.join(FAILS)}")
 sys.exit(1 if FAILS else 0)

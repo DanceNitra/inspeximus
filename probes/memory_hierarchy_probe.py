@@ -48,5 +48,21 @@ check("3 user-only query sees the user's own sessions", "black" in t3 and "latte
 h4 = fresh().recall("coffee", k=10)
 check("4 legacy recall (no ids) sees all 5", len(h4) == 5)
 
+
+# ── 1.18.1 regression: _TenantView must rebind EVERY tenant-sensitive method ─────────────────────────
+# Reached through __getattr__ a method runs PARENT-bound, so `self.tenant` is the parent's (normally None).
+# remember_decision/distill_and_remember then wrote records with NO tenant stamp (visible to every other
+# view) and graph()/subgraph() returned every tenant's edges — a cross-tenant leak through the newer surface.
+import tempfile as _tf, os as _os
+mt = Mnemo(path=_os.path.join(_tf.mkdtemp(), "t.json"))
+acme, other = mt.for_tenant("acme"), mt.for_tenant("other")
+_id = acme.remember_decision("acme picked RED", because="blue failed", topic="colour")
+_rec = [r for r in mt.items if r.get("id") == _id]
+check("5 remember_decision through a tenant view stamps that tenant",
+      bool(_rec) and _rec[0].get("tenant") == "acme")
+other.remember("other co name", key="co::name", object="OTHER")
+check("5b graph() through a tenant view shows only that tenant's edges",
+      len(acme.graph().get("edges", [])) < len(mt.graph().get("edges", [])))
+
 print(f"\n{'ALL PASS' if not FAILS else 'FAILED: ' + ', '.join(FAILS)}")
 sys.exit(1 if FAILS else 0)

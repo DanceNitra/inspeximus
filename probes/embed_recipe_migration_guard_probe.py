@@ -85,6 +85,13 @@ m8 = Mnemo(path=p4, embed=embC, persist_vectors=True, embed_id="C")
 check("7 past MNEMO_REALIGN_MAX the guard drops vectors instead of stalling", calls["n"] == 0)
 check("7b dropped vectors degrade to lexical (vec=None), never a stale-space mismatch",
       all(r.get("vec") is None for r in m8.items))
+
+# 8: the cap DROPS vectors, so there must be an explicit, deliberate way to rebuild them. reembed() is that
+# way — the point being that it is a foreground call you choose, never implicit work on a load path.
+r8 = m8.reembed()
+check("8 reembed() rebuilds the dropped vectors", r8["reembedded"] == 12 and r8["remaining"] == 0)
+m9 = Mnemo(path=p4, embed=embC, persist_vectors=True, embed_id="C")
+check("8b the rebuilt vectors are persisted", all(r.get("vec") == [0.0, 0.0, 1.0] for r in m9.items))
 os.environ.pop("MNEMO_REALIGN_MAX", None)
 
 print(f"\n{'ALL PASS' if not FAILS else 'FAILED: ' + ', '.join(FAILS)}")

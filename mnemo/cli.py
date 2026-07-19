@@ -39,10 +39,12 @@ def _embedder():
     return embed
 
 
-def _store(path):
+def _store(path, persist_vectors: bool = False):
     from mnemo import Mnemo
     p = path or os.environ.get("MNEMO_PATH") or "mnemo_memory.json"
-    return Mnemo(path=p, embed=_embedder())
+    # persist_vectors stays OFF by default (vectors are a re-derivable cache; writing them balloons the store
+    # file on every command). `reembed` opts in — persisting is the entire point of that command.
+    return Mnemo(path=p, embed=_embedder(), persist_vectors=persist_vectors)
 
 
 def _out(obj, as_json):
@@ -105,6 +107,11 @@ def main(argv=None):
     di = sub.add_parser("distill", help="LLM-distill a transcript into memories (needs MNEMO_LLM_URL)")
     di.add_argument("--file", help="read text from a file (else stdin)")
 
+    re_ = sub.add_parser("reembed", help="rebuild embeddings for records that have none (after an embed-recipe "
+                                         "change dropped them); needs an embedder configured")
+    re_.add_argument("--all", action="store_true", help="re-embed EVERY record, not just the ones missing a vector")
+    re_.add_argument("--batch", type=int, default=None, help="cap how many records this run re-embeds")
+
     a = ap.parse_args(argv)
     m = _store(a.path)
 
@@ -164,6 +171,17 @@ def main(argv=None):
               "superseded": superseded, "keyed": keyed}
         _out(st, a.json) or print(
             f"{st['path']}: {st['total']} total ({active} active, {superseded} superseded, {keyed} keyed)")
+
+    elif a.cmd == "reembed":
+        if m.embed is None:
+            print("reembed: no embedder configured (set MNEMO_EMBED_URL, or .mnemo/config.json {\"embed\":{...}})",
+                  file=sys.stderr)
+            return 2
+        m = _store(a.path, persist_vectors=True)      # re-open so the rebuilt vectors actually reach disk
+        res = m.reembed(only_missing=not a.all, batch=a.batch)
+        _out(res, a.json) or print(
+            f"re-embedded {res['reembedded']} ({res['failed']} failed, {res['remaining']} still without a vector)"
+            + (f"\n{res['warning']}" if res.get("warning") else ""))
 
     elif a.cmd == "browse":
         from mnemo.browser import write_html
