@@ -174,10 +174,24 @@ def recall(ev):
     q = ev.get("prompt") or ev.get("user_prompt") or ""
     if not q.strip():
         return
-    hits = _store(cwd).recall(q, k=5)
-    if hits:
-        lines = "\n".join(f"- {h['text']}" for h in hits)
-        print(f"[mnemo] relevant project memory (deterministic, corrections already applied):\n{lines}")
+    # DECISIONS FIRST: a raw event log (commands, file-states) captures MECHANICS, but what an agent needs
+    # recalled is the DECISIONS/RULES relevant to what it's about to do ("what did we decide, and why"). So we
+    # surface decision-typed memories ahead of the command/file mechanics — otherwise the useful signal drowns
+    # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
+    hits = _store(cwd).recall(q, k=12)
+    def is_decision(h):
+        return "decision" in (h.get("tags") or [])
+    decisions = [h for h in hits if is_decision(h)][:4]
+    mechanics = [h for h in hits if not is_decision(h)][:3]
+    out = []
+    if decisions:
+        out.append("decisions/rules (what we concluded, and why):")
+        out += [f"  * {d['text']}" for d in decisions]
+    if mechanics:
+        out.append("recent mechanics (files/commands):")
+        out += [f"  - {m['text']}" for m in mechanics]
+    if out:
+        print("[mnemo] relevant project memory (deterministic, corrections already applied):\n" + "\n".join(out))
     _maybe_nudge(cwd)   # visible slot: UserPromptSubmit stdout is shown to the user
 
 
