@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.22.0"
+__version__ = "1.22.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -459,7 +459,9 @@ class Mnemo:
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
         embedder like nomic-embed-text, which is trained to prefix stored text with 'search_document: ' and
-        queries with 'search_query: '; measured on LoCoMo (n=1536) to lift recall_any@1 from 0.19 to 0.29.
+        queries with 'search_query: '; measured on LoCoMo (n=1536, reinforcement-controlled re-measure):
+        recall_any@1 0.397 with prefixes on (the earlier 0.19->0.29 delta was measured under a since-fixed
+        recall-reinforcement confound — see the 1.15.0 CHANGELOG correction; direction held, absolutes superseded).
 
         receipts/receipt_key (OPT-IN, default OFF -> identical legacy behavior): when enabled, every
         remember() appends a tamper-evident, hash-chained WRITE RECEIPT committing to the memory's

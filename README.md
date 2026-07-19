@@ -1252,9 +1252,10 @@ fallback. The agent then calls `recall(query)` before reasoning and `remember(fa
 its memory is value-ranked and append-only, not a recency buffer. If `MNEMO_EMBED_MODEL` contains
 `nomic` (nomic-embed-text is asymmetric — see its model card; like E5's `passage:`/`query:`), mnemo auto-applies its
 required task prefixes — `search_document: ` for stored text, `search_query: ` for the query (opt out with
-`MNEMO_NOMIC_PREFIX=0`). Omitting them was simply using the model wrong; adding them lifts our own recall_any@1 on
-one LoCoMo config from 0.19 to 0.29 (n=1536, deterministic retrieval-recall — an upper bound, not end-to-end QA; a
-self-comparison, not a cross-system claim). In the library, pass a separate `Mnemo(embed=…, embed_query=…)` for any
+`MNEMO_NOMIC_PREFIX=0`). Omitting them was simply using the model wrong; with prefixes on, our own
+reinforcement-controlled re-measure lands recall_any@1 at 0.397 on one LoCoMo config (n=1536, deterministic
+retrieval-recall — an upper bound, not end-to-end QA; a self-comparison, not a cross-system claim; the earlier
+0.19→0.29 delta was contaminated by a since-fixed recall-reinforcement confound — see the 1.15.0 CHANGELOG correction). In the library, pass a separate `Mnemo(embed=…, embed_query=…)` for any
 asymmetric embedder. If you use `persist_vectors=True`, also pass `Mnemo(embed_id="…")` (a recipe fingerprint): when
 it changes, mnemo re-embeds the persisted vectors once so a new-space query can't silently mis-match old vectors.
 

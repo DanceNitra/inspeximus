@@ -3,6 +3,18 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.22.1
+
+**Measurement correction propagated to the shipped text (no code change).** The `Mnemo` docstring and the README
+still cited the 1.15.0 `recall_any@1 0.19 → 0.29` delta, which the 1.15.0 CHANGELOG correction had already
+declared contaminated by the recall-reinforcement confound. Both now carry the clean, reinforcement-controlled
+number (recall_any@1 **0.397** with nomic prefixes, LoCoMo n=1536) and point to the correction. The correction
+note itself gained a paired-bootstrap re-verification (5000 resamples, fixed seed, Bonferroni across the 5 k's):
+vs a raw-cosine baseline over the same embeddings, @1 is a statistical tie, k=3/k=5 are small Bonferroni-surviving
+wins (Δ +0.023 / +0.032), @10/@25 positive but not significant. Receipts:
+`agora_output/lab/locomo_recall_clean_reinforce.result.json` + `locomo_reinforce_flag_fair.result.json`
+(both re-run 2026-07-19 evening and reproduced exactly — the pipeline is deterministic).
+
 ## 1.22.0
 
 **MCP: the hydration-witness primitives are now tools.** `witness`, `verify_witness`, and `index_coherence`
@@ -198,7 +210,12 @@ retrieval upper bound, not end-to-end QA, and multi-hop full-recall barely moves
 > non-mutating read — no value bump, decay-clock reset, or graduation; default `reinforce=True` is unchanged),
 > re-measured on the same LoCoMo config against our OWN plain-cosine baseline over the same nomic embeddings, mnemo is
 > **indistinguishable from that cosine baseline within measurement noise** (recall_any@1 0.397 vs 0.390; single run,
-> n≈1536, no confidence interval — read as "no measurable gap", not a proven win). So the integrity core adds no
+> n≈1536, no confidence interval — read as "no measurable gap", not a proven win).
+> *Re-verified 2026-07-19 with a paired bootstrap (n=1536, 5000 resamples, fixed seed, Bonferroni across the 5 k's
+> tested): @1 remains statistically indistinguishable (Δ +0.007, 99% CI [−0.009, +0.024]); at k=3 and k=5 mnemo's
+> native ranking is a small but Bonferroni-surviving WIN over raw cosine (Δ +0.023, 99% CI [+0.005, +0.044] and
+> Δ +0.032, 99% CI [+0.014, +0.051]); @10/@25 positive but not significant after correction. Same scope as above:
+> one dataset, one embedder, retrieval upper bound, self-built baseline — no cross-system claim.* So the integrity core adds no
 > detectable recall penalty *in this eval mode*; under the default reinforced path the number is lower (0.294), so that
 > statement is scoped to `reinforce=False`. The two fixes (prefixes + reinforcement) substantially account for the
 > earlier gap. We make no claim about any external system's retrieval — none was run here.
