@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.20.0"
+__version__ = "1.21.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1994,6 +1994,84 @@ class Mnemo:
                 "erasures": [{"memory_id": t["memory_id"], "ts": t.get("ts"),
                               "request_id": t.get("request_id"), "signed": "sig" in t}
                              for t in self._tombstones]}
+
+    def state_digest(self) -> str:
+        """Deterministic SHA-256 fingerprint of the CURRENT store state. Order-independent (records are
+        sorted by id) and covers what retrieval can serve: id, status, ts, key, tenant, and the content
+        hash — so any supersession, revert, erasure, or out-of-band edit changes the digest. Zero-LLM,
+        O(n) hashing, no configuration. This is the "revision X" a hydration witness pins to."""
+        h = hashlib.sha256()
+        for r in sorted(self.items, key=lambda x: x.get("id") or ""):
+            line = "\x1f".join([
+                str(r.get("id") or ""), str(r.get("status") or "active"),
+                repr(r.get("ts")), str(r.get("key") or ""), str(r.get("tenant") or ""),
+                hashlib.sha256((r.get("text") or "").encode("utf-8")).hexdigest(),
+            ])
+            h.update(line.encode("utf-8")); h.update(b"\x1e")
+        return h.hexdigest()
+
+    def witness(self) -> dict:
+        """HYDRATION WITNESS: a compact, deterministic receipt of the store state an answer was derived
+        from — "this answer reflects store state as of revision X". Attach it to any answer assembled
+        from recall() results; verify later with verify_witness(). When write receipts are enabled
+        (receipts=True), the witness also carries the receipt-chain tip, anchoring the claimed state to
+        the tamper-evident write history. HONEST SCOPE: the witness pins the STORE + this store's view of
+        its index inputs; it cannot attest external caches or copies it never saw."""
+        act = sum(1 for r in self.items if r.get("status") == "active")
+        w = {"mnemo_hydration_witness": 1, "digest": self.state_digest(),
+             "records": len(self.items), "active": act,
+             "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+        if self.embed_id:
+            w["embed_id"] = self.embed_id
+        if getattr(self, "_receipts", None):
+            w["receipts_tip"] = self._receipts[-1].get("hash")
+        return w
+
+    def verify_witness(self, w: dict) -> dict:
+        """Check a hydration witness against the store as it is NOW. digest_match=True means the store
+        is byte-for-byte in the state the witness pinned (no write, supersession, revert, or erasure has
+        happened since); False means the answer that carried this witness reflects a PRIOR revision —
+        which is exactly what the receipt exists to make visible."""
+        cur = self.state_digest()
+        out = {"digest_match": cur == w.get("digest"), "current_digest": cur}
+        if "receipts_tip" in w:
+            tip = self._receipts[-1].get("hash") if getattr(self, "_receipts", None) else None
+            out["receipts_tip_match"] = (tip == w.get("receipts_tip"))
+        out["valid"] = out["digest_match"] and out.get("receipts_tip_match", True)
+        return out
+
+    def index_coherence(self) -> dict:
+        """Does the derived semantic index agree with the store? An append-only or git-backed store can be
+        perfectly governed and STILL serve a stale value if the embedding index lags or was built with a
+        different recipe (the class of bug behind mnemo's own 1.15-1.18 realign fixes). Deterministic,
+        read-only. Reports: active text-bearing records missing a vector while an embedder is configured
+        (index behind store), vectors persisted under a DIFFERENT embed recipe than the current one
+        (unrankable against fresh queries), and whether vectors survive a save at all on this store.
+        coherent=True means semantic recall on this store ranks against vectors that match the current
+        store content and recipe."""
+        has_embedder = self.embed is not None
+        act_text = [r for r in self.items if r.get("status") == "active" and r.get("text")]
+        missing = sum(1 for r in act_text if not r.get("vec")) if has_embedder else 0
+        sidecar = None
+        if getattr(self, "_embedid_path", None) is not None and self._embedid_path.exists():
+            try:
+                sidecar = self._embedid_path.read_text(encoding="utf-8").strip() or None
+            except OSError:
+                sidecar = None
+        recipe_match = True
+        if self._persist_vectors and sidecar is not None and (self.embed_id or "") != sidecar:
+            recipe_match = False
+        out = {"coherent": (missing == 0 and recipe_match),
+               "embedder_configured": has_embedder,
+               "active_text_records": len(act_text), "missing_vecs": missing,
+               "recipe_match": recipe_match, "persist_vectors": self._persist_vectors,
+               "embed_id": self.embed_id or None, "sidecar_embed_id": sidecar}
+        if not has_embedder:
+            out["note"] = "lexical-only store: no derived index to drift; coherent by construction"
+        elif not self._persist_vectors:
+            out["note"] = ("persist_vectors=False: vectors are a RAM-only cache rebuilt per process; "
+                           "a fresh open starts with an empty index until the backfill re-embeds")
+        return out
 
     def erasure_certificate(self, request_id: str | None = None, expected_pubkey: str | None = None) -> dict:
         """Portable, INDEPENDENTLY-VERIFIABLE erasure certificate — the auditor-grade receipt for a

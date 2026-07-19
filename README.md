@@ -35,7 +35,9 @@ runs LLM entity/edge extraction on every `add_episode()`. That one choice is why
 what makes three things possible the mainstream libraries don't offer:
 
 - **Corrections that stick.** Write a new value for a key and it *supersedes* the old one; `echo_guard` blocks a
-  later restatement of the retired value from resurfacing. No config, no model call.
+  later restatement of the retired value from resurfacing. No config, no model call. Honest scope: the guard
+  engages on **keyed or extractor-derived** assertions (the shipped extractors derive the key from raw text);
+  a free-text write that nothing keys is stored as an independent record and ranks on its own.
 - **Revert on command.** `m.revert(key)` rolls a corrected fact back to its predecessor. Of the leading systems
   we checked — mem0, Zep/Graphiti, Letta, Cognee, Memobase, MemoryScope, LangMem, txtai — **none exposes a
   revert-to-predecessor command** (mem0's `history()` is a read-only log; Graphiti invalidates but never
@@ -132,7 +134,7 @@ recall serves the current value, a restated stale value can't resurrect it (`ech
 fields; `get(id)` / `neighbors(id)` for detail on demand). Eighteen tools total; [details below](#use-it-as-an-mcp-server-any-claude--cursor--agent-client).
 
 **Jump to:** [Correction (measured)](#correction-is-a-first-class-operation-measured-across-systems) ·
-[Governance & erasure](#governance-erasure--audit) · [Org-wide erasure receipt](#org-wide-erasure-receipt-prove-deletion-across-your-whole-stack-not-one-library) · [Install](#install) ·
+[Governance & erasure](#governance-erasure--audit) · [Org-wide erasure receipt](#org-wide-erasure-receipt-one-signed-manifest-across-every-store-you-register) · [Install](#install) ·
 [MCP server](#use-it-as-an-mcp-server-any-claude--cursor--agent-client) ·
 [Shell CLI](#use-it-from-the-shell-the-mnemo-cli-1124) ·
 [Framework integrations](#framework-integrations) ·
@@ -799,10 +801,29 @@ erasure use an encrypted store + `shred()` (NIST SP 800-88 crypto-erasure: destr
 every backup die); for cross-store erasure register `ErasureTarget`s so `forget_subject` cascades. Receipts:
 `mnemo/probes/erasure_certificate_probe.py`, `erasure_raw_store_probe.py`.
 
-### Org-wide erasure receipt: prove deletion across your WHOLE stack, not one library
+### Hydration witness + index coherence: "this answer reflects store state as of revision X" (1.21.0)
+A governed store can still serve a stale answer if the **derived index** (embeddings, caches) lags the store —
+git guarantees the files, nothing guarantees the index agrees with them. Two deterministic, zero-LLM checks:
+
+```python
+w = m.witness()            # {digest, records, active, iso, receipts_tip?} — attach to any answer
+m.verify_witness(w)        # later: {valid, digest_match, ...} — False = the answer predates a change
+m.index_coherence()        # {coherent, missing_vecs, recipe_match, ...} — does the vec index match the store?
+```
+
+`state_digest()` covers exactly what retrieval can serve (id, status, ts, key, tenant, content hash), so any
+write, supersession, revert, erasure, or out-of-band edit changes it; with `receipts=True` the witness is also
+anchored to the tamper-evident write chain. Honest scope: the witness pins **this store and its view of its
+index inputs** — it cannot attest external caches or copies it never saw.
+(Receipt: `probes/hydration_witness_probe.py`, 12/12.)
+
+### Org-wide erasure receipt: one signed manifest across every store you REGISTER
 A right-to-erasure demand isn't satisfied by one library scrubbing its own file — the subject's data is also in
 your vector index, your retrieval logs, your caches, your backups. `DeletionManifest` (`mnemo.deletion_manifest`)
-cascades the erasure across **every store you register** and emits ONE signed, tamper-evident manifest:
+cascades the erasure across **every store you register** and emits ONE signed, tamper-evident manifest. Honest
+scope: the manifest is an auditable trail over the stores it was shown — it names the registered stores that
+complied (and the non-compliant ones), but it cannot attest a copy nobody registered (an unknown cache, a backup,
+a teammate's already-hydrated context):
 
 ```python
 from mnemo.deletion_manifest import DeletionManifest

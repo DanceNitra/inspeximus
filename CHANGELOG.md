@@ -3,6 +3,33 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.21.0
+
+**Hydration witness: `witness()` / `verify_witness()` / `state_digest()`.** A compact, deterministic receipt
+of the store state an answer was derived from — "this answer reflects store state as of revision X".
+`state_digest()` is an order-independent SHA-256 over exactly what retrieval can serve (id, status, ts, key,
+tenant, content hash), so any write, supersession, revert, erasure, or out-of-band edit changes it;
+`verify_witness()` later says whether the answer predates a change. With `receipts=True` the witness also
+carries the write-receipt chain tip, anchoring the pinned state to the tamper-evident write history. Honest
+scope: the witness pins THIS store and its view of its index inputs; it cannot attest external caches or
+copies it never saw. Motivated by the shared-team-memory discussion (anthropics/claude-code#38536): governed,
+git-backed stores are still read through a derived index, and provenance receipts need a cheap thing to pin to.
+
+**Index coherence: `index_coherence()`.** Deterministic, read-only answer to "does the derived semantic index
+agree with the store?" — reports active text records missing a vector while an embedder is configured (index
+behind store), persisted-vector recipe vs the current `embed_id` (the sidecar guard's view), and the
+`persist_vectors` regime. This operationalizes the exact bug class behind the 1.15–1.18 realign fixes as a
+user-callable check instead of tribal knowledge.
+
+**README honesty pass (from the same adversarial review):** the `echo_guard` bullet now states its real scope
+(keyed or extractor-derived assertions — a free-text write nothing keys is an independent record), and the
+org-wide erasure receipt heading no longer says "your WHOLE stack": the manifest is an auditable trail over
+the stores you REGISTER, and cannot attest a copy nobody registered (unknown caches, backups, already-hydrated
+contexts).
+
+Probe: `probes/hydration_witness_probe.py` (12/12 — determinism, every retrieval-visible mutation flips the
+digest, receipts-tip anchoring, lag + recipe-mismatch detection).
+
 ## 1.20.0
 
 **Claude Code hooks are now LEXICAL by default (opt in to semantic with `MNEMO_EMBED_HOOKS=1` or config
