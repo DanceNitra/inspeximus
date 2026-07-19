@@ -1,0 +1,63 @@
+{
+  "n_properties": 8,
+  "passed": 8,
+  "results": {
+    "supersession_returns_current": {
+      "metric": "current@1",
+      "value": 1.0,
+      "baseline": 0.0,
+      "pass": true,
+      "note": "mnemo keyed vs naive keep-all"
+    },
+    "revert_restores_prior": {
+      "metric": "restored@1",
+      "value": 1.0,
+      "baseline": null,
+      "pass": true,
+      "note": ""
+    },
+    "erasure_reconstructibility": {
+      "metric": "leak_rate",
+      "value": 0.0,
+      "baseline": null,
+      "pass": true,
+      "note": "content gone from items + recall"
+    },
+    "poison_trusted_only": {
+      "metric": "truth@1",
+      "value": 1.0,
+      "baseline": 0.0,
+      "pass": true,
+      "note": "trusted_only vs default recall, adaptive attacker"
+    },
+    "noop_dedup": {
+      "metric": "new_records_on_restate",
+      "value": 0,
+      "baseline": null,
+      "pass": true,
+      "note": "unbounded-growth guard"
+    },
+    "hierarchy_session_isolation": {
+      "metric": "isolated",
+      "value": 1,
+      "baseline": null,
+      "pass": true,
+      "note": "S1 sees own, not peer S2"
+    },
+    "determinism": {
+      "metric": "identical_over_runs",
+      "value": 1,
+      "baseline": null,
+      "pass": true,
+      "note": "zero-LLM read = reproducible"
+    },
+    "graph_triples_and_traversal": {
+      "metric": "ok",
+      "value": 1,
+      "baseline": null,
+      "pass": true,
+      "note": "keyed triples -> graph + 2-hop"
+    }
+  },
+  "scope": "self-contained synthetic, deterministic, lexical recall; proves the mechanism per property"
+}

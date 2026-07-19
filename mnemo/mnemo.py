@@ -3063,6 +3063,18 @@ class Mnemo:
                         return False
                 return True
             pool = [r for r in pool if _visible(r)]
+        # TRUSTED-ONLY (OPT-IN, needs trust_seeds): keep only candidates whose ORIGIN is anchored to the trust root —
+        # the record is itself attested by a seed key, its (entity-resolved) source is seed-vouched, OR a trusted
+        # actor endorses it via a link (the trust closure). Filtered HERE, BEFORE ranking, so recall returns the top
+        # TRUSTED hit even at k=1 (not the top hit then dropped). The deterministic, zero-LLM defense against
+        # forged-provenance memory poisoning: an attacker can forge a warrant STRING and mint Sybil Ed25519 keys, but
+        # cannot sign as a TRUSTED key, so its poison never enters the pool. Trust is a root set ONCE (CA-style), not
+        # a per-query oracle. High-friction by design — anchor the facts that MATTER (bank, medication, instructions).
+        if trusted_only and self.trust_seeds:
+            _trusted = self._trusted_sources({it["id"]: it for it in self.items})
+            pool = [r for r in pool
+                    if ("key:" + str(r.get("attested_key"))) in self.trust_seeds
+                    or self._canon_of(r) in _trusted]
         # Metadata pre-filter (the 'filter before you rank' lever): keep only records matching ALL `where`
         # conditions, matched against top-level fields then meta. Deterministic, no embedder, O(pool).
         if where:
@@ -3382,20 +3394,6 @@ class Mnemo:
                 if _masked:
                     _o["pii_masked"] = _masked
             out.append(_o)
-        # TRUSTED-ONLY (OPT-IN, needs trust_seeds): keep only hits whose ORIGIN is anchored to the trust root — the
-        # record is itself attested by a seed key, its (entity-resolved) source is seed-vouched, OR a trusted actor
-        # endorses it via a link (the trust closure). This is the deterministic, zero-LLM defense against
-        # forged-provenance memory poisoning: an attacker can forge a warrant STRING and mint Sybil Ed25519 keys, but
-        # cannot sign as a TRUSTED key, so its poison never enters the returned set. Trust is a root set ONCE (like a
-        # CA allowlist), not a per-query oracle. High-friction by design — anchor the facts that MATTER (bank details,
-        # medication, instructions); unanchored memory recalls normally.
-        if trusted_only and self.trust_seeds:
-            trusted = self._trusted_sources(_by_id)
-            def _anchored(o):
-                r = _by_id.get(o["id"], {})
-                return (("key:" + str(r.get("attested_key"))) in self.trust_seeds
-                        or self._canon_of(r) in trusted)
-            out = [o for o in out if _anchored(o)]
         # AUTO-STAMP LINEAGE: remember what this recall surfaced, so a derived write built from it (a summary
         # written next) can inherit these as parents. Store-carried lineage from the recall->write flow.
         self._last_recall = [o["id"] for o in out]
