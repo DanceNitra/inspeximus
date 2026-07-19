@@ -11,12 +11,15 @@ key, and a CT-style anchor into ONE portable, content-free JSON document. A thir
 function `verify_erasure_certificate(cert, store_path=...)` — WITHOUT the private key and WITHOUT trusting the
 operator — and gets a machine-checkable verdict: the tombstone chain re-derives, every Ed25519 signature
 verifies (pinnable to an expected pubkey), the anchor commits to the chain tip, AND every erased id is genuinely
-ABSENT from the raw store (the "read the raw store" proof that soft-delete / history-keeping memory systems
-fail). Tampering a tombstone, faking an "erased" id that is still present, or pinning the wrong key all flip the
-verdict to INVALID. This is the erasure primitive built for a right-to-erasure demand (GDPR Art.17) with an
-Art.30-style auditable record — a governance capability most agent-memory libraries do not expose. Honest scope
-stays in-band (within this store; the ACT not the content; witness the anchor externally for an operator-
-adversarial audit). Pair with `shred()` for encrypted-at-rest crypto-erasure. Receipts:
+ABSENT from mnemo's store records (the value is deleted, not soft-deleted or kept in a history table by design
+as most libraries do). Tampering a tombstone, faking an "erased" id that is still present, or pinning the wrong
+key all flip the verdict to INVALID. This is the erasure primitive built for a right-to-erasure demand (GDPR
+Art.17) with an Art.30-style auditable record — a governance capability most agent-memory libraries do not
+expose. Honest scope stays in-band: it proves erasure from THIS store's records (the ACT, not the content;
+witness the anchor externally for an operator-adversarial audit) — it is NOT secure at-rest erasure against
+raw-disk/backup forensics (a plaintext store of any library leaves bytes in free space/backups → use an
+encrypted store + `shred()`, NIST SP 800-88 crypto-erasure) and NOT the app's own vector store/logs (register
+`ErasureTarget`s for cross-store cascade). Receipts:
 `mnemo/probes/erasure_certificate_probe.py` (9/9) + `mnemo/probes/erasure_raw_store_probe.py` (12/12).
 
 ## 1.12.4

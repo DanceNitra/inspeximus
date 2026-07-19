@@ -40,14 +40,18 @@ what makes three things possible the mainstream libraries don't offer:
   we checked — mem0, Zep/Graphiti, Letta, Cognee, Memobase, MemoryScope, LangMem, txtai — **none exposes a
   revert-to-predecessor command** (mem0's `history()` is a read-only log; Graphiti invalidates but never
   un-invalidates; Letta has no undo).
-- **Provable erasure.** `forget_subject` removes a value from *every* surface and leaves a tamper-evident, signed
-  receipt. Among mainstream agent-memory libraries this is unique: mem0 keeps the deleted value in its SQLite
-  history table (only a full `reset()` purges it); Graphiti stamps the old edge `invalid_at` and *keeps* it.
+- **Deletes the value, not just the pointer.** `forget_subject` removes the value from mnemo's records (subject
+  + its `derived_from` lineage) and leaves a **content-free**, tamper-evident signed receipt — so what remains is
+  a proof-of-deletion, not the data. Most agent-memory libraries instead *retain the deleted value* by design:
+  mem0 keeps it in its SQLite history table (a full `reset()` purges it); Graphiti stamps the old edge
+  `invalid_at` and keeps it. For **secure erasure at rest** (against raw-disk/backup forensics — which a plaintext
+  store of ANY library, mnemo included, does not give you) use an encrypted store + `shred()` (NIST SP 800-88
+  crypto-erasure: destroy the key and every at-rest copy dies).
 
-| | LLM on write | corrections stick | revert to predecessor | erasure leaves no residue |
+| | LLM on write | corrections stick | revert to predecessor | deleted value retained? |
 |---|---|---|---|---|
-| **mnemo** | **no — deterministic** | ✅ supersession + echo_guard | ✅ `revert(key)` | ✅ all surfaces + signed receipt |
-| mem0 | yes (by default) | LLM decides ADD/UPDATE | ✗ history is read-only | ✗ deleted value kept in history |
+| **mnemo** | **no — deterministic** | ✅ supersession + echo_guard | ✅ `revert(key)` | ✅ no — value scrubbed, content-free receipt (+ `shred()` for at-rest) |
+| mem0 | yes (by default) | LLM decides ADD/UPDATE | ✗ history is read-only | ✗ kept in the history table by design |
 | Zep / Graphiti | yes | temporal invalidation | ✗ no un-invalidate | ✗ invalidated edge retained |
 | Letta / MemGPT | yes | LLM rewrites the block | ✗ no undo | ✗ |
 
@@ -783,11 +787,14 @@ verify_erasure_certificate(cert, store_path="mem.json", expected_pubkey=pk)
 ```
 
 The verifier re-derives the tombstone hash-chain, checks every Ed25519 signature (pinnable to `expected_pubkey`),
-confirms the anchor commits to the chain tip, and — reading the **raw store on disk** — confirms every erased id
-is genuinely absent. Tampering a tombstone, faking an "erased" id that is still present, or pinning the wrong key
-each flips the verdict to `valid: False`. Same honest scope as `governance_report()` (within this store; the act
-not the content; witness the anchor externally). For encrypted-at-rest stores, pair with `shred()`
-(crypto-erasure: destroy the key, the ciphertext and every backup die). Receipts:
+confirms the anchor commits to the chain tip, and — reading **mnemo's store records** — confirms every erased id
+is genuinely absent (the value is gone from the store, not merely soft-deleted or kept in a history table).
+Tampering a tombstone, faking an "erased" id that is still present, or pinning the wrong key each flips the
+verdict to `valid: False`. Honest scope (`governance_report()`'s): this proves erasure from THIS mnemo store's
+records — NOT secure at-rest erasure against raw-disk/backup forensics (a plaintext store of any library, mnemo
+included, leaves bytes in free space/backups), and NOT the app's own vector store/logs. For secure at-rest
+erasure use an encrypted store + `shred()` (NIST SP 800-88 crypto-erasure: destroy the key, ciphertext and
+every backup die); for cross-store erasure register `ErasureTarget`s so `forget_subject` cascades. Receipts:
 `mnemo/probes/erasure_certificate_probe.py`, `erasure_raw_store_probe.py`.
 
 ### Point-in-time / bi-temporal reads: `as_of()` + `history()` (0.6.14)
