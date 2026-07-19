@@ -1432,14 +1432,29 @@ class Mnemo:
         "reusable items; drop chit-chat, transient state, and anything already obvious. Return a JSON object "
         "{\"items\": [...]} where each item is:\n"
         "  {\"kind\": \"decision\"|\"fact\", \"text\": <one clear sentence>, \"topic\": <short stable slug or \"\">, "
-        "\"because\": <rationale, only for decisions, else \"\">}\n"
+        "\"because\": <rationale, only for decisions, else \"\">, "
+        "\"support\": <a SHORT verbatim quote (>=12 chars) copied EXACTLY from the transcript that grounds this item>}\n"
         "- kind=\"decision\": a choice/conclusion/plan (\"we decided/chose/dropped/will…\"). Give a `topic` slug so "
         "a later decision on the same topic supersedes it (e.g. \"release::v2\", \"vendor::db\").\n"
         "- kind=\"fact\": a durable fact/preference/detail worth recalling later.\n"
+        "- `support` MUST be an exact substring of the transcript (do NOT paraphrase it). Items whose `support` is not "
+        "found verbatim in the transcript are DROPPED — never invent a quote to pass this check.\n"
         "Return {\"items\": []} if nothing is worth keeping. No prose outside the JSON."
     )
 
-    def distill_and_remember(self, text: str, distiller, source: dict | None = None) -> dict:
+    @staticmethod
+    def _support_ok(support, text: str) -> bool:
+        """Correctness gate: an extracted item is kept ONLY if its `support` quote appears VERBATIM in the source
+        transcript (case-insensitive, whitespace-collapsed, >=12 non-space chars). This is the deterministic guard
+        that stops a hallucinated decision — a plausible sentence the LLM invented but that was never said — from
+        landing in the durable store and inverting the correction moat. No LLM, no similarity: pure substring."""
+        s = " ".join(str(support or "").split()).lower()
+        if len(s.replace(" ", "")) < 12:
+            return False
+        return s in " ".join(str(text or "").split()).lower()
+
+    def distill_and_remember(self, text: str, distiller, source: dict | None = None,
+                             require_support: bool = True) -> dict:
         """OPTIONAL LLM capture: turn a raw conversation/transcript into the few memories worth keeping — the
         auto-capture-what-matters that a raw event log misses and that mem0/Zep do with an LLM on the write path.
         mnemo stays zero-dependency/zero-LLM in its CORE: YOU inject `distiller`, a callable `distiller(prompt, text)
@@ -1468,12 +1483,15 @@ class Mnemo:
                 return {"captured": 0, "decisions": 0, "facts": 0, "ids": [], "error": "unparseable_distiller_output"}
         if isinstance(items, dict):
             items = items.get("items", [])
-        ids, nd, nf = [], 0, 0
+        ids, nd, nf, dropped = [], 0, 0, 0
         for it in (items or []):
             if not isinstance(it, dict):
                 continue
             t = str(it.get("text") or "").strip()
             if not t:
+                continue
+            if require_support and not self._support_ok(it.get("support"), text):
+                dropped += 1                                  # unsupported/hallucinated item -> never stored
                 continue
             topic = str(it.get("topic") or "").strip() or None
             try:
@@ -1485,7 +1503,7 @@ class Mnemo:
                                              object=topic, source=source)); nf += 1
             except Exception:
                 continue
-        return {"captured": len(ids), "decisions": nd, "facts": nf, "ids": ids}
+        return {"captured": len(ids), "decisions": nd, "facts": nf, "dropped": dropped, "ids": ids}
 
     def observe(self, text: str, key: str, object: str | None = None, support=None,
                 meta: dict | None = None) -> dict:
