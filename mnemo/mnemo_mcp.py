@@ -40,16 +40,19 @@ except Exception as e:  # pragma: no cover
     raise
 
 
-def _make_embedder():
-    """Optional OpenAI-compatible embedder (zero extra deps — urllib). Returns None if unconfigured."""
+def _make_embedders():
+    """Optional OpenAI-compatible embedder (zero extra deps — urllib). Returns (embed_doc, embed_query).
+    For nomic-embed-text (asymmetric, trained with task prefixes) it returns SEPARATE document/query
+    embedders that prefix `search_document: ` / `search_query: ` — measured on LoCoMo (n=1536) to lift
+    recall_any@1 from 0.19 to 0.29. For symmetric models it returns (embed, None). (None, None) if unconfigured."""
     url = os.environ.get("MNEMO_EMBED_URL", "").strip()
     if not url:
-        return None
+        return None, None, None
     model = os.environ.get("MNEMO_EMBED_MODEL", "text-embedding-3-small").strip()
     key = os.environ.get("MNEMO_EMBED_KEY", "").strip()
 
-    def embed(text: str):
-        body = json.dumps({"model": model, "input": text}).encode()
+    def _embed(text: str, prefix: str = ""):
+        body = json.dumps({"model": model, "input": prefix + text}).encode()
         headers = {"Content-Type": "application/json"}
         if key:
             headers["Authorization"] = f"Bearer {key}"
@@ -57,11 +60,15 @@ def _make_embedder():
         with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read())["data"][0]["embedding"]
 
-    return embed
+    # nomic-embed-text is asymmetric; task prefixes are REQUIRED for good retrieval. Opt out with MNEMO_NOMIC_PREFIX=0.
+    if "nomic" in model.lower() and os.environ.get("MNEMO_NOMIC_PREFIX", "1") != "0":
+        return (lambda t: _embed(t, "search_document: ")), (lambda t: _embed(t, "search_query: ")), f"{model}|nomic-sd-sq"
+    return _embed, None, model
 
 
 _PATH = os.environ.get("MNEMO_PATH", "mnemo_memory.json")
-_MEM = Mnemo(_PATH, embed=_make_embedder())
+_EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
+_MEM = Mnemo(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID)
 # ECHO GUARD is ON by default on the MCP surface (a fresh product surface, not bound by the library's
 # byte-identical-legacy default): a keyed fact that is corrected and then RE-STATED (a benign restatement
 # or an attacker re-injecting the old value) otherwise resurrects the stale value. Measured on RAMR
@@ -70,6 +77,38 @@ _MEM = Mnemo(_PATH, embed=_make_embedder())
 _MEM.echo_guard = os.environ.get("MNEMO_ECHO_GUARD", "1") != "0"
 
 mcp = FastMCP("mnemo")
+
+# ── recall payload economy (standard MCP/RAG context practice, applied to mnemo) ─────────────────────
+# A memory server that returns every internal field (links, provenance, ISO stamps) burns the agent's context
+# on data it never reads. Two deterministic, zero-LLM levers — both standard practice (progressive disclosure /
+# small-to-big retrieval), not novel:
+#   (1) recall() returns a COMPACT projection — the fields an agent reasons over, dropping internal bookkeeping.
+#       FULL TEXT IS KEPT BY DEFAULT. (mnemo already never emitted embedding vectors in recall output.)
+#   (2) a hard cap on k so a runaway call can't flood the window.
+# Snippet truncation is OPT-IN (snippet_chars>0), NOT default: truncating a recall hit can cut off a corrected/
+# current value that sits past the boundary, which would silently defeat mnemo's own supersession/echo-guard —
+# so the default never truncates; opt in only when you accept that tradeoff and will get(id) for full text.
+_MAX_K = int(os.environ.get("MNEMO_MAX_K", "50"))                 # hard ceiling on any recall k
+_SNIPPET = int(os.environ.get("MNEMO_SNIPPET_CHARS", "0"))       # opt-in truncation; 0 = keep full text (default)
+
+
+def _snip(text: str, n: int) -> tuple[str, bool]:
+    text = text or ""
+    if n and len(text) > n:
+        return text[:n].rstrip() + "…", True
+    return text, False
+
+
+def _compact(rec: dict, snippet_chars: int) -> dict:
+    """Small, model-facing projection of a recall hit: only the fields an agent reasons over. Drops internal
+    bookkeeping (links, source, iso, stale_derived, relevance/reliability breakdown) — fetch the full record with
+    get(id) if needed. Keeps FULL text unless snippet_chars>0 is opted in (then truncates + flags `truncated`)."""
+    snippet, truncated = _snip(rec.get("text", ""), snippet_chars)
+    out = {"id": rec.get("id"), "text": snippet, "score": round(float(rec.get("score", 0.0)), 4),
+           "value": rec.get("value"), "tags": rec.get("tags") or []}
+    if truncated:
+        out["truncated"] = True
+    return out
 
 
 @mcp.tool()
@@ -166,10 +205,70 @@ def resolve_reopened(id: str, decision: str, capability: str = "") -> dict:
 
 
 @mcp.tool()
-def recall(query: str, k: int = 6) -> list[dict]:
-    """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load
-    relevant prior knowledge before reasoning. Returns text, tags, value, and a relevance score."""
-    return _MEM.recall(query, k=k)
+def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0) -> list[dict]:
+    """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
+    knowledge before reasoning.
+
+    Compact by default: each hit is a small projection — {id, text, score, value, tags} — dropping internal
+    bookkeeping fields the model doesn't reason over, which keeps recall cheap to drop into a prompt. FULL TEXT IS
+    KEPT (no truncation by default). Pass `snippet_chars>0` to opt into snippet truncation (flags `truncated`; then
+    use get(id) for full text) — note that truncation can cut off a corrected value past the boundary, so it is
+    off by default. Set `full=True` to return complete records (all fields). `k` is hard-capped for safety.
+    (Standard progressive-disclosure / small-to-big retrieval practice, not a mnemo-specific technique.)"""
+    k = max(1, min(int(k), _MAX_K))
+    hits = _MEM.recall(query, k=k) or []
+    if full:
+        return hits
+    n = snippet_chars if snippet_chars > 0 else _SNIPPET
+    return [_compact(h, n) for h in hits]
+
+
+@mcp.tool()
+def get(id: str) -> dict:
+    """Fetch ONE memory's FULL record by id (complete untruncated text + all fields). The companion to recall's
+    progressive-disclosure default: recall returns compact snippets + ids cheaply; call get(id) only for the few
+    memories you actually need in full, instead of paying to dump every full record into context. Returns {} if
+    the id is unknown."""
+    rec = next((r for r in _MEM.items if r.get("id") == id), None)
+    return rec or {}
+
+
+@mcp.tool()
+def neighbors(id: str, k: int = 5) -> list[dict]:
+    """Expand context AROUND a memory: the k memories most related to the one with `id` (compact snippets), by
+    recalling on that memory's own text and excluding itself. Use it for on-demand local context after recall
+    surfaces a relevant hit — a bounded expansion, not a whole-store dump. Returns [] if the id is unknown."""
+    rec = next((r for r in _MEM.items if r.get("id") == id), None)
+    if not rec:
+        return []
+    k = max(1, min(int(k), _MAX_K))
+    hits = _MEM.recall(rec.get("text", ""), k=k + 1) or []
+    return [_compact(h, _SNIPPET) for h in hits if h.get("id") != id][:k]
+
+
+@mcp.tool()
+def token_report(query: str, k: int = 6) -> dict:
+    """DETERMINISTIC payload-size estimate (no LLM, ~chars/4) for the SAME top-k recall: how much smaller the
+    compact projection is than the full records for those same k hits. This is the honest, apples-to-apples
+    comparison — compact vs full for identical results — NOT a comparison against dumping the whole store (that
+    would be a strawman baseline that inflates with corpus size), and NOT a measured token/cost saving on any
+    workload. It is a rough payload-sizing aid (chars/4 is an English-prose heuristic; code/JSON/other scripts
+    differ). Note the real token cost of agent memory is usually the number of recall CALLS + writes, not the
+    per-hit payload; and if you opt into snippet truncation, follow-up get(id) calls can add tokens back."""
+    import json as _json
+    k = max(1, min(int(k), _MAX_K))
+    hits = _MEM.recall(query, k=k) or []
+    n = _SNIPPET
+    full_chars = sum(len(_json.dumps(h, default=str)) for h in hits)
+    compact_chars = sum(len(_json.dumps(_compact(h, n), default=str)) for h in hits)
+    est = lambda c: max(1, round(c / 4))
+    full_tok, compact_tok = est(full_chars), est(compact_chars)
+    return {"k": len(hits),
+            "full_records_tokens_est": full_tok, "compact_records_tokens_est": compact_tok,
+            "compact_fraction": round(compact_tok / full_tok, 2) if full_tok else None,
+            "baseline": "compact vs FULL records for the SAME k hits (not vs the whole store)",
+            "note": "chars/4 payload-size estimate, not a measured token saving; per-hit payload is usually not "
+                    "the dominant memory token cost (recall-call count + writes are)."}
 
 
 @mcp.tool()

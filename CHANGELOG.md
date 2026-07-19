@@ -3,6 +3,42 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.15.0
+
+**Asymmetric query embedder (`embed_query`) — a recall correctness fix for nomic-embed-text.** nomic-embed-text is
+trained to prefix stored text with `search_document: ` and queries with `search_query: ` (Nomic's model card;
+asymmetric prefixing is standard retrieval practice, cf. E5's `passage:`/`query:`). mnemo was omitting the prefixes,
+which is simply using the model wrong. `Mnemo(embed=…, embed_query=…)` now lets the recall QUERY be embedded
+differently from stored TEXT (defaults to `embed`, so existing setups are byte-identical); the MCP server
+auto-applies the nomic prefixes when `MNEMO_EMBED_MODEL` contains `nomic` (opt out with `MNEMO_NOMIC_PREFIX=0`).
+Impact, measured against our OWN prior (unprefixed) behavior on one LoCoMo config (`agora`'s `locomo_prefix_scale.py`,
+deterministic, all 10 conversations, n=1536): **recall_any@1 0.193 → 0.294, @25 0.754 → 0.807**. Scope, stated
+plainly: this is a self-comparison bug-fix on a single dataset/embedder; `recall_any` (≥1 gold turn retrieved) is a
+retrieval upper bound, not end-to-end QA, and multi-hop full-recall barely moves. We make no cross-system claim here.
+
+**Migration guard (persisted vectors).** Because a query and its stored vectors must live in the SAME embedding
+space, changing the embed recipe (e.g. turning prefixes on) would silently mis-rank an existing `persist_vectors=True`
+store. `Mnemo(embed_id=…)` fingerprints the recipe into a `<path>.embedid` sidecar; on open with a different
+`embed_id`, the persisted vectors are re-embedded once with the current embedder so the space realigns (RAM-only
+default stores are unaffected). Probes: `probes/embed_query_asymmetric_probe.py`, `probes/embed_recipe_migration_guard_probe.py`. Suite 148/148.
+
+## 1.14.0
+
+**Compact MCP recall + progressive disclosure (standard context-economy practice, applied to mnemo).** A memory
+server that returns every internal field burns the agent's context on data it never reads. Over MCP, `recall` now
+returns a **compact projection** — `{id, text, score, value, tags}` — dropping internal bookkeeping (links,
+provenance, ISO stamps, relevance/reliability breakdown); `k` is hard-capped (`MNEMO_MAX_K`, default 50). **Full
+text is kept by default** — snippet truncation is **opt-in** (`snippet_chars>0`), deliberately NOT the default,
+because truncating a hit could cut off a corrected value that sits past the boundary and silently defeat mnemo's
+own supersession/echo-guard. Two companion tools do progressive disclosure: `get(id)` returns one full record,
+`neighbors(id, k)` a bounded local expansion (excludes self). `token_report(query, k)` is a **deterministic,
+no-LLM** payload-size estimate (~chars/4) comparing the compact projection to the FULL records for the **same k
+hits** — the honest apples-to-apples baseline, explicitly **not** a whole-store comparison and **not** a measured
+token/cost saving. None of these are novel (progressive disclosure / small-to-big retrieval are standard MCP/RAG
+practice); mnemo already never emitted embedding vectors in recall. Core library and on-disk format unchanged;
+`recall(full=True)` returns complete records. Receipt: `probes/mnemo_mcp_token_pack_probe.py` (7/7), suite 148/148.
+Eighteen MCP tools total.
+
 ## 1.13.0
 
 **Auditor-grade erasure certificate — independently verifiable, no trust in the operator.** `m.erasure_certificate(request_id=...)`

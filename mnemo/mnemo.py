@@ -42,6 +42,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import sys
 import math
 import os
 import re
@@ -408,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.13.0"
+__version__ = "1.15.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -452,9 +453,13 @@ class Mnemo:
                  revert_pubkey: str | None = None, max_text: int | None = None,
                  tenant: str | None = None, pii_detect: bool = False,
                  encrypt_key: bytes | None = None, encrypt_passphrase: str | None = None,
-                 support_authorities: list | None = None, persist_vectors: bool = False):
+                 support_authorities: list | None = None, persist_vectors: bool = False,
+                 embed_query=None, embed_id: str | None = None):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
-        recall; if omitted, recall uses lexical token overlap (zero dependencies).
+        recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
+        SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
+        embedder like nomic-embed-text, which is trained to prefix stored text with 'search_document: ' and
+        queries with 'search_query: '; measured on LoCoMo (n=1536) to lift recall_any@1 from 0.19 to 0.29.
 
         receipts/receipt_key (OPT-IN, default OFF -> identical legacy behavior): when enabled, every
         remember() appends a tamper-evident, hash-chained WRITE RECEIPT committing to the memory's
@@ -466,6 +471,8 @@ class Mnemo:
         so a third party can verify it with the public key only. (Standalone version: agora-agent-receipts.)"""
         self.path = Path(path) if path else None
         self.embed = embed
+        self.embed_query = embed_query        # asymmetric query embedder (e.g. nomic search_query:); None -> use self.embed
+        self.embed_id = embed_id              # opaque fingerprint of the embed recipe (model+prefix); guards persisted vecs
         # OPT-IN vector persistence (default False -> legacy: vecs are a RAM-only cache, STRIPPED on save
         # to keep the file small and dodge the frozen-world GIL stall on big stores). Set True for a SMALL
         # store (e.g. the Claude Code coding memory, a few hundred items) whose process is short-lived and
@@ -757,6 +764,31 @@ class Mnemo:
                     self.items = json.loads(raw.decode("utf-8"))     # legacy plaintext JSON
                 except Exception:
                     self.items = []
+        # EMBED-RECIPE GUARD (persist_vectors only): persisted vectors are only comparable to a query embedded the
+        # SAME way. If the store was written with a different embed recipe than the one now in use — most importantly
+        # an ASYMMETRIC upgrade (e.g. adding nomic's search_document:/search_query: prefixes) — a query in the new
+        # space would silently mis-match the old stored vectors and DEGRADE recall. When embed_id changes, we drop
+        # the stale vectors and re-embed with the current document embedder (once, on load) so the spaces realign.
+        # RAM-only stores (persist_vectors=False) strip vectors on save, so they never hit this. Sidecar: <path>.embedid.
+        self._embedid_path = (self.path.parent / (self.path.name + ".embedid")) if self.path else None
+        if self._persist_vectors and self._embedid_path is not None:
+            _prev = None
+            if self._embedid_path.exists():
+                try:
+                    _prev = self._embedid_path.read_text(encoding="utf-8").strip()
+                except Exception:
+                    _prev = None
+            _cur = self.embed_id or ""
+            if _prev is not None and _prev != _cur and self.embed is not None and any(r.get("vec") for r in self.items):
+                sys.stderr.write(f"[mnemo] embed recipe changed ({_prev!r} -> {_cur!r}); re-embedding "
+                                 f"{sum(1 for r in self.items if r.get('vec'))} persisted vectors to realign the space\n")
+                for r in self.items:
+                    if r.get("text") is not None:
+                        try:
+                            r["vec"] = list(self.embed(r["text"]))
+                        except Exception:
+                            r["vec"] = None
+                self._mat = None                                    # invalidate the cached matrix (realigned vecs persist on next save)
         # OPT-IN write receipts (default OFF -> zero behavior change; no sidecar created)
         self.receipts_enabled = bool(receipts or receipt_key)
         self._receipt_sk = receipt_key
@@ -2603,13 +2635,17 @@ class Mnemo:
         return {"superseded_total": sum(counts.values()), "by_policy": counts}
 
     # ── retrieval (value-ranked) ──────────────────────────────────────────────
-    def _qvec(self, query: str):
+    def _qvec(self, query: str, embedder=None):
         """Embed a query ONCE per scan, or None (no embedder / failure). Callers pass the result
-        into _similarity so a recall over N memories costs 1 embedding, not N."""
-        if not self.embed:
+        into _similarity so a recall over N memories costs 1 embedding, not N. `embedder` overrides
+        the default `self.embed` — recall() passes `self.embed_query` so an asymmetric embedder (e.g.
+        nomic-embed-text, which wants `search_query:` for queries vs `search_document:` for stored text)
+        embeds the query correctly; internal callers embedding STORED text keep the document embedder."""
+        emb = embedder or self.embed
+        if not emb:
             return None
         try:
-            return self.embed(query)
+            return emb(query)
         except Exception:
             return None
 
@@ -2878,7 +2914,7 @@ class Mnemo:
             sel = mode
         else:                                                 # 'auto': fuse once the store is worth it
             sel = "hybrid" if len(pool) >= self.semantic_threshold else "lexical"
-        qvec = self._qvec(query) if sel in ("semantic", "hybrid") else None
+        qvec = self._qvec(query, self.embed_query) if sel in ("semantic", "hybrid") else None
         if qvec is None and sel != "lexical":
             sel = "lexical"                                   # embedder absent or failed -> graceful fallback
         self._last_mode = sel
@@ -4443,6 +4479,13 @@ class Mnemo:
             else:
                 tmp.write_text(data, encoding="utf-8")
             os.replace(tmp, self.path)
+            # record the embed recipe the persisted vectors were made with (only when vectors are actually
+            # persisted) so a later open with a different recipe re-embeds instead of silently mismatching.
+            if self._persist_vectors and getattr(self, "_embedid_path", None) is not None:
+                try:
+                    self._embedid_path.write_text(self.embed_id or "", encoding="utf-8")
+                except Exception:
+                    pass
             self._last_save = now
             self._dirty = False
         except Exception:

@@ -128,7 +128,8 @@ claude mcp add mnemo -e MNEMO_PATH=~/.mnemo_memory.json -- uvx --from "agora-mne
 
 Your agent now has `remember` / `recall` / `history` — and corrections that stick: when a fact is superseded,
 recall serves the current value, a restated stale value can't resurrect it (`echo_guard`), and `revert` /
-`route` undo a correction on an unmarked "go back". Fifteen tools total; [details below](#use-it-as-an-mcp-server-any-claude--cursor--agent-client).
+`route` undo a correction on an unmarked "go back". `recall` returns compact records by default (drops internal
+fields; `get(id)` / `neighbors(id)` for detail on demand). Eighteen tools total; [details below](#use-it-as-an-mcp-server-any-claude--cursor--agent-client).
 
 **Jump to:** [Correction (measured)](#correction-is-a-first-class-operation-measured-across-systems) ·
 [Governance & erasure](#governance-erasure--audit) · [Org-wide erasure receipt](#org-wide-erasure-receipt-prove-deletion-across-your-whole-stack-not-one-library) · [Install](#install) ·
@@ -1227,7 +1228,25 @@ Or, after `pip install "agora-mnemo[mcp]"`, with the console script directly:
 For **semantic** recall, point it at any OpenAI-compatible embeddings endpoint via
 `MNEMO_EMBED_URL` / `MNEMO_EMBED_MODEL` / `MNEMO_EMBED_KEY`; with none set it uses the lexical
 fallback. The agent then calls `recall(query)` before reasoning and `remember(fact)` as it learns —
-its memory is value-ranked and append-only, not a recency buffer.
+its memory is value-ranked and append-only, not a recency buffer. If `MNEMO_EMBED_MODEL` contains
+`nomic` (nomic-embed-text is asymmetric — see its model card; like E5's `passage:`/`query:`), mnemo auto-applies its
+required task prefixes — `search_document: ` for stored text, `search_query: ` for the query (opt out with
+`MNEMO_NOMIC_PREFIX=0`). Omitting them was simply using the model wrong; adding them lifts our own recall_any@1 on
+one LoCoMo config from 0.19 to 0.29 (n=1536, deterministic retrieval-recall — an upper bound, not end-to-end QA; a
+self-comparison, not a cross-system claim). In the library, pass a separate `Mnemo(embed=…, embed_query=…)` for any
+asymmetric embedder. If you use `persist_vectors=True`, also pass `Mnemo(embed_id="…")` (a recipe fingerprint): when
+it changes, mnemo re-embeds the persisted vectors once so a new-space query can't silently mis-match old vectors.
+
+**Compact recall + progressive disclosure (1.14.0).** Over MCP, `recall` returns a compact projection — `{id,
+text, score, value, tags}` — dropping internal bookkeeping fields the model doesn't reason over, and `k` is
+hard-capped (`MNEMO_MAX_K`, default 50), so a recall drops cheaply into the prompt. **Full text is kept by
+default**; snippet truncation is **opt-in** (`snippet_chars>0`) — off by default on purpose, since truncating a
+hit could cut off a corrected value past the boundary and defeat the echo-guard. Pull detail on demand: `get(id)`
+returns one full record, `neighbors(id, k)` a bounded local expansion (excludes self). `recall(full=True)` returns
+complete records. `token_report(query, k)` is a **deterministic, no-LLM** (~chars/4) payload-size estimate
+comparing the compact projection to the full records for the **same k hits** — an apples-to-apples sizing aid, not
+a whole-store comparison and not a measured token saving. None of this is novel — it's standard MCP/RAG
+context-economy practice (progressive disclosure / small-to-big retrieval); mnemo never emitted embedding vectors.
 
 ## The four operations
 
