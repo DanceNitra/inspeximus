@@ -114,7 +114,8 @@ def _compact(rec: dict, snippet_chars: int) -> dict:
 @mcp.tool()
 def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
              mtype: str | None = None, key: str | None = None,
-             object: str | None = None, reaffirm: bool = False) -> dict:
+             object: str | None = None, reaffirm: bool = False,
+             user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> dict:
     """Store a memory (append-only; raw text is never edited afterward). `tags` group memories into
     cohorts; `value` (>=1) is its importance — higher-value memories outrank merely-similar ones at
     recall, and recall itself nudges value up. `mtype` ∈ {episodic, semantic, procedural} sets the
@@ -131,7 +132,8 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
     to intentionally revert to a previously-retired value (an explicit change-of-mind, not an echo).
     Returns the new id."""
     mid = _MEM.remember(text, tags=tags or [], value=value, mtype=mtype, key=key,
-                        object=object, reaffirm=reaffirm)
+                        object=object, reaffirm=reaffirm,
+                        user_id=user_id, agent_id=agent_id, session_id=session_id)
     rec = next((r for r in _MEM.items if r["id"] == mid), {})
     return {"id": mid, "stored": text[:120], "tags": tags or [], "value": value,
             "mtype": rec.get("mtype")}
@@ -223,7 +225,8 @@ def resolve_reopened(id: str, decision: str, capability: str = "") -> dict:
 
 @mcp.tool()
 def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
-           mmr: float | None = None, trusted_only: bool = False) -> list[dict]:
+           mmr: float | None = None, trusted_only: bool = False,
+           user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> list[dict]:
     """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
     knowledge before reasoning.
 
@@ -239,7 +242,8 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     against injected/poisoned memories from untrusted writers.
     (Standard progressive-disclosure / small-to-big retrieval practice, not a mnemo-specific technique.)"""
     k = max(1, min(int(k), _MAX_K))
-    hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only) or []
+    hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
+                       user_id=user_id, agent_id=agent_id, session_id=session_id) or []
     if full:
         return hits
     n = snippet_chars if snippet_chars > 0 else _SNIPPET

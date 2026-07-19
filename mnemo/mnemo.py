@@ -826,7 +826,8 @@ class Mnemo:
                  source: dict | None = None, key: str | None = None,
                  derived_from: list | None = None, attestation=None, derived: bool = False,
                  object: str | None = None, reaffirm: bool = False, capability: str | None = None,
-                 pii=None, identity_confidence: float | None = None) -> str:
+                 pii=None, identity_confidence: float | None = None,
+                 user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> str:
         """Append-only raw capture. Stamped with an absolute UTC time; never edited afterward.
         mtype in {episodic, semantic, procedural} sets the decay prior (episodic fades fast,
         semantic slow, procedural barely); inferred from the text if not given. Pass it explicitly
@@ -881,6 +882,16 @@ class Mnemo:
                "status": "active", "links": [], "meta": dict(meta or {})}
         if _trunc_from is not None:
             rec["meta"]["truncated_from"] = _trunc_from
+        # MEMORY HIERARCHY (user > agent > session): stamp the scope this memory belongs to. A memory with only
+        # uid set is user-level (shared across that user's agents/sessions); adding aid/sid narrows it. recall()
+        # then filters by hierarchical VISIBILITY (a session query sees session + agent + user memories, but a
+        # user-level query does NOT pull session-specifics). Only set fields are stamped -> unset = wildcard.
+        if user_id is not None:
+            rec["meta"]["uid"] = str(user_id)
+        if agent_id is not None:
+            rec["meta"]["aid"] = str(agent_id)
+        if session_id is not None:
+            rec["meta"]["sid"] = str(session_id)
         # TENANT STAMP: bind this write to the store's tenant so recall/supersession/erasure can isolate it.
         # Unbound stores (tenant=None) leave no tag -> byte-identical legacy.
         if self.tenant is not None:
@@ -2847,7 +2858,8 @@ class Mnemo:
                tie_recent: float | None = None,
                with_status: bool = False, with_warrant: bool = False,
                redact_pii: bool = False, rerank=None, rerank_pool: int | None = None,
-               reinforce: bool = True, trusted_only: bool = False, mmr: float | None = None) -> list[dict]:
+               reinforce: bool = True, trusted_only: bool = False, mmr: float | None = None,
+               user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> list[dict]:
         """Top-k memories by RELEVANCE × VALUE — high-value memories outrank merely-similar ones.
         Memories the dream pass flagged as hubs (universal matchers) are skipped unless include_hubs.
 
@@ -3006,6 +3018,25 @@ class Mnemo:
         # one scope's memories into another's recall. scope=None (default) sees everything (legacy behavior).
         if scope is not None:
             pool = [r for r in pool if (r.get("meta") or {}).get("scope") == scope]
+        # MEMORY HIERARCHY visibility (user > agent > session): when the query names any of user/agent/session,
+        # a memory is visible iff, for each NAMED level, the memory is EITHER unscoped at that level (wildcard)
+        # OR equal to the query's value; an UNNAMED query level is unconstrained. So (a) a session query sees that
+        # session's memories PLUS the user's/agent's shared (unscoped-session) memories, but NOT a peer session's;
+        # (b) users are isolated from each other and peer sessions from each other; (c) a broad user-only query
+        # sees all that user's own memories (incl. their sessions' — same user, not a leak). All None = legacy.
+        if user_id is not None or agent_id is not None or session_id is not None:
+            _want = {"uid": user_id, "aid": agent_id, "sid": session_id}
+
+            def _visible(r):
+                m = r.get("meta") or {}
+                for lvl, qv in _want.items():
+                    if qv is None:
+                        continue
+                    mv = m.get(lvl)
+                    if mv is not None and str(mv) != str(qv):
+                        return False
+                return True
+            pool = [r for r in pool if _visible(r)]
         # Metadata pre-filter (the 'filter before you rank' lever): keep only records matching ALL `where`
         # conditions, matched against top-level fields then meta. Deterministic, no embedder, O(pool).
         if where:

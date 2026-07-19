@@ -3,6 +3,15 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## Unreleased
+
+**Memory hierarchy — `user_id` / `agent_id` / `session_id` scoping (mem0/Letta-style).** `remember(...)` stamps a
+memory's scope; `recall(...)` filters by hierarchical visibility: a session query sees that session's memories PLUS
+the user/agent-level shared ones, but never a peer session's; users are isolated from each other; a user-only query
+sees all that user's own memories; unscoped = global. Deterministic, in-core (on top of the existing hard `tenant`
+isolation + soft `scope`); exposed on the MCP `remember`/`recall` tools too. Probe `memory_hierarchy_probe.py`
+(4 checks incl. peer-session + cross-user isolation).
+
 ## 1.16.0
 
 **LangGraph checkpointer (`MnemoSaver`).** The thread-state half of LangGraph memory (MnemoStore was the long-term
