@@ -4851,6 +4851,34 @@ def make_llm_extractor(call_fn, prompt_prefix=None):
     return _ex
 
 
+def default_distiller(url=None, model=None, key=None, timeout=60):
+    """Batteries-included distiller for distill_and_remember(): a zero-dependency urllib chat caller against any
+    OpenAI-compatible /chat/completions endpoint (args or env MNEMO_LLM_URL / MNEMO_LLM_MODEL / MNEMO_LLM_KEY —
+    e.g. local Ollama at http://localhost:11434/v1/chat/completions). Returns a `distiller(prompt, text) -> str`
+    you pass straight to distill_and_remember, so capture works out of the box instead of forcing every caller to
+    wire an LLM. OPT-IN: this is the only place an LLM touches capture; the core store/recall/revert stay zero-LLM.
+    Raises if no URL is configured (so you know to inject your own)."""
+    import urllib.request
+    url = (url or os.environ.get("MNEMO_LLM_URL", "")).strip()
+    if not url:
+        raise RuntimeError("default_distiller needs MNEMO_LLM_URL (an OpenAI-compatible /chat/completions endpoint) "
+                           "or explicit url= ; the core stays zero-LLM, so a distiller is opt-in.")
+    model = (model or os.environ.get("MNEMO_LLM_MODEL", "gpt-4o-mini")).strip()
+    key = (key or os.environ.get("MNEMO_LLM_KEY", "")).strip()
+
+    def distiller(prompt, text):
+        body = json.dumps({"model": model, "temperature": 0, "messages": [
+            {"role": "system", "content": prompt}, {"role": "user", "content": text or ""}]}).encode()
+        headers = {"Content-Type": "application/json"}
+        if key:
+            headers["Authorization"] = f"Bearer {key}"
+        req = urllib.request.Request(url, data=body, headers=headers)
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read())["choices"][0]["message"]["content"]
+
+    return distiller
+
+
 if __name__ == "__main__":
     m = Mnemo()                                  # no path, no embedder — pure in-memory + lexical
     m.remember("SGD converges slowly due to gradient variance.", tags=["optimization"], value=3)

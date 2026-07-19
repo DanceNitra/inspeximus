@@ -84,6 +84,27 @@ def main(argv=None):
 
     sub.add_parser("stats", help="store summary")
 
+    br = sub.add_parser("browse", help="render a self-contained offline HTML memory browser")
+    br.add_argument("--out", default="mnemo_browser.html", help="output HTML file")
+    br.add_argument("--open", action="store_true", help="open it in the default browser after writing")
+
+    dc = sub.add_parser("decision", help="store a DECISION (what you chose + why), topic-keyed + supersedable")
+    dc.add_argument("decision")
+    dc.add_argument("--because", help="rationale")
+    dc.add_argument("--topic", help="topic slug -> a new decision on it supersedes the old")
+
+    sub.add_parser("contradictions", help="list mutually-incompatible memories (flagged, not auto-resolved)")
+    sub.add_parser("governance", help="governance/erasure/tamper-evidence snapshot")
+
+    co = sub.add_parser("consolidate", help="run the dedup/consolidation pass (optionally prune to --keep)")
+    co.add_argument("--keep", type=int, default=None)
+
+    wy = sub.add_parser("why", help="explain why memories were recalled for a query (per-channel breakdown)")
+    wy.add_argument("query")
+
+    di = sub.add_parser("distill", help="LLM-distill a transcript into memories (needs MNEMO_LLM_URL)")
+    di.add_argument("--file", help="read text from a file (else stdin)")
+
     a = ap.parse_args(argv)
     m = _store(a.path)
 
@@ -143,6 +164,55 @@ def main(argv=None):
               "superseded": superseded, "keyed": keyed}
         _out(st, a.json) or print(
             f"{st['path']}: {st['total']} total ({active} active, {superseded} superseded, {keyed} keyed)")
+
+    elif a.cmd == "browse":
+        from mnemo.browser import write_html
+        path = write_html(m, a.out)
+        if a.open:
+            import webbrowser
+            webbrowser.open("file://" + os.path.abspath(path))
+        _out({"written": path}, a.json) or print(f"wrote memory browser -> {path}" + ("  (opened)" if a.open else ""))
+
+    elif a.cmd == "decision":
+        mid = m.remember_decision(a.decision, because=a.because, topic=a.topic)
+        m._save(force=True)
+        _out({"id": mid, "topic": a.topic}, a.json) or print(f"decision stored {mid}" + (f" [topic={a.topic}]" if a.topic else ""))
+
+    elif a.cmd == "contradictions":
+        pairs = m.contradictions()
+        if a.json:
+            _out(pairs, True)
+        elif not pairs:
+            print("(no contradictions)")
+        else:
+            for p in pairs:
+                print(f"- {p.get('a_text','')}  <>  {p.get('b_text','')}")
+
+    elif a.cmd == "governance":
+        _out(m.governance_report(), a.json) or print(json.dumps(m.governance_report(), indent=2, default=str))
+
+    elif a.cmd == "consolidate":
+        res = m.consolidate(keep=a.keep)
+        m._save(force=True)
+        _out(res, a.json) or print(f"consolidated: {res}")
+
+    elif a.cmd == "why":
+        exp = m.why_recalled(a.query)
+        _out(exp, a.json) or print(json.dumps(exp, indent=2, default=str))
+
+    elif a.cmd == "distill":
+        from mnemo import default_distiller
+        text = open(a.file, encoding="utf-8").read() if a.file else sys.stdin.read()
+        try:
+            distiller = default_distiller()
+        except RuntimeError as e:
+            print(f"distill: {e}", file=sys.stderr)
+            return 2
+        res = m.distill_and_remember(text, distiller)
+        m._save(force=True)
+        _out(res, a.json) or print(f"distilled: {res.get('captured',0)} kept "
+                                   f"({res.get('decisions',0)} decisions, {res.get('facts',0)} facts, "
+                                   f"{res.get('dropped',0)} dropped)")
     return 0
 
 

@@ -5,6 +5,23 @@ All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Chan
 
 ## Unreleased (built, not yet published)
 
+**Offline memory browser (`mnemo.browser` + `mnemo browse`).** Renders the store to a SINGLE self-contained HTML
+file (all data inlined, vanilla JS, inline CSS — no server, no build, works offline) with client-side search +
+filters and a summary header (counts, cohorts, contradictions); shows active vs superseded so you can SEE
+corrections. Read-only by design. The console every competitor ships and mnemo lacked.
+
+**Rich MCP server — resources + prompts + governance/integrity tools.** The MCP server was tools-only (19/60
+methods). Now exposes the 3 MCP primitives: +8 governance/integrity tools (forget_subject, governance_report,
+verify_writes, pii_report, forget_pii, influence_gate_report, why_recalled, supersession_report), 3 resources
+(`mnemo://digest`, `://contradictions`, `://governance`) + a `mnemo://memory/{id}` template, and 3 prompts
+(recall_before_answer, consolidate_session, review_contradictions); `recall` now takes `mmr` + `trusted_only`.
+27 tools total.
+
+**Fatter CLI (6 → 13 commands)** + **`default_distiller`.** New: `browse`, `decision`, `contradictions`,
+`governance`, `consolidate`, `why`, `distill`. `mnemo.default_distiller()` is a zero-dep urllib chat caller (any
+OpenAI-compatible endpoint via `MNEMO_LLM_URL`) so `distill_and_remember` works out of the box — opt-in (the core
+stays zero-LLM), raises a clear error if no endpoint is set.
+
 **`recall(mmr=λ)` — result-level diversity / dedup.** A top-k that isn't dominated by near-identical memories, via
 greedy Maximal Marginal Relevance (Carbonell & Goldstein 1998 — a standard IR technique, not novel here). The value
 is that it is **in-core, zero-LLM, and works with OR without an embedder** (diversity by record vectors, falling back
