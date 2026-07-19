@@ -226,7 +226,8 @@ def resolve_reopened(id: str, decision: str, capability: str = "") -> dict:
 @mcp.tool()
 def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
            mmr: float | None = None, trusted_only: bool = False,
-           user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> list[dict]:
+           user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
+           rerank_by: str | None = None) -> list[dict]:
     """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
     knowledge before reasoning.
 
@@ -243,7 +244,7 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     (Standard progressive-disclosure / small-to-big retrieval practice, not a mnemo-specific technique.)"""
     k = max(1, min(int(k), _MAX_K))
     hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
-                       user_id=user_id, agent_id=agent_id, session_id=session_id) or []
+                       user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by) or []
     if full:
         return hits
     n = snippet_chars if snippet_chars > 0 else _SNIPPET

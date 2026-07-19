@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.16.0"
+__version__ = "1.17.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2884,7 +2884,8 @@ class Mnemo:
                with_status: bool = False, with_warrant: bool = False,
                redact_pii: bool = False, rerank=None, rerank_pool: int | None = None,
                reinforce: bool = True, trusted_only: bool = False, mmr: float | None = None,
-               user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> list[dict]:
+               user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
+               rerank_by: str | None = None) -> list[dict]:
         """Top-k memories by RELEVANCE × VALUE — high-value memories outrank merely-similar ones.
         Memories the dream pass flagged as hubs (universal matchers) are skipped unless include_hubs.
 
@@ -3261,6 +3262,27 @@ class Mnemo:
                 chosen.append(best_i)
                 remaining.remove(best_i)
             scored = [pool[i] for i in chosen] + tail
+        # OPT-IN NAMED RERANKER MENU (rerank_by): a discoverable set of deterministic, zero-LLM reorderings of the
+        # top relevant pool — the "named reranker" depth a serious retrieval layer exposes (cf. Zep's menu), no LLM.
+        # Complements the `mmr=` diversity knob and the `rerank=` cross-encoder hook:
+        #   'recency'     — newest (event-time valid_from, else ts) first among the relevant pool
+        #   'value'       — highest accrued importance first
+        #   'reliability' — best track record first (Beta good/bad posterior: was-it-right, not just similar)
+        #   'relevance'   — pure relevance order (explicit no-op passthrough)
+        # Reorders only the top pool (rerank_pool, default max(4k,50)); relevance filtering already applied.
+        if rerank_by:
+            _mp = int(rerank_pool) if rerank_pool else max(4 * k, 50)
+            pool, tail = scored[:_mp], scored[_mp:]
+            rb = rerank_by.lower()
+            if rb == "recency":
+                pool.sort(key=lambda t: -(t[2].get("valid_from") or t[2].get("ts") or 0))
+            elif rb == "value":
+                pool.sort(key=lambda t: -float(t[2].get("value") or 0))
+            elif rb == "reliability":
+                pool.sort(key=lambda t: -self._reliability(t[2]))
+            elif rb == "relevance":
+                pass                                          # explicit no-op: keep pure relevance order
+            scored = pool + tail
         out = []
         _top_sim = scored[0][1] if scored else 1.0   # normalize reinforcement by this query's best match
         for score, sim, r in scored[:k]:

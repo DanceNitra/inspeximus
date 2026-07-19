@@ -3,7 +3,13 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased
+## 1.17.0
+
+**Named reranker menu (`recall(rerank_by=...)`).** A discoverable set of deterministic, zero-LLM reorderings of the
+top relevant pool — `recency` (newest by event-time first), `value` (highest accrued importance), `reliability`
+(best Beta good/bad track record — was-it-right, not just similar), `relevance` (explicit no-op). Complements the
+`mmr=` diversity knob and the `rerank=` cross-encoder hook; exposed on the MCP recall tool. Probe
+`rerank_menu_probe.py` (3 strategies engineered to pick 3 different top-1s, proving the menu discriminates).
 
 **One-call `route()` now emits mem0-parity ADD / UPDATE / DELETE / NOOP.** The single-call write router decides the
 ledger op deterministically (zero-LLM): a new keyed fact -> ADD, a new value for a key -> UPDATE (keyed
