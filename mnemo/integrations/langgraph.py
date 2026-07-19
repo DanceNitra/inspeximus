@@ -27,9 +27,14 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
+import base64
 from langgraph.store.base import (
     BaseStore, Item, SearchItem, GetOp, PutOp, SearchOp, ListNamespacesOp,
 )
+from langgraph.checkpoint.base import BaseCheckpointSaver, CheckpointTuple
+
+_b = lambda x: base64.b64encode(x).decode()      # bytes -> ascii for JSON meta
+_ub = lambda s: base64.b64decode(s.encode())     # back to bytes
 
 
 def _dt(ts: float) -> datetime:
@@ -121,3 +126,131 @@ class MnemoStore(BaseStore):
         rows = [r for r in self.store.items if (r.get("meta") or {}).get("mkey") == mk]
         rows.sort(key=lambda r: r.get("valid_from", r.get("ts", 0)))
         return [(r.get("meta") or {}).get("value") for r in rows]
+
+
+class MnemoSaver(BaseCheckpointSaver):
+    """LangGraph `BaseCheckpointSaver` backed by mnemo — the THREAD-STATE half of LangGraph memory (MnemoStore is
+    the long-term half). Persists checkpoints + pending writes so a graph can resume, with the SAME contract as
+    SqliteSaver/PostgresSaver, but in a single zero-dependency mnemo JSON file (no DB, no server). Checkpoints and
+    writes are stored as mnemo records (payloads serialized via LangGraph's own serde, base64 in meta), tagged
+    `_langgraph` so they never pollute normal recall.
+
+        from mnemo.integrations.langgraph import MnemoSaver
+        graph = builder.compile(checkpointer=MnemoSaver(path="threads.json"))
+
+    Async methods delegate to the sync ones (a local file store has no real I/O concurrency to exploit); fine for
+    single-process agents. Importing this module imports LangGraph — opt-in; `import mnemo` never pulls it in."""
+
+    def __init__(self, path: str | None = None, store: Any = None, serde: Any = None):
+        super().__init__(serde=serde)
+        if store is None:
+            from mnemo import Mnemo
+            store = Mnemo(path=path)
+        self.store = store
+
+    @staticmethod
+    def _cfg(config):
+        c = (config or {}).get("configurable", {}) or {}
+        return c.get("thread_id", ""), c.get("checkpoint_ns", ""), c.get("checkpoint_id")
+
+    def _ckpts(self, thread=None, ns=None):
+        rows = [r for r in self.store.items if (r.get("meta") or {}).get("kind") == "lg_checkpoint"]
+        if thread is not None:
+            rows = [r for r in rows if r["meta"]["thread"] == thread and r["meta"]["ns"] == (ns or "")]
+        rows.sort(key=lambda r: r.get("ts", 0))
+        return rows
+
+    def _tuple(self, rec) -> CheckpointTuple:
+        m = rec["meta"]
+        checkpoint = self.serde.loads_typed((m["ctype"], _ub(m["cblob"])))
+        metadata = self.serde.loads_typed((m["mtype"], _ub(m["mblob"])))
+        cid, thread, ns = m["cid"], m["thread"], m["ns"]
+        writes = []
+        for w in self.store.items:
+            wm = w.get("meta") or {}
+            if (wm.get("kind") == "lg_write" and wm.get("thread") == thread
+                    and wm.get("ns") == ns and wm.get("cid") == cid):
+                writes.append((wm["task_id"], wm["channel"], self.serde.loads_typed((wm["wtype"], _ub(wm["wblob"])))))
+        cur = {"configurable": {"thread_id": thread, "checkpoint_ns": ns, "checkpoint_id": cid}}
+        parent = m.get("parent")
+        parent_cfg = ({"configurable": {"thread_id": thread, "checkpoint_ns": ns, "checkpoint_id": parent}}
+                      if parent else None)
+        return CheckpointTuple(cur, checkpoint, metadata, parent_cfg, writes or None)
+
+    def put(self, config, checkpoint, metadata, new_versions):
+        thread, ns, _ = self._cfg(config)
+        cid = checkpoint["id"]
+        parent = (config or {}).get("configurable", {}).get("checkpoint_id")
+        ctype, cblob = self.serde.dumps_typed(checkpoint)
+        mtype, mblob = self.serde.dumps_typed(dict(metadata))
+        self.store.remember(
+            f"lg checkpoint {thread}/{ns}/{cid}", key=f"lgckpt::{thread}::{ns}::{cid}", tags=["_langgraph"],
+            meta={"kind": "lg_checkpoint", "thread": thread, "ns": ns, "cid": cid, "parent": parent,
+                  "ctype": ctype, "cblob": _b(cblob), "mtype": mtype, "mblob": _b(mblob)})
+        self.store._save()
+        return {"configurable": {"thread_id": thread, "checkpoint_ns": ns, "checkpoint_id": cid}}
+
+    def put_writes(self, config, writes, task_id, task_path=""):
+        thread, ns, cid = self._cfg(config)
+        for idx, (channel, value) in enumerate(writes):
+            wtype, wblob = self.serde.dumps_typed(value)
+            self.store.remember(
+                f"lg write {thread}/{ns}/{cid}/{task_id}/{idx}",
+                key=f"lgwrite::{thread}::{ns}::{cid}::{task_id}::{idx}", tags=["_langgraph"],
+                meta={"kind": "lg_write", "thread": thread, "ns": ns, "cid": cid, "task_id": task_id,
+                      "task_path": task_path, "idx": idx, "channel": channel, "wtype": wtype, "wblob": _b(wblob)})
+        self.store._save()
+
+    def get_tuple(self, config):
+        thread, ns, cid = self._cfg(config)
+        rows = self._ckpts(thread, ns)
+        if not rows:
+            return None
+        rec = next((r for r in rows if r["meta"]["cid"] == cid), None) if cid else rows[-1]
+        return self._tuple(rec) if rec else None
+
+    def list(self, config, *, filter=None, before=None, limit=None):
+        thread = (config or {}).get("configurable", {}).get("thread_id")
+        ns = (config or {}).get("configurable", {}).get("checkpoint_ns", "") if config else None
+        rows = self._ckpts(thread, ns) if thread is not None else self._ckpts()
+        rows = list(reversed(rows))                                  # newest-first
+        before_id = before["configurable"]["checkpoint_id"] if before else None
+        seen_before = before_id is None
+        n = 0
+        for rec in rows:
+            if before_id and not seen_before:
+                if rec["meta"]["cid"] == before_id:
+                    seen_before = True
+                continue
+            t = self._tuple(rec)
+            if filter and not all((t.metadata or {}).get(k) == v for k, v in filter.items()):
+                continue
+            yield t
+            n += 1
+            if limit and n >= limit:
+                break
+
+    def delete_thread(self, thread_id):
+        ids = [r["id"] for r in self.store.items
+               if (r.get("meta") or {}).get("kind") in ("lg_checkpoint", "lg_write")
+               and (r.get("meta") or {}).get("thread") == thread_id]
+        if ids:
+            self.store.forget(ids=ids)
+            self.store._save()
+
+    # async delegates (local file store: no real concurrency to exploit)
+    async def aput(self, *a, **k):
+        return self.put(*a, **k)
+
+    async def aput_writes(self, *a, **k):
+        return self.put_writes(*a, **k)
+
+    async def aget_tuple(self, *a, **k):
+        return self.get_tuple(*a, **k)
+
+    async def alist(self, config, **k):
+        for t in self.list(config, **k):
+            yield t
+
+    async def adelete_thread(self, thread_id):
+        return self.delete_thread(thread_id)

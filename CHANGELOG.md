@@ -3,7 +3,12 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased (built, not yet published)
+## 1.16.0
+
+**LangGraph checkpointer (`MnemoSaver`).** The thread-state half of LangGraph memory (MnemoStore was the long-term
+half): a `BaseCheckpointSaver` so a graph can persist + resume, same contract as SqliteSaver/PostgresSaver but in a
+single zero-dependency mnemo file (no DB, no server). Checkpoints + pending writes serialized via LangGraph's own
+serde, tagged so they never pollute recall. Sync + async; `mnemo.integrations.langgraph.MnemoSaver`.
 
 **Offline memory browser (`mnemo.browser` + `mnemo browse`).** Renders the store to a SINGLE self-contained HTML
 file (all data inlined, vanilla JS, inline CSS — no server, no build, works offline) with client-side search +
