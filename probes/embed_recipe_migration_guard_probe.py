@@ -42,5 +42,50 @@ mm = Mnemo(path=p2, embed=embA, embed_id="A")   # persist_vectors=False (default
 mm.remember("x", key="k"); mm._save(force=True)
 check("4 non-persist store never creates the embedid sidecar", not os.path.exists(p2 + ".embedid"))
 
+# ── regressions for the 2026-07-19 "re-embed storm" (a hook-driven store froze Claude Code) ──────────
+# The guard re-embedded EVERY record (not just the vec-bearing ones) and, because the sidecar is only
+# written by _save(), a read-only caller redid the whole thing on every single open: 1214 records x one
+# network call each, per hook, forever.
+calls = {"n": 0}
+def embC(t):
+    calls["n"] += 1
+    return [0.0, 0.0, 1.0]
+
+p3 = os.path.join(d, "mixed.json")
+m4 = Mnemo(path=p3, embed=embA, persist_vectors=True, embed_id="A")
+m4.remember("has a vector", key="v")
+for i in range(50):                                  # vec-less records (an embedder-down capture, or lexical era)
+    m4.remember(f"no vector {i}", key=f"n{i}")
+    m4.items[-1]["vec"] = None
+m4._save(force=True)
+
+calls["n"] = 0
+m5 = Mnemo(path=p3, embed=embC, persist_vectors=True, embed_id="C")
+check("5 realign embeds ONLY vec-bearing records (not the whole store)", calls["n"] == 1)
+check("5b vec-less records stay vec-less", all(r["vec"] is None for r in m5.items if r.get("key") != "v"))
+
+# The killer: m5 was never saved by the caller. Opening again must NOT redo the realignment.
+calls["n"] = 0
+m6 = Mnemo(path=p3, embed=embC, persist_vectors=True, embed_id="C")
+check("6 realignment is persisted, so a read-only open never repeats it", calls["n"] == 0)
+check("6b sidecar records the new recipe without an explicit save",
+      open(p3 + ".embedid").read().strip() == "C")
+check("6c the realigned vector actually reached disk",
+      [r["vec"] for r in m6.items if r.get("key") == "v"][0] == [0.0, 0.0, 1.0])
+
+# Bounded: a big store must never pay an unbounded synchronous re-embed on the load path.
+p4 = os.path.join(d, "big.json")
+m7 = Mnemo(path=p4, embed=embA, persist_vectors=True, embed_id="A")
+for i in range(12):
+    m7.remember(f"rec {i}", key=f"b{i}")
+m7._save(force=True)
+os.environ["MNEMO_REALIGN_MAX"] = "5"
+calls["n"] = 0
+m8 = Mnemo(path=p4, embed=embC, persist_vectors=True, embed_id="C")
+check("7 past MNEMO_REALIGN_MAX the guard drops vectors instead of stalling", calls["n"] == 0)
+check("7b dropped vectors degrade to lexical (vec=None), never a stale-space mismatch",
+      all(r.get("vec") is None for r in m8.items))
+os.environ.pop("MNEMO_REALIGN_MAX", None)
+
 print(f"\n{'ALL PASS' if not FAILS else 'FAILED: ' + ', '.join(FAILS)}")
 sys.exit(1 if FAILS else 0)

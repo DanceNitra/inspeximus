@@ -3,7 +3,24 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased
+## 1.18.0
+
+**Fix: the embed-recipe guard could re-embed the whole store on EVERY open.** With `persist_vectors=True` and a
+stored recipe differing from the current `embed_id`, the realignment (a) re-embedded every record rather than only
+the vector-bearing ones, and (b) recorded the new recipe only inside `_save()` — so any caller that never saves (a
+read-only `recall()`, a session digest, a short-lived hook process) redid the entire realignment on every open.
+Together that turned a one-time migration into a permanent per-open network storm: a 1214-record store issued 1214
+embedding calls *per open*, forever — which froze a Claude Code session through the `mnemo.claude_code` hooks
+(~44 min per hook; the hook blocks prompt submission). The guard now realigns only vector-bearing records, persists
+the realignment exactly once (vectors and sidecar together — never the sidecar alone, which would label old vectors
+with a new recipe), and is bounded by `MNEMO_REALIGN_MAX` (default 256): past the cap it drops the stale vectors
+(those records degrade to lexical recall and are re-embedded on their next write) instead of stalling the load
+path. Measured on the affected store: 44 min -> 17 s once, then 2.6 s per open. Probe
+`embed_recipe_migration_guard_probe.py` gains regressions 5/5b/6/6b/6c/7/7b.
+
+**Fix: `mnemo.claude_code._make_embedder` returned a bare `None` when unconfigured** while its caller unpacked three
+values — a `TypeError` that the hook's fail-open swallowed, so in any project without `.mnemo/config.json` the
+plugin silently captured nothing at all.
 
 **Deterministic knowledge graph (`graph()` + `subgraph()`).** Every keyed `(subject::relation, object)` memory is an edge subject-[relation]->object; `graph()` exports nodes+edges and `subgraph(entity, hops)` does multi-hop traversal — the graph-memory view mem0/Zep/cognee ship, but DERIVED deterministically from mnemo's supersession triples (no LLM entity-extraction, no graph DB). Superseded facts drop out (graph = current truth). Probe `graph_layer_probe.py` (5 checks incl. supersession-drop + 2-hop).
 

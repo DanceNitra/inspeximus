@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.17.0"
+__version__ = "1.18.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -771,6 +771,7 @@ class Mnemo:
         # the stale vectors and re-embed with the current document embedder (once, on load) so the spaces realign.
         # RAM-only stores (persist_vectors=False) strip vectors on save, so they never hit this. Sidecar: <path>.embedid.
         self._embedid_path = (self.path.parent / (self.path.name + ".embedid")) if self.path else None
+        self._realigned = False
         if self._persist_vectors and self._embedid_path is not None:
             _prev = None
             if self._embedid_path.exists():
@@ -779,16 +780,35 @@ class Mnemo:
                 except Exception:
                     _prev = None
             _cur = self.embed_id or ""
-            if _prev is not None and _prev != _cur and self.embed is not None and any(r.get("vec") for r in self.items):
-                sys.stderr.write(f"[mnemo] embed recipe changed ({_prev!r} -> {_cur!r}); re-embedding "
-                                 f"{sum(1 for r in self.items if r.get('vec'))} persisted vectors to realign the space\n")
-                for r in self.items:
-                    if r.get("text") is not None:
+            # ONLY records that carry a vec are in the old space, so they are the only ones to realign.
+            # Re-embedding vec-less records here would (a) make a load cost one network call per record —
+            # an unbounded stall, and (b) silently ADD vectors the store never had.
+            _stale = [r for r in self.items if r.get("vec") and r.get("text") is not None]
+            if _prev is not None and _prev != _cur and self.embed is not None and _stale:
+                try:
+                    _cap = int(os.environ.get("MNEMO_REALIGN_MAX", "256"))
+                except Exception:
+                    _cap = 256
+                if len(_stale) > _cap:
+                    # BOUNDED: past the cap we DROP the stale vectors instead of re-embedding them. A dropped
+                    # vec degrades that record to lexical recall and is re-embedded on its next write; a
+                    # synchronous re-embed of a large store on the load path would hang the caller for
+                    # minutes-to-hours (and every hook-style short-lived process would pay it again).
+                    sys.stderr.write(f"[mnemo] embed recipe changed ({_prev!r} -> {_cur!r}); {len(_stale)} persisted "
+                                     f"vectors exceed MNEMO_REALIGN_MAX={_cap} -> dropping them (recall degrades to "
+                                     f"lexical for those records; each is re-embedded on its next write)\n")
+                    for r in _stale:
+                        r["vec"] = None
+                else:
+                    sys.stderr.write(f"[mnemo] embed recipe changed ({_prev!r} -> {_cur!r}); re-embedding "
+                                     f"{len(_stale)} persisted vectors to realign the space\n")
+                    for r in _stale:
                         try:
                             r["vec"] = list(self.embed(r["text"]))
                         except Exception:
                             r["vec"] = None
-                self._mat = None                                    # invalidate the cached matrix (realigned vecs persist on next save)
+                self._mat = None                                    # invalidate the cached matrix
+                self._realigned = True                              # -> persisted ONCE at the end of __init__
         # OPT-IN write receipts (default OFF -> zero behavior change; no sidecar created)
         self.receipts_enabled = bool(receipts or receipt_key)
         self._receipt_sk = receipt_key
@@ -819,6 +839,14 @@ class Mnemo:
                 self._tombstones = json.loads(self._tombstones_path.read_text(encoding="utf-8"))
             except Exception:
                 self._tombstones = []
+        # PERSIST A REALIGNMENT EXACTLY ONCE. The realigned vectors and the recipe sidecar must land together:
+        # the sidecar is written only inside _save(), so a caller that never saves (a READ-ONLY path — recall(),
+        # a session-digest, any short-lived hook process) would redo the whole realignment on EVERY open, turning
+        # one migration into a permanent per-open network storm. Saving here ends it after the first open.
+        # It must NOT be done by writing the sidecar alone: that would leave the OLD vectors on disk labelled
+        # with the NEW recipe — precisely the silent mismatch this guard exists to prevent.
+        if self._realigned:
+            self._save(force=True)
 
     # ── capture ──────────────────────────────────────────────────────────────
     def remember(self, text: str, tags=None, value: float = 1.0, meta: dict | None = None,

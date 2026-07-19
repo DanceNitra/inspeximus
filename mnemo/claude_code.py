@@ -43,7 +43,7 @@ def _make_embedder(cwd):
     """Optional embedder for SEMANTIC recall (zero extra deps — urllib against any OpenAI-compatible
     /embeddings endpoint, e.g. local Ollama at http://localhost:11434/v1/embeddings). Configured by env
     (MNEMO_EMBED_URL / MNEMO_EMBED_MODEL / MNEMO_EMBED_KEY) or .mnemo/config.json {"embed": {...}}.
-    Returns None when unconfigured -> deterministic LEXICAL recall (runs anywhere, no service needed).
+    Returns (embed_doc, embed_query, embed_id); (None, None, None) when unconfigured -> LEXICAL recall.
     Fail-open on the write path: mnemo stores the record with vec=None if a call raises, so a down
     embedder degrades recall to lexical but never drops a capture."""
     import urllib.request
@@ -52,7 +52,7 @@ def _make_embedder(cwd):
         ec = {}
     url = (os.environ.get("MNEMO_EMBED_URL") or ec.get("url") or "").strip()
     if not url:
-        return None
+        return None, None, None
     model = (os.environ.get("MNEMO_EMBED_MODEL") or ec.get("model") or "nomic-embed-text").strip()
     key = (os.environ.get("MNEMO_EMBED_KEY") or ec.get("key") or "").strip()
     try:
@@ -60,8 +60,8 @@ def _make_embedder(cwd):
     except Exception:
         timeout = 10.0
 
-    def embed(text: str):
-        body = json.dumps({"model": model, "input": text}).encode()
+    def _embed(text: str, prefix: str = ""):
+        body = json.dumps({"model": model, "input": prefix + text}).encode()
         headers = {"Content-Type": "application/json"}
         if key:
             headers["Authorization"] = f"Bearer {key}"
@@ -69,18 +69,25 @@ def _make_embedder(cwd):
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return json.loads(r.read())["data"][0]["embedding"]
 
-    return embed
+    # nomic-embed-text is ASYMMETRIC — the doc/query task prefixes are REQUIRED for good retrieval (the
+    # correctness fix shipped for the MCP in 1.15.0, now applied to the Claude Code plugin too). Returns
+    # SEPARATE document/query embedders + an embed_id so the recipe guard re-embeds on a recipe change.
+    # Opt out with MNEMO_NOMIC_PREFIX=0. Symmetric models -> (embed, None, model).
+    if "nomic" in model.lower() and os.environ.get("MNEMO_NOMIC_PREFIX", "1") != "0":
+        return (lambda t: _embed(t, "search_document: ")), (lambda t: _embed(t, "search_query: ")), f"{model}|nomic-sd-sq"
+    return _embed, None, model
 
 
 def _store(cwd):
     from mnemo import Mnemo
     d = os.path.join(cwd or os.getcwd(), ".mnemo")
     os.makedirs(d, exist_ok=True)
-    emb = _make_embedder(cwd)
+    emb_doc, emb_query, emb_id = _make_embedder(cwd)
     # persist_vectors only when an embedder is configured: a coding store is small and its process is
     # short-lived (one per hook), so keeping vecs on disk lets semantic recall survive a reload without
     # re-embedding every item on each start. With no embedder we keep the legacy vec-less (lexical) store.
-    m = Mnemo(path=os.path.join(d, "coding_memory.json"), embed=emb, persist_vectors=emb is not None)
+    m = Mnemo(path=os.path.join(d, "coding_memory.json"), embed=emb_doc, embed_query=emb_query,
+              embed_id=emb_id, persist_vectors=emb_doc is not None)
     m.echo_guard = True
     return m
 

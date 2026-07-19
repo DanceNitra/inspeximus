@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agora-mnemo"
-version = "1.17.0"
+version = "1.18.0"
 description = "The self-correcting memory layer for AI agents: when a fact is corrected, mnemo serves the new value and resists the old one resurfacing. Zero-dependency single file + MCP server — value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
 requires-python = ">=3.8"
