@@ -178,18 +178,22 @@ def recall(ev):
     # recalled is the DECISIONS/RULES relevant to what it's about to do ("what did we decide, and why"). So we
     # surface decision-typed memories ahead of the command/file mechanics — otherwise the useful signal drowns
     # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
-    hits = _store(cwd).recall(q, k=12)
-    def is_decision(h):
-        return "decision" in (h.get("tags") or [])
-    decisions = [h for h in hits if is_decision(h)][:4]
-    mechanics = [h for h in hits if not is_decision(h)][:3]
+    hits = _store(cwd).recall(q, k=16)
+    def has(h, tag):
+        return tag in (h.get("tags") or [])
+    decisions = [h for h in hits if has(h, "decision")][:4]
+    knowledge = [h for h in hits if has(h, "knowledge") and not has(h, "decision")][:4]
+    mechanics = [h for h in hits if not has(h, "decision") and not has(h, "knowledge")][:2]
     out = []
     if decisions:
         out.append("decisions/rules (what we concluded, and why):")
         out += [f"  * {d['text']}" for d in decisions]
+    if knowledge:
+        out.append("curated knowledge (from memory):")
+        out += [f"  = {k['text']}" for k in knowledge]
     if mechanics:
         out.append("recent mechanics (files/commands):")
-        out += [f"  - {m['text']}" for m in mechanics]
+        out += [f"  - {mm['text']}" for mm in mechanics]
     if out:
         print("[mnemo] relevant project memory (deterministic, corrections already applied):\n" + "\n".join(out))
     _maybe_nudge(cwd)   # visible slot: UserPromptSubmit stdout is shown to the user
