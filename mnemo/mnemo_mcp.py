@@ -227,7 +227,7 @@ def resolve_reopened(id: str, decision: str, capability: str = "") -> dict:
 def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
            mmr: float | None = None, trusted_only: bool = False,
            user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
-           rerank_by: str | None = None) -> list[dict]:
+           rerank_by: str | None = None, resolve_conflicts: bool | None = None) -> list[dict]:
     """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
     knowledge before reasoning.
 
@@ -240,11 +240,17 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     `mmr` (0..1, off by default) reranks for DIVERSITY so you don't get k near-duplicate memories — 1.0 = pure
     relevance, lower = more diverse (deterministic Maximal Marginal Relevance, zero-LLM). `trusted_only=True` (needs
     a configured trust root) returns only memories anchored to a trusted signing key — a deterministic defense
-    against injected/poisoned memories from untrusted writers.
+    against injected/poisoned memories from untrusted writers. `resolve_conflicts=True` (or server-wide
+    MNEMO_READ_RESOLVER=1) resolves near-duplicate same-subject candidates at read time by value BIRTH — an
+    un-keyed restatement of a superseded value is demoted below the correction instead of out-ranking it; the
+    surviving hit carries `resolved_over` ids. Deterministic, zero-LLM.
     (Standard progressive-disclosure / small-to-big retrieval practice, not a mnemo-specific technique.)"""
     k = max(1, min(int(k), _MAX_K))
+    if resolve_conflicts is None:                     # env default: MNEMO_READ_RESOLVER=1 turns it on server-wide
+        resolve_conflicts = os.environ.get("MNEMO_READ_RESOLVER", "0").strip() == "1"
     hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
-                       user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by) or []
+                       user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by,
+                       resolve_conflicts=resolve_conflicts) or []
     if full:
         return hits
     n = snippet_chars if snippet_chars > 0 else _SNIPPET

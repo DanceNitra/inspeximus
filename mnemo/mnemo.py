@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.22.1"
+__version__ = "1.23.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -573,6 +573,7 @@ class Mnemo:
         self._consumed_revert_nonces: set[str] = set()
         self.items: list[dict] = []
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
+        self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
         # recall auto-mode: below this many active memories lexical is as good and free; above it the
         # lexical+semantic HYBRID (RRF) pays — measured to beat either channel alone on agent memory. Tunable.
@@ -1777,6 +1778,7 @@ class Mnemo:
                     meta.pop("superseded_by_toggle", None)   # drop dangling toggle pointer (no ghost stale-derived)
         for tid in target:
             self._tok_cache.pop(tid, None)
+            self._sig_cache.pop(tid, None)
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
         return {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed}
@@ -2957,6 +2959,65 @@ class Mnemo:
             t = _tokens(rec["text"]); self._tok_cache[rid] = t
         return t
 
+    def _rec_sig(self, rec: dict) -> str:
+        """Normalized value signature: the record's token set, sorted and joined — identical restatements
+        of one value collapse to one signature regardless of word order. Cached by id."""
+        rid = rec.get("id") or id(rec)
+        s = self._sig_cache.get(rid)
+        if s is None:
+            s = " ".join(sorted(self._rec_tokens(rec)))
+            self._sig_cache[rid] = s
+        return s
+
+    def _resolve_read_conflicts(self, scored: list, k: int) -> tuple[list, dict]:
+        """Read-time newest-VALUE-BIRTH conflict resolution over the top pool (see the recall() stage
+        comment for semantics). Returns (reordered scored, {winner_id: [loser_ids]})."""
+        bound = max(4 * k, 50)
+        pool, tail = scored[:bound], scored[bound:]
+        toks = [self._rec_tokens(t[2]) for t in pool]
+        sigs = [self._rec_sig(t[2]) for t in pool]
+        # birth of a VALUE = earliest assertion of its signature anywhere in the store, superseded rows
+        # included — an echo restating a retired value inherits the retired birth and can never look fresh
+        birth: dict = {}
+        for r in self.items:
+            sg = self._rec_sig(r)
+            ts = r.get("valid_from") or r.get("ts") or 0
+            if sg not in birth or ts < birth[sg]:
+                birth[sg] = ts
+        clusters: list[list[int]] = []
+        for i in range(len(pool)):
+            placed = False
+            for cl in clusters:
+                j = cl[0]
+                if sigs[i] == sigs[j]:
+                    cl.append(i); placed = True; break
+                a, b = toks[i], toks[j]
+                if a and b and (len(a & b) / len(a | b)) >= 0.6:   # near-dup subject, different value
+                    cl.append(i); placed = True; break
+            if not placed:
+                clusters.append([i])
+        drop: set = set()
+        losers: dict = {}
+        for cl in clusters:
+            if len(cl) < 2:
+                continue
+            by_val: dict = {}
+            for i in cl:
+                by_val.setdefault(sigs[i], []).append(i)
+            if len(by_val) < 2:
+                continue                                           # restatements of ONE value: dedup is MMR's job
+            win_sig = max(by_val, key=lambda s: (birth.get(s, 0), s))   # newest birth wins; sig tiebreak = determinism
+            winner = min(by_val[win_sig])                          # its highest-scored member
+            lose = [i for i in cl if sigs[i] != win_sig]
+            if lose:
+                losers[pool[winner][2]["id"]] = [pool[i][2]["id"] for i in lose]
+                drop.update(lose)
+        if not drop:
+            return scored, {}
+        resolved = ([pool[i] for i in range(len(pool)) if i not in drop]
+                    + [pool[i] for i in sorted(drop)] + tail)
+        return resolved, losers
+
     def _rec_tokcount(self, rec: dict) -> dict:
         """Term-frequency map for a memory, cached by id (for the BM25 hybrid channel)."""
         rid = rec.get("id") or id(rec)
@@ -3011,7 +3072,7 @@ class Mnemo:
                redact_pii: bool = False, rerank=None, rerank_pool: int | None = None,
                reinforce: bool = True, trusted_only: bool = False, mmr: float | None = None,
                user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
-               rerank_by: str | None = None) -> list[dict]:
+               rerank_by: str | None = None, resolve_conflicts: bool = False) -> list[dict]:
         """Top-k memories by RELEVANCE × VALUE — high-value memories outrank merely-similar ones.
         Memories the dream pass flagged as hubs (universal matchers) are skipped unless include_hubs.
 
@@ -3357,6 +3418,21 @@ class Mnemo:
             _rest = [t for t in scored if t[1] < _top_sim - _eps]
             _tied.sort(key=lambda t: -(t[2].get("valid_from") or t[2]["ts"]))
             scored = _tied + _rest
+        # OPT-IN READ-TIME CONFLICT RESOLVER (resolve_conflicts=True, default OFF -> byte-identical legacy).
+        # The write-time guards (keyed supersession, echo_guard) cannot reach an UN-KEYED re-assertion of a
+        # retired value: it lands as an independent record, embeds near-identically to the correction, and can
+        # out-rank it (the measured stale-serve failure; cf. arXiv 2606.01435's read-time resolution result).
+        # This stage clusters near-duplicate same-subject candidates in the top pool (token-Jaccard >= 0.6, or
+        # identical normalized text) and resolves each cluster by VALUE BIRTH: a value's timestamp is its
+        # EARLIEST assertion anywhere in the store (superseded rows included), so restating an old value never
+        # refreshes it — the echo keeps its old birth and LOSES to the correction, while a genuinely new value
+        # wins as the newest birth. Losing candidates are demoted below the kept pool (backfilled, not hidden);
+        # the surviving hit carries `resolved_over: [ids]` for explainability. Deterministic, zero-LLM.
+        # KNOWN LIMIT (documented, same as echo_guard): a deliberate reversal back to an older value is
+        # indistinguishable from an echo at read time — use keys + remember(reaffirm=True) for that.
+        _rc_losers: dict = {}
+        if resolve_conflicts and len(scored) > 1:
+            scored, _rc_losers = self._resolve_read_conflicts(scored, k)
         # OPT-IN reranker hook (retrieve-then-rerank). `rerank(query, records) -> list[float]` (one relevance
         # score per record, higher=better) lets a caller plug a cross-encoder / model reranker over the top
         # candidates — the one lever MEASURED to lift multi-hop recall beyond mnemo's zero-LLM base (LoCoMo
@@ -3497,6 +3573,7 @@ class Mnemo:
             _o = {"id": r["id"], "text": r["text"], "tags": r["tags"], "iso": r["iso"],
                   "value": round(r["value"], 2), "relevance": round(sim, 3),
                   "score": round(score, 3), "links": r["links"],
+                  **({"resolved_over": _rc_losers[r["id"]]} if r["id"] in _rc_losers else {}),
                   "reliability": round(self._reliability(r), 3),
                   "source": r.get("source"),    # re-checkable origin (provenance), surfaced so a recalled fact can be traced back
                   "stale_derived": bool(r.get("_stale_derived"))}

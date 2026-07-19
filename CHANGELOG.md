@@ -3,6 +3,28 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.23.0
+
+**Read-time conflict resolver: `recall(resolve_conflicts=True)` (default OFF → byte-identical legacy).**
+The write-time guards (keyed supersession, echo_guard) cannot reach an UN-KEYED re-assertion of a retired
+value — it lands as an independent record, embeds near-identically to the correction, and can out-rank it
+(our own 1.21.0 validation demonstrated the failure; the mechanism matches the stale-serve findings in
+arXiv 2606.01435, whose read-time deterministic resolution reports +10.8 pts single-hop). The resolver
+clusters near-duplicate same-subject candidates in the top pool (token-Jaccard ≥ 0.6 or identical
+normalized text) and resolves each cluster by **value birth**: a value's timestamp is its EARLIEST
+assertion anywhere in the store, superseded rows included — so restating an old value never refreshes it
+(the echo keeps its old birth and loses), while a genuinely new value wins as the newest birth. Losers are
+demoted below the kept pool (backfilled, not hidden); the surviving hit carries `resolved_over: [ids]`.
+Deterministic, zero-LLM, read-only. Documented limit (same as echo_guard): a deliberate un-keyed reversal
+to an older value reads as an echo — use keys + `reaffirm=True` for authoritative reversals.
+
+MCP: the `recall` tool takes `resolve_conflicts`, or set `MNEMO_READ_RESOLVER=1` server-wide.
+
+Receipts: `probes/read_conflict_resolver_probe.py` (9/9 — incl. proof the failure EXISTS without the flag,
+honest-update wins, keyed-superseded birth inheritance, no false clustering across subjects, determinism);
+LoCoMo regression with the resolver ON is IDENTICAL to baseline on every k (0.397/0.582/0.668/0.750/0.839,
+n=1536 — no conflicts to resolve there, and no damage from clustering). Suite 148.
+
 ## 1.22.1
 
 **Measurement correction propagated to the shipped text (no code change).** The `Mnemo` docstring and the README
