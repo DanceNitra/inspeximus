@@ -62,5 +62,26 @@ except RuntimeError as e:
     ok5 = "MNEMO_LLM_URL" in str(e)
 check("5 default_distiller raises a clear opt-in error with no endpoint", ok5)
 
+
+# 6: STORED-XSS REGRESSION. The browser inlines the rows into an inline <script>; json.dumps does not escape
+# < > &, so a memory containing "</script>" used to close the element and turn the rest into live HTML in the
+# opened file:// document. Agents ingest memory text from tools/web/MCP, so this was reachable normally.
+import re, json as _json
+from mnemo.browser import render_html
+mx = Mnemo(path=os.path.join(tempfile.mkdtemp(), "xss.json"))
+payloads = ["note: </script><img src=x onerror=alert(1)>", "<!--<script>", "</SCRIPT ><svg onload=alert(2)>",
+            "ampersand & intact"]
+for p in payloads:
+    mx.remember(p)
+mx.remember("tagged", tags=["</script>evil"], key="</script>k")
+h = render_html(mx)
+blob = h[h.find("const DATA="):]
+line = blob[:blob.find("\n")]
+check("6 no </script> breakout survives into the inlined data", re.search(r"</\s*script", line, re.I) is None)
+rows = _json.loads(line[len("const DATA="):line.rfind(";")])
+texts = [r["text"] for r in rows]
+check("6b the escaping is transport-only — text round-trips byte-identical",
+      all(p in texts for p in payloads) and any(r.get("key") == "</script>k" for r in rows))
+
 print(f"\n{'ALL PASS' if not FAILS else 'FAILED: ' + ', '.join(FAILS)}")
 sys.exit(1 if FAILS else 0)

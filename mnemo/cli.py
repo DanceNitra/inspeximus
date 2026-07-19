@@ -169,8 +169,10 @@ def main(argv=None):
         from mnemo.browser import write_html
         path = write_html(m, a.out)
         if a.open:
-            import webbrowser
-            webbrowser.open("file://" + os.path.abspath(path))
+            import webbrowser, pathlib
+            # as_uri(), not "file://" + abspath: on Windows the latter yields file://C:\... (backslashes,
+            # missing third slash) and it mangles spaces/non-ASCII in the path.
+            webbrowser.open(pathlib.Path(path).resolve().as_uri())
         _out({"written": path}, a.json) or print(f"wrote memory browser -> {path}" + ("  (opened)" if a.open else ""))
 
     elif a.cmd == "decision":
@@ -202,7 +204,11 @@ def main(argv=None):
 
     elif a.cmd == "distill":
         from mnemo import default_distiller
-        text = open(a.file, encoding="utf-8").read() if a.file else sys.stdin.read()
+        try:
+            text = open(a.file, encoding="utf-8").read() if a.file else sys.stdin.read()
+        except OSError as e:                    # an unreadable --file deserves the same tidy exit as the
+            print(f"distill: {e}", file=sys.stderr)   # missing-endpoint case below, not a raw traceback
+            return 2
         try:
             distiller = default_distiller()
         except RuntimeError as e:

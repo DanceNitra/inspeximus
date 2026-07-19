@@ -115,7 +115,15 @@ def render_html(store) -> str:
     stats = (f"<b>{s['total']}</b> memories &middot; <b>{s['active']}</b> active &middot; "
              f"<b>{s['superseded']}</b> superseded &middot; contradictions: <b>{s['contradictions']}</b>"
              + (f"<br>cohorts: {coh}" if coh else ""))
-    return _TEMPLATE.format(stats=stats, data=json.dumps(rows, default=str))
+    # The rows are inlined into an inline <script> block, and json.dumps does NOT escape < > & — so a memory
+    # whose text/key/tag contains "</script>" CLOSES the script element and everything after it is parsed as
+    # HTML (stored XSS, running in the opened file:// document). The JS-side esc() never gets a chance: the
+    # breakout happens at parse time, before any script runs. Memory text is exactly what agents ingest from
+    # tools, web pages and MCP callers, so this is reachable through ordinary use. \uXXXX is valid inside a
+    # JSON string and parses to the identical character, so the data is unchanged — only the transport is safe.
+    data = (json.dumps(rows, default=str)
+            .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026"))
+    return _TEMPLATE.format(stats=stats, data=data)
 
 
 def write_html(store, path: str = "mnemo_browser.html") -> str:
