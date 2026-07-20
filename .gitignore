@@ -16,3 +16,4 @@ id_ed25519*
 secrets.json
 credentials.json
 service-account*.json
+_*.log
