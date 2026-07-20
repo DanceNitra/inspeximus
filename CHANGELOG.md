@@ -3,6 +3,27 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.24.0
+
+**`forget()` now emits a deletion receipt, like every other erasure path.** Previously only
+`forget_subject()` and `forget_pii()` wrote a hash-chained tombstone. A record removed with plain
+`forget(ids=…, where=…)` was therefore deleted correctly — gone from the store and from the bytes on disk —
+but *unaccounted for*: `verify_writes()` found a write receipt whose record no longer existed, with nothing
+explaining the absence, and reported `deleted out-of-band`, which is precisely the signature of someone
+editing the store behind its back. The store flagged its own legitimate API call as tampering.
+
+`forget()` takes optional `request_id=` and `basis=`, both committed inside the tombstone hash, and returns
+`tombstones` alongside `forgotten` / `ids` / `scrubbed_links`. Regression probe:
+`probes/forget_emits_tombstone_probe.py`.
+
+Found by installing the published wheel into a clean room and testing the README's own claim — the record
+was gone, the bytes were gone, and the receipt count was zero.
+
+**Probe fix (was reporting FAILED against correct code):** `trusted_only_poison_defense_probe` still
+asserted the pre-1.19.0 fail-OPEN behaviour of `recall(trusted_only=True)`, which 1.19.0 deliberately
+reversed. The code was right and the test was wrong, so the suite carried a permanent red — the kind that
+teaches you to stop reading red.
+
 ## 1.23.1
 
 **BUGFIX (silent data loss): `regex_extractor` minted keys from non-referring subjects.** On natural

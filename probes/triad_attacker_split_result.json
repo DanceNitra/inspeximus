@@ -1,0 +1,137 @@
+{
+ "scenario": "triad_attacker_split",
+ "patience_grid": [
+  0.0,
+  0.15,
+  0.3,
+  0.5,
+  0.7,
+  0.85,
+  1.0
+ ],
+ "rows": {
+  "0.0": {
+   "D": {
+    "": 8.0,
+    "I": 3.0,
+    "S": 0.0,
+    "C": 1.2,
+    "IS": 0.0,
+    "IC": 0.44999999999999996,
+    "SC": 0.0,
+    "ISC": 0.0
+   },
+   "synergy": 0.0,
+   "binding": "S",
+   "collapse_to_C": false
+  },
+  "0.15": {
+   "D": {
+    "": 8.0,
+    "I": 3.0,
+    "S": 0.5510204081632653,
+    "C": 1.2,
+    "IS": 0.5510204081632653,
+    "IC": 0.44999999999999996,
+    "SC": 0.08265306122448979,
+    "ISC": 0.08265306122448979
+   },
+   "synergy": 0.9808292530117262,
+   "binding": "S",
+   "collapse_to_C": false
+  },
+  "0.3": {
+   "D": {
+    "": 8.0,
+    "I": 3.0,
+    "S": 1.2857142857142856,
+    "C": 1.2,
+    "IS": 0.9310344827586208,
+    "IC": 0.44999999999999996,
+    "SC": 0.19285714285714284,
+    "ISC": 0.1396551724137931
+   },
+   "synergy": 0.6580558607486751,
+   "binding": "C",
+   "collapse_to_C": false
+  },
+  "0.5": {
+   "D": {
+    "": 8.0,
+    "I": 3.0,
+    "S": 1.8620689655172415,
+    "C": 1.2,
+    "IS": 1.4210526315789473,
+    "IC": 0.44999999999999996,
+    "SC": 0.2793103448275862,
+    "ISC": 0.2131578947368421
+   },
+   "synergy": 0.7105389232718144,
+   "binding": "C",
+   "collapse_to_C": false
+  },
+  "0.7": {
+   "D": {
+    "": 8.0,
+    "I": 3.0,
+    "S": 1.8947368421052633,
+    "C": 1.2,
+    "IS": 1.5882352941176472,
+    "IC": 0.44999999999999996,
+    "SC": 0.28421052631578947,
+    "ISC": 0.23823529411764707
+   },
+   "synergy": 0.8043728156701695,
+   "binding": "C",
+   "collapse_to_C": false
+  },
+  "0.85": {
+   "D": {
+    "": 8.0,
+    "I": 3.0,
+    "S": 1.8947368421052633,
+    "C": 1.2,
+    "IS": 1.723404255319149,
+    "IC": 0.44999999999999996,
+    "SC": 0.28421052631578947,
+    "ISC": 0.25851063829787235
+   },
+   "synergy": 0.8860508466844368,
+   "binding": "C",
+   "collapse_to_C": false
+  },
+  "1.0": {
+   "D": {
+    "": 8.0,
+    "I": 3.0,
+    "S": 1.8947368421052633,
+    "C": 1.2,
+    "IS": 1.723404255319149,
+    "IC": 0.44999999999999996,
+    "SC": 0.28421052631578947,
+    "ISC": 0.25851063829787235
+   },
+   "synergy": 0.8860508466844368,
+   "binding": "C",
+   "collapse_to_C": false
+  }
+ },
+ "synergy_tunable_not_claimed": true,
+ "ceiling_binds_at_high_patience": true,
+ "cold_tail_range": [
+  0.4373,
+  0.87562
+ ],
+ "cold_tail_mid": 0.60832,
+ "cold_tail_sweep": {
+  "zipf1.6_bar2": 0.4373,
+  "zipf1.6_bar3": 0.58166,
+  "zipf2.0_bar2": 0.60832,
+  "zipf2.0_bar3": 0.76162,
+  "zipf2.5_bar2": 0.74194,
+  "zipf2.5_bar3": 0.87562
+ },
+ "sleeper_residual": 0.25851063829787235,
+ "base": 8.0,
+ "verdict": "HONEST / MIXED (built + tested to answer jacksonxly with data; NO new law -- this is textbook defense-in-depth / diffcap, prior art USPTO 11,829,484, arXiv 2510.11235, Saltzer & Schroeder). Two-part result: (1) The attacker-split SYNERGY is NOT cleanly measurable in a hand-set sim: the log-synergy SIGN vs the multiplicative/Bliss null is a function of the budget/tax parameters we typed in (here >0 for all p>0, i.e. sub-multiplicative correlated-failure, but tunable) -- so we do NOT claim it. IMPORTANT CORRECTION for the reply: 'superadditive because the taxes multiply through' actually describes the MULTIPLICATIVE (Bliss) NULL -- independent effects -- which is NOT synergy; genuine superadditivity would be BELOW multiplicative. So the honest framing is 'independent-to-correlated-failure', never 'superadditive'. What IS structurally robust: as attacker patience rises the binding layer shifts onto the standing-INDEPENDENT ceiling (jackson's point that against the concentrated sleeper only the ceiling is left, and it caps everyone, cannot be relaxed for proven-good sources). (2) The ROBUST, non-tunable MEASURED result is the COLD-TAIL corollary: with heavy-tailed memory reuse, 44%-88% of memories are re-used too few times to EVER earn standing, so they live under the ceiling permanently -- standing-gating is a HOT-PATH PRIVILEGE, not a global one (holds across the tail exponent and the bar; directly extends our density result: D=1 cold memories can't earn). That is the data with weight for the reply; the synergy stays analytical/scoped. INCREMENTAL, honest."
+}

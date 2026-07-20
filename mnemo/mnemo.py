@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.23.1"
+__version__ = "1.24.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1739,7 +1739,8 @@ class Mnemo:
                 return h["id"]            # NO-OP: near-identical, same value -> skip the redundant append
         return self.remember(text, tags=tags, value=value, meta=meta, mtype=mtype)
 
-    def forget(self, ids=None, where=None, redact_links: bool = True) -> dict:
+    def forget(self, ids=None, where=None, redact_links: bool = True,
+               request_id: str | None = None, basis: str | None = None) -> dict:
         """HARD-DELETE memories — the one operation that genuinely REMOVES content. mnemo is otherwise
         append-only: supersession / invalidation only DEMOTE a record (it still exists, recallable with
         include_superseded). forget() is for the cases where demotion is not enough: a right-to-be-forgotten
@@ -1751,7 +1752,16 @@ class Mnemo:
         vec matrix + token caches are dropped — so a forgotten memory cannot resurface via recall, via a
         consolidation link, or via a stale derived-summary pointer. This is complete because consolidation
         never copies raw text into other records (it only links ids and toggles status) — there is no merged
-        blob left holding the forgotten content. Returns {forgotten, ids, scrubbed_links}."""
+        blob left holding the forgotten content.
+
+        EVERY deletion emits a hash-chained, content-free tombstone, exactly like forget_subject() and
+        forget_pii(). Until 1.24.0 only those two did, which meant a record removed through this method left
+        the store accusing ITSELF: verify_writes() found a write receipt whose record was gone with nothing
+        accounting for it, and reported "deleted out-of-band" — the signature of tampering — after a
+        perfectly legitimate API call. `request_id` and `basis` are carried into the tombstone's committed
+        hash so an auditor can see why a record went, not merely that it did.
+
+        Returns {forgotten, ids, scrubbed_links, tombstones}."""
         target = set()
         if ids is not None:
             target |= ({ids} if isinstance(ids, str) else set(ids))
@@ -1779,9 +1789,13 @@ class Mnemo:
         for tid in target:
             self._tok_cache.pop(tid, None)
             self._sig_cache.pop(tid, None)
+        now = time.time()
+        for tid in sorted(target):                           # deterministic order -> reproducible chain
+            self._emit_tombstone(tid, now, request_id, basis=basis or "forget")
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
-        return {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed}
+        return {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
+                "tombstones": len(target)}
 
     @staticmethod
     def _tombstone_core(t: dict) -> dict:

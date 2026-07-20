@@ -5,13 +5,13 @@
     {
       "k": 1,
       "gate": "naive",
-      "asr": 0.833,
+      "asr": 0.583,
       "util": 1.0
     },
     {
       "k": 1,
       "gate": "count_gate",
-      "asr": 0.583,
+      "asr": 0.833,
       "util": 1.0
     },
     {

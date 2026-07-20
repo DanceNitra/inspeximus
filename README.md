@@ -44,7 +44,11 @@ what makes three things possible the mainstream libraries don't offer:
   un-invalidates; Letta has no undo).
 - **Deletes the value, not just the pointer.** `forget_subject` removes the value from mnemo's records (subject
   + its `derived_from` lineage) and leaves a **content-free**, tamper-evident signed receipt — so what remains is
-  a proof-of-deletion, not the data. Most agent-memory libraries instead *retain the deleted value* by design:
+  a proof-of-deletion, not the data. Since **1.24.0 every deletion path leaves that receipt**, including plain
+  `forget(ids=…, where=…)`; before that only `forget_subject` and `forget_pii` did, so a record removed with
+  `forget()` was erased correctly but unaccounted-for, and `verify_writes()` reported it as an out-of-band
+  deletion — the store flagging its own legitimate API call as tampering. Pass `request_id=` / `basis=` to
+  `forget()` to bind the reason into the receipt's committed hash. Most agent-memory libraries instead *retain the deleted value* by design:
   mem0 keeps it in its SQLite history table (a full `reset()` purges it); Graphiti stamps the old edge
   `invalid_at` and keeps it. For **secure erasure at rest** (against raw-disk/backup forensics — which a plaintext
   store of ANY library, mnemo included, does not give you) use an encrypted store + `shred()` (NIST SP 800-88

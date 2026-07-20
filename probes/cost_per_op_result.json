@@ -1,16 +1,16 @@
 {
  "metric": "LLM-calls & tokens per op, by phase; extract 'site' shows where extraction is paid",
- "n": 3,
+ "n": 10,
  "systems": {
-  "mem0": {
+  "mnemo": {
    "extract": {
     "llm_calls_per_op": 0.0,
     "tokens_per_op": 0.0,
-    "site": "in-store"
+    "site": "upstream/caller"
    },
    "retain": {
-    "llm_calls_per_op": 1.0,
-    "tokens_per_op": 8431.0
+    "llm_calls_per_op": 0.0,
+    "tokens_per_op": 0.0
    },
    "recall": {
     "llm_calls_per_op": 0.0,
