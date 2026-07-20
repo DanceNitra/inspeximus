@@ -50,6 +50,25 @@ jobs:
             echo "falsification control correctly reported CLAIM BROKEN"
           fi
 
+  basestore-parity:
+    name: MnemoStore vs LangGraph's own store
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade langgraph
+      # "Drop-in BaseStore" is only true if a caller cannot tell the difference, so the same operation
+      # scripts run against langgraph's InMemoryStore and against ours, and the results must match.
+      - run: python store_audit.py
+      - name: parity check must fail when writes are swallowed
+        run: |
+          if STORE_FALSIFY=1 python store_audit.py --repeats 1; then
+            echo "::error::falsification control PASSED — the parity comparison proves nothing"
+            exit 1
+          fi
+
   published:
     name: the PUBLISHED wheel from PyPI
     runs-on: ubuntu-latest
