@@ -3,6 +3,17 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.24.1
+
+**Docs only.** `claims_audit.py` is now the first thing the README offers: one command downloads the
+published wheel and checks every claim on the page against that artifact, printing raw evidence per
+claim. Claims about other systems are listed separately and never counted as passing.
+
+Adds the measured write cost from the MemOps run (600-730 s of LLM extraction per scenario for an
+LLM-on-write pipeline against zero model calls here) **together with the finding that answer accuracy
+was statistically indistinguishable** — the honest claim is same answers at no write-time model cost,
+not better answers.
+
 ## 1.24.0
 
 **`forget()` now emits a deletion receipt, like every other erasure path.** Previously only

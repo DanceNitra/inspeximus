@@ -24,6 +24,28 @@ Built by **[Rastislav Drahoš](https://github.com/DanceNitra)** — extracted fr
 
 ---
 
+## Every claim below is checked by a script you can run
+
+```bash
+python claims_audit.py          # downloads the published wheel from PyPI and audits THAT
+```
+
+It fetches the released artifact, prints its sha256, and runs each claim on it — never on the working
+tree. The write-path claim is enforced rather than asserted: sockets are disabled for the duration, so a
+write that reached for a model would fail the check instead of passing it quietly. Claims about *other*
+systems are listed separately and marked untestable here; verifying those means running those systems,
+so they are never counted as passing.
+
+```
+auditing : agora_mnemo-1.24.0-py3-none-any.whl
+13 passed · 0 FAILED · 0 skipped · 5 not testable here
+```
+
+This exists because the exercise pays for itself: the first time we ran a README sentence against the
+published wheel, it failed. Erasure did delete the record and scrub the bytes, but plain `forget()` left
+no receipt, so the store's own `verify_writes()` reported the deletion as out-of-band — flagging a
+legitimate API call as tampering. Fixed in 1.24.0, with a regression probe, and the audit now covers it.
+
 ## Why mnemo — the one thing no other agent memory does
 
 Every mainstream agent-memory library puts an **LLM on the write path**: it calls a model to extract, summarize,
@@ -33,6 +55,16 @@ runs LLM entity/edge extraction on every `add_episode()`. That one choice is why
 
 **mnemo has no LLM on the write path.** Storing a fact is a deterministic, zero-cost operation — and *that* is
 what makes three things possible the mainstream libraries don't offer:
+
+> **What that costs, measured on someone else's benchmark.** On the [MemOps](https://github.com/MemTensor/MemOps)
+> long-context scenarios (24 scenarios, ~50 sessions each), ingesting one scenario through mem0's default
+> pipeline took **600–730 s of LLM extraction**; mnemo's write path made **zero model calls**. Read the rest
+> before quoting that: on the same run, answer accuracy was **statistically indistinguishable** — mnemo 0.593,
+> a naive keep-all store 0.592, mem0 0.544, with every bootstrap CI crossing zero. So the honest claim is *same
+> answers, no write-time model cost*, not *better answers*. About 2% of mem0's extraction calls failed to parse
+> and those memories are missing from its store, which handicaps it slightly. MemOps is published by MemTensor,
+> who also make a competing system. Harness, pre-registration and the full result:
+> [agora/agora_output/lab/memops](https://github.com/DanceNitra/agora/tree/main/agora_output/lab/memops).
 
 - **Corrections that stick.** Write a new value for a key and it *supersedes* the old one; `echo_guard` blocks a
   later restatement of the retired value from resurfacing. No config, no model call. Honest scope: the guard
