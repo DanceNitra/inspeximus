@@ -1,0 +1,9552 @@
+[
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A01_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A02_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A05_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 1,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 0
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": 0,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_forget.json",
+  "op": "forget",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": 1
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_reflect.json",
+  "op": "reflect",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_remember.json",
+  "op": "remember",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "mnemo",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "naive",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "session_rag",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "state_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A06_trajectory_ops.json",
+  "op": "trajectoryops",
+  "arm": "no_context",
+  "category": "trajectory_reasoning",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "mnemo",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "distractor_control",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "naive",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "target_binding",
+  "answer_score": 1,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 1,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "session_rag",
+  "category": "downstream_application",
+  "answer_score": 1,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "operation_trace",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "target_binding",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "distractor_control",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": null,
+  "leakage": null,
+  "over_forget": null
+ },
+ {
+  "file": "A11_update.json",
+  "op": "update",
+  "arm": "no_context",
+  "category": "downstream_application",
+  "answer_score": 0,
+  "stale_value": 0,
+  "leakage": null,
+  "over_forget": null
+ }
+]

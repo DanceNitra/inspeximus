@@ -1,0 +1,426 @@
+{
+ "GOLD": {
+  "n": 12,
+  "correct": 12,
+  "wrong": 0,
+  "parse_fail": 0,
+  "rate": 1.0,
+  "rows": [
+   {
+    "file": "A01_reflect.json",
+    "op": "reflect",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": null,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A01_remember.json",
+    "op": "remember",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": null,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A01_trajectory_ops.json",
+    "op": "trajectoryops",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": 0,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A01_update.json",
+    "op": "update",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": 0,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_forget.json",
+    "op": "forget",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": 0,
+     "leakage": 0
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_reflect.json",
+    "op": "reflect",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": null,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_remember.json",
+    "op": "remember",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": null,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_trajectory_ops.json",
+    "op": "trajectoryops",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": 0,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_update.json",
+    "op": "update",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": 0,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A04_forget.json",
+    "op": "forget",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": null,
+     "leakage": 0
+    },
+    "correct": true
+   },
+   {
+    "file": "A04_reflect.json",
+    "op": "reflect",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": null,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A04_remember.json",
+    "op": "remember",
+    "arm": "GOLD",
+    "got": {
+     "answer_score": 1,
+     "stale_value": null,
+     "leakage": null
+    },
+    "correct": true
+   }
+  ]
+ },
+ "STALE": {
+  "n": 12,
+  "correct": 11,
+  "wrong": 1,
+  "parse_fail": 0,
+  "rate": 0.917,
+  "rows": [
+   {
+    "file": "A01_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A05_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A06_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A11_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 0,
+     "leakage": null
+    },
+    "correct": false
+   },
+   {
+    "file": "A13_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A01_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A05_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A06_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A11_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   },
+   {
+    "file": "A13_update.json",
+    "op": "update",
+    "arm": "STALE",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 1,
+     "leakage": null
+    },
+    "correct": true
+   }
+  ]
+ },
+ "LEAK": {
+  "n": 12,
+  "correct": 12,
+  "wrong": 0,
+  "parse_fail": 0,
+  "rate": 1.0,
+  "rows": [
+   {
+    "file": "A02_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A04_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A05_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A06_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A07_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 0,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A11_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A02_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A04_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A05_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A06_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A07_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": 0,
+     "leakage": 1
+    },
+    "correct": true
+   },
+   {
+    "file": "A11_forget.json",
+    "op": "forget",
+    "arm": "LEAK",
+    "got": {
+     "answer_score": 0,
+     "stale_value": null,
+     "leakage": 1
+    },
+    "correct": true
+   }
+  ]
+ },
+ "GATE_PASSED": true
+}

@@ -1,0 +1,42 @@
+{
+ "mnemo": {
+  "n": 237,
+  "accuracy": 0.283,
+  "stale_value": 0.11428571428571428,
+  "stale_n": 35,
+  "leakage": 0.1794871794871795,
+  "leak_n": 39,
+  "over_forget": 0.625,
+  "over_forget_n": 40
+ },
+ "naive": {
+  "n": 238,
+  "accuracy": 0.269,
+  "stale_value": 0.08108108108108109,
+  "stale_n": 37,
+  "leakage": 0.14705882352941177,
+  "leak_n": 34,
+  "over_forget": 0.6666666666666666,
+  "over_forget_n": 36
+ },
+ "session_rag": {
+  "n": 240,
+  "accuracy": 0.442,
+  "stale_value": 0.11428571428571428,
+  "stale_n": 35,
+  "leakage": 0.3333333333333333,
+  "leak_n": 36,
+  "over_forget": 0.2777777777777778,
+  "over_forget_n": 36
+ },
+ "no_context": {
+  "n": 240,
+  "accuracy": 0.058,
+  "stale_value": 0.0,
+  "stale_n": 29,
+  "leakage": 0.0,
+  "leak_n": 35,
+  "over_forget": 0.875,
+  "over_forget_n": 40
+ }
+}

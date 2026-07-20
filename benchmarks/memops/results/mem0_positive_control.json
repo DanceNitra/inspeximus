@@ -1,0 +1,14 @@
+{
+ "deepseek-v4-flash": {
+  "parse_errors": 1,
+  "hits": 5,
+  "current_retrieved": true,
+  "passes": true
+ },
+ "glm-5.2": {
+  "parse_errors": 0,
+  "hits": 20,
+  "current_retrieved": true,
+  "passes": true
+ }
+}

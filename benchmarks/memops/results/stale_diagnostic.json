@@ -1,0 +1,16 @@
+{
+ "mnemo": {
+  "n": 40,
+  "cur": 36,
+  "stale": 32,
+  "stale_only": 2,
+  "neither": 2
+ },
+ "naive": {
+  "n": 40,
+  "cur": 38,
+  "stale": 32,
+  "stale_only": 0,
+  "neither": 2
+ }
+}
