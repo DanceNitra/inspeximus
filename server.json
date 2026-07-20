@@ -6,13 +6,13 @@
     "url": "https://github.com/DanceNitra/mnemo",
     "source": "github"
   },
-  "version": "1.24.3",
+  "version": "1.24.4",
   "websiteUrl": "https://pypi.org/project/agora-mnemo/",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "agora-mnemo",
-      "version": "1.24.3",
+      "version": "1.24.4",
       "transport": {
         "type": "stdio"
       },

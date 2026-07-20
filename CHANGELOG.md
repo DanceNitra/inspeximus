@@ -3,6 +3,17 @@
 All notable changes to mnemo (`agora-mnemo`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.24.4
+
+Adds `examples/trust_is_not_truth.py` — a standalone, pip-installable demonstration that the provenance
+gate is an authorization control and not a truth detector: a trusted key signing a false fact returns
+the false fact at full weight, and a correct fact signed by an unknown key is dropped. The earlier
+version of that test lived in a gitignored directory and reached into a sibling checkout, so nobody
+outside this machine could run it — for a test whose whole point is "check us", that made it worthless.
+
+First release published through GitHub Actions with PyPI Trusted Publishing, so the wheel carries a
+signed attestation binding it to this repository, this workflow and this commit.
+
 ## 1.24.3
 
 **BUGFIX (regression from 1.24.0): double deletion receipts.** `forget_subject()` and `forget_pii()`
