@@ -25,6 +25,11 @@ on:
         required: false
         type: choice
         options: ["", "langgraph-checkpoint-inspeximus", "langgraph-store-inspeximus", "adk-inspeximus"]
+      mcp_registry:
+        description: "publish only the MCP registry listing (uses the version in pyproject.toml)"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -35,7 +40,7 @@ jobs:
     name: audits must pass first
     # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
     # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
-    if: ${{ !inputs.package && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
+    if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +59,7 @@ jobs:
     name: build sdist + wheel
     # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
     # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
-    if: ${{ !inputs.package && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
+    if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     needs: audit
     runs-on: ubuntu-latest
     steps:
@@ -80,7 +85,7 @@ jobs:
     name: publish to PyPI (trusted, attested)
     # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
     # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
-    if: ${{ !inputs.package && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
+    if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     needs: build
     runs-on: ubuntu-latest
     environment: pypi
@@ -140,3 +145,49 @@ jobs:
         with:
           attestations: true
           packages-dir: packages/${{ steps.pick.outputs.pkg }}/dist/
+
+
+  # ── the official MCP registry ────────────────────────────────────────────────────────────────────
+  # The interactive `mcp-publisher login github` device flow would put a human in the loop on every
+  # release. GitHub Actions OIDC authenticates as the repository owner instead, so the listing tracks the
+  # releases by itself. The registry stores only METADATA and resolves the package from PyPI, so this runs
+  # after the package is published and refuses to advertise a version PyPI is not serving yet.
+  mcp-registry:
+    name: publish the listing to the MCP registry
+    if: ${{ inputs.mcp_registry || (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: server.json must name the version we just released
+        run: python packages/_pin_server_json.py
+      - name: install mcp-publisher
+        run: |
+          curl -sL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.0/mcp-publisher_linux_amd64.tar.gz" | tar -xz mcp-publisher
+          chmod +x mcp-publisher
+      - name: the manifest must be valid before we claim anything
+        run: ./mcp-publisher validate
+      - name: refuse to advertise a version PyPI is not serving
+        run: |
+          VERSION="$(python -c "import json;print(json.load(open('server.json'))['version'])")"
+          for i in $(seq 1 30); do
+            if curl -sf "https://pypi.org/pypi/inspeximus/$VERSION/json" > /dev/null; then
+              echo "PyPI is serving $VERSION"; exit 0
+            fi
+            echo "waiting for PyPI to serve $VERSION ($i/30)"; sleep 20
+          done
+          echo "::error::PyPI never served $VERSION; not publishing a listing that points nowhere"
+          exit 1
+      - run: ./mcp-publisher login github-oidc
+      - run: ./mcp-publisher publish
+      - name: the listing must actually be there afterwards
+        run: |
+          sleep 15
+          curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=inspeximus" -o r.json
+          cat r.json
+          python -c "import json;d=json.load(open('r.json'));assert d['metadata']['count']>0,'registry still returns zero results';print('listed:',d['servers'][0]['name'])"
