@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langgraph-checkpoint-inspeximus"
+version = "0.1.0"
+description = "LangGraph checkpointer backed by inspeximus: durable thread state with queryable value history and receipted erasure."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["langgraph", "checkpointer", "agent", "memory", "persistence"]
+classifiers = ["Programming Language :: Python :: 3", "Topic :: Scientific/Engineering :: Artificial Intelligence"]
+dependencies = ["inspeximus>=1.27.1", "langgraph-checkpoint>=2.0"]
+
+[project.urls]
+Homepage = "https://dancenitra.github.io/inspeximus/"
+Source = "https://github.com/DanceNitra/inspeximus"
+
+# langgraph/ and langgraph/checkpoint/ carry no __init__.py on purpose: they are PEP 420 namespace
+# packages owned by langgraph itself, and this distribution only adds a leaf under them.
+[tool.setuptools]
+packages = ["langgraph.checkpoint.inspeximus"]

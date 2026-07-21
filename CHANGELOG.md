@@ -3,6 +3,25 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.27.1 — LangGraph adapter: conformance and parity fixes
+
+Both of LangGraph's official verification routes were run against the adapter for the first time,
+and each found a real defect.
+
+- **Checkpointer, `langgraph-checkpoint-conformance`: BASE 4/5 -> FULL 5/5.** `put_writes` was not
+  idempotent: the write-collection loop returned records regardless of status, so a superseded write
+  came back as a pending one and re-putting a write left two. Checkpoint listing had the same missing
+  filter. The suite now runs in CI and fails the build on a base capability.
+- **Store, parity audit against `InMemoryStore` (the method LangGraph's docs prescribe):**
+  `list_namespaces` ignored `match_conditions` and `max_depth` outright, so filtering by prefix
+  returned every namespace in the store, and an unsorted result made `limit` return a different
+  subset than the reference. Now filters prefix/suffix including `*` wildcards, truncates to
+  `max_depth`, dedupes and sorts before slicing.
+- **A literal duplicate is not a restatement.** 1.26.0's "agreement is not correction" kept both rows
+  when the same key was written twice with identical text -- which is what broke put_writes
+  idempotency. Same key + same text now collapses to one row; two differently-worded sentences
+  carrying one value still keep both, which is the measured behaviour that change existed for.
+
 ## 1.27.0 — `inspeximus install --ide <host>`
 
 One command wires the MCP server into an editor's own config. Hosts: claude, cursor, windsurf,

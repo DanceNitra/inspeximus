@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langgraph-store-inspeximus"
+version = "0.1.0"
+description = "LangGraph BaseStore backed by inspeximus: drop-in for InMemoryStore, plus queryable value history and receipted erasure."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["langgraph", "store", "basestore", "agent", "memory", "langmem"]
+classifiers = ["Programming Language :: Python :: 3", "Topic :: Scientific/Engineering :: Artificial Intelligence"]
+dependencies = ["inspeximus>=1.27.1", "langgraph>=0.2"]
+
+[project.urls]
+Homepage = "https://dancenitra.github.io/inspeximus/"
+Source = "https://github.com/DanceNitra/inspeximus"
+
+[tool.setuptools]
+packages = ["langgraph.store.inspeximus"]
