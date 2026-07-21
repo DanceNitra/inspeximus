@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adk-inspeximus"
+version = "0.1.0"
+description = "Google ADK memory service backed by inspeximus: drop-in for InMemoryMemoryService, but persistent, with per-user erasure."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["google-adk", "adk", "memory", "agent", "memory-service", "long-term-memory"]
+classifiers = ["Programming Language :: Python :: 3", "Topic :: Scientific/Engineering :: Artificial Intelligence"]
+dependencies = ["inspeximus>=1.28.0", "google-adk>=1.0"]
+
+[project.urls]
+Homepage = "https://dancenitra.github.io/inspeximus/"
+Source = "https://github.com/DanceNitra/inspeximus"
+
+[tool.setuptools]
+packages = ["adk_inspeximus"]

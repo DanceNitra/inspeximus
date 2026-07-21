@@ -17,14 +17,14 @@ name: release
 # separate registration and would fail OIDC until someone remembered that.
 on:
   push:
-    tags: ["v*", "langgraph-*-v*"]
+    tags: ["v*", "langgraph-*-v*", "adk-*-v*"]
   workflow_dispatch:
     inputs:
       package:
         description: "wrapper package to publish (leave blank for the core)"
         required: false
         type: choice
-        options: ["", "langgraph-checkpoint-inspeximus", "langgraph-store-inspeximus"]
+        options: ["", "langgraph-checkpoint-inspeximus", "langgraph-store-inspeximus", "adk-inspeximus"]
 
 permissions:
   contents: read
@@ -33,7 +33,9 @@ jobs:
   audit:
     # Never publish something the audits have not just passed on a clean runner.
     name: audits must pass first
-    if: ${{ !startsWith(github.ref_name, 'langgraph-') && !inputs.package }}
+    # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
+    # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
+    if: ${{ !inputs.package && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +52,9 @@ jobs:
 
   build:
     name: build sdist + wheel
-    if: ${{ !startsWith(github.ref_name, 'langgraph-') && !inputs.package }}
+    # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
+    # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
+    if: ${{ !inputs.package && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     needs: audit
     runs-on: ubuntu-latest
     steps:
@@ -74,7 +78,9 @@ jobs:
 
   publish:
     name: publish to PyPI (trusted, attested)
-    if: ${{ !startsWith(github.ref_name, 'langgraph-') && !inputs.package }}
+    # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
+    # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
+    if: ${{ !inputs.package && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     needs: build
     runs-on: ubuntu-latest
     environment: pypi
@@ -93,8 +99,8 @@ jobs:
 
   # ── the LangGraph wrapper distributions ──────────────────────────────────────────────────────────
   wrapper:
-    name: publish a LangGraph wrapper package
-    if: ${{ startsWith(github.ref_name, 'langgraph-') || inputs.package }}
+    name: publish a wrapper package
+    if: ${{ inputs.package || (github.ref_type == 'tag' && !startsWith(github.ref_name, 'v')) }}
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
@@ -122,7 +128,7 @@ jobs:
       - name: the wrapper must import and re-export what it claims
         run: |
           python -m pip install packages/${{ steps.pick.outputs.pkg }}/dist/*.whl
-          python -c "import importlib,sys; m='${{ steps.pick.outputs.pkg }}'.replace('langgraph-','langgraph.').replace('-inspeximus','.inspeximus').replace('-','_'); mod=importlib.import_module(m); print(m, mod.__all__)"
+          python packages/_check_wrapper.py "${{ steps.pick.outputs.pkg }}"
       - name: version in the artifact must match the tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |

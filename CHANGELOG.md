@@ -3,6 +3,27 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.28.0 - the ADK memory service ingests idempotently, and supports incremental writes
+
+Google ADK ships no conformance suite for `BaseMemoryService`, so `InspeximusMemoryService` was called a
+drop-in replacement for `InMemoryMemoryService` without anything checking it. `adk_audit.py` now does:
+eight scenarios against ADK's own service, three repeats each, and `ADK_FALSIFY=1` breaks ingestion on
+purpose so the comparison has to be able to fail.
+
+Writing it found two real defects:
+
+- **Re-adding a session stored it again.** ADK documents that a session "may be added multiple times
+  during its lifetime", and the runner does exactly that, so a long conversation was written once per
+  turn. Ingestion is now idempotent per event, keyed on the event id, and the seen-set is rebuilt from
+  the store so it survives a restart.
+- **`add_events_to_memory` was not implemented**, so the incremental path fell through to the base
+  class and raised `NotImplementedError`. Both it and `add_memory` now work; a direct memory write has
+  no position in a conversation, so it dedupes on its text.
+
+Also new: `InspeximusMemoryService.from_uri()` and `register()`, which put the service behind
+`adk web --memory_service_uri=inspeximus://memory.json` with no Python glue. Published as
+`adk-inspeximus` for people who search PyPI rather than the docs.
+
 ## 1.27.2 - InspeximusStore now matches the reference on namespace lifetime
 
 `InMemoryStore` keeps listing a namespace after its last key is deleted; this store dropped it. That

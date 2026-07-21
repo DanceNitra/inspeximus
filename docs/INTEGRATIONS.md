@@ -149,11 +149,28 @@ runner = Runner(agent=agent, app_name="app", session_service=...,
                 memory_service=InspeximusMemoryService(path="mem.json"))
 ```
 
+Or through the ADK CLI with no Python glue — call `register()` from the `services.py` that `adk web` loads,
+then `adk web --memory_service_uri=inspeximus://memory.json`.
+
 Two honest extras over `InMemoryMemoryService`: `search_memory` goes through supersession-filtered `recall()`
 (a corrected keyed fact is not returned), and `forget_subject_for(app_name, user_id, request_id=…)` gives
-per-user right-to-erasure with a signed deletion tombstone. Verified end-to-end against real `google-adk`
-2.4.0 (`inspeximus/probes/inspeximus_adk_adapter_probe.py`, 4/4, incl. per-user isolation, current-truth, and
-accounted-for erasure). Opt-in extra; `import inspeximus` stays zero-dependency.
+per-user right-to-erasure with a signed deletion tombstone.
+
+**How "drop-in" is checked.** ADK ships no conformance suite for `BaseMemoryService`, so the claim rests on
+[`adk_audit.py`](../adk_audit.py): eight scenarios run against ADK's own `InMemoryMemoryService` and ours,
+three repeats each — ingestion, user and app isolation, empty and missed queries, repeated ingestion,
+incremental event deltas, and retrieval from a store crowded with 60 other users. `ADK_FALSIFY=1` swallows
+ingestion so the checks must fail; without that control the audit would only prove it can print PASS. It runs
+in CI against the current `google-adk` release, so the version it was verified against is whatever CI last
+installed rather than a number in this file that quietly goes stale.
+
+Writing that audit caught two defects that had been there since 0.7.4: re-adding a session stored it a
+second time (ADK documents that a session *"may be added multiple times during its lifetime"*), and
+`add_events_to_memory` was never implemented, so the incremental path raised `NotImplementedError`. Both
+fixed in 1.28.0. Opt-in extra; `import inspeximus` stays zero-dependency.
+
+Also on PyPI as [`adk-inspeximus`](https://pypi.org/project/adk-inspeximus/) for people who search there
+rather than reading this file; it re-exports the same class.
 
 ### Memory-as-tools for Pydantic AI: `inspeximus_toolset` (0.7.8+)
 Pydantic AI ships no built-in persistent memory by design; the pattern (Hindsight's `hindsight-pydantic-ai`,
