@@ -183,8 +183,14 @@ jobs:
           done
           echo "::error::PyPI never served $VERSION; not publishing a listing that points nowhere"
           exit 1
+      - name: is this version already listed?
+        id: state
+        run: python packages/_registry_state.py
       - run: ./mcp-publisher login github-oidc
-      - run: ./mcp-publisher publish
+        if: steps.state.outputs.already != 'true'
+      - name: publish (skipped when the registry already has this exact version)
+        if: steps.state.outputs.already != 'true'
+        run: ./mcp-publisher publish
       - name: the listing must actually be there afterwards
         run: |
           # The registry accepts the publish before its search index catches up, so a single check right
