@@ -13,6 +13,8 @@ and `inspeximus-mcp` share one store). Recall is lexical by default; set $INSPEX
 any OpenAI-compatible /embeddings endpoint (e.g. local Ollama) for semantic recall. Zero dependencies."""
 from __future__ import annotations
 import argparse
+
+from . import install as _install
 import json
 import os
 import sys
@@ -112,7 +114,31 @@ def main(argv=None):
     re_.add_argument("--all", action="store_true", help="re-embed EVERY record, not just the ones missing a vector")
     re_.add_argument("--batch", type=int, default=None, help="cap how many records this run re-embeds")
 
+    ins = sub.add_parser("install", help="register the MCP server in an editor's own config file")
+    ins.add_argument("--ide", required=True,
+                     help="host to configure: " + ", ".join(sorted(_install.HOSTS)))
+    ins.add_argument("--scope", choices=["user", "project"], default=None,
+                     help="user-level (default) or project-level config, where the host supports it")
+    ins.add_argument("--project", default=None, help="project directory for project scope (default: cwd)")
+    ins.add_argument("--store", default=None, help="value for INSPEXIMUS_PATH in the written config")
+    ins.add_argument("--name", default=_install.SERVER_NAME, help="server name to write")
+    ins.add_argument("--dry-run", action="store_true", help="print the exact diff, write nothing")
+
     a = ap.parse_args(argv)
+
+    # `install` edits an editor's config; it must never touch a memory store. Opening one here would
+    # create inspeximus_memory.json in the working directory as a side effect of asking for help.
+    if a.cmd == "install":
+        p = _install.plan(a.ide, scope=a.scope, project=a.project, store_path=a.store, name=a.name)
+        print(_install.render(p, dry_run=a.dry_run))
+        if p.get("error"):
+            return 2
+        if a.dry_run:
+            return 0
+        ok, msg = _install.apply(p)
+        print(f"  {msg}")
+        return 0 if ok else 1
+
     m = _store(a.path)
 
     if a.cmd == "remember":

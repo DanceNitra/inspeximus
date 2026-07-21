@@ -3,7 +3,7 @@
 Public API (stable as of 1.0.0). Submodules for the governance/erasure tooling:
   - inspeximus.deletion_manifest : DeletionManifest, ErasureTarget   (cross-store erasure record)
   - inspeximus.erasure_auditor   : ErasureAuditor, StoreProbe, ...    ('content still reconstructible?' audit)
-  - inspeximus.mcp         : the MCP stdio server (console script: inspeximus-mcp)
+  - inspeximus.mcp_server         : the MCP stdio server (console script: inspeximus-mcp)
 """
 from .core import (  # noqa: F401
     Inspeximus,

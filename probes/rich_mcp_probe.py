@@ -15,7 +15,7 @@ os.environ["INSPEXIMUS_EMBED_URL"] = ""                 # lexical, no embedder /
 if os.path.exists(os.environ["INSPEXIMUS_PATH"]):
     os.remove(os.environ["INSPEXIMUS_PATH"])
 sys.path.insert(0, ".")
-import inspeximus.mcp as M
+import inspeximus.mcp_server as M
 
 FAILS = []
 def check(n, c):

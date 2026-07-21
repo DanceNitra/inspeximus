@@ -18,7 +18,7 @@ import os, json, tempfile, sys
 
 os.environ["INSPEXIMUS_PATH"] = tempfile.mktemp(suffix=".json")
 try:
-    import inspeximus.mcp as M
+    import inspeximus.mcp_server as M
 except SystemExit:
     print("SKIP: MCP SDK not installed (pip install 'mcp[cli]')"); sys.exit(0)
 

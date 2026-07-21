@@ -3,6 +3,22 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.26.1 — the MCP server could not start (shadowed its own SDK)
+
+1.26.0 renamed `mnemo_mcp.py` to `mcp.py`. That file also carried an old line inserting its own
+package directory onto `sys.path` so it could be run as a loose script. Harmless under the old name;
+fatal under the new one: with the package directory on the path, the module became importable as
+top-level `mcp` and shadowed the MCP SDK, so `from mcp.server.fastmcp import FastMCP` resolved to
+itself and every launch died with `'mcp' is not a package`.
+
+- the module is now `inspeximus/mcp_server.py` (console script `inspeximus-mcp` unchanged), a name
+  that cannot collide with the SDK
+- the `sys.path` insertion is gone
+
+Found by the acceptance test for `inspeximus install`: the config was written correctly and Claude
+Code listed the server, but it reported "Failed to connect" -- which is exactly the failure an
+installer must be tested against rather than assumed away.
+
 ## 1.26.0 — the name is gone from the code, not just the label
 
 1.25.0 renamed the distribution but kept the old name alive inside: the core class, two module names,
@@ -14,7 +30,7 @@ exist, so it bought nothing and left the product half-renamed.
 
 - `Mnemo` -> `Inspeximus`; every integration class follows (`MnemoStore` -> `InspeximusStore`,
   `MnemoSaver` -> `InspeximusSaver`, and the rest).
-- `inspeximus.mnemo` -> `inspeximus.core`; `inspeximus.mnemo_mcp` -> `inspeximus.mcp`.
+- `inspeximus.mnemo` -> `inspeximus.core`; `inspeximus.mnemo_mcp` -> `inspeximus.mcp_server`.
 - the `mnemo` compatibility alias package is **removed**, as are the `mnemo` / `mnemo-mcp` console
   scripts. `pip install inspeximus`, `from inspeximus import Inspeximus`.
 - `MNEMO_PATH` -> `INSPEXIMUS_PATH`; default store `mnemo_memory.json` -> `inspeximus_memory.json`;

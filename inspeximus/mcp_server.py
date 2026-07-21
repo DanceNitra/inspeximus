@@ -29,8 +29,12 @@ import sys
 import urllib.request
 from pathlib import Path
 
-# Import the local zero-dep store whether launched as `python -m inspeximus.mcp` or `python mcp.py`.
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+# NO sys.path surgery here. This file used to insert its own package directory onto sys.path so it
+# could be run as a loose script -- harmless while it was called mnemo_mcp.py, fatal once it was
+# renamed: with the package dir on sys.path this module becomes importable as top-level `mcp` and
+# SHADOWS the MCP SDK, so `from mcp.server.fastmcp import ...` resolved to itself and every launch
+# died with "'mcp' is not a package". The module is also named mcp_server.py rather than mcp.py so
+# it cannot collide with the SDK even if something else puts this directory on the path.
 from inspeximus import Inspeximus  # noqa: E402
 
 try:
