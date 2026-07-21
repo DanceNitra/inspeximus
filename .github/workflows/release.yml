@@ -187,7 +187,15 @@ jobs:
       - run: ./mcp-publisher publish
       - name: the listing must actually be there afterwards
         run: |
-          sleep 15
-          curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=inspeximus" -o r.json
-          cat r.json
-          python -c "import json;d=json.load(open('r.json'));assert d['metadata']['count']>0,'registry still returns zero results';print('listed:',d['servers'][0]['name'])"
+          # The registry accepts the publish before its search index catches up, so a single check right
+          # after publishing fails on a listing that is in fact fine. Poll instead of guessing a sleep.
+          for i in $(seq 1 20); do
+            curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=inspeximus" -o r.json
+            if python -c "import json,sys;d=json.load(open('r.json'));sys.exit(0 if d['metadata']['count']>0 else 1)"; then
+              python -c "import json;d=json.load(open('r.json'));s=d['servers'][0]['server'];print('listed:',s['name'],s['version'])"
+              exit 0
+            fi
+            echo "not indexed yet ($i/20)"; sleep 15
+          done
+          echo "::error::published, but the registry still returns zero results for inspeximus"
+          exit 1
