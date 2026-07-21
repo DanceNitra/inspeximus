@@ -2975,6 +2975,77 @@ class Mnemo:
             t = _tokens(rec["text"]); self._tok_cache[rid] = t
         return t
 
+    def _retired_values(self) -> list:
+        """Per key: (retired value strings, current value string). The read-side of supersession.
+
+        WHY THIS EXISTS (measured, agora_output/lab/memops/keying_recall.py). Supersession retires a
+        RECORD, not a VALUE. In structured data those are the same thing; in conversational prose one
+        value is smeared across a dozen sentences — the user states it, the assistant echoes it, a
+        summary repeats it, a template quotes it — and retiring the single sentence that happened to
+        carry a key accomplishes nothing. Measured on the MemOps corpus: 33,186 records, 5.2% keyed,
+        0.33% superseded, and `Junior Data Analyst` alive in fifteen records after its correction.
+        That is why the store tied a keep-everything baseline on stale-fact rate (0.2105 vs 0.1250).
+
+        So the correction must be applied at READ time to the VALUE, not to the row: whatever the
+        current value of a key is, every record asserting one of that key's retired values is stale,
+        keyed or not. Deterministic, zero-LLM, and it is what the product already claims to do."""
+        out = []
+        by_key: dict = {}
+        for r in self.items:
+            k = r.get("key")
+            if k:
+                by_key.setdefault(str(k), []).append(r)
+        for k, recs in by_key.items():
+            cur = self._current_active(k)
+            if not cur:
+                continue
+            cur_v = str(cur.get("object") or "").strip()
+            if not cur_v:
+                continue                                    # no explicit object -> no value to compare
+            cur_tok = _tokens(cur_v)
+            retired = []
+            for r in recs:
+                v = str(r.get("object") or "").strip()
+                # A retired value is any OTHER object ever asserted under this key — not only the rows
+                # supersession happened to mark, since marking is exactly what under-fires here.
+                if len(v) < 4 or v.lower() == cur_v.lower():
+                    continue
+                # DISTINGUISHING tokens, not the raw string. Extracted objects carry conversational
+                # tails ('Senior Data Analyst as of yesterday'), so full-string containment is the wrong
+                # test in both directions: it fails to recognise the correction, and it lets a value
+                # that is merely a TRUNCATION of the current one ('Data Analyst') look like a rival.
+                # A retired value with no token of its own says nothing the current value does not —
+                # it is a truncation, and suppressing on it withheld the very record stating the
+                # current title (measured on A01_update). Skip it.
+                v_tok = _tokens(v)
+                mark = v_tok - cur_tok                      # what makes the retired value retired
+                cur_mark = cur_tok - v_tok                  # ...and what makes the current one current
+                if mark and cur_mark:
+                    retired.append((v, mark, cur_mark))
+            if retired:
+                out.append((retired, cur.get("tenant"), cur.get("id")))
+        return out
+
+    def _stale_by_value(self, rec: dict, retired_map: list) -> str | None:
+        """Does this record assert a retired value of some key, WITHOUT also asserting the current one?
+        Returns the retired string it carries, else None. Decided on distinguishing TOKENS: a record is
+        stale when it carries what makes the retired value retired ('junior') and none of what makes the
+        current value current ('senior'), so 'your current title is Senior Data Analyst' is kept while
+        'Summary: title Junior Data Analyst' is withheld."""
+        rec_tok = self._rec_tokens(rec)
+        low = (rec.get("text") or "").lower()
+        for retired, tenant, cur_id in retired_map:
+            if rec.get("id") == cur_id:
+                continue
+            if tenant is not None and rec.get("tenant") is not None and rec.get("tenant") != tenant:
+                continue
+            for v, mark, cur_mark in retired:
+                if cur_mark & rec_tok:
+                    continue                                # states the current value -> never stale
+                if mark <= rec_tok and v.lower() in low:
+                    return v
+        return None
+
     def _rec_sig(self, rec: dict) -> str:
         """Normalized value signature: the record's token set, sorted and joined — identical restatements
         of one value collapse to one signature regardless of word order. Cached by id."""
@@ -3088,7 +3159,8 @@ class Mnemo:
                redact_pii: bool = False, rerank=None, rerank_pool: int | None = None,
                reinforce: bool = True, trusted_only: bool = False, mmr: float | None = None,
                user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
-               rerank_by: str | None = None, resolve_conflicts: bool = False) -> list[dict]:
+               rerank_by: str | None = None, resolve_conflicts: bool = False,
+               suppress_stale_values: bool = False) -> list[dict]:
         """Top-k memories by RELEVANCE × VALUE — high-value memories outrank merely-similar ones.
         Memories the dream pass flagged as hubs (universal matchers) are skipped unless include_hubs.
 
@@ -3449,6 +3521,28 @@ class Mnemo:
         _rc_losers: dict = {}
         if resolve_conflicts and len(scored) > 1:
             scored, _rc_losers = self._resolve_read_conflicts(scored, k)
+        # OPT-IN VALUE-LEVEL STALE SUPPRESSION (suppress_stale_values=True, default OFF -> legacy order).
+        # The conflict resolver above only reaches candidates that CLUSTER (token-Jaccard >= 0.6); in prose
+        # the fourteen other sentences carrying a retired value are phrased differently and never cluster,
+        # so they survive every write-time and read-time guard we had. This stage carries the correction to
+        # the VALUE: any candidate asserting a retired value of some key, while not also asserting that
+        # key's current value, is demoted below the kept pool (backfilled, not hidden — same contract as
+        # the resolver). See _retired_values() for the measurement that motivated it. Deterministic, zero-LLM.
+        # WITHHELD, not merely demoted, and for a measured reason: demotion only helps while clean candidates
+        # outnumber k. Ask a 5-record store for k=3 with three echoes of the retired value and reordering
+        # returns all three anyway — the leak is unchanged. This is the same contract recall() already applies
+        # to a superseded ROW (hidden by default, `include_superseded=True` to see it); applying it to the
+        # VALUE is the whole point. The withheld candidates are appended after the kept pool so a caller
+        # passing include_superseded still sees them, and an all-stale result falls back to the legacy order
+        # rather than returning nothing.
+        if suppress_stale_values and len(scored) > 1:
+            _rm = self._retired_values()
+            if _rm:
+                _keep, _stale = [], []
+                for _t in scored:
+                    (_keep if self._stale_by_value(_t[2], _rm) is None else _stale).append(_t)
+                if _keep:                                   # never empty the result: all-stale -> no-op
+                    scored = _keep + _stale if include_superseded else _keep
         # OPT-IN reranker hook (retrieve-then-rerank). `rerank(query, records) -> list[float]` (one relevance
         # score per record, higher=better) lets a caller plug a cross-encoder / model reranker over the top
         # candidates — the one lever MEASURED to lift multi-hop recall beyond mnemo's zero-LLM base (LoCoMo
