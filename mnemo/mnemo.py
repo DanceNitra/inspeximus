@@ -887,15 +887,24 @@ class Mnemo:
             derived_from = list(getattr(self, "_last_recall", []) or [])
         # WRITE-PATH EXTRACTOR: derive (key, object) from the text when the caller didn't supply a key and an
         # extractor is plugged, so the governance layer keys itself over free text. Fail-open (never break a write).
+        rec_asserts_change = True
         if self.extractor is not None and key is None and not derived:
             try:
                 ex = self.extractor(text)
-                if isinstance(ex, tuple) and len(ex) == 2:
+                if isinstance(ex, tuple) and len(ex) in (2, 3):
                     key = ex[0]
                     if object is None:
                         object = ex[1]
-                elif isinstance(ex, str):
-                    key = ex
+                    # OPTIONAL THIRD ELEMENT: does this sentence ASSERT A CHANGE ("changed to", "update
+                    # it to", "actually it's X now") or merely restate a value ("your address remains
+                    # X")? Supersession keyed on a differing object STRING cannot tell the difference,
+                    # and the difference is not cosmetic: `Unit 4A` and `742 Birchwood Lane, Unit 4A`
+                    # are the same fact stated at two granularities, but they differ as strings, so a
+                    # restatement retires the record it agrees with. Measured (MemOps corpus): with
+                    # echoes keyed, the CURRENT value became unretrievable at k=100 for 7 of 12
+                    # correction chains -> 4 of 12. A 2-tuple keeps the legacy behaviour exactly.
+                    if len(ex) == 3 and ex[2] is False:
+                        rec_asserts_change = False
             except Exception:
                 pass
         # availability guard (OPT-IN): cap a single record's text so one runaway/malicious write can't exhaust
@@ -912,6 +921,8 @@ class Mnemo:
                "source": dict(source) if source else None,   # re-checkable origin (e.g. {"doc": id, "span": [start, end]}) so a recalled fact can be traced back, not trusted blind
                "mtype": mtype or _infer_type(text), "last_access": now,
                "status": "active", "links": [], "meta": dict(meta or {})}
+        if not rec_asserts_change:
+            rec["meta"]["asserts_change"] = False       # a restatement, not a correction (see extractor block)
         if _trunc_from is not None:
             rec["meta"]["truncated_from"] = _trunc_from
         # MEMORY HIERARCHY (user > agent > session): stamp the scope this memory belongs to. A memory with only
@@ -1290,8 +1301,24 @@ class Mnemo:
                 m["superseded_by_toggle"] = active[0]["id"]
                 m["superseded_by_policy"] = "echo_guard"
                 return                                 # current value preserved; skip normal supersession
+        # A record that does not ASSERT A CHANGE never retires anything. It is the store's only way to
+        # tell "your address remains 742 Birchwood Lane, Unit 4A" (agreement, possibly at a different
+        # granularity) from "actually it's Unit 3A now" (a correction). Without it, keying the echoes of
+        # a value makes the echoes supersede each other and the current answer disappears from recall.
+        if rec.get("meta", {}).get("asserts_change") is False:
+            return
+        new_sig_r = self._obj_sig(rec)
         for r in self.items:
             if r is rec or r.get("status") != "active" or r.get("key") != k or r.get("tenant") != tv:
+                continue
+            # A RESTATEMENT IS NOT A SUPERSESSION. Last-write-wins used to retire any active same-key
+            # record, including one asserting the SAME value, so "your title is Senior Data Analyst"
+            # retired the sentence it agrees with and each key kept exactly one active record no matter
+            # how often the value was confirmed. Measured cost (MemOps corpus, keying_recall.py): with
+            # echoes keyed, current-value coverage in a top-20 recall fell 5/12 -> 3/12 — the store was
+            # deleting its own evidence for the CURRENT answer. Supersession means replaced by a
+            # DIFFERENT value; agreement reaffirms.
+            if self._obj_sig(r) == new_sig_r:
                 continue
             vf_r = r.get("valid_from", r["ts"])
             if vf_r <= vf_new:                 # r is the older value -> retire it
