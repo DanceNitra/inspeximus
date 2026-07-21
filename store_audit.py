@@ -75,9 +75,62 @@ def script_search():
     return ops
 
 
+def script_list_namespaces():
+    """The operation this audit did NOT cover until 2026-07-21, and the gap was not theoretical.
+
+    `list_namespaces` was applying only offset/limit: match_conditions and max_depth were ignored, so
+    `list_namespaces(prefix=("org",))` returned every namespace in the store, and an unsorted result
+    meant `limit` handed back a different subset than the reference for the same query. Both passed
+    the audit because the audit never asked. An operation that is not scripted is not audited.
+    """
+    a, b, c, d = ("org", "acme", "team"), ("org", "globex"), ("notes",), ("org", "acme", "other")
+    ns = lambda r: sorted(tuple(x) for x in r)
+    return [
+        ("seed a",        lambda s: s.put(a, "k", {"v": 1})),
+        ("seed b",        lambda s: s.put(b, "k", {"v": 2})),
+        ("seed c",        lambda s: s.put(c, "k", {"v": 3})),
+        ("seed d",        lambda s: s.put(d, "k", {"v": 4})),
+        ("list all",      lambda s: ns(s.list_namespaces())),
+        ("prefix org",    lambda s: ns(s.list_namespaces(prefix=("org",)))),
+        ("prefix deep",   lambda s: ns(s.list_namespaces(prefix=("org", "acme")))),
+        ("suffix team",   lambda s: ns(s.list_namespaces(suffix=("team",)))),
+        ("wildcard",      lambda s: ns(s.list_namespaces(prefix=("org", "*", "team")))),
+        ("max_depth 2",   lambda s: ns(s.list_namespaces(max_depth=2))),
+        ("limit 2",       lambda s: [tuple(x) for x in s.list_namespaces(limit=2)]),
+        ("offset 1",      lambda s: [tuple(x) for x in s.list_namespaces(offset=1)]),
+    ]
+
+
 SCRIPTS = [("CRUD + overwrite + delete", script_crud),
            ("namespace isolation", script_namespaces),
-           ("search, limit, delete-by-None", script_search)]
+           ("search, limit, delete-by-None", script_search),
+           ("list_namespaces: prefix/suffix/wildcard/depth/order", script_list_namespaces)]
+
+
+def report_documented_divergence():
+    """One place where we deliberately do NOT match the reference, stated rather than hidden.
+
+    After the last key in a namespace is deleted, InMemoryStore still lists the now-empty namespace;
+    this store does not. Matching the reference would mean a namespace name outliving the erasure of
+    every value it held, which contradicts the receipted-erasure guarantee this library is built on.
+    So the divergence is intentional -- and printed, because a parity audit that quietly skips the
+    case it loses is worth nothing.
+    """
+    import tempfile
+    from langgraph.store.memory import InMemoryStore
+    tmp = pathlib.Path(tempfile.mkdtemp())
+    out = []
+    for label, s in (("reference", InMemoryStore()),
+                     ("ours", InspeximusStore(path=str(tmp / "div.jsonl")))):
+        s.put(("u", "1"), "p", {"a": 1})
+        s.delete(("u", "1"), "p")
+        out.append((label, [tuple(x) for x in s.list_namespaces()]))
+    print()
+    print("--- documented divergence (intentional, not a parity failure)")
+    for label, got in out:
+        print(f"  {label:10} namespaces after deleting the only key: {got}")
+    print("  ours drops the empty namespace: an erased value must not leave its namespace behind.")
+    return out[0][1] != out[1][1]
 
 
 def _item(it):
@@ -125,10 +178,16 @@ def run_script(name, build, run_idx):
             ours.store._save(force=True)
             blob = " ".join(p.read_text(encoding="utf-8", errors="replace")
                             for p in tmp.rglob("*") if p.is_file()).lower()
+            # Only scripts that actually delete something can assert erasure. Keyed by script name,
+            # so a new script must opt in rather than silently inherit someone else's expectation --
+            # the first version raised KeyError the moment a script was added.
             secret = {"CRUD + overwrite + delete": "bratislava",
                       "namespace isolation": "alpha",
-                      "search, limit, delete-by-None": "rachel tseng"}[name]
-            extras["deleted value gone from disk"] = secret not in blob
+                      "search, limit, delete-by-None": "rachel tseng"}.get(name)
+            if secret is None:
+                extras["deleted value gone from disk"] = "n/a (script deletes nothing)"
+            else:
+                extras["deleted value gone from disk"] = secret not in blob
         except Exception as e:
             extras["deleted value gone from disk"] = f"RAISED {type(e).__name__}: {e}"
 
@@ -168,6 +227,9 @@ def main():
             print(f"  [PASS] parity with the reference implementation on every operation")
         for k, v in extras.items():
             if v is None:
+                continue
+            if isinstance(v, str) and v.startswith("n/a"):
+                print(f"  [ -- ] {k}: {v}")     # not applicable to this script, not a failure
                 continue
             ok = v is True
             fails += not ok

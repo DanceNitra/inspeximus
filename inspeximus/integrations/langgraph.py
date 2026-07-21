@@ -103,6 +103,10 @@ class InspeximusStore(BaseStore):
                                            created_at=_dt(r.get("ts", 0)), updated_at=_dt(r.get("ts", 0)),
                                            score=score) for r, score in page])
             elif isinstance(op, ListNamespacesOp):
+                # This used to apply only offset/limit and ignore the op's match_conditions and
+                # max_depth, so `list_namespaces(prefix=("org",))` returned every namespace in the
+                # store. The parity audit never scripted this operation, so "drop-in BaseStore"
+                # passed while a real caller filtering by prefix would silently get the wrong set.
                 seen = []
                 for r in self.store.items:
                     if r.get("status") != "active":
@@ -110,6 +114,29 @@ class InspeximusStore(BaseStore):
                     ns = tuple((r.get("meta") or {}).get("lg_ns", ()))
                     if ns and ns not in seen:
                         seen.append(ns)
+
+                def _matches(ns, cond):
+                    path = tuple(cond.path)
+                    part = ns[:len(path)] if cond.match_type == "prefix" else ns[-len(path):]
+                    if len(part) != len(path):
+                        return False
+                    # "*" is a single-segment wildcard in a NameSpacePath.
+                    return all(p == "*" or p == n for p, n in zip(path, part))
+
+                for cond in (op.match_conditions or ()):
+                    seen = [ns for ns in seen if _matches(ns, cond)]
+
+                if op.max_depth is not None:
+                    truncated = []
+                    for ns in seen:                       # truncate, then dedupe: two deep namespaces
+                        t = ns[:op.max_depth]              # sharing a prefix collapse into one entry
+                        if t not in truncated:
+                            truncated.append(t)
+                    seen = truncated
+
+                # Sorted before slicing: the reference returns namespaces in sorted order, so with a
+                # limit an unsorted list hands back a different subset for the same query.
+                seen.sort()
                 results.append(seen[op.offset: op.offset + op.limit])
             else:
                 results.append(None)
@@ -154,7 +181,8 @@ class InspeximusSaver(BaseCheckpointSaver):
         return c.get("thread_id", ""), c.get("checkpoint_ns", ""), c.get("checkpoint_id")
 
     def _ckpts(self, thread=None, ns=None):
-        rows = [r for r in self.store.items if (r.get("meta") or {}).get("kind") == "lg_checkpoint"]
+        rows = [r for r in self.store.items if r.get("status") == "active"
+                and (r.get("meta") or {}).get("kind") == "lg_checkpoint"]
         if thread is not None:
             rows = [r for r in rows if r["meta"]["thread"] == thread and r["meta"]["ns"] == (ns or "")]
         rows.sort(key=lambda r: r.get("ts", 0))
@@ -167,6 +195,11 @@ class InspeximusSaver(BaseCheckpointSaver):
         cid, thread, ns = m["cid"], m["thread"], m["ns"]
         writes = []
         for w in self.store.items:
+            # ACTIVE only. A superseded row is a write that was replaced -- returning it as a pending
+            # write is how re-putting the same write produced two. LangGraph's own conformance suite
+            # caught it: test_put_writes_idempotent, "Expected exactly 1 write total, got 2".
+            if w.get("status") != "active":
+                continue
             wm = w.get("meta") or {}
             if (wm.get("kind") == "lg_write" and wm.get("thread") == thread
                     and wm.get("ns") == ns and wm.get("cid") == cid):

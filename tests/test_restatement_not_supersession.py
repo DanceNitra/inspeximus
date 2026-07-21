@@ -75,3 +75,22 @@ def test_two_tuple_extractor_is_unchanged():
     m.remember("I live in Prague")
     m.remember("I live in Berlin")
     assert [r["status"] for r in m.items] == ["superseded", "active"]
+
+
+def test_a_literal_duplicate_collapses_but_a_reworded_one_does_not():
+    """The line between 'evidence worth keeping' and 'the same row twice'.
+
+    Two differently-worded sentences carrying one value are two pieces of evidence, and retiring one
+    measurably cost current-value coverage. The SAME text written twice under the same key is one
+    fact stored twice -- and for a keyed KV caller it is a re-put, which must leave one row. Keeping
+    both broke LangGraph's checkpointer conformance (test_put_writes_idempotent).
+    """
+    dup = Inspeximus(path=None)
+    for _ in range(2):
+        dup.remember("lg write t/0", key="lgwrite::t::0", meta={"kind": "lg_write"})
+    assert sum(1 for r in dup.items if r["status"] == "active") == 1
+
+    reworded = Inspeximus(path=None)
+    reworded.remember("my title is Senior Data Analyst", key="my::title", object="Senior Data Analyst")
+    reworded.remember("your title is Senior Data Analyst", key="my::title", object="Senior Data Analyst")
+    assert sum(1 for r in reworded.items if r["status"] == "active") == 2

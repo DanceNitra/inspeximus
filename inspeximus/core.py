@@ -1321,7 +1321,13 @@ class Inspeximus:
             # echoes keyed, current-value coverage in a top-20 recall fell 5/12 -> 3/12 — the store was
             # deleting its own evidence for the CURRENT answer. Supersession means replaced by a
             # DIFFERENT value; agreement reaffirms.
-            if self._obj_sig(r) == new_sig_r:
+            # ...but a LITERAL duplicate is not a restatement either. Two differently-worded sentences
+            # carrying one value are evidence worth keeping; the same text written twice under the same
+            # key is one fact stored twice, and for a keyed KV caller it is simply a re-put. Keeping
+            # both broke LangGraph's own checkpointer conformance suite
+            # (test_put_writes_idempotent: "Expected exactly 1 write total, got 2"), because writing
+            # the same write twice must leave one row.
+            if self._obj_sig(r) == new_sig_r and (r.get("text") or "") != (rec.get("text") or ""):
                 continue
             vf_r = r.get("valid_from", r["ts"])
             if vf_r <= vf_new:                 # r is the older value -> retire it
