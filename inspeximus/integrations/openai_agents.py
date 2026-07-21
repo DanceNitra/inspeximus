@@ -6,7 +6,7 @@ faithful, drop-in persistent backend (the same slot SQLiteSession/RedisSession f
 conversation item in a mnemo store so history survives process restarts.
 
     from agents import Agent, Runner
-    from mnemo.integrations.openai_agents import MnemoSession
+    from inspeximus.integrations.openai_agents import MnemoSession
     session = MnemoSession("user-42", path="sessions.json")
     Runner.run_sync(agent, "hi", session=session)
 
@@ -21,7 +21,7 @@ searchable shadow. One store can hold many sessions (namespaced by session_id), 
 HONEST DIFFERENTIATOR (do not overclaim). A `Session` is a VERBATIM turn log, so mnemo's supersession /
 echo_guard (which key on FACTS) do NOT automatically "clean" replayed messages — for poison-resistant FACT
 memory use mnemo's core `remember(key=…, object=…)` / `recall()` alongside this session. What this backend
-DOES add for free over a plain SQLite session, from mnemo's governance layer:
+DOES add for free over a plain SQLite session, from inspeximus's governance layer:
   - RIGHT-TO-ERASURE across a user's turns: `session.forget_subject()` (or `store.forget_subject(user)`)
     hard-deletes the user's items AND leaves a signed, content-free deletion tombstone, so an erasure is
     provable and does not read as tampering (see mnemo.forget_subject / verify_writes).
@@ -45,7 +45,7 @@ class MnemoSession:
         is then current-truth. See Mnemo.extractor."""
         self.session_id = str(session_id)
         if store is None:
-            from mnemo import Mnemo
+            from inspeximus import Mnemo
             store = Mnemo(path=path)
         self.store = store
         if extractor is not None:

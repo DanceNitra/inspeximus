@@ -6,7 +6,7 @@ provides `MnemoStorage`, a drop-in Storage you hand to CrewAI's `ExternalMemory`
 
     from crewai import Crew, Agent, Task
     from crewai.memory.external.external_memory import ExternalMemory
-    from mnemo.integrations.crewai import MnemoStorage
+    from inspeximus.integrations.crewai import MnemoStorage
 
     crew = Crew(
         agents=[...], tasks=[...],
@@ -20,7 +20,7 @@ in the metadata (`storage.save(value, {"key": "user::tz"})`) or set an OPT-IN `e
 so plain `save()` calls are auto-keyed. Without a key, values are stored append-only like any RAG store.
 
 Duck-typed: this module does NOT import CrewAI, so `pip install agora-mnemo` alone is enough to use it against
-an installed CrewAI. `MnemoStorage` matches the `Storage` protocol structurally; `import mnemo` stays
+an installed CrewAI. `MnemoStorage` matches the `Storage` protocol structurally; `import inspeximus` stays
 zero-dependency. For semantic recall pass an embedder to the store: `MnemoStorage(embed=my_embed_fn)`; without
 one, recall is lexical (zero-dependency fallback).
 """
@@ -39,7 +39,7 @@ class MnemoStorage:
     def __init__(self, path: str | None = None, store: Any = None,
                  embed=None, extractor=None, tag: str = "crewai"):
         if store is None:
-            from mnemo import Mnemo
+            from inspeximus import Mnemo
             store = Mnemo(path=path, embed=embed)
         self.store = store
         self._tag = tag

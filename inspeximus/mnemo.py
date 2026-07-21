@@ -28,7 +28,7 @@ Design rules that are not optional (each one cost us to learn):
 Bring your own embedder for semantic recall (any text->vector fn); with none, mnemo falls back to a
 lexical token overlap so it runs anywhere, today.
 
-    from mnemo import Mnemo
+    from inspeximus import Mnemo
     m = Mnemo("memory.json")                 # or Mnemo("memory.json", embed=my_embedder)
     m.remember("Pre-trend tests catch only ~31% of fatal DiD bias.", tags=["causal"], value=3)
     m.recall("difference in differences", k=5)
@@ -338,7 +338,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
          you pinned the anchor against an externally-witnessed one);
       4. GIVEN the store (store_path to the JSON/encrypted file, or store_items as a decrypted list), every
          erased memory id is genuinely ABSENT from it — the 'read the raw store' proof soft-delete systems fail.
-    Returns {valid, checks, problems}. Pure-stdlib + Ed25519; import it standalone: `from mnemo import
+    Returns {valid, checks, problems}. Pure-stdlib + Ed25519; import it standalone: `from inspeximus import
     verify_erasure_certificate`. HONEST: signatures are load-bearing only against a party who does not hold
     receipt_key; for operator-adversarial audit, pin the anchor against one you witnessed out of band."""
     problems: list = []
@@ -409,7 +409,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.24.4"
+__version__ = "1.25.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1028,7 +1028,7 @@ class Mnemo:
         if reaffirm and (self.revert_authority is not None or self.revert_pubkey is not None)                 and capability is not _SANCTIONED and not self._revert_authorized(key, capability):
             raise PermissionError("reaffirm/revert requires a valid capability (revert authority is set)")
         # ORIGIN ATTESTATION (OPT-IN): bind this claim to a source's VERIFIED KEY. attestation is
-        # (pubkey_hex, sig_hex) or {"pubkey":..., "sig":...}; the signature (from mnemo.attest(text, sk,
+        # (pubkey_hex, sig_hex) or {"pubkey":..., "sig":...}; the signature (from inspeximus.attest(text, sk,
         # source_doc)) must verify over the same claim+canonical-source message, else the write is REJECTED
         # (a forged attestation is loud, not silently dropped). On success the record carries attested_key,
         # which strict_corroboration counts distinct instances of — so manufactured independence costs a real
@@ -5022,7 +5022,7 @@ class Mnemo:
         """Deterministic knowledge GRAPH over keyed (subject::relation, object) memories — zero-LLM, no graph DB.
         Every memory stored with a key of the form 'subject::relation' AND an `object` is an edge
         subject -[relation]-> object; entities are the subjects + objects. This gives the 'graph memory' view
-        mem0/Zep/cognee ship, but DERIVED deterministically from mnemo's existing supersession triples (no LLM
+        mem0/Zep/cognee ship, but DERIVED deterministically from inspeximus's existing supersession triples (no LLM
         entity-extraction, no separate graph store). It covers memories keyed explicitly OR via the optional
         `extractor` hook, so extractor-keyed free text also enters the graph. Only ACTIVE edges by default, so a
         superseded fact drops out of the graph (the graph reflects CURRENT truth) unless include_superseded.

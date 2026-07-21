@@ -7,8 +7,8 @@ time, with client-side search + filters, plus a header summary (counts, cohorts,
 design (viewing, not editing — edits go through the audited remember/revert/forget path).
 
 Usage:
-    from mnemo import Mnemo
-    from mnemo.browser import render_html, write_html
+    from inspeximus import Mnemo
+    from inspeximus.browser import render_html, write_html
     write_html(Mnemo("memory.json"), "mnemo_browser.html")   # then open the file
 or via the CLI: `mnemo browse [--out FILE] [--open]`.
 """

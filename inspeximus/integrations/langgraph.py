@@ -12,14 +12,14 @@ held, in order), point-in-time reads, tamper-evident receipts, and `forget_subje
 plain KV store can't offer. (mnemo's supersession itself is not the novelty here: BaseStore already overwrites
 on same-key put; the novelty is that mnemo *keeps and can prove* what the value used to be.)
 
-    from mnemo.integrations.langgraph import MnemoStore
+    from inspeximus.integrations.langgraph import MnemoStore
     store = MnemoStore(path="lg.json")
     store.put(("user", "42"), "timezone", {"tz": "UTC"})
     store.put(("user", "42"), "timezone", {"tz": "PST"})   # overwrites, like InMemoryStore
     store.get(("user", "42"), "timezone").value            # -> {"tz": "PST"}
     store.history(("user", "42"), "timezone")              # -> [{"tz": "UTC"}, {"tz": "PST"}]  (mnemo-only)
 
-Importing this module imports LangGraph (it subclasses BaseStore) — it is an opt-in extra; `import mnemo`
+Importing this module imports LangGraph (it subclasses BaseStore) — it is an opt-in extra; `import inspeximus`
 never pulls it in, so the core stays zero-dependency.
 """
 from __future__ import annotations
@@ -46,7 +46,7 @@ class MnemoStore(BaseStore):
 
     def __init__(self, path: str | None = None, store: Any = None):
         if store is None:
-            from mnemo import Mnemo
+            from inspeximus import Mnemo
             store = Mnemo(path=path)
         self.store = store
 
@@ -135,16 +135,16 @@ class MnemoSaver(BaseCheckpointSaver):
     writes are stored as mnemo records (payloads serialized via LangGraph's own serde, base64 in meta), tagged
     `_langgraph` so they never pollute normal recall.
 
-        from mnemo.integrations.langgraph import MnemoSaver
+        from inspeximus.integrations.langgraph import MnemoSaver
         graph = builder.compile(checkpointer=MnemoSaver(path="threads.json"))
 
     Async methods delegate to the sync ones (a local file store has no real I/O concurrency to exploit); fine for
-    single-process agents. Importing this module imports LangGraph — opt-in; `import mnemo` never pulls it in."""
+    single-process agents. Importing this module imports LangGraph — opt-in; `import inspeximus` never pulls it in."""
 
     def __init__(self, path: str | None = None, store: Any = None, serde: Any = None):
         super().__init__(serde=serde)
         if store is None:
-            from mnemo import Mnemo
+            from inspeximus import Mnemo
             store = Mnemo(path=path)
         self.store = store
 

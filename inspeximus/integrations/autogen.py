@@ -8,11 +8,11 @@ poisoned facts by default, so the agent is grounded on CURRENT-TRUTH context, no
 correction already retired.
 
     from autogen_agentchat.agents import AssistantAgent
-    from mnemo.integrations.autogen import MnemoMemory
+    from inspeximus.integrations.autogen import MnemoMemory
     mem = MnemoMemory(path="mem.json")
     agent = AssistantAgent("assistant", model_client=..., memory=[mem])
 
-Zero-dependency core: `import mnemo` never imports AutoGen. The AutoGen types are imported LAZILY inside the
+Zero-dependency core: `import inspeximus` never imports AutoGen. The AutoGen types are imported LAZILY inside the
 methods, so `pip install agora-mnemo` alone is enough — you only need AutoGen installed to actually USE the
 adapter (which you already have, since you're wiring it into an AutoGen agent).
 
@@ -31,7 +31,7 @@ class MnemoMemory:
     def __init__(self, path: str | None = None, store: Any = None, k: int = 5, source: str | None = None,
                  extractor=None):
         if store is None:
-            from mnemo import Mnemo
+            from inspeximus import Mnemo
             store = Mnemo(path=path)
         self.store = store
         self.k = int(k)

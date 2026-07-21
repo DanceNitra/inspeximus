@@ -2,11 +2,11 @@ name: release
 
 # Publishes to PyPI via Trusted Publishing (OIDC) — no API token exists anywhere, and PyPI records a
 # signed attestation binding the wheel to THIS repository, THIS workflow and THIS commit. That is the
-# part a user can check: `pip download agora-mnemo` and the provenance says where it was built, rather
+# part a user can check: `pip download inspeximus` and the provenance says where it was built, rather
 # than "the maintainer says he built it from the tagged source".
 #
 # One-time setup on PyPI (owner, web UI — cannot be done from here):
-#   https://pypi.org/manage/project/agora-mnemo/settings/publishing/
+#   https://pypi.org/manage/project/inspeximus/settings/publishing/
 #   Owner: DanceNitra · Repository: mnemo · Workflow: release.yml · Environment: pypi
 # After that, publishing needs no secret at all.
 
@@ -51,7 +51,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          FOUND=$(ls dist/*.whl | sed -E 's/.*agora_mnemo-([0-9.]+)-.*/\1/')
+          FOUND=$(ls dist/*.whl | sed -E 's/.*inspeximus-([0-9.]+)-.*/\1/')
           echo "tag=$TAG wheel=$FOUND"
           test "$TAG" = "$FOUND"
       - uses: actions/upload-artifact@v4

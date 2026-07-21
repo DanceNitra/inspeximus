@@ -5,7 +5,7 @@ flushes into each block, and before a turn the blocks return relevant content to
 async `_aget` (return what to inject) and `_aput` (store new messages).
 
     from llama_index.core.memory import Memory
-    from mnemo.integrations.llamaindex import MnemoMemoryBlock
+    from inspeximus.integrations.llamaindex import MnemoMemoryBlock
     memory = Memory.from_defaults(
         session_id="s1", token_limit=40000,
         memory_blocks=[MnemoMemoryBlock(name="mnemo", path="mem.json", k=5)],
@@ -16,7 +16,7 @@ through mnemo's `recall()`, which hides SUPERSEDED values by default — so once
 keyed write), the block never injects the stale value back into the prompt. For that to bite you must write
 facts with a supersession `key`; plain message text is stored append-only like any block.
 
-Subclasses BaseMemoryBlock, so importing this module imports LlamaIndex (opt-in extra); `import mnemo` stays
+Subclasses BaseMemoryBlock, so importing this module imports LlamaIndex (opt-in extra); `import inspeximus` stays
 zero-dependency.
 """
 from __future__ import annotations
@@ -38,7 +38,7 @@ class MnemoMemoryBlock(BaseMemoryBlock[str]):
     def __init__(self, path: str | None = None, store: Any = None, extractor=None, **kwargs: Any):
         super().__init__(**kwargs)                      # only pydantic fields (name/description/priority/k)
         if store is None:
-            from mnemo import Mnemo
+            from inspeximus import Mnemo
             store = Mnemo(path=path)
         self._store = store
         # OPT-IN extractor (text -> (key, object)): auto-keys _aput'd messages so _aget injects current-truth.

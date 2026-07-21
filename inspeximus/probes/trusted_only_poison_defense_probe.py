@@ -16,7 +16,7 @@ excluded — deterministically, zero-LLM. Asserts (each able to FAIL):
 """
 import sys
 sys.path.insert(0, ".")
-from mnemo import Mnemo, new_source_keypair, attest
+from inspeximus import Mnemo, new_source_keypair, attest
 
 FAILS = []
 def check(n, c):

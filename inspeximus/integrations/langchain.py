@@ -1,14 +1,14 @@
 """LangChain integration for mnemo — a supersession-filtered retriever and a chat-message history.
 
-Two opt-in classes (importing this module imports langchain-core; `import mnemo` stays zero-dependency):
+Two opt-in classes (importing this module imports langchain-core; `import inspeximus` stays zero-dependency):
 
-    MnemoRetriever          — a langchain_core BaseRetriever whose results come from mnemo.recall(), so
+    MnemoRetriever          — a langchain_core BaseRetriever whose results come from inspeximus.recall(), so
                               SUPERSEDED facts are hidden by default: once a fact is corrected via a keyed
                               write, the retriever never returns the stale value into your chain/prompt.
     MnemoChatMessageHistory — a BaseChatMessageHistory that persists a conversation in a mnemo store
                               (per-session subject) with the same current-truth recall available.
 
-    from mnemo.integrations.langchain import MnemoRetriever
+    from inspeximus.integrations.langchain import MnemoRetriever
     r = MnemoRetriever(path="mem.json", k=5)
     r.store.remember("the deploy channel is BLUE-9", key="deploy-channel")   # keyed write -> supersedable
     docs = r.invoke("what is the deploy channel?")     # returns current value, never a superseded one
@@ -24,7 +24,7 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage, message_to_dict, messages_from_dict
 
-from mnemo import Mnemo
+from inspeximus import Mnemo
 
 
 class MnemoRetriever(BaseRetriever):

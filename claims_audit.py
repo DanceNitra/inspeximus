@@ -41,7 +41,7 @@ def _load():
     p = os.environ.get(PKG_ENV)
     if p and p not in sys.path:
         sys.path.insert(0, p)
-    import mnemo
+    import inspeximus as mnemo
     from mnemo.mnemo import Mnemo
     return mnemo, Mnemo
 
@@ -307,7 +307,7 @@ def main():
     os.environ[PKG_ENV] = str(pkg)
 
     sys.path.insert(0, str(pkg))
-    import mnemo
+    import inspeximus as mnemo
     print("=" * 92)
     print(f"auditing : {src}")
     print(f"version  : {getattr(mnemo, '__version__', '?')}")

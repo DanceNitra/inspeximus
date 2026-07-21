@@ -40,7 +40,7 @@ def _embedder():
 
 
 def _store(path, persist_vectors: bool = False):
-    from mnemo import Mnemo
+    from inspeximus import Mnemo
     p = path or os.environ.get("MNEMO_PATH") or "mnemo_memory.json"
     # persist_vectors stays OFF by default (vectors are a re-derivable cache; writing them balloons the store
     # file on every command). `reembed` opts in — persisting is the entire point of that command.
@@ -184,7 +184,7 @@ def main(argv=None):
             + (f"\n{res['warning']}" if res.get("warning") else ""))
 
     elif a.cmd == "browse":
-        from mnemo.browser import write_html
+        from inspeximus.browser import write_html
         path = write_html(m, a.out)
         if a.open:
             import webbrowser, pathlib
@@ -221,7 +221,7 @@ def main(argv=None):
         _out(exp, a.json) or print(json.dumps(exp, indent=2, default=str))
 
     elif a.cmd == "distill":
-        from mnemo import default_distiller
+        from inspeximus import default_distiller
         try:
             text = open(a.file, encoding="utf-8").read() if a.file else sys.stdin.read()
         except OSError as e:                    # an unreadable --file deserves the same tidy exit as the

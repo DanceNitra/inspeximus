@@ -91,7 +91,7 @@ def _make_embedder(cwd):
 
 
 def _store(cwd):
-    from mnemo import Mnemo
+    from inspeximus import Mnemo
     d = os.path.join(cwd or os.getcwd(), ".mnemo")
     os.makedirs(d, exist_ok=True)
     emb_doc, emb_query, emb_id = _make_embedder(cwd)
@@ -230,8 +230,8 @@ def session_start(ev):
         print(f"[mnemo] this project's current known files (latest state only):\n{lines}")
     # once-a-day, opt-out "newer version exists" courtesy (stdout is injected as context here)
     try:
-        from mnemo import __version__
-        from mnemo._update import check_for_update
+        from inspeximus import __version__
+        from inspeximus._update import check_for_update
         note = check_for_update(__version__, cache_dir=os.path.join(cwd, ".mnemo"))
         if note:
             print(note)

@@ -7,11 +7,11 @@ hindsight-pydantic-ai, etc.) is to expose memory as agent tools. `mnemo_toolset(
 before storing it.
 
     from pydantic_ai import Agent
-    from mnemo.integrations.pydantic_ai import mnemo_toolset
+    from inspeximus.integrations.pydantic_ai import mnemo_toolset
     agent = Agent("openai:gpt-4o-mini", toolsets=[mnemo_toolset(path="mem.json")])
 
 Pass a supersession `extractor` (text -> (key, object)) so remembered facts auto-key and a corrected value
-stops surfacing; see Mnemo.extractor. Importing this module imports Pydantic AI (opt-in extra); `import mnemo`
+stops surfacing; see Mnemo.extractor. Importing this module imports Pydantic AI (opt-in extra); `import inspeximus`
 stays zero-dependency.
 """
 from __future__ import annotations
@@ -21,7 +21,7 @@ from typing import Any
 def mnemo_toolset(store: Any = None, path: str | None = None, k: int = 5, extractor=None):
     """Build a Pydantic AI FunctionToolset of memory tools bound to a mnemo store."""
     if store is None:
-        from mnemo import Mnemo
+        from inspeximus import Mnemo
         store = Mnemo(path=path)
     if extractor is not None:
         store.extractor = extractor

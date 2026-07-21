@@ -15,7 +15,7 @@ supersession fires without the benchmark supplying keys.
 
     # in MemoryAgentBench/agent.py:
     #   elif self._is_agent_type("mnemo"):
-    #       from mnemo.integrations.memoryagentbench import MnemoMABMemory
+    #       from inspeximus.integrations.memoryagentbench import MnemoMABMemory
     #       self.memory = MnemoMABMemory()          # then reuse the mem0 handler unchanged
     #       self.retrieve_num = agent_config['retrieve_num']; self.client = self._create_oai_client()
 
@@ -46,7 +46,7 @@ class MnemoMABMemory:
     """
 
     def __init__(self, path: str | None = None, embed=None, use_extractor: bool = True):
-        from mnemo import Mnemo
+        from inspeximus import Mnemo
         self._Mnemo = Mnemo
         self._path = path
         self._embed = embed
@@ -62,7 +62,7 @@ class MnemoMABMemory:
             m.echo_guard = True
             if self._use_extractor:
                 try:
-                    from mnemo import regex_extractor
+                    from inspeximus import regex_extractor
                     m.extractor = regex_extractor
                 except Exception:
                     pass

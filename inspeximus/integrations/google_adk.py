@@ -7,7 +7,7 @@ adapter is a drop-in replacement for `InMemoryMemoryService`, backed by a mnemo 
 retrieval is value-ranked lexical+semantic instead of plain word overlap.
 
     from google.adk.runners import Runner
-    from mnemo.integrations.google_adk import MnemoMemoryService
+    from inspeximus.integrations.google_adk import MnemoMemoryService
     runner = Runner(agent=agent, app_name="app", session_service=..., memory_service=MnemoMemoryService(path="mem.json"))
 
 Two honest extras over the built-in service:
@@ -18,7 +18,7 @@ Two honest extras over the built-in service:
     memories across sessions and leaves a signed deletion tombstone (GDPR-style, provable). No built-in ADK
     service offers that.
 
-Subclasses BaseMemoryService, so importing this module imports google-adk (opt-in extra); `import mnemo`
+Subclasses BaseMemoryService, so importing this module imports google-adk (opt-in extra); `import inspeximus`
 stays zero-dependency.
 """
 from __future__ import annotations
@@ -38,7 +38,7 @@ class MnemoMemoryService(BaseMemoryService):
 
     def __init__(self, path: str | None = None, store: Any = None, k: int = 10, extractor=None):
         if store is None:
-            from mnemo import Mnemo
+            from inspeximus import Mnemo
             store = Mnemo(path=path)
         self.store = store
         self.k = int(k)

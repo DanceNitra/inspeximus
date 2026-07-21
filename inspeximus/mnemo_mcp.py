@@ -31,7 +31,7 @@ from pathlib import Path
 
 # Import the local zero-dep store whether launched as `python -m mnemo.mnemo_mcp` or `python mnemo_mcp.py`.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mnemo import Mnemo  # noqa: E402
+from inspeximus import Mnemo  # noqa: E402
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -531,8 +531,8 @@ def review_contradictions() -> str:
 def main():
     # once-a-day, opt-out "newer version exists" courtesy. MUST go to stderr — stdout is the JSON-RPC channel.
     try:
-        from mnemo import __version__
-        from mnemo._update import check_for_update
+        from inspeximus import __version__
+        from inspeximus._update import check_for_update
         note = check_for_update(__version__)
         if note:
             sys.stderr.write(note + "\n")
