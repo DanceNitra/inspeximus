@@ -193,17 +193,16 @@ jobs:
       - name: publish (skipped when the registry already has this exact version)
         if: steps.state.outputs.already != 'true'
         run: ./mcp-publisher publish
-      - name: the listing must actually be there afterwards
+      - name: the version we just released must actually be listed
         run: |
-          # The registry accepts the publish before its search index catches up, so a single check right
-          # after publishing fails on a listing that is in fact fine. Poll instead of guessing a sleep.
+          # The registry keeps every version and does NOT return them newest-first; the check confirms OUR
+          # version is present rather than reading servers[0]. It polls because the index catches up a little
+          # after the publish returns.
+          VERSION="$(python -c "import json;print(json.load(open('server.json'))['version'])")"
           for i in $(seq 1 20); do
             curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=inspeximus" -o r.json
-            if python -c "import json,sys;d=json.load(open('r.json'));sys.exit(0 if d['metadata']['count']>0 else 1)"; then
-              python -c "import json;d=json.load(open('r.json'));s=d['servers'][0]['server'];print('listed:',s['name'],s['version'])"
-              exit 0
-            fi
+            if python packages/_registry_verify.py r.json "$VERSION"; then exit 0; fi
             echo "not indexed yet ($i/20)"; sleep 15
           done
-          echo "::error::published, but the registry still returns zero results for inspeximus"
+          echo "::error::published, but the registry does not list $VERSION"
           exit 1

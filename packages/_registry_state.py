@@ -20,22 +20,23 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-def listed_version(payload: dict, name: str) -> str | None:
-    for entry in payload.get("servers", []):
-        server = entry.get("server", entry)
-        if server.get("name") == name:
-            return server.get("version")
-    return None
+def listed_versions(payload: dict, name: str) -> set[str]:
+    # The registry keeps every published version, so this must collect ALL of them, not just the first
+    # match. Returning the first entry's version (which is the OLDEST) would compare an old version to
+    # ours, decide "not listed", and then hit the duplicate-version 400 the check exists to avoid.
+    return {(e.get("server", e)).get("version")
+            for e in payload.get("servers", [])
+            if (e.get("server", e)).get("name") == name}
 
 
 def main(argv: list[str]) -> int:
     manifest = json.loads((ROOT / "server.json").read_text(encoding="utf-8"))
     name, version = manifest["name"], manifest["version"]
 
-    current = None
+    versions: set[str] = set()
     if len(argv) > 1:
         try:
-            current = listed_version(json.loads(pathlib.Path(argv[1]).read_text(encoding="utf-8")), name)
+            versions = listed_versions(json.loads(pathlib.Path(argv[1]).read_text(encoding="utf-8")), name)
         except Exception as e:
             # An unreadable response is not evidence that the version is absent; let publish decide, and
             # let it fail loudly if the version really is a duplicate.
@@ -43,8 +44,8 @@ def main(argv: list[str]) -> int:
     else:
         print("no registry response given; assuming not listed")
 
-    already = current == version
-    print(f"{name}: registry has {current!r}, we want {version!r} -> already={already}")
+    already = version in versions
+    print(f"{name}: registry has {sorted(versions) or 'nothing'}, we want {version!r} -> already={already}")
     out = os.environ.get("GITHUB_OUTPUT")
     if out:
         with open(out, "a", encoding="utf-8") as fh:
