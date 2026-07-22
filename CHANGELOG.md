@@ -3,6 +3,14 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.29.1 - remove an internal path from a docstring
+
+A docstring in the core referenced an internal repository path (`agora_output/lab/memops/keying_recall.py`)
+that describes where a behaviour was measured. That path means nothing outside the private repo and had no
+business shipping in a public package; it is now just "(measured)". No code or behaviour change — a
+hygiene fix, found while re-vendoring this core into a public benchmark and grepping it for internal
+references. The whole package was re-scanned: no other internal path, secret, or identifier leaks.
+
 ## 1.29.0 - a Haystack DocumentStore
 
 `InspeximusDocumentStore` implements Haystack's `DocumentStore` protocol (write_documents /

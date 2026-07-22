@@ -412,7 +412,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.29.0"
+__version__ = "1.29.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3029,7 +3029,7 @@ class Inspeximus:
     def _retired_values(self) -> list:
         """Per key: (retired value strings, current value string). The read-side of supersession.
 
-        WHY THIS EXISTS (measured, agora_output/lab/memops/keying_recall.py). Supersession retires a
+        WHY THIS EXISTS (measured). Supersession retires a
         RECORD, not a VALUE. In structured data those are the same thing; in conversational prose one
         value is smeared across a dozen sentences — the user states it, the assistant echoes it, a
         summary repeats it, a template quotes it — and retiring the single sentence that happened to
