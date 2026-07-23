@@ -3,6 +3,19 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.33.0 - check_self_narration: keep the assistant's self-talk out of the store
+
+New write-gate primitive `check_self_narration(text)` (library + MCP tool). An LLM memory-writer routinely
+stores its OWN reasoning and hedges ("as an AI...", "I think...", "I remember that you...") as if they were
+facts about the user, silently polluting the store. This deterministic, zero-LLM phrase guard flags such
+candidate writes at word boundaries and returns `{'self_narration': bool, 'markers': [...]}` so the caller
+can gate or rewrite before remember(). It FLAGS, never blocks (a first-person quote can legitimately trip it),
+matching inspeximus's no-silent-rewrite stance. Pairs with check_conflict (contradiction gate) and
+verify_claim (grounding gate) to complete the write/assert boundary. Exposed MCP tools 43 -> 44. 8 tests;
+full suite green. No new dependencies. (Note: write-time ORIGIN-binding — a source cryptographically signing
+authorship of a write — is already provided by the attestation layer: remember(..., attestation=), plus
+verify_attribution() and verify_writes().)
+
 ## 1.32.0 - verify_claim: read-time grounding, the output-side complement to check_conflict
 
 New primitive `verify_claim(text, key=, object=)` (library + MCP tool). `check_conflict` gates WRITES; this

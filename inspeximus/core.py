@@ -199,6 +199,19 @@ _NON_CONTENT = ("no sources were provided", "no sources provided", "i cannot", "
                 "as an ai language model", "as an ai", "i'm sorry", "i am sorry", "cannot assist",
                 "no information available", "not enough information", "none provided")
 
+# SELF-NARRATION markers: the ASSISTANT describing its own state / reasoning / meta-conversation, which an
+# LLM memory-writer often stores as if it were a fact ABOUT THE USER, polluting the store with the model's
+# own hedges and self-talk. Matched as whole phrases at word boundaries. A caller-side write-gate signal
+# (flag, never auto-reject) — see check_self_narration. Honest limit: heuristic; a legitimately stored
+# first-person QUOTE ("user said: I think...") can trip it, which is why it flags rather than blocks.
+_SELF_NARRATION = (
+    "as an ai", "as an assistant", "as your assistant", "as a language model", "i am an ai", "i'm an ai",
+    "i am here to help", "i'm here to help", "i can help you", "how can i help", "let me help",
+    "i think", "i believe", "i feel that", "i'm not sure", "i am not sure", "i'm unsure", "i guess",
+    "i suppose", "i assume", "in my opinion", "it seems to me", "i would say", "i'd say", "i'm confident",
+    "i remember that", "i recall that", "i noted that", "i have stored", "i've stored", "if i understand",
+    "correct me if i", "to summarize", "as i mentioned", "as i said")
+
 # PII DETECTION (zero-dependency regex heuristic). Ordered by specificity so a more-specific pattern
 # (SSN, credit card) claims a span BEFORE a broader one (phone) can eat it. This is a lightweight DLP
 # HEURISTIC for tagging + masking, NOT a compliance-grade detector: it has false negatives (obfuscated
@@ -412,7 +425,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.32.0"
+__version__ = "1.33.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5096,6 +5109,24 @@ class Inspeximus:
             return _out("contradicted", contra.get("object"),
                         {"id": contra["id"], "object": contra.get("object"), "text": contra["text"][:200]})
         return _out("unsupported", None, None)
+
+    @staticmethod
+    def check_self_narration(text: str) -> dict:
+        """WRITE-TIME self-narration guard (READ-ONLY, no LLM, no state): does this candidate write read as the
+        ASSISTANT narrating its own reasoning/state ("as an AI…", "I think…", "I remember that…") rather than a
+        fact about the user/world? An LLM memory-writer routinely stores its own hedges and self-talk as if they
+        were user facts, silently polluting the store — the specific failure a fabrication write-gate should
+        catch. Deterministic phrase match at word boundaries. Returns {'self_narration': bool, 'markers': [...]}
+        so the caller can gate/rewrite the write; it FLAGS, never blocks (inspeximus never auto-rejects). Honest
+        limit: heuristic — a legitimately stored first-person QUOTE can trip it, hence flag-not-block."""
+        markers: list = []
+        if isinstance(text, str) and text:
+            low = text.lower()
+            for phrase in _SELF_NARRATION:
+                # word-boundary match so 'i think' does not fire inside 'within' etc.
+                if re.search(r"(?<![a-z])" + re.escape(phrase) + r"(?![a-z])", low):
+                    markers.append(phrase)
+        return {"self_narration": bool(markers), "markers": markers}
 
     # ── value, reported at the COHORT level ───────────────────────────────────
     def value_by_cohort(self) -> dict:

@@ -373,6 +373,16 @@ def verify_claim(text: str, key: str | None = None, object: str | None = None) -
 
 
 @mcp.tool()
+def check_self_narration(text: str) -> dict:
+    """WRITE-TIME self-narration guard (read-only, no LLM): does this candidate memory read as the ASSISTANT
+    narrating its own reasoning/state ("as an AI...", "I think...", "I remember that...") instead of a fact
+    about the user/world? LLM memory-writers routinely store their own hedges and self-talk as if they were
+    user facts, silently polluting the store. Returns {'self_narration': bool, 'markers': [...]} so you can
+    gate or rewrite the write before remember(). Flags, never blocks."""
+    return _MEM.check_self_narration(text)
+
+
+@mcp.tool()
 def value_by_cohort() -> dict:
     """Per-tag value rollup (count / total value / average). Reported at the cohort level on purpose:
     at n-of-1 a single memory's value is noise; the tag/time-block is where the signal is real."""
