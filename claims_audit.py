@@ -262,8 +262,8 @@ CHECKS = [
 NOT_TESTABLE_HERE = [
     "mem0 keeps the deleted value in its SQLite history table",
     "Zep/Graphiti retains the invalidated edge",
-    "Letta/MemGPT has no undo",
-    "no competitor exposes revert-to-predecessor",
+    "Letta has an engine-level checkpoint-undo (undo_checkpoint_block over BlockHistory), not surfaced as a first-class recall-integrity op",
+    "revert-to-predecessor is rare: mem0 and Graphiti expose none; Letta has an undocumented service-layer undo",
     "secure erasure at rest (needs an encrypted store + key destruction)",
 ]
 

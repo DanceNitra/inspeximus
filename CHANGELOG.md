@@ -3,6 +3,21 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.30.0 - expose the operator-adversarial provenance primitives over MCP
+
+`anchor()` and `verify_consistency()` are now MCP tools. Both already existed in the core but were
+unreachable over MCP, which meant the one part of the tamper-evidence story that survives an adversarial
+*operator* was invisible to agents. `verify_writes()` proves the write chain wasn't silently edited — but
+an operator who holds the receipt key can rewrite the whole history *and* re-sign it so it still verifies
+internally. `anchor()` emits a Certificate-Transparency-style signed tree head (RFC 6962): a compact,
+externally-publishable commitment to the entire write + erasure history at this instant. Publish it where
+the operator can't retroactively alter it (a public log, a third-party witness, the auditor's own records),
+and `verify_consistency(prior_anchor)` later detects any append-only violation against it — the forged tip
+won't reconcile with the tip an outsider already pinned. Verified end-to-end: a valid forward-extension
+stays consistent; a tampered tip is caught as a fork. No new dependencies; the primitives are unchanged,
+only newly reachable. Also corrected two stale claim strings in `claims_audit.py`: revert-to-predecessor is
+*rare* (absent in mem0 and Graphiti), not unique — Letta ships an engine-level checkpoint-undo.
+
 ## 1.29.1 - remove an internal path from a docstring
 
 A docstring in the core referenced an internal repository path (`agora_output/lab/memops/keying_recall.py`)
