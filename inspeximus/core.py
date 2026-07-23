@@ -412,7 +412,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.31.0"
+__version__ = "1.32.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5028,6 +5028,75 @@ class Inspeximus:
         return [{"id": r["id"], "kind": kind, "key": r.get("key"), "object": r.get("object"),
                  "text": r["text"][:200]} for r, kind in hits]
 
+    def verify_claim(self, text: str, key: str | None = None, object: str | None = None,
+                     sim_threshold: float = 0.5, incompatible=None) -> dict:
+        """READ-TIME grounding check (READ-ONLY, no LLM): is this asserted memory-claim SUPPORTED by the
+        CURRENT stored truth? The output-side complement to check_conflict (which gates WRITES). Call it on a
+        claim an agent is about to ASSERT back to the user ("you told me X", "I remember that Y") to catch a
+        claim that is ungrounded OR — the case a write-gate / tombstone store cannot see from the store alone
+        — one that cites a value which WAS true but has since been SUPERSEDED or reverted. Deterministic and
+        supersession-AWARE, which an LLM grounding judge does not reliably get (a corrected value is usually
+        MORE embedding-similar to the claim than a rephrase, so a cosine/LLM check reads it as 'grounded').
+        Does NOT write. Returns {'verdict', 'current', 'matched'} with verdict in:
+          - 'supported'        : matches an ACTIVE memory (key+object, or a similar memory with no clash)
+          - 'stale_superseded' : matches a RETIRED value whose key now holds a DIFFERENT current value — the
+                                 reply is citing a corrected fact (the dangerous case; 'current' = the truth now)
+          - 'contradicted'     : clashes with the CURRENT active value (asserts against current truth)
+          - 'unsupported'      : no matching memory at all (possible fabrication)
+
+        This is the deterministic, retire-history-aware read-side of the 'model proposes, store decides'
+        boundary: a write-gate stops a corrected fact being re-STORED, but only a check against current-truth-
+        vs-history catches the same corrected fact being re-ASSERTED in the generated reply."""
+        inc = incompatible or (lambda a, b: _value_clash(a, b) or _negation_clash(a, b))
+        def _matches(rec_object, rec_text):
+            if object is not None and rec_object is not None:
+                return str(rec_object) == str(object)          # both values known -> compare directly
+            return not inc(text, rec_text or "")               # else: no value clash / negation flip
+        def _out(verdict, cur, matched):
+            return {"verdict": verdict,
+                    "current": (cur.get("object") if isinstance(cur, dict) else cur),
+                    "matched": matched}
+        # (1) keyed path — precise and supersession-aware
+        if key is not None:
+            cur = self._current_active(key)
+            if cur is not None and _matches(cur.get("object"), cur["text"]):
+                return _out("supported", cur, {"id": cur["id"], "object": cur.get("object"),
+                                                "text": cur["text"][:200]})
+            stale = next((h for h in self.history(key)
+                          if h["status"] != "active" and _matches(h.get("object"), h.get("text"))), None)
+            if stale is not None:
+                return _out("stale_superseded", (cur.get("object") if cur else None),
+                            {"id": stale["id"], "object": stale.get("object"),
+                             "text": (stale.get("text") or "")[:200],
+                             "invalidated_at": stale.get("invalidated_at"), "policy": stale.get("policy")})
+            if cur is not None:
+                return _out("contradicted", cur, {"id": cur["id"], "object": cur.get("object"),
+                                                  "text": cur["text"][:200]})
+            return _out("unsupported", None, None)
+        # (2) keyless path — similarity search: active (support / contradict), then retired (stale)
+        tvec = self._qvec(text)
+        rows = [r for r in self.items if self.tenant is None or r.get("tenant") == self.tenant]
+        contra = None
+        for r in rows:
+            if r.get("status") != "active":
+                continue
+            if self._similarity(text, r, tvec) >= sim_threshold:
+                if not inc(text, r["text"]):
+                    return _out("supported", r.get("object"),
+                                {"id": r["id"], "object": r.get("object"), "text": r["text"][:200]})
+                if contra is None:
+                    contra = r
+        for r in rows:
+            if r.get("status") == "active":
+                continue
+            if self._similarity(text, r, tvec) >= sim_threshold and not inc(text, r["text"]):
+                return _out("stale_superseded", None,
+                            {"id": r["id"], "object": r.get("object"), "text": r["text"][:200]})
+        if contra is not None:
+            return _out("contradicted", contra.get("object"),
+                        {"id": contra["id"], "object": contra.get("object"), "text": contra["text"][:200]})
+        return _out("unsupported", None, None)
+
     # ── value, reported at the COHORT level ───────────────────────────────────
     def value_by_cohort(self) -> dict:
         """Per-TAG value rollup. Deliberately not per-memory: at n-of-1, per-item value is noise;
@@ -5306,6 +5375,7 @@ class _TenantView:
     def consolidate_clusters(self, *a, **k): return Inspeximus.consolidate_clusters(self, *a, **k)
     def contradictions(self, *a, **k):  return Inspeximus.contradictions(self, *a, **k)
     def check_conflict(self, *a, **k):  return Inspeximus.check_conflict(self, *a, **k)
+    def verify_claim(self, *a, **k):    return Inspeximus.verify_claim(self, *a, **k)
     def _cluster_active(self, *a, **k): return Inspeximus._cluster_active(self, *a, **k)
     def _supersede_by_key(self, *a, **k): return Inspeximus._supersede_by_key(self, *a, **k)
     def candidates(self, *a, **k):      return Inspeximus.candidates(self, *a, **k)

@@ -361,6 +361,18 @@ def check_conflict(text: str, key: str | None = None, object: str | None = None)
 
 
 @mcp.tool()
+def verify_claim(text: str, key: str | None = None, object: str | None = None) -> dict:
+    """READ-TIME grounding check (read-only, no LLM): BEFORE an agent ASSERTS a memory-claim back to the user
+    ("you told me X", "I remember Y"), see whether the CURRENT stored truth supports it. The output-side
+    complement to check_conflict. Returns {'verdict', 'current', 'matched'} where verdict is: 'supported'
+    (matches an active memory), 'stale_superseded' (matches a value that has since been CORRECTED/reverted —
+    the reply is citing an outdated fact; 'current' is the truth now), 'contradicted' (clashes with current
+    truth), or 'unsupported' (no matching memory — possible fabrication). Supersession-aware, so it catches a
+    corrected fact re-surfacing in the reply — the case a write-gate cannot see. Detects, never writes."""
+    return _MEM.verify_claim(text, key=key, object=object)
+
+
+@mcp.tool()
 def value_by_cohort() -> dict:
     """Per-tag value rollup (count / total value / average). Reported at the cohort level on purpose:
     at n-of-1 a single memory's value is noise; the tag/time-block is where the signal is real."""

@@ -3,6 +3,20 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.32.0 - verify_claim: read-time grounding, the output-side complement to check_conflict
+
+New primitive `verify_claim(text, key=, object=)` (library + MCP tool). `check_conflict` gates WRITES; this
+governs the ASSERTION side — call it on a memory-claim an agent is about to state back to the user ("you told
+me X") to see whether the CURRENT stored truth supports it. Deterministic (no LLM), read-only, and — the point
+— supersession-AWARE, so it separates four verdicts: `supported` (matches an active memory), `stale_superseded`
+(matches a value that has since been CORRECTED/reverted — the reply is citing an outdated fact; the response
+carries the current value), `contradicted` (clashes with current truth), `unsupported` (no matching memory —
+possible fabrication). The `stale_superseded` case is the differentiator: a write-gate/tombstone store stops a
+corrected fact being re-STORED, but only a check against current-truth-vs-history catches the same corrected
+fact being re-ASSERTED in a generated reply — and a cosine/LLM grounding judge tends to miss it because the old
+value is usually MORE embedding-similar to the claim than a rephrase. Exposed MCP tools 42 -> 43. 8 new tests;
+full suite green. No new dependencies.
+
 ## 1.31.0 - expose the auditor's toolkit over MCP
 
 Eight more read-mostly governance/audit primitives are now MCP tools, completing the DPO/auditor surface an
