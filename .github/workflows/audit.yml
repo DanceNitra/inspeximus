@@ -111,6 +111,20 @@ jobs:
             exit 1
           fi
 
+  optional-adapters:
+    name: adapters whose tests otherwise run in NO environment
+    runs-on: ubuntu-latest
+    # tests/test_governance_mixin.py skips crewai and llama_index when the dependency is absent, and no job
+    # installed either — so those skips were permanent and the adapters were covered nowhere. A skip that is
+    # never un-skipped is an untested code path with a green tick next to it.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pytest crewai llama-index-core
+      - run: python -m pytest tests/test_governance_mixin.py tests/test_surfaces_consistency.py -q
+
   haystack-parity:
     name: InspeximusDocumentStore vs Haystack's own document store
     runs-on: ubuntu-latest
@@ -121,7 +135,10 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --upgrade haystack-ai pytest
       - run: python haystack_audit.py
-      - run: python -m pytest tests/test_governance_mixin.py -q
+      # tests/test_haystack.py skips locally (haystack-ai is optional) and this job used to run only
+      # test_governance_mixin.py — so all 9 haystack tests, including the one asserting a delete removes the
+      # value FROM DISK, executed in no environment at all. A test that runs nowhere is not a test.
+      - run: python -m pytest tests/test_haystack.py tests/test_governance_mixin.py -q
       - name: parity check must fail when writes are swallowed
         run: |
           if HAYSTACK_FALSIFY=1 python haystack_audit.py --repeats 1; then

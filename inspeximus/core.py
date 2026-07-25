@@ -445,7 +445,26 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     if not checks["anchor_matches_tip"]:
         problems.append("anchor tombstones_tip does not match the tombstone chain tip")
 
-    erased = set(cert.get("erased_memory_ids") or [])
+    # (5) THE SUMMARY MUST FOLLOW FROM THE TOMBSTONES. Until 1.63.0 `count`, `erased_memory_ids` and
+    # `request_ids` were echoed straight from the certificate and never re-derived, so every one of them was
+    # forgeable while `valid` stayed True — including replacing the erased ids with ids that never existed.
+    # The tombstones ARE hash-chained and signed; the summary is a claim about them, and a claim that does
+    # not follow from its evidence is exactly what a certificate must not carry. Same defect as the
+    # DeletionManifest verdict fixed in 1.59.0, one artifact over.
+    derived_ids = sorted({t.get("memory_id") for t in toms if t.get("memory_id")})
+    derived_reqs = sorted({t.get("request_id") for t in toms if t.get("request_id")})
+    if sorted(set(cert.get("erased_memory_ids") or [])) != derived_ids:
+        problems.append(f"erased_memory_ids does not match the tombstone chain "
+                        f"(certificate claims {len(cert.get('erased_memory_ids') or [])}, "
+                        f"the chain shows {len(derived_ids)})")
+    if cert.get("count") is not None and cert.get("count") != len(derived_ids):
+        problems.append(f"count says {cert.get('count')} but the tombstone chain holds {len(derived_ids)}")
+    if cert.get("request_ids") is not None and sorted(set(cert.get("request_ids") or [])) != derived_reqs:
+        problems.append(f"request_ids does not match the tombstone chain: {derived_reqs}")
+    checks["summary_derivable"] = not any(
+        x.startswith(("erased_memory_ids", "count", "request_ids")) for x in problems)
+
+    erased = set(derived_ids)                # check ABSENCE against the chain, not against the claim
     checks["store_absent"] = None
     if store_items is None and store_path:
         try:
@@ -464,8 +483,12 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
         if leaked:
             problems.append(f"{len(leaked)} erased id(s) STILL PRESENT in the store: {leaked[:5]}")
 
-    valid = chain_ok and sigs_ok and checks["anchor_matches_tip"] and (checks["store_absent"] is not False)
-    return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
+    # `valid` is computed from the CHECKS, and a check absent from this expression is decorative — the
+    # summary-derivability finding was recorded in `problems` and ignored here in the first cut of this fix,
+    # so a forged count still verified. `count` in the return is the DERIVED one, not the claim.
+    valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"]
+             and checks["summary_derivable"] and (checks["store_absent"] is not False))
+    return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
 __version__ = "1.62.0"
