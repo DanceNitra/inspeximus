@@ -870,8 +870,12 @@ because agents reuse a small vocabulary. Against a random same-store window the 
 most of a raw score is vocabulary rather than lineage. Null-adjusted, the firing rate is **~22%** and stable
 across thresholds 0.10–0.50.
 
-**Honest limits.** No ground truth for "truly derived" exists in that corpus, so ~22% is a firing rate, not a
-precision; a null-model check put discrimination at **61.6%** against a 50% chance line, so a real share of
-inferred edges will be wrong. It over-taints deliberately: a false parent is visible in `provenance()`, a
+**MEASURED AND WITHDRAWN (1.50.0).** Against constructed ground truth
+(`probes/infer_lineage_precision.py`) this does not work. On a topically diverse store with same-topic
+negatives: **precision 0.06-0.23**, recall 0.03-0.22 — at its best setting it stamps 43 wrong parents for
+every 13 right ones. On a homogeneous store: recall **~0**, blind by construction, because the derived write
+overlaps the whole store exactly as much as it overlaps its parent (0.943 vs 0.943, lift **+0.000**) and the
+null adjustment removes the signal with the noise. So the ~22% firing rate above is not 22% of true
+derivations. Default stays `0.0` = OFF; the code is kept as a substrate, the claim is not. It over-taints deliberately: a false parent is visible in `provenance()`, a
 missing one is silent. Default `0.0` = OFF (byte-identical legacy), and an explicit `derived_from` always
 wins. Receipt: `tests/test_infer_lineage.py` (8/8).

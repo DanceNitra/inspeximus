@@ -3,6 +3,34 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.50.0 - CORRECTION: infer_lineage measured against ground truth, and it does not work
+
+**1.49.0 shipped four hours ago and oversold this feature. This entry withdraws the claim.**
+
+What 1.49.0 reported was a **firing rate** — ~22% of writes stamped on our own 27,290-record deployment,
+stable across thresholds — and called it *calibrated*. A firing rate is not an accuracy. There was no ground
+truth in that corpus for "was this write actually derived from that recall", which the release notes said,
+and then the summary line went on to imply the number meant more than it did.
+
+Measured properly (`probes/infer_lineage_precision.py`, constructed corpora where derivation is known):
+
+| regime | result |
+|---|---|
+| topically **diverse** store, same-topic negatives | **precision 0.06-0.23**, recall 0.03-0.22 — at its best setting it stamps **43 wrong parents for every 13 right ones** |
+| topically **homogeneous** store | recall **~0**, blind BY CONSTRUCTION: the derived write overlaps the whole store exactly as much as it overlaps its parent (0.943 vs 0.943, lift **+0.000**), so the null adjustment removes the entire signal along with the noise |
+
+It fails in both directions. The ~22% seen on the real corpus is therefore not 22% of true derivations — on
+this evidence most of it is noise. The threshold is not the tuning knob it appears to be; the governing
+variable is how confusable a random slice of the store is with the parent, and neither extreme works.
+
+**What changed:** the docstring claim is withdrawn (not softened), the probe that killed it ships so anyone
+can re-run it, and the default remains `0.0` = OFF. The code is kept because the null-adjusted shape may be a
+useful substrate for a better signal — but nobody should enable it expecting lineage recovery.
+
+**What stands from 1.49.0:** the measurement that motivated it. Declared fields still read **0.00%** across
+27,290 records in a 43-day deployment while store-computed fields run at 88-90%. The problem is real. This
+attempt at solving it is not the answer.
+
 ## 1.49.0 - infer_lineage: stamp a derivation edge without asking the writer
 
 **The measurement that forced this.** `remember(derived=True)` auto-stamps the last recall as a write's

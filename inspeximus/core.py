@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.49.0"
+__version__ = "1.50.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -805,18 +805,23 @@ class Inspeximus:
         # shares with what was just recalled than with a same-store baseline it was not built from. Clearing
         # it stamps that recall as the parents. No flag, no embedding, no LLM.
         #
-        # The null adjustment is not decoration -- measured on 27,342 real agent writes:
-        #   raw overlap threshold      median 1.000, and 0.8 still stamps 77% of writes  -> DEGENERATE
-        #   overlap vs a random window  0.860 vs 0.540                                   -> mostly vocabulary
-        #   null-adjusted (shipped)     ~22% stamped, stable across thresholds 0.10-0.50 -> calibrated
-        # Agents reuse a small vocabulary, so a raw score measures how repetitive the corpus is, not what the
-        # write came from. Subtracting the store's own baseline leaves the part that is about THIS recall.
+        # !!! MEASURED AND FOUND WANTING (2026-07-25, same day it shipped). DO NOT ENABLE THIS ON THE
+        # STRENGTH OF THE 1.49.0 RELEASE NOTES -- they reported a FIRING RATE and called it calibration.
+        # Against constructed ground truth (probes/infer_lineage_precision.py) it fails in both regimes:
         #
-        # HONEST LIMITS. (1) There is no ground truth for "truly derived" in that corpus, so ~22% is a FIRING
-        # rate, not a precision. A separate null-model check put discrimination at 61.6% (chance = 50%), so a
-        # real share of stamped edges will be wrong. (2) It over-taints by design, and that is the deliberate
-        # direction: a false parent is visible in provenance(), a missing one is silent. (3) Default 0.0 =
-        # OFF, because silently changing a shipped write path is worse than either failure.
+        #   topically DIVERSE store, same-topic negatives : precision 0.06-0.23, recall 0.03-0.22.
+        #                                                   At its best setting it stamps 43 wrong parents
+        #                                                   for every 13 right ones.
+        #   topically HOMOGENEOUS store                   : recall ~0, and blind BY CONSTRUCTION -- the
+        #                                                   derived write overlaps the whole store exactly
+        #                                                   as much as its parent (0.943 vs 0.943, lift
+        #                                                   +0.000), so the null adjustment that rescues the
+        #                                                   raw score here removes the entire signal.
+        #
+        # So the ~22% firing rate observed on our own 27,290-record deployment is NOT 22% of true
+        # derivations; on this evidence most of it is noise. The threshold is not the knob it appears to be.
+        # Kept, OFF, because the null-adjusted shape may still be a useful substrate for a better signal --
+        # but the claim that it recovers lineage is withdrawn, not softened.
         #
         # Why it exists at all: the flagged path (derived=True) measured 0.00% over 27,290 writes. A mechanism
         # that requires the writer to opt in is a mechanism that does not run.
