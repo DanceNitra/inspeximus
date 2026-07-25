@@ -3,6 +3,41 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.61.0 - three controls that failed OPEN
+
+The last of round four's sweep. All three share a shape worse than a crash: each **silently granted what it
+exists to withhold**, and its presence is what stopped anyone looking.
+
+### The value signature erased whole writing systems
+
+`_obj_sig` normalised with `[^a-z0-9]`, which deletes every non-Latin character — so `東京` and `北京` both
+became the **empty string** and compared equal. `observe()` therefore recorded a flat contradiction as
+**agreement** and marked its support seen, so later corrections were discounted. Any store keeping values in
+Chinese, Japanese, Korean, Cyrillic, Greek, Hebrew, Arabic or Thai had one signature for all of them.
+
+Now Unicode-aware: letters and digits of any script survive, only punctuation and spacing fold (`3-2` and
+`3/2` still match, which was the point). A second layer falls back to the raw value if normalisation would
+still leave nothing, so no value can ever share the empty signature.
+
+### The lifetime irreversible budget reset itself on a corrupt file
+
+Its own docstring says *"a patient attacker must not reset its spent budget by spanning sessions."* A corrupt
+`.irrev.json` was swallowed and the state reset to `{}`, so a 0.9 spend against a 1.0 budget was allowed a
+**second** time — cumulative 1.8 — and nothing reported it. Corrupting one file *was* the reset. It now fails
+CLOSED: an unreadable balance refuses the spend rather than authorising against an unknown one. A **missing**
+file is still fine — an empty budget is the correct starting state.
+
+### An anchor that looked witnessed
+
+`anchor(sign=…)` swallowed a raising signer and returned a dict byte-identical to `anchor()` with no signer at
+all. External witnessing is the **only** operator-adversarial property in the whole design, and the caller who
+asked for it could not tell it had not happened. It now raises.
+
+453 tests pass. Mutation note, recorded because it nearly misled me: reverting *either* signature layer alone
+leaves the tests green — the Unicode regex and the empty-signature fallback each cover the other. Only
+reverting both together kills them, which is what defence in depth is supposed to look like. A single
+mutation reporting "no teeth" is not proof that a test is toothless.
+
 ## 1.60.0 - the surfaces, brought in line with the library
 
 Four rounds hardened `core.py`. Everything here is one step out from it, and it shares a shape: **the library

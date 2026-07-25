@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.60.0"
+__version__ = "1.61.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1438,7 +1438,14 @@ class Inspeximus:
         Value-preserving paraphrases share the object; a verbatim-only fallback (text) matches MemStrata."""
         o = r.get("object")
         s = o if o is not None else r.get("text", "")
-        return re.sub(r"[^a-z0-9]+", " ", str(s).lower()).strip()
+        # UNICODE-AWARE. `[^a-z0-9]` deleted every non-Latin character, so 東京 and 北京 both normalised to
+        # the EMPTY STRING and compared equal — observe() recorded a flat contradiction as agreement and
+        # marked its support seen, so later corrections were discounted. Any script's letters and digits are
+        # kept; only punctuation and spacing collapse, which was the point.
+        sig = re.sub(r"[\W_]+", " ", str(s).lower(), flags=re.UNICODE).strip()
+        # And if normalisation still leaves nothing while the value was non-empty, fall back to the raw
+        # value rather than returning a signature that matches every other unnormalisable value.
+        return sig or str(s).strip().lower()
 
     def _supersede_by_key(self, rec: dict, reaffirm: bool = False) -> None:
         """Deterministic (subject, relation, object) supersession: retire active records that share
@@ -2965,8 +2972,13 @@ class Inspeximus:
         if sign is not None:
             try:
                 sth["witness_sig"] = sign(bytes.fromhex(sth["sth_hash"]))
-            except Exception:
-                pass
+            except Exception as e:
+                # An unsigned anchor was returned, byte-identical to anchor() with no signer at all — so the
+                # caller who asked for external witnessing (the ONLY operator-adversarial property here)
+                # could not tell it had not happened.
+                raise RuntimeError(
+                    f"the witness signer raised ({type(e).__name__}: {e}); refusing to return an anchor that "
+                    f"looks unsigned when co-signing was requested") from None
         return sth
 
     def verify_consistency(self, prior_anchor: dict) -> tuple[bool, list[str]]:
@@ -5418,10 +5430,23 @@ class Inspeximus:
         if getattr(self, "_irrev", None) is None:
             self._irrev = {}
             if self.path:
+                _bp = self.path.with_name(self.path.name + ".irrev.json")
                 try:
-                    self._irrev = json.loads((self.path.with_name(self.path.name + ".irrev.json"))
-                                             .read_text(encoding="utf-8"))
-                except Exception:
+                    self._irrev = json.loads(_bp.read_text(encoding="utf-8"))
+                except FileNotFoundError:
+                    pass                                     # no spend yet: an empty budget is correct
+                except Exception as e:
+                    # FAIL CLOSED. A corrupt sidecar used to reset the state to {}, so a 0.9 spend against a
+                    # 1.0 budget was allowed a SECOND time (cumulative 1.8) — the exact "reset by spanning
+                    # sessions" the docstring says must not happen, reachable by corrupting one file. If we
+                    # cannot read how much was spent, we must not authorise more.
+                    self._sidecar_errors["irrev"] = f"{_bp}: unreadable ({type(e).__name__}: {e})"
+                    self._irrev = None
+                    raise RuntimeError(
+                        f"the irreversible-influence budget at {_bp} is unreadable ({e}). Refusing to "
+                        f"authorise a spend against an unknown balance — restore or delete the file "
+                        f"deliberately if you intend to reset it.") from None
+                except BaseException:
                     self._irrev = {}
         return self._irrev
 
