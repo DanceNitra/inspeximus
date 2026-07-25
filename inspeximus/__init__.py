@@ -5,7 +5,8 @@ Public API (stable as of 1.0.0). Submodules for the governance/erasure tooling:
   - inspeximus.erasure_auditor   : ErasureAuditor, StoreProbe, ...    ('content still reconstructible?' audit)
   - inspeximus.mcp_server         : the MCP stdio server (console script: inspeximus-mcp)
 """
-from .core import (  # noqa: F401
+from .core import (
+    AmbiguousSubject,  # noqa: F401
     Inspeximus,
     new_receipt_keypair,
     new_source_keypair,
@@ -27,6 +28,7 @@ from .core import (  # noqa: F401
 
 __all__ = [
     "Inspeximus",
+    "AmbiguousSubject",
     "new_receipt_keypair",
     "new_source_keypair",
     "sign_revert",

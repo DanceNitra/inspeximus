@@ -3,6 +3,70 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.53.0 - a DSAR for one person no longer erases another, and forget_subject can be previewed
+
+The preview was the intended work. Reviewing it found a **data-loss defect in the erasure path itself**, which
+is the headline.
+
+**`forget_subject` merged two people.** `_canon_source` keeps only the host — it exists to collapse sybil
+variants of one *publisher* ('Wikipedia', 'wikipedia.org', 'https://www.wikipedia.org/wiki/X') into one
+attribution key, and for that it is right. As an erasure selector it is not. Measured before the fix, on a
+store holding three people:
+
+```
+forget_subject("crm.example.com/alice")   ->  erased 2
+survivors                                 ->  ['Carol Kiss, unrelated']
+```
+
+Bob's record was gone. `crm.example.com/alice` and `crm.example.com/bob` both canonicalize to `crmexample`,
+and the new preview's `also_carrying` field reported `{}` — no collateral — because as far as the selector
+could tell, Bob *was* the request. A compliant operator doing the right thing would have read that as "two
+records, all Alice's, no entanglement" and committed an irreversible delete of a third party.
+
+Now an erasure whose subject was written **exactly** as given, but whose canonical key is shared by a
+different raw source in the store, raises `AmbiguousSubject` (a `ValueError` subclass) naming the colliding
+sources, and deletes nothing. Pass `allow_ambiguous=True` to proceed deliberately. Detection is narrow on
+purpose, so what canonicalization is *for* still works: writing `user-42` and erasing `User 42` has no exact
+raw match and still resolves.
+
+**The limit that cannot be fixed here:** `taint` stores already-canonical keys, so a record that merely
+*inherited* from Alice is indistinguishable from one that inherited from Bob. Colliding subjects cannot be
+separated in the derived tier without rewriting taint. This catches the direct case and refuses rather than
+guessing.
+
+**`forget_subject(subject, dry_run=True)`** returns what the erasure would remove, without writing:
+
+- `would_erase` — active records that would be hard-deleted
+- `direct` — records naming `subject` as their own canonical source
+- `inherited` — records reached only through `derived_from` taint
+- `sample` — up to five of each, with id, key, a text snippet and the record's taint
+- `also_carrying` — other source ids present on those same records, with counts
+- `ambiguous_with` / `excluded_by_ambiguity` — present only when the collision above applies
+
+It mutates nothing: no delete, no tombstone, no manifest cascade, no save, and it is tenant-scoped exactly
+like the real call. `dry_run` defaults to `False`.
+
+Why the split matters: taint is the transitive union of every parent's sources computed at write time, so a
+record's inherited attribution is not readable from its own `source` field. It is not hypothetical — a record
+repaired by `rederive()` inherits the taint of the source it was rewritten from, so erasing that source takes
+the repair with it and the store keeps neither the old value nor the corrected one.
+
+**What the preview does NOT cover.** Records that survive but are *modified*: `forget()` scrubs deleted ids
+from survivors' `links` and drops `superseded_by_toggle` pointers into the deleted set, so a survivor can
+lose corroboration or its `revert()` target — none of which appears in `would_erase`. Registered erasure
+targets are named in `targets` but the manifest is not run. Nothing outside this store. And `sample` returns
+record text, including records ordinary recall would not surface, while writing no receipt.
+
+**Accuracy bound, unchanged from 1.52.0:** the lineage path follows *declared* `derived_from` edges. A
+paraphrase written back as a fresh unparented record is invisible to both the preview and the erasure. In our
+own 27,290-record production store, writer-declared lineage fields measured **0.00%** — if your writers do not
+pass `derived_from`, expect `inherited: 0` and read `would_erase` as a source-match delete. The figures above
+(`would_erase 3 / direct 1 / inherited 2`) are one constructed fixture, not a typical ratio.
+
+A dry run is an ordinary affordance — `terraform plan`, a rolled-back transaction, `SELECT` before `DELETE`;
+nothing novel is claimed for the mechanism. Also fixed: the docstring had offered `'key:<hex>'` as a subject
+form, which `_rec_sources` has never emitted, so such a call silently erased nothing. 335 tests pass.
+
 ## 1.52.0 - two more internal writes declare the record their text came from
 
 Erasure in inspeximus follows **declared** lineage edges. 1.51.0 fixed `revert()`, which rebuilt a record's

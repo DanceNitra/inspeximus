@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.52.0"
+__version__ = "1.53.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -503,6 +503,15 @@ def _cosine(a, b) -> float:
     na = math.sqrt(sum(x * x for x in a)) or 1.0
     nb = math.sqrt(sum(y * y for y in b)) or 1.0
     return dot / (na * nb)
+
+
+class AmbiguousSubject(ValueError):
+    """An erasure subject whose canonical form is shared by a DIFFERENT raw source in the store.
+
+    Raised instead of hard-deleting the other subject's records. `_canon_source` keeps only the host, so
+    'crm.example.com/alice' and 'crm.example.com/bob' resolve alike; before this, a DSAR for Alice erased
+    Bob and the preview reported no collateral. Subclasses ValueError so existing `except ValueError`
+    handlers keep working."""
 
 
 class Inspeximus:
@@ -2031,14 +2040,16 @@ class Inspeximus:
 
     def forget_subject(self, subject: str, request_id: str | None = None, basis: str | None = None,
                        authorized_by: str | None = None, authorization: str | None = None,
-                       values=None) -> dict:
+                       values=None, dry_run: bool = False, allow_ambiguous: bool = False) -> dict:
         """RIGHT-TO-ERASURE across provenance lineage, with a tamper-evident audit of the ACT. Hard-deletes
         every active memory ATTRIBUTABLE to `subject` — its own canonical source OR any record that inherited
         `subject` through derived_from taint (so a summary/consolidation built from the subject's data is erased
         too, which a naive text-match delete would miss) — then records a signed, CONTENT-FREE tombstone per
         erased record so verify_writes() reports the now-missing rows as deliberately erased (not out-of-band
         tampering). `subject` is matched against canonical sources (`_rec_sources`): pass the same source string
-        you wrote with (`remember(..., source={'doc': subject})`) or an attested key as 'key:<hex>'.
+        you wrote with (`remember(..., source={'doc': subject})`), or `'id:<record id>'` for a record written
+        without any source. (Until 1.53.0 this line also offered an attested key as `'key:<hex>'`.
+        `_rec_sources` has never emitted that prefix, so such a call silently erased nothing.)
 
         Returns {erased, ids, request_id, tombstones}. HONEST SCOPE (read before relying on it for compliance):
         this erases + proves-deletion WITHIN THIS inspeximus store only — NOT the app's vector store, prompt logs,
@@ -2047,12 +2058,41 @@ class Inspeximus:
         load-bearing only against a party who does NOT hold receipt_key (the operator who holds the key can forge
         tombstones too — anchor the chain head externally for operator-adversarial audit). Prior art: crypto-
         shredding; Cassandra/event-sourcing tombstones; GDPR Art.30 erasure logs; Crosby-Wallach / Certificate
-        Transparency tamper-evident logs."""
+        Transparency tamper-evident logs.
+
+        `dry_run=True` PREVIEWS the blast radius and touches NOTHING — no delete, no tombstone, no manifest
+        cascade, no save. It returns {would_erase, ids, direct, inherited, sample, also_carrying, targets,
+        dry_run:True}, and the split is the point: `direct` records name the subject as their own source,
+        while `inherited` ones are reached only through derived_from taint. That second number is the one an
+        operator cannot predict, and it is not hypothetical — a record repaired by rederive() inherits the
+        taint of the source it was rewritten from, so erasing that source takes the repair with it and the
+        store is left holding neither the old value nor the corrected one. `also_carrying` lists the OTHER
+        subjects whose data would go down with this request, which is where a single erasure quietly becomes
+        several. Preview before you commit.
+
+        WHAT THE PREVIEW DOES NOT SHOW. (a) Records that SURVIVE but are modified — `forget()` scrubs the
+        deleted ids from survivors' `links` and drops `superseded_by_toggle` pointers into the deleted set, so
+        a survivor can silently lose corroboration or its revert target; none of that appears in
+        `would_erase`. (b) The app-side cascade: `targets` NAMES the registered erasure targets but the
+        preview does not run the manifest against them. (c) Anything outside this store. (d) `sample` returns
+        record TEXT, including records ordinary recall would not surface, and the preview writes no receipt —
+        treat it as a read of the content, and mind where your call path logs it."""
         # match the subject against canonical sources; accept either the raw string the caller wrote or its
         # entity-resolved form (_canon_source collapses "user-42"/"user_42"/"User 42" -> one canonical id).
         cand = {subject, Inspeximus._canon_source(subject)}
         subj_ids = [r["id"] for r in self.items if cand & Inspeximus._rec_sources(r)
                     and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant isolation on erasure
+        collisions = self._erasure_collisions(subject, cand, subj_ids)
+        if collisions and not allow_ambiguous:
+            subj_ids = [rid for rid in subj_ids if rid not in collisions["ids"]]
+        if dry_run:
+            return self._erasure_preview(subject, cand, subj_ids, collisions, allow_ambiguous)
+        if collisions and not allow_ambiguous:
+            raise AmbiguousSubject(
+                f"'{subject}' canonicalizes to '{Inspeximus._canon_source(subject)}', which is ALSO the "
+                f"canonical form of {sorted(collisions['sources'])} in this store. Erasing would hard-delete "
+                f"{len(collisions['ids'])} record(s) belonging to a different subject. Pass the exact source "
+                f"string, or allow_ambiguous=True to erase all of them deliberately.")
         if not subj_ids:
             return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0}
         # capture the sensitive values BEFORE deletion so the cross-store residue check has something to
@@ -2077,6 +2117,88 @@ class Inspeximus:
         if targets:
             out["manifest"] = self._erasure_manifest(subject, values or [], targets, request_id,
                                                      basis, authorized_by, already_erased=res["forgotten"])
+        return out
+
+    @staticmethod
+    def _raw_source(rec: dict):
+        """The record's own source string exactly as the writer passed it — NOT entity-resolved."""
+        src = rec.get("source")
+        return src.get("doc") if isinstance(src, dict) else (src if isinstance(src, str) else None)
+
+    def _erasure_collisions(self, subject: str, cand: set, subj_ids: list) -> dict:
+        """Records swept in by a subject whose RAW source is a different string that merely canonicalizes the
+        same way.
+
+        `_canon_source` is deliberately lossy — it exists to collapse sybil variants of one publisher
+        ('Wikipedia', 'wikipedia.org', 'https://www.wikipedia.org/wiki/X') into one attribution key, and for
+        that it is right. As an ERASURE selector it is not: it keeps only the host, so
+        'crm.example.com/alice' and 'crm.example.com/bob' are one key, and a DSAR for Alice hard-deleted
+        Bob's record while the preview reported no collateral at all. Measured, then fixed.
+
+        Detection is deliberately narrow: a collision needs an EXACT raw match for `subject` to exist in the
+        store (so the caller demonstrably wrote that identifier) plus at least one other raw source landing on
+        the same canonical key. That leaves the intended case working — writing 'user-42' and erasing
+        'User 42' has no exact match, so it still resolves canonically.
+
+        LIMIT, and it is not small: `taint` stores already-canonical keys, so a record that merely INHERITED
+        from Alice is indistinguishable from one that inherited from Bob. Colliding subjects cannot be
+        separated in the derived tier without re-writing taint, which no migration here attempts. This
+        catches the direct case and refuses rather than guessing."""
+        raws = {}
+        for rid in subj_ids:
+            raw = self._raw_source({r["id"]: r for r in self.items}[rid])
+            if raw:
+                raws.setdefault(raw, []).append(rid)
+        if subject not in raws:                   # no exact identifier written -> canonical resolution intended
+            return {}
+        # A collision is a DIFFERENT raw source that lands on the SAME canonical key. A matched record whose
+        # own source is simply another string (reached through taint) is ordinary cascade, not ambiguity —
+        # flagging those refused every inherited erasure, which is the feature working as designed.
+        canon = Inspeximus._canon_source(subject)
+        other = {raw: ids for raw, ids in raws.items()
+                 if raw != subject and Inspeximus._canon_source(raw) == canon}
+        if not other:
+            return {}
+        return {"sources": sorted(other), "ids": {rid for ids in other.values() for rid in ids}}
+
+    def _erasure_preview(self, subject: str, cand: set, subj_ids: list,
+                         collisions: dict | None = None, allow_ambiguous: bool = False) -> dict:
+        """The read-only half of forget_subject(). Splits the matched set into records that name the subject
+        themselves and records reached only through inherited taint, and names the other subjects that would
+        be caught in the same sweep. Mutates nothing."""
+        by_id = {r["id"]: r for r in self.items}
+        direct, inherited, others = [], [], {}
+        for rid in subj_ids:
+            r = by_id[rid]
+            # Compare on the record's OWN raw source resolved the same way _rec_sources does it, or the
+            # synthetic id key for a source-less record. An earlier version read every value of a dict source
+            # and had no id fallback, so a record matched purely by taint (source={'doc':'summary-svc',
+            # 'author':'user-42'}) was reported as DIRECT — inverting the one number this split exists for.
+            raw = self._raw_source(r)
+            own = {Inspeximus._canon_source(raw)} if raw else {"id:" + rid}
+            (direct if cand & own else inherited).append(rid)
+            for s in Inspeximus._rec_sources(r):
+                if s not in cand and s != Inspeximus._canon_source(subject) and not s.startswith("id:"):
+                    others.setdefault(s, 0)
+                    others[s] += 1
+
+        def _row(rid, why):
+            r = by_id[rid]
+            return {"id": rid, "why": why, "key": r.get("key"),
+                    "text": (r.get("text") or "")[:120],
+                    "taint": sorted(Inspeximus._rec_sources(r) - {f"id:{rid}"})}
+
+        sample = ([_row(i, "direct") for i in sorted(direct)[:5]]
+                  + [_row(i, "inherited") for i in sorted(inherited)[:5]])
+        out = {"would_erase": len(subj_ids), "ids": sorted(subj_ids),
+               "direct": len(direct), "inherited": len(inherited), "sample": sample,
+               "also_carrying": dict(sorted(others.items(), key=lambda kv: -kv[1])),
+               "targets": [getattr(t, "name", type(t).__name__)
+                           for t in getattr(self, "_erasure_targets", [])],
+               "dry_run": True}
+        if collisions:
+            out["ambiguous_with"] = collisions["sources"]
+            out["excluded_by_ambiguity"] = 0 if allow_ambiguous else len(collisions["ids"])
         return out
 
     def _erasure_manifest(self, subject: str, values: list, targets: list, request_id, basis,
