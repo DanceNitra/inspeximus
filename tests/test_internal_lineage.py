@@ -8,6 +8,10 @@ than guessing.
 The bug this closes is not cosmetic. `revert()` rebuilds a record's text from a specific predecessor and
 recorded that parent in `meta['revert_of']` — a field no lineage check traverses. So a restored value looked
 parentless: erase the subject its value came from, and the revert survived carrying that subject's data.
+
+`rederive()` had the same defect and hid it better; see the test below. The class is only closed by
+`test_the_owned_sites_are_declared_and_the_rest_are_not`, which fails if a new write site copies another
+record's text without declaring where it came from.
 """
 import os
 import sys
@@ -52,6 +56,55 @@ def test_a_revert_no_longer_hides_from_erasure():
     assert restored in erased["ids"], \
         "the reverted record carries runbook-v1's value and must be erased with it"
     assert m.erasure_audit(subject="runbook-v1")["residue"] == []
+
+
+def test_rederive_declares_the_record_its_TEXT_came_from():
+    """The same bug as revert, one function over, and worse: rederive builds the new text OUT OF a demoted
+    record (`rewrite(r['text'], old, new)`) but declared only the corrected root as parent, filing the actual
+    text parent in `meta['rederived_from']` — a field nothing traverses.
+
+    Measured before the fix: erasing the subject the text came from reported `erased 1`, the rederived copy
+    survived carrying that subject's wording verbatim, and `erasure_audit` returned `no_declared_residue` —
+    it certified the leak as clean. An audit that cannot see the residue is worse than no audit.
+    """
+    m = _store()
+    root = m.remember("billing uses api-keys", key="billing::auth", object="api-keys",  # noqa: F841
+                      source={"doc": "runbook"})
+    m.remember("alice bernard reaches the nightly backup with api-keys", derived=True,
+               derived_from=[root], source={"doc": "alice-ticket"})
+    # ORDER MATTERS: the keyed root must still be active when the lineage is retracted, or it is never
+    # stamped needs_rederivation and rederive cannot resolve the old value.
+    m.retract_lineage("runbook")
+    corrected = m.remember("billing uses oauth2", key="billing::auth", object="oauth2",
+                           source={"doc": "adr-014"})
+
+    res = m.rederive("runbook")
+    assert res["rederived"] == 1, res
+    new_id = res["ids"][0]
+
+    assert corrected in (_rec(m, new_id).get("derived_from") or []), \
+        "the corrected current record stays declared — the fix ADDS a parent, it does not swap one"
+    assert "aliceticket" in (_rec(m, new_id).get("taint") or []), \
+        "the record the TEXT was rewritten from must ride the lineage edge too"
+
+    erased = m.forget_subject("alice-ticket", request_id="REQ-1", basis="gdpr-art17")
+    assert new_id in erased["ids"], "a rederived copy still carries its source's wording and must go with it"
+
+
+def test_rederive_still_actually_rederives():
+    """Erasability is not the only requirement — over-tainting could make the correction itself unusable."""
+    m = _store()
+    root = m.remember("billing uses api-keys", key="billing::auth", object="api-keys",  # noqa: F841
+                      source={"doc": "runbook"})
+    m.remember("the nightly backup signs in with api-keys", derived=True, derived_from=[root],
+               source={"doc": "ops-notes"})
+    m.retract_lineage("runbook")
+    m.remember("billing uses oauth2", key="billing::auth", object="oauth2", source={"doc": "adr-014"})
+
+    new_id = m.rederive("runbook")["ids"][0]
+    assert _rec(m, new_id)["text"] == "the nightly backup signs in with oauth2"
+    assert any(h["id"] == new_id for h in m.recall("nightly backup", k=3)), \
+        "the corrected derivative must be recallable, not just present"
 
 
 def test_resolve_reopened_declares_the_reopened_record():

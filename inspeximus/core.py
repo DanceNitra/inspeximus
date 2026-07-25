@@ -2725,7 +2725,7 @@ class Inspeximus:
                 skipped += 1
                 continue
             rid = self.remember(nt, tags=r.get("tags"), value=r.get("value", 1.0), mtype=r.get("mtype"),
-                                derived_from=[cur_id], meta={"rederived_from": r["id"]})
+                                derived_from=[cur_id, r["id"]], meta={"rederived_from": r["id"]})
             r.setdefault("meta", {})["rederived_to"] = rid
             done += 1
             ids.append(rid)
