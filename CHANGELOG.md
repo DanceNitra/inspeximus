@@ -3,6 +3,78 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.67.0 - what testing SEQUENCES found, and four defects inside my own recent fixes
+
+Eight rounds tested functions. This one tested **sequences**: 2,700 random operations over a small pool of
+keys, subjects and tenants, with eight invariants re-checked after every single one (~21,600 evaluations).
+That is a different lens, and it found two things no unit test had.
+
+### `reload()` retired another tenant's value
+
+Its last-write-wins keyed on `key` **alone**. So tenant A's current value was superseded because tenant B
+happened to use the same key name — cross-tenant data loss in the *recovery* path, with `verify_writes()`
+reporting True throughout. A three-operation random sequence found it:
+
+```
+acme.remember(key="auth", object="oauth") ; globex.remember(key="auth", object="saml") ; reload()
+acme.recall("auth")  ->  []          # acme's row is now superseded
+```
+
+It also demoted **restatements** that `_supersede_by_key` deliberately keeps ("a restatement is not a
+supersession"), so `reload()` was not state-preserving where `flush()`+reopen is. Now keyed on
+`(tenant, key)` and only across differing values — the store's own rule, not a second one invented beside it.
+
+### `slash()` reported itself as tampering
+
+`slash()` revokes graduation by rewriting `mtype`, which the write receipt commits to — so a legitimate
+in-band operation made `verify_writes()` report *"stored content no longer matches its write receipt (edited
+after write)"*. It fired in **27 of 45** random sequences, first at operation 3. For a tamper-evidence
+product, a false positive raised by its own accountability lever poisons the signal.
+
+`slash()` and `restore()` now **amend the chain** — appending a receipt for the legitimate change, so the log
+records when standing was revoked — and only the LATEST receipt's content commitment binds a record. The code
+had already called this mutation legitimate in a comment; the follow-through was missing.
+
+**And my first version of that fix broke the chain walk**: it used `continue` to skip a superseded receipt,
+which also skipped the `prev = r["hash"]` at the end of the loop body, so every later receipt reported
+"broken chain link". A guard that jumps over the loop's own bookkeeping breaks what it sits beside.
+
+### `exact=True` reintroduced the over-erasure it was written to prevent
+
+1.66.0's escape simply cleared `collisions` — but the resolver had only excluded records whose **raw** source
+collides. A record derived from the *other* subject carries the shared canonical taint with its own raw
+source, so it survived the exclusion and was hard-deleted:
+
+```
+exact=True  ->  erased 3   # alice, her summary, AND the other subject's summary
+```
+
+`exact` now takes the forward lineage closure of the exact-source records, so it erases what descends from the
+subject and nothing that descends from the collider. The test fixture could not see this because the attacker
+had no derived record — the same fixture-blindness that hid two earlier fixes' defects.
+
+### An honest unscoped certificate failed its own chain
+
+`request_ids` drops `None`, so a verifier could not distinguish "unscoped" from "scoped to exactly these" —
+and an unscoped certificate failed in any store where one erasure ran without a request id (ordinary
+housekeeping `forget()`). The producer now emits an explicit `scoped_to` marker; certificates minted before it
+still verify.
+
+### Invariants that HELD across 2,700 operations
+
+Worth stating as a result rather than only listing what broke: one active value per `(tenant, key)`;
+`recall()` never returning a superseded record; `state_digest()` surviving `flush()`+reopen; tombstone
+soundness in both directions; tenant containment for tenant-scoped operations; `erasure_audit` residue iff a
+live record is attributable; monotonic receipts with `anchor().n_writes == len(_receipts)`. Capacity eviction,
+consolidation, `apply_retention`, `forget_pii` and `forget_subject` all route deletions through the tombstone
+chain without a gap.
+
+One framing correction from the run: "at most one active RECORD per (tenant, key)" is false by design — a
+repeat keyed write with the same object but different wording leaves two active records deliberately. As "one
+active VALUE" it holds.
+
+529 tests pass; 7 mutations, each killed by its own test.
+
 ## 1.66.0 - four attacker findings, verified before acting
 
 All four were reported by an adversarial review and carried as UNVERIFIED. I reproduced each one first. All

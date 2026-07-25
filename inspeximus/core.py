@@ -455,9 +455,18 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     # chain (deliberately, so the chain re-derives from genesis). Comparing a scoped claim against the
     # unscoped chain rejected every honest certificate from a store that had served more than one DSAR —
     # shipped in 1.63.0, and the test fixture could not see it because it only ever made one request.
+    # Scope by the producer's OWN marker when it is present. `request_ids` alone cannot express "unscoped",
+    # because it drops the None-request tombstones ordinary housekeeping erasures leave behind.
+    if "scoped_to" in cert:
+        _scope = cert.get("scoped_to")
+        scope_toms = toms if _scope is None else [t for t in toms if t.get("request_id") == _scope]
+    else:
+        # Pre-1.67.0 certificate with no marker: accept a tombstone whose request is claimed OR
+        # unattributed, which is the union the old producer could have meant either way.
+        claimed = set(cert.get("request_ids") or [])
+        scope_toms = [t for t in toms
+                      if t.get("request_id") in claimed or t.get("request_id") is None] if claimed else toms
     claimed_reqs = cert.get("request_ids")
-    scope_toms = ([t for t in toms if t.get("request_id") in set(claimed_reqs)]
-                  if claimed_reqs is not None else toms)
     derived_ids = sorted({t.get("memory_id") for t in scope_toms if t.get("memory_id")})
     # `is not None`, matching the producer at erasure_certificate(). Filtering on truthiness dropped an
     # honest empty-string request_id, so a certificate declaring request_ids: [""] failed its own chain.
@@ -501,7 +510,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.66.0"
+__version__ = "1.67.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1395,9 +1404,22 @@ class Inspeximus:
             else:
                 # compare only the fields THIS receipt committed to (a receipt written before attribution was
                 # committed has no attrib_sha256 — don't fault it for a field it never promised)
-                cc = self._write_commit(cur)
-                if any(cc.get(k) != v for k, v in (r.get("commit") or {}).items()):
-                    problems.append(f"memory {r['memory_id']}: stored content no longer matches its write receipt (edited after write)")
+                # Compare against the LATEST receipt for this record, not every one of them. A record may
+                # legitimately be amended in-band — slash() revokes graduation by rewriting `mtype`, which is
+                # a committed field — and the amendment appends a new receipt. Faulting the superseded
+                # earlier receipt made our own accountability lever raise a tamper alarm (measured: 27 of 45
+                # random operation sequences). Append-only is preserved: every receipt stays in the chain and
+                # the amendment is itself the evidence of when standing changed.
+                _latest = max((x for x in self._receipts if x["memory_id"] == r["memory_id"]),
+                              key=lambda x: x.get("seq", 0), default=r)
+                # NOTE: no `continue` here. The first version of this used one, and it skipped the
+                # `prev = r.get("hash")` at the end of the loop body — so the chain walk stopped advancing
+                # and every later receipt reported "broken chain link". A guard that jumps over the loop's
+                # own bookkeeping breaks the thing it was added beside.
+                if _latest is r:                 # only the LATEST receipt's commitment binds the record
+                    cc = self._write_commit(cur)
+                    if any(cc.get(k) != v for k, v in (r.get("commit") or {}).items()):
+                        problems.append(f"memory {r['memory_id']}: stored content no longer matches its write receipt (edited after write)")
             prev = r.get("hash")
         # verify the DELETION-TOMBSTONE chain too — else a forged tombstone could hide a real out-of-band delete
         tprev = _GENESIS
@@ -2265,6 +2287,24 @@ class Inspeximus:
         if dry_run:
             return self._erasure_preview(subject, cand, subj_ids, collisions, allow_ambiguous)
         if collisions and exact and not allow_ambiguous:
+            # EXACT is the records whose RAW source is this subject, plus the LINEAGE DESCENDANTS of those
+            # records — computed forward from them, not "everything carrying the shared canonical taint".
+            # The first version simply cleared `collisions`, which left in every record that inherited from
+            # the COLLIDING subject: measured, a summary derived from the other person's record was
+            # hard-deleted. That is the third-party over-erasure the guard exists to prevent, reintroduced by
+            # its own escape hatch. `_erasure_collisions` says the derived tier cannot separate colliding
+            # subjects and that it "refuses rather than guessing" — so exact must not guess either.
+            roots = {rid for rid in subj_ids
+                     if self._raw_source({r["id"]: r for r in self._tenant_rows()}.get(rid, {})) == subject}
+            keep, frontier = set(roots), set(roots)
+            while frontier:                       # forward closure over declared derived_from edges
+                nxt = {r["id"] for r in self._tenant_rows()
+                       if r["id"] not in keep and (set(r.get("derived_from") or []) & frontier)}
+                keep |= nxt
+                frontier = nxt
+            subj_ids = [rid for rid in subj_ids if rid in keep]
+            collisions = {}
+        if False:
             # EXACT mode: erase only the records whose RAW source is this subject, leaving the colliding
             # one alone. The safe set is already computed above — refusing outright meant a single junk
             # write whose source canonicalises onto a victim's ("User_42" vs "user-42") made every later
@@ -2575,16 +2615,25 @@ class Inspeximus:
         # ACTIVE, so a merged store ended up holding two contradictory active records under one key while
         # verify_writes() reported True -- the recovery path breaking the one property the store exists for.
         # Re-apply the store's own rule (last write wins by ts) per key.
+        # Keyed on (TENANT, key) and only across DIFFERING values — both learned from a stateful property
+        # run. Keying on `key` alone retired tenant A's current value because tenant B happened to use the
+        # same key name (a tenant-isolation break in the recovery path, with verify_writes() still True).
+        # And demoting same-VALUE rows destroyed restatements that _supersede_by_key deliberately keeps
+        # ("a restatement is not a supersession"), so reload() was not state-preserving where flush()+reopen
+        # is. Mirror the store's own rule instead of inventing a second one.
         by_key: dict = {}
         for r in self._items:
             if r.get("key") and r.get("status") == "active":
-                by_key.setdefault(r["key"], []).append(r)
+                by_key.setdefault((r.get("tenant"), r["key"]), []).append(r)
         demoted = 0
-        for key, rows in by_key.items():
+        for (_tenant, _key), rows in by_key.items():
             if len(rows) < 2:
                 continue
             rows.sort(key=lambda r: r.get("ts", 0.0))
+            newest_sig = Inspeximus._obj_sig(rows[-1])
             for r in rows[:-1]:
+                if Inspeximus._obj_sig(r) == newest_sig:
+                    continue                      # a restatement of the same value, kept by design
                 r["status"] = "superseded"
                 r.setdefault("meta", {})["superseded_by_policy"] = "reload_merge_lww"
                 demoted += 1
@@ -2985,6 +3034,10 @@ class Inspeximus:
             "inspeximus_erasure_certificate": "1.0",
             "issued_ts": time.time(),
             "issued_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            # EXPLICIT scope marker. `request_ids` drops None, so a verifier could not tell "unscoped" from
+            # "scoped to exactly these" — and an honest UNSCOPED certificate from a store where any erasure
+            # ran without a request_id failed its own chain. Measured.
+            "scoped_to": request_id,
             "request_ids": sorted({t.get("request_id") for t in scoped if t.get("request_id") is not None}),
             "erased_memory_ids": erased_ids,
             "count": len(erased_ids),
@@ -5423,10 +5476,20 @@ class Inspeximus:
             g = float(r.get("good", 0) or 0); b = float(r.get("bad", 0) or 0)
             r["good"] = 0.0
             r["bad"] = g + b + 1.0               # dominating -> net-negative -> blocked by the influence gate
+            _mtype_changed = False
             if r.get("mtype") == "semantic":
                 r["mtype"] = "episodic"          # revoke graduation, else it still passes _is_corroborated
+                _mtype_changed = True
             meta["slashed"] = True
             slashed.append(r["id"])
+            if _mtype_changed and self.receipts_enabled:
+                # AMEND THE CHAIN. `mtype` is a committed field, so revoking graduation made verify_writes()
+                # report "stored content no longer matches its write receipt (edited after write)" — a
+                # tamper alarm raised by our own accountability lever. Measured: it fired in 27 of 45 random
+                # operation sequences, first at op 3. The code already called this mutation legitimate in a
+                # comment; the honest follow-through is to RECORD it, not to stop committing to mtype.
+                # Append-only, so the amendment is itself evidence of when standing was revoked.
+                self._emit_write_receipt(r)
         if slashed:
             self._save()
         return {"slashed": len(slashed), "sources": sources, "ids": slashed}
@@ -5461,6 +5524,7 @@ class Inspeximus:
         for r in targets:
             meta = r.get("meta") or {}
             prev = meta.pop("pre_slash", None)
+            _mtype_before = r.get("mtype")
             if prev:                              # recover exact pre-slash standing
                 r["good"] = float(prev.get("good", 0) or 0)
                 r["bad"] = float(prev.get("bad", 0) or 0)
@@ -5469,6 +5533,11 @@ class Inspeximus:
                 r["good"] = 0.0; r["bad"] = 0.0
             meta["slashed"] = False
             restored.append(r["id"])
+            if r.get("mtype") != _mtype_before and self.receipts_enabled:
+                # Same amendment as slash(): restoring graduation rewrites a COMMITTED field, so without a
+                # new receipt the chain still asserts the slashed mtype and verify_writes() reports tampering
+                # after a legitimate exoneration. slash and restore must be symmetric here.
+                self._emit_write_receipt(r)
         if restored:
             self._save()
         return {"restored": len(restored), "sources": sources, "ids": restored}
