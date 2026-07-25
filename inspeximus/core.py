@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.53.0"
+__version__ = "1.54.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1038,8 +1038,13 @@ class Inspeximus:
                     # correction chains -> 4 of 12. A 2-tuple keeps the legacy behaviour exactly.
                     if len(ex) == 3 and ex[2] is False:
                         rec_asserts_change = False
-            except Exception:
-                pass
+            except Exception as e:
+                # A raising extractor leaves key=None, which silently disables supersession for that write —
+                # and a store where every write hits it looks exactly like an unkeyed store
+                # (supersession_report: 0). The write still proceeds (an extractor is an enrichment, not a
+                # gate), but the failure is now counted and surfaced instead of vanishing.
+                self._extractor_errors = getattr(self, "_extractor_errors", 0) + 1
+                self._extractor_last_error = f"{type(e).__name__}: {e}"
         # availability guard (OPT-IN): cap a single record's text so one runaway/malicious write can't exhaust
         # memory. Truncate rather than reject (don't break the app), and record the original length. SECURITY.md.
         _trunc_from = None
@@ -1199,13 +1204,13 @@ class Inspeximus:
             self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
             #                                                  a candidate (low identity_confidence) never supersedes
         if self.capacity is not None:
-            self._evict_to_capacity()                        # bounded working set (opt-in) BEFORE persisting
+            self._evict_to_capacity(protect_id=mid)          # bounded working set (opt-in) BEFORE persisting
         self._save(force=True)        # a new memory is real content - persist immediately, not throttled
         if self.receipts_enabled:
             self._emit_write_receipt(rec)
         return mid
 
-    def _evict_to_capacity(self) -> None:
+    def _evict_to_capacity(self, protect_id: str | None = None) -> None:
         """Keep the ACTIVE working set at <= self.capacity by HARD-EVICTING the lowest-value active
         memories, using the VERIFIED two-tier policy (Lab 29992a: value-protected + recency-aged is the
         one eviction rule that is universal across regimes). Protect the top protect_frac of capacity by
@@ -1214,16 +1219,31 @@ class Inspeximus:
         one, and pure junk floods age out). Eviction REMOVES (frees space) via forget(), unlike
         consolidate(keep=) which only DEMOTES — a bounded store must actually shrink. Superseded history
         is not counted or evicted here (it is low-overhead and preserves as_of); only the active set is
-        bounded. No-op when active <= capacity, so remember() stays O(1) amortized until the cap bites."""
+        bounded. No-op when active <= capacity, so remember() stays O(1) amortized until the cap bites.
+
+        `protect_id` exempts the record whose own write triggered this pass. Without it remember() could
+        evict the very record it had just stored and still return its id: at capacity=3, writing a fourth
+        low-value memory returned an id that was not in the store and could not be recalled, and
+        distill_and_remember() reported `captured: 3` with two records saved. A write that is silently undone
+        by itself is never what the caller asked for; admit-then-evict-others is what a bounded cache does.
+        The new record can still be evicted by a LATER write — it just cannot lose to its own."""
         active = [r for r in self.items if r.get("status") == "active"]
         if len(active) <= self.capacity:
             return
+        keep_new = None
+        if protect_id is not None:
+            keep_new = next((r for r in active if r["id"] == protect_id), None)
+            if keep_new is not None:
+                active = [r for r in active if r["id"] != protect_id]   # budget the REST against capacity-1
         now = time.time()
+        budget = self.capacity - (1 if keep_new is not None else 0)
+        if len(active) <= budget:
+            return
         active.sort(key=lambda r: -r["value"])               # by RAW value (protected tier order)
-        kprot = int(self.protect_frac * self.capacity) if self.two_tier_keep else 0
+        kprot = int(self.protect_frac * budget) if self.two_tier_keep else 0
         protected, rest = active[:kprot], active[kprot:]
         rest_keep = set(id(r) for r in
-                        sorted(rest, key=lambda r: -self._effective_value(r, now))[:self.capacity - kprot])
+                        sorted(rest, key=lambda r: -self._effective_value(r, now))[:budget - kprot])
         evict_ids = [r["id"] for r in rest if id(r) not in rest_keep]
         if evict_ids:
             self.forget(evict_ids)                            # hard delete + link/toggle scrub
@@ -1267,6 +1287,10 @@ class Inspeximus:
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
         Requires receipts to have been enabled at write time."""
         problems: list[str] = []
+        if getattr(self, "_extractor_errors", 0):
+            problems.append(f"the key/object extractor raised on {self._extractor_errors} write(s) "
+                            f"(last: {self._extractor_last_error}) — those records are UNKEYED, so "
+                            f"supersession never ran for them")
         if getattr(self, "_persist_error", None):
             # An unwritable store makes every other check here a statement about MEMORY, not about what an
             # auditor would find on disk. Reported first because it invalidates the rest.
@@ -1972,7 +1996,7 @@ class Inspeximus:
                       for t in sorted(target)[:10]]
             return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True}
         if not target:
-            return {"forgotten": 0, "ids": [], "scrubbed_links": 0}
+            return {"forgotten": 0, "ids": [], "scrubbed_links": 0, "tombstones": 0}
         self.items = [r for r in self.items if r["id"] not in target]
         scrubbed = 0
         if redact_links:
@@ -2878,7 +2902,7 @@ class Inspeximus:
                    and not (r.get("meta") or {}).get("rederived_to")
                    and r["id"] in _ok]
         if not flagged:
-            return {"rederived": 0, "skipped": 0, "ids": []}
+            return {"rederived": 0, "skipped": 0, "ids": [], "old_value": "", "new_value": ""}
         root = next((r for r in flagged if r.get("key")), None)
         k = key or (root.get("key") if root else None)
         if not k:
@@ -2896,14 +2920,18 @@ class Inspeximus:
                 if old and old.lower() in (text or "").lower():
                     return re.sub(re.escape(old), new, text, flags=re.IGNORECASE)
                 return None                       # paraphrase: needs a caller-supplied (LLM) rewrite; skip
-        done, skipped, ids = 0, 0, []
+        done, skipped, ids, failed = 0, 0, [], []
         for r in flagged:
             if r.get("key"):                      # the root itself is replaced by the correction, not rederived
                 continue
             try:
                 nt = rewrite(r.get("text", ""), old_v, new_v)
-            except Exception:
+            except Exception as e:
+                # A rewriter that RAISED is not the same as a fact that could not be rewritten. Folding both
+                # into `skipped` told the caller "paraphrased, nothing to do" when their LLM was down, and
+                # they never retried. Counted separately so a retry is possible.
                 nt = None
+                failed.append({"id": r["id"], "error": f"{type(e).__name__}: {e}"})
             if not nt or nt == r.get("text"):
                 skipped += 1
                 continue
@@ -2914,7 +2942,11 @@ class Inspeximus:
             ids.append(rid)
         if done:
             self._save(force=True)
-        return {"rederived": done, "skipped": skipped, "ids": ids, "old_value": old_v, "new_value": new_v}
+        out = {"rederived": done, "skipped": skipped, "ids": ids,
+               "old_value": old_v, "new_value": new_v}
+        if failed:
+            out["failed"] = failed          # the rewriter raised on these -- retryable, unlike `skipped`
+        return out
 
     def _current_active_id(self, key: str) -> str:
         """id of the record currently CURRENT for `key` (the thing a revert would undo), or "" if none.
@@ -4606,7 +4638,7 @@ class Inspeximus:
     @staticmethod
     def _canon_of(rec: dict) -> str:
         """The single canonical source string of ONE record (same rule _distinct_sources counts by): its
-        entity-resolved `source.doc`/string, else 'id:'+its id. Also exposes the attested key as 'key:<k>'."""
+        entity-resolved `source.doc`/string, else 'id:'+its id. (It does NOT emit a 'key:<k>' form; the docstring claimed that until 1.54.0 and no caller ever saw one -- _trusted_sources tests the attested key on a separate branch.)"""
         src = rec.get("source")
         doc = src.get("doc") if isinstance(src, dict) else (src if isinstance(src, str) else None)
         return Inspeximus._canon_source(doc) if doc else "id:" + rec.get("id", "")
@@ -5736,6 +5768,16 @@ class Inspeximus:
             # (the numeric/negation clash heuristic alone was blind to categorical value changes).
             if object is not None and rec_object is not None:
                 return str(rec_object) == str(object)                       # both values known -> exact compare
+            if object is not None:
+                # The CALLER knows the value but the record does not (`object=` is optional on remember(),
+                # so most real stores are in this state). Until 1.54.0 this fell through to the clash
+                # heuristic, which is blind to a categorical change — so re-asserting a retired password
+                # verdicted `supported` even when the caller had passed object='hunter2' explicitly. The
+                # caller's value is a usable discriminator against the record's TEXT; this is the mirror of
+                # the branch below.
+                v = str(object).lower().strip()
+                return bool(v) and re.search(r"(?<![a-z0-9])" + re.escape(v) + r"(?![a-z0-9])",
+                                             (rec_text or "").lower()) is not None
             if rec_object is not None:
                 v = str(rec_object).lower().strip()                         # record's known value in the claim?
                 return bool(v) and re.search(r"(?<![a-z0-9])" + re.escape(v) + r"(?![a-z0-9])", low) is not None
@@ -5814,6 +5856,15 @@ class Inspeximus:
                      for r in qualified if r["id"] not in actual_ids]
         untrusted = [{"id": r["id"], "text": (r.get("text") or "")[:160]}
                      for r in actual if r["id"] not in trusted_ids]
+        if not trusted_ids:
+            # `stable = not displaced` is structurally True when the trusted recall returns NOTHING, so a
+            # trust_seeds entry that matches no record (e.g. the literal source string where the store keys
+            # on its canonical form) reported stable=True with the whole top-k untrusted. Empty seeds already
+            # failed CLOSED; wrong seeds failed OPEN, which is the more dangerous of the two.
+            return {"stable": None, "displaced": [], "untrusted_in_topk": untrusted, "k": k,
+                    "note": f"trust_seeds are configured but match no record in this store "
+                            f"(canonical forms: {sorted(Inspeximus._canon_source(x) for x in self.trust_seeds)}) "
+                            f"— selection integrity is unknown here, not stable"}
         return {"stable": not displaced, "displaced": displaced,
                 "untrusted_in_topk": untrusted, "k": k}
 

@@ -280,7 +280,7 @@ def _run(idx):
 
 def fetch_wheel(version, workdir):
     cmd = [sys.executable, "-m", "pip", "download",
-           f"agora-inspeximus=={version}" if version else "agora-inspeximus",
+           f"inspeximus=={version}" if version else "inspeximus",
            "--no-deps", "-d", str(workdir)]
     subprocess.run(cmd, capture_output=True, check=True)
     wheel = sorted(workdir.glob("*.whl"))[0]

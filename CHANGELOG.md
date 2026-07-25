@@ -3,6 +3,100 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.54.0 - what a full codebase audit found, and it was not flattering
+
+After 1.53.0 we audited the whole package for the defect CLASS we had just fixed, rather than for the defect.
+Every finding below has the same shape as the one that prompted the search: **an instrument reported safe
+while the guarantee it was measuring was broken.** All were reproduced before being fixed, and each fix is
+pinned by a test that a mutation kills.
+
+### Tenant isolation was enforced in 25 of 79 methods
+
+`_TenantView` rebound the tenant-aware methods and **forwarded everything else** to the parent store, which
+runs unbound — i.e. as admin. `recall()` honoured the boundary. These did not:
+
+```
+A = store.for_tenant("acme"); B = store.for_tenant("globex")
+A.recall("api key")            ->  []                                     # isolation holds
+A.history("globex api key")    ->  ['... the globex api key is sk-globex-999']
+A.provenance("globex api key") ->  found=True, full text
+```
+
+`as_of()` and `why_recalled()` did the same; `beta.forget([acme_id])` returned `{'forgotten': 1}` and the row
+was gone; `credit()` wrote across the boundary; `memory_report`, `value_by_cohort`, `index_coherence`,
+`supersession_report`, `erasure_report` and `governance_report` counted and attributed other tenants, and two
+tenants produced an **identical `state_digest`**.
+
+Fixed at both levels. 18 read sites across 12 methods now resolve through `_tenant_rows()`; `forget()` scopes
+its SELECTION before deleting from the shared list; 32 more methods are rebound. And `__getattr__` is now
+**default-deny** — an unclassified public method raises instead of silently running as admin, so a method
+added tomorrow cannot leak by default. A test fails the moment a public method is added without classifying
+it. *(The class docstring had asked for this in words since the beginning: "Any new tenant-aware method
+belongs in this list." A note is not a mechanism.)*
+
+### A failed save was reported as a successful one
+
+`_save()` swallowed every exception AND left `_dirty` False — so `flush()` became a no-op and every later
+write was lost too, while `verify_writes()` returned True:
+
+```
+in-memory 5 | verify_writes -> True
+RELOADED from disk -> ['fact 0']
+```
+
+Now the failure is recorded, retried on the next save, reported by `verify_writes()`, and **raised by
+`flush()`** — the call whose entire purpose is "make sure it is on disk". `remember()` also rejects an
+unserialisable `meta` at the write that carries it: the damage was never the bad record, it was every good
+record written after it.
+
+### The 1.53.0 collision guard covered one of five paths
+
+`forget_pii(subject=...)` erased the colliding subject (`erased 2`, Bob gone), `retract_lineage` demoted him,
+and `rederive` **rewrote his text and re-emitted it**. All subject resolution now goes through one
+`_resolve_subject()` that carries the guard, and a test caps how many sites may inline it — because the
+regression happened precisely because five call sites each had their own copy.
+
+### The auditor-facing verifier passed a bundle carrying its own failure
+
+`build_bundle()` wrote `governance.proof.verified` and `verify_bundle()` never read it, so a bundle exported
+from a store whose records had been edited out of band verified **PASS with zero problems**. A
+receipts-disabled store also passed, with `writes: 0`. Both now fail — and an *empty* store is reported as
+empty rather than failed, so the finding stays meaningful.
+
+### Smaller, same theme
+
+- **`remember()` returned the id of a record it had just evicted.** At `capacity=3`, a fourth low-value write
+  returned an id that was not in the store and could not be recalled. The new record is now exempt from its
+  own write's eviction pass (a later write can still evict it); the capacity bound still holds exactly.
+- **`verify_claim` verdicted `supported` for a retired value** whenever the store had not recorded `object=`
+  (which is optional, so most stores) — even when the caller passed `object=` explicitly. The caller's value
+  is now used as the discriminator against the record's text.
+- **A rewriter that RAISED was folded into `skipped`**, so a caller read "paraphrased, nothing to do" when
+  their LLM was down. `rederive` now returns a separate `failed` list.
+- **An extractor that raised silently disabled keying and supersession** for that write — and the store then
+  looked exactly like one that was never keyed. Counted and surfaced by `verify_writes()`.
+- **`selection_integrity` reported `stable=True` with the whole top-k untrusted** when `trust_seeds` held a
+  literal source string instead of its canonical form. Empty seeds already failed closed; wrong seeds failed
+  open, which is the more dangerous half. Now `None` with a note naming the canonical forms it looked for.
+- **Documented return keys vanished on early-return paths** (`forget` without `tombstones`, `rederive`
+  without `new_value`) — a `KeyError` exactly when the answer was zero.
+- **A docstring still offered `'key:<hex>'`** on `_canon_of`, the same false claim fixed for `forget_subject`
+  in 1.53.0. No caller has ever seen that prefix.
+
+### README, honestly
+
+The README claimed *"every number in this README traces to a runnable probe"*. The audit found one that does
+not: the harness behind the LOCOMO **retrieval-recall@25 0.78 / 0.65** pair is not in the repository, and the
+file the README named does not exist. The numbers are now marked **reported, not independently reproducible
+from this repo**, and the "every number" line says "almost every", with the exception flagged in place. Also
+fixed: probe paths pointed at `inspeximus/probes/` (2 files) instead of `probes/`; `claims_audit.py`
+pip-downloaded a package name that is not on PyPI; the version line said 1.48.0; `recall()` examples showed
+strings when it returns dicts; and "zero dependencies — one file" is now "zero required dependencies —
+pure-Python package" (15 modules).
+
+368 tests pass. Nothing here was found by a user or a regulator; it was found by looking for one defect and
+refusing to stop at the first instance.
+
 ## 1.53.0 - a DSAR for one person no longer erases another, and forget_subject can be previewed
 
 The preview was the intended work. Reviewing it found a **data-loss defect in the erasure path itself**, which

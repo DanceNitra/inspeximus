@@ -68,6 +68,8 @@ def build_bundle(store, expected_pubkey: str | None = None, sign=None) -> dict:
         "anchor": anchor,
         "governance": store.governance_report(expected_pubkey),
         "supersession": store.supersession_report(),
+        "n_records": len(getattr(store, "items", []) or []),   # content-free count: lets the verifier tell
+        #                                        "empty store" from "store with data but receipts disabled"
         "write_chain": _content_free_writes(store),
         "tombstone_chain": _content_free_tombstones(store),
     }
@@ -158,6 +160,31 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         ok(f"anchor carries {len(cosigs)} co-signature(s) (pass witnesses= to verify them)")
 
     gov = bundle.get("governance") or {}
+
+    # (6) the bundle's OWN verdict on the store it came from. build_bundle() already wrote
+    # governance.proof.verified, and until 1.54.0 the verifier never read it -- so a bundle exported from a
+    # store whose records had been edited out of band carried `verified: False` and still verified PASS with
+    # zero problems. The auditor runs THIS side; it must not be the side that skips the finding.
+    proof = (gov.get("proof") or {})
+    if proof.get("verified") is False:
+        bad("the store reported its own write-verification as FAILED at export time"
+            + (f": {'; '.join(map(str, proof.get('problems') or []))}" if proof.get("problems") else "")
+            + " -- the chains below re-walk consistently, but the RECORDS no longer match their receipts")
+
+    # (7) an empty chain proves nothing, and 'PASS' on nothing is the most misleading output here. A
+    # receipts-disabled store exported a bundle that verified clean with writes=0.
+    n_records = bundle.get("n_records")
+    if not wc and not tc:
+        if n_records:
+            bad(f"this bundle carries NO write or tombstone receipts, yet the store holds {n_records} "
+                f"record(s) -- receipts were not enabled, so there is nothing here to verify, which is "
+                f"not the same as verified")
+        elif n_records == 0:
+            ok("store is empty: nothing to verify (this is not evidence of anything)")
+        else:                                    # pre-1.54.0 bundle, no n_records field
+            bad("this bundle carries NO write or tombstone receipts -- nothing here to verify, which is "
+                "not the same as verified")
+
     return {
         "ok": not problems,
         "checks": checks,

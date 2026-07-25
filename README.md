@@ -11,7 +11,7 @@ attests it unaltered. The self-correcting memory layer for AI agents.*
 back — deterministically, with no LLM on the write path. Extracted from an autonomous research OS that has run
 it daily over 10,000 notes.*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.48.0
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.54.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -53,7 +53,7 @@ memory that keeps a correction corrected and can show, with an offline-verifiabl
 | **Verifiable erasure** | **signed, content-free tombstone + an offline-verifiable receipt** | `delete()` — unverified |
 | **Tamper-evident record-keeping** | hash-linked receipts + a signed anchor, verified offline | SOC 2 audit logs (not cryptographic) / none |
 | **EU AI Act / GDPR evidence** | **`inspeximus compliance` overlay + audit bundle** | not framed |
-| **Dependencies** | **zero — one file** | server / DB / vector / graph stack |
+| **Dependencies** | **zero required — pure-Python package** | server / DB / vector / graph stack |
 | **MCP server** | yes (one-command install) | varies |
 
 To our knowledge the only agent-memory library that ships verifiable erasure **and** tamper-evident
@@ -234,7 +234,7 @@ what makes three things possible the mainstream libraries don't offer:
 | Letta / MemGPT | yes | LLM rewrites the block | ✗ no undo | ✗ |
 
 *(Every competitor cell was checked against that project's current source/docs — see [the integrity
-benchmark](inspeximus/probes/INTEGRITY_BENCHMARK.md), which also names each system that shares an individual property.
+benchmark](probes/INTEGRITY_BENCHMARK.md), which also names each system that shares an individual property.
 Cryptographic deletion receipts do exist in purpose-built provenance systems like Engram and Heartwood; the claim
 here is scoped to mainstream agent-memory libraries.)*
 
@@ -246,16 +246,23 @@ its extraction design. That is the moat.
 Integrity would be hollow if inspeximus retrieved worse. It doesn't. On the standard **LOCOMO** benchmark (full set,
 n=1536), with the built-in tuned recipe (a semantic embedder + hybrid recall + a soft speaker prefilter),
 inspeximus's **retrieval-recall@25 is 0.78** (a supporting turn is retrieved) / **0.65** (all supporting turns) —
-top-tier, and measured the honest way: **LLM-free and reproducible**, with no LLM judge to inflate it. Run it:
-`python inspeximus/probes/retrieval_recall_locomo.py`.
+top-tier, and measured the honest way: **LLM-free**, with no LLM judge to inflate it.
+
+> **Reproducibility caveat (2026-07-25, found by our own codebase audit).** The harness this pair of numbers
+> came from is **not currently in this repository** — the file previously named here does not exist, so you
+> cannot re-run it from a clean checkout today. The LOCOMO retrieval work that IS runnable lives in
+> [`probes/`](probes/) (`locomo_retrieval_map.py`, `locomo_soft_prefer_filter.py`,
+> `locomo_composed_soft_filters.py`). Until the exact harness is restored, treat 0.78 / 0.65 as **reported,
+> not independently reproducible from this repo**.
 
 *(We deliberately don't headline an LLM-judged end-to-end QA score. Those are judge-dependent and not comparable
 across harnesses — mem0 reports 66.9% and Zep 71.2% under their own judges — so a cross-system "we win" claim
 would need running them through this harness, which we haven't done. What we publish is our own reproducible
 number.)*
 
-**Every number in this README traces to a runnable probe in [`inspeximus/probes/`](inspeximus/probes/). Nothing is
-asserted that you can't reproduce.**
+**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The one exception is
+flagged in place above, rather than left for you to discover. (This line used to say *every* number, without
+exception — an audit found the exception, so the line changed rather than the standard.)
 
 ## Quickstart (2 minutes)
 
@@ -268,11 +275,11 @@ from inspeximus import Inspeximus
 
 m = Inspeximus("memory.json")                      # persists to JSON; drop the path for pure in-memory
 m.remember("The API rate limit is 1000 req/min", key="api::rate_limit")
-m.recall("what is the rate limit")            # -> ["The API rate limit is 1000 req/min"]
+m.recall("what is the rate limit")            # -> [{"id": ..., "text": "The API rate limit is 1000 req/min", ...}]
 
 # Correction is first-class: writing the same key supersedes the old value — no config, no LLM call.
 m.remember("The API rate limit is 5000 req/min", key="api::rate_limit")
-m.recall("rate limit")                        # -> ["...5000 req/min"]  (only the current value)
+m.recall("rate limit")                        # -> [{"text": "...5000 req/min", ...}]  (only the current value)
 m.revert("api::rate_limit")                   # roll back to the predecessor, on command
 m.history("api::rate_limit")                  # full audit trail, oldest to newest
 ```
@@ -636,7 +643,7 @@ the limits attached to the answer.
   (fixes supersession but serves the *freshest lie* — **0/8** on poison); `inspeximus` — deterministic
   supersession key **+** corroboration gate **+** value-ranking — is **100%**, robust across all three.
   Each single mechanism wins one regime and loses another (the *memory operating-point trap*), which is
-  why the durable layer needs all three together (probe `inspeximus/probes/operating_point_memory.py`).
+  why the durable layer needs all three together (probe `probes/operating_point_memory.py`).
 - **Cohort-level value** — per-memory outcome attribution is **statistically underpowered at n-of-1**
   (the best proxy reached only ~0.36 power at realistic sample sizes); the cohort is where the
   signal lives. Hence rule 4.
