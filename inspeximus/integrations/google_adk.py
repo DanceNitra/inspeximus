@@ -151,11 +151,13 @@ class InspeximusMemoryService(BaseMemoryService, ComplianceMixin):
         return cls(path=path or None, **kwargs)
 
     # ── governance bonus (inspeximus-specific) ──
-    def forget_subject_for(self, app_name: str, user_id: str, request_id: str | None = None) -> dict:
+    def forget_subject_for(self, app_name: str, user_id: str, request_id: str | None = None,
+                           allow_ambiguous: bool = False) -> dict:
         """Right-to-erasure for one ADK user: hard-delete their memories across sessions and leave a signed,
         content-free deletion tombstone (verify_writes stays intact). Needs receipts enabled on the store for
         the signature; works either way for the erasure itself."""
-        return self.store.forget_subject(_subject(app_name, user_id), request_id=request_id)
+        return self.store.forget_subject(_subject(app_name, user_id), request_id=request_id,
+                                        allow_ambiguous=allow_ambiguous)
 
 
 def register(scheme: str = "inspeximus") -> None:

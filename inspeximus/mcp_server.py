@@ -549,10 +549,11 @@ def pii_report() -> dict:
 
 
 @mcp.tool()
-def forget_pii(types: list[str] | None = None, subject: str = "") -> dict:
+def forget_pii(types: list[str] | None = None, subject: str = "",
+               allow_ambiguous: bool = False) -> dict:
     """Erase detected PII — of the given `types` (default all), optionally scoped to a `subject`. Deletes the
     offending content deterministically (not an LLM guess). Returns what was erased."""
-    return _MEM.forget_pii(types=types, subject=subject or None)
+    return _MEM.forget_pii(types=types, subject=subject or None, allow_ambiguous=allow_ambiguous)
 
 
 @mcp.tool()

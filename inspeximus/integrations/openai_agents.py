@@ -100,10 +100,11 @@ class InspeximusSession(ComplianceMixin):
             self.store.forget(ids=ids)
 
     # ── governance bonus (inspeximus-specific, honest) ──
-    def forget_subject(self, request_id: str | None = None) -> dict:
+    def forget_subject(self, request_id: str | None = None, allow_ambiguous: bool = False) -> dict:
         """Right-to-erasure for THIS session's user: hard-delete every turn of this session and leave a
         signed, content-free deletion tombstone (provable erasure that doesn't read as tampering)."""
-        return self.store.forget_subject(self._src["doc"], request_id=request_id)
+        return self.store.forget_subject(self._src["doc"], request_id=request_id,
+                                        allow_ambiguous=allow_ambiguous)
 
     @staticmethod
     def _shadow(item: Any) -> str:

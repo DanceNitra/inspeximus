@@ -3,6 +3,63 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.58.0 - the known-and-unfixed list, cleared
+
+Every item below was reported, reproduced and carried in the handoff as **known and unfixed** for three
+releases, because each needed a change larger than the release it was found in. Naming them beat quietly
+dropping them; shipping them beats naming them.
+
+### Cross-process data loss — the largest, and the worst-shaped
+
+The store is one JSON file written whole and read **once** at open, with no lock and no re-check. A second
+handle therefore won by writing last:
+
+```
+A.remember("base");  A.flush()
+B.remember("B-only"); B.flush()      # second handle, loaded before A's next write
+A.remember("A-only"); A.flush()
+on disk -> ['base', 'A-only']        # B's committed, flushed record is GONE
+A.verify_writes() -> True            # and both sides still certify clean
+```
+
+That is the shipped default, not an exotic setup: `mcp_server.py` and `cli.py` both resolve
+`$INSPEXIMUS_PATH`, so a long-running MCP server plus one CLI invocation is the ordinary case. Losing data and
+then certifying it is the worst thing a store whose pitch is integrity can do.
+
+inspeximus is a **single-writer** store, and that is now enforced rather than assumed. Each handle records the
+file's `(mtime_ns, size)` when it loads and after each of its own saves; if the file changed underneath, the
+save raises **`StoreChangedOnDisk`** instead of overwriting. `reload()` is the recovery path: it re-reads the
+file and re-adds this handle's records by id, so **neither writer loses a write**. A single writer never sees
+a false conflict — its own saves refresh the fingerprint.
+
+Receipt and tombstone sidecars are now written atomically (temp + `os.replace`) too; they were plain writes, so
+a crash mid-write could leave the *evidence* file truncated while the store itself was fine.
+
+### The store file stays valid JSON
+
+`json.dumps` ran without `allow_nan=False`, so `remember(..., value=float('nan'))` wrote a bare `NaN` literal.
+Python re-reads it; **jq, JS and serde do not** — the file silently stopped being JSON for the audit bundle and
+every non-Python consumer, while `state_digest` and `verify_writes` both reported healthy. `inf` also sorted
+first in every recall forever, and `nan` never compared true so the record sank without trace. Non-finite
+`value`/`valid_from` are now refused at the write, and the serializer refuses as a second layer.
+
+### Foreign and older records no longer crash — or miscount
+
+A record missing `status` raised a bare `KeyError` inside six methods, and made `index_coherence` report
+`coherent: true` with an **undercount** — a wrong answer, which is worse than a crash. Records are normalised
+once at load (absent keys only; nothing present is touched), so hand-edited, foreign and pre-upgrade stores
+work.
+
+### The erasure path is reachable from every surface
+
+The library has had subject erasure since 1.0 and **the CLI never exposed it**, so the one operation a DSAR
+actually needs was unreachable from a terminal. `inspeximus forget-subject <source>` now exists, with
+`--dry-run` (direct vs inherited, plus which other subjects go with it) and `--allow-ambiguous`. And
+`forget_pii` on MCP, `google_adk.forget_subject_for` and `openai_agents.forget_subject` gained the
+`allow_ambiguous` escape hatch the guard needs — without it, a legitimate erasure was unreachable there too.
+
+420 tests pass; 6 mutations, each killed by its own test.
+
 ## 1.57.0 - round three, including two regressions the previous fix introduced
 
 The pattern held a third time, and this round I was the source of half of it. **A fix is new code and carries

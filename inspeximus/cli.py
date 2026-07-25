@@ -96,6 +96,18 @@ def main(argv=None):
     f.add_argument("--dry-run", action="store_true",
                    help="preview what would be deleted (with a text sample) — deletes nothing")
 
+    fs = sub.add_parser("forget-subject",
+                        help="right-to-erasure by SUBJECT: delete everything attributable to a source, "
+                             "including records that inherited it through lineage")
+    fs.add_argument("subject", help="the canonical source string you wrote with (remember --source)")
+    fs.add_argument("--request-id", help="the DSAR/ticket id, recorded in the tombstone")
+    fs.add_argument("--basis", default="gdpr-art17", help="legal/operational basis for the erasure")
+    fs.add_argument("--dry-run", action="store_true",
+                    help="preview the blast radius: direct vs inherited, and which OTHER subjects go with it")
+    fs.add_argument("--allow-ambiguous", action="store_true",
+                    help="proceed when the subject shares a canonical form with a DIFFERENT source "
+                         "(read the refusal first — it names the other subject)")
+
     ls = sub.add_parser("list", help="list recent active memories")
     ls.add_argument("-n", type=int, default=10)
 
@@ -310,6 +322,32 @@ def main(argv=None):
         res = m.revert(a.key)
         m._save(force=True)
         _out(res, a.json) or print(f"reverted {a.key}: now -> {res.get('restored') or res.get('active') or res}")
+
+    elif a.cmd == "forget-subject":
+        # The library has had subject erasure since 1.0; the CLI never exposed it, so the one operation a
+        # DSAR actually needs was unreachable from the terminal. Found by an audit of the guard's usability,
+        # not of the guard.
+        from .core import AmbiguousSubject
+        try:
+            res = m.forget_subject(a.subject, request_id=a.request_id, basis=a.basis,
+                                   dry_run=a.dry_run, allow_ambiguous=a.allow_ambiguous)
+        except AmbiguousSubject as e:
+            print(f"refused: {e}", file=sys.stderr)
+            return 2
+        if res.get("dry_run"):
+            print(f"would erase {res['would_erase']} record(s): "
+                  f"{res['direct']} naming the subject, {res['inherited']} reached through lineage")
+            if res.get("also_carrying"):
+                print("  also carrying data from: "
+                      + ", ".join(f"{k} ({v})" for k, v in res["also_carrying"].items()))
+            for row in res.get("sample", []):
+                print(f"  [{row['why']:<9}] {row['id']}  {row['text'][:70]}")
+            if res.get("ambiguous_with"):
+                print(f"  EXCLUDED as ambiguous: {res['ambiguous_with']} "
+                      f"({res.get('excluded_by_ambiguity')} record(s)); --allow-ambiguous to include")
+        else:
+            print(f"erased {res['erased']} record(s), {res['tombstones']} tombstone(s)")
+        return 0
 
     elif a.cmd == "forget":
         where = None

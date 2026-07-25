@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.57.0"
+__version__ = "1.58.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -512,6 +512,17 @@ class AmbiguousSubject(ValueError):
     'crm.example.com/alice' and 'crm.example.com/bob' resolve alike; before this, a DSAR for Alice erased
     Bob and the preview reported no collateral. Subclasses ValueError so existing `except ValueError`
     handlers keep working."""
+
+
+class StoreChangedOnDisk(RuntimeError):
+    """Another writer changed the store file since this handle loaded or last saved it.
+
+    The store is one JSON file written whole with an atomic replace, and it is read ONCE at open. So a second
+    handle — a long-running MCP server plus a CLI invocation is the ordinary case, since both default to
+    $INSPEXIMUS_PATH — used to win by simply writing last: the other writer's committed, `flush()`ed record
+    was erased, and `verify_writes()` still returned True because the surviving chain was self-consistent.
+    Detecting the conflict and refusing is the honest floor: no silent loss, and `reload()` offers a recovery
+    path. inspeximus is a SINGLE-WRITER store; this makes that assumption enforced rather than assumed."""
 
 
 class Inspeximus:
@@ -641,6 +652,7 @@ class Inspeximus:
         # nonce is only held in memory (honest boundary: after a restart it would conflict again, not land).
         self._consumed_revert_nonces: set[str] = set()
         self._items: list[dict] = []
+        self._file_sig = None       # (mtime_ns, size) of the file we loaded; guards against clobbering a peer
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -859,29 +871,7 @@ class Inspeximus:
         self._encrypted = bool(encrypt_key is not None or encrypt_passphrase is not None)
         if self._encrypted and not _HAVE_AEAD:
             raise RuntimeError("encryption needs the `cryptography` package (pip install cryptography)")
-        if self.path and self.path.exists():
-            raw = self.path.read_bytes()
-            if raw[:5] == _INSPEXIMUS_ENC_MAGIC:                           # encrypted store -> decrypt or FAIL LOUD
-                if not self._encrypted:
-                    raise ValueError("store is encrypted; pass encrypt_key= or encrypt_passphrase= to open it")
-                self._enc_salt = raw[5:21]                            # reuse the store's salt (passphrase re-derivation)
-                try:
-                    self._items = json.loads(_decrypt_blob(self._resolve_key(), raw))
-                except Exception as e:                                # wrong key / tampered / truncated -> never
-                    raise ValueError("cannot decrypt store (wrong key/passphrase, or the file was tampered)") from e
-                #                                                       silently return [] (would risk overwriting real data)
-            else:
-                try:
-                    self._items = json.loads(raw.decode("utf-8"))    # legacy plaintext JSON
-                except Exception as e:
-                    # NEVER swallow this. A truncated/corrupt file loaded as [] and the very next _save()
-                    # wrote that empty list over it: 5 records in, 0 loaded, 1 on disk after the next write.
-                    # The encrypted branch above has always raised here; the plaintext branch silently
-                    # destroyed the store instead. Refuse to open rather than overwrite what we cannot read.
-                    raise ValueError(
-                        f"cannot parse the store at {self.path} ({e}). Refusing to open it, because "
-                        f"continuing would overwrite the file with an empty store. Restore a backup, or "
-                        f"move the file aside if you meant to start fresh.") from None
+        self._load_from_disk()
         # EMBED-RECIPE GUARD (persist_vectors only): persisted vectors are only comparable to a query embedded the
         # SAME way. If the store was written with a different embed recipe than the one now in use — most importantly
         # an ASYMMETRIC upgrade (e.g. adding nomic's search_document:/search_query: prefixes) — a query in the new
@@ -1061,6 +1051,11 @@ class Inspeximus:
         if self.max_text is not None and isinstance(text, str) and len(text) > self.max_text:
             _trunc_from = len(text)
             text = text[:self.max_text]
+        for _n, _v in (("value", value), ("valid_from", valid_from)):
+            if _v is not None and isinstance(_v, float) and not math.isfinite(_v):
+                # inf sorted first in every recall forever; nan never compared true so the record sank
+                # silently, and its bi-temporal window was undefined.
+                raise ValueError(f"remember({_n}=...) must be a finite number, got {_v!r}")
         if meta is not None:
             # Reject an unserialisable `meta` AT THE WRITE that carries it. Accepting it stored one poisoned
             # record that made every subsequent _save() of the whole store fail — so the damage was not the
@@ -1286,8 +1281,8 @@ class Inspeximus:
         self._receipts.append(r)
         if self._receipts_path:
             try:
-                self._receipts_path.write_text(json.dumps(self._receipts, indent=2, ensure_ascii=False),
-                                               encoding="utf-8")
+                Inspeximus._atomic_write(self._receipts_path,
+                                         json.dumps(self._receipts, indent=2, ensure_ascii=False))
             except Exception as e:
                 # The receipt chain IS the evidence. Losing it silently was worse than losing a record:
                 # measured, 4 receipts in memory, verify_writes() -> (True, []), and ZERO on reload — the
@@ -2082,8 +2077,8 @@ class Inspeximus:
         self._tombstones.append(t)
         if self._tombstones_path:
             try:
-                self._tombstones_path.write_text(json.dumps(self._tombstones, indent=2, ensure_ascii=False),
-                                                 encoding="utf-8")
+                Inspeximus._atomic_write(self._tombstones_path,
+                                         json.dumps(self._tombstones, indent=2, ensure_ascii=False))
             except Exception as e:
                 # A tombstone is the PROOF an erasure happened. Silently losing it meant forget_subject
                 # returned tombstones:1 and erasure_certificate said verified, while a reload showed
@@ -2340,6 +2335,88 @@ class Inspeximus:
             man.register(t)
         return man.execute(subject, values, request_id=request_id, basis=basis,
                            authorized_by=authorized_by)
+
+    def _load_from_disk(self) -> None:
+        """Read the store file into `_items` and record the file fingerprint we loaded from.
+
+        The fingerprint is what makes concurrent writers detectable: `_save` compares it to the file's
+        current (mtime_ns, size) and refuses rather than overwriting another writer's work."""
+        if self.path and self.path.exists():
+            raw = self.path.read_bytes()
+            if raw[:5] == _INSPEXIMUS_ENC_MAGIC:                           # encrypted store -> decrypt or FAIL LOUD
+                if not self._encrypted:
+                    raise ValueError("store is encrypted; pass encrypt_key= or encrypt_passphrase= to open it")
+                self._enc_salt = raw[5:21]                            # reuse the store's salt (passphrase re-derivation)
+                try:
+                    self._items = json.loads(_decrypt_blob(self._resolve_key(), raw))
+                except Exception as e:                                # wrong key / tampered / truncated -> never
+                    raise ValueError("cannot decrypt store (wrong key/passphrase, or the file was tampered)") from e
+                #                                                       silently return [] (would risk overwriting real data)
+            else:
+                try:
+                    self._items = json.loads(raw.decode("utf-8"))    # legacy plaintext JSON
+                except Exception as e:
+                    # NEVER swallow this. A truncated/corrupt file loaded as [] and the very next _save()
+                    # wrote that empty list over it: 5 records in, 0 loaded, 1 on disk after the next write.
+                    # The encrypted branch above has always raised here; the plaintext branch silently
+                    # destroyed the store instead. Refuse to open rather than overwrite what we cannot read.
+                    raise ValueError(
+                        f"cannot parse the store at {self.path} ({e}). Refusing to open it, because "
+                        f"continuing would overwrite the file with an empty store. Restore a backup, or "
+                        f"move the file aside if you meant to start fresh.") from None
+        for r in self._items:
+            # A record missing a field newer code assumes crashed six methods with a bare KeyError — and made
+            # index_coherence report `coherent: true` with an undercount, which is worse than crashing. Foreign,
+            # hand-edited and pre-upgrade stores are ordinary; normalise once here instead of guarding at every
+            # read. Only absent keys are filled; nothing existing is touched.
+            r.setdefault("status", "active")
+            r.setdefault("tags", [])
+            r.setdefault("links", [])
+            r.setdefault("meta", {})
+            r.setdefault("value", 1.0)
+            r.setdefault("text", "")
+            r.setdefault("ts", time.time())
+            r.setdefault("last_access", r["ts"])
+            r.setdefault("valid_from", r["ts"])
+            r.setdefault("mtype", _infer_type(r.get("text") or ""))
+            r.setdefault("iso", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(r["ts"])))
+        self._file_sig = self._stat_sig()
+
+    @staticmethod
+    def _atomic_write(path, text: str) -> None:
+        """Write via a temp file + os.replace. The sidecars used plain write_text, so a crash or a competing
+        writer mid-write could leave a TRUNCATED receipt/tombstone chain — i.e. the evidence file corrupt
+        while the store itself was fine, which is the worst way round."""
+        tmp = path.with_name(path.name + ".tmp")
+        tmp.write_text(text, encoding="utf-8")
+        os.replace(tmp, path)
+
+    def _stat_sig(self):
+        """(mtime_ns, size) of the store file, or None if it does not exist."""
+        try:
+            st = self.path.stat()
+            return (st.st_mtime_ns, st.st_size)
+        except (OSError, AttributeError):
+            return None
+
+    def reload(self) -> dict:
+        """Re-read the store from disk and re-apply any records THIS handle holds that are not on disk.
+
+        The recovery path after StoreChangedOnDisk: it keeps the other writer's records and re-adds ours by id
+        (append-only union), so neither side loses a write. It cannot resurrect intent we never persisted —
+        a deletion this handle made and could not save is simply not re-applied — so re-run it if it mattered.
+        Returns {reloaded, readded}."""
+        mine = {r["id"]: r for r in self._items}
+        self._items = []
+        self._file_sig = None
+        self._load_from_disk()
+        on_disk = {r["id"] for r in self._items}
+        readded = [r for rid, r in mine.items() if rid not in on_disk]
+        self._items.extend(readded)
+        self._file_sig = self._stat_sig()
+        self._items_view_rev = None
+        self._save(force=True)
+        return {"reloaded": len(on_disk), "readded": len(readded)}
 
     @property
     def items(self) -> list:
@@ -6159,7 +6236,20 @@ class Inspeximus:
                 [{k: v for k, v in r.items() if k != "vec"} for r in self.items]
             # Atomic write: a partial/interleaved write can't corrupt the store (crash- and
             # concurrent-writer-safe — last writer wins, never a torn JSON file).
-            data = json.dumps(slim, ensure_ascii=False, indent=1)
+            if self._file_sig is not None and self._stat_sig() != self._file_sig:
+                # Another handle wrote this file since we loaded or last saved it. Writing now replaces its
+                # records with ours -- measured: B's committed, flush()ed record erased by A's next save,
+                # with verify_writes() still True on both sides because each chain was self-consistent.
+                # inspeximus is a SINGLE-WRITER store; refuse rather than lose the other writer's work.
+                raise StoreChangedOnDisk(
+                    f"{self.path} changed on disk since this handle loaded it (another process or another "
+                    f"Inspeximus() on the same path). Saving would erase its records. Call reload() to merge "
+                    f"the two and retry, or give each writer its own store file.")
+            # allow_nan=False: a caller-supplied NaN/Infinity was written as a bare literal, which
+            # Python re-reads but every STRICT JSON parser (jq, JS, Rust/serde) rejects — so the
+            # store silently stopped being valid JSON for the audit bundle and any non-Python reader,
+            # while state_digest and verify_writes both still reported healthy.
+            data = json.dumps(slim, ensure_ascii=False, indent=1, allow_nan=False)
             tmp = self.path.with_name(self.path.name + ".tmp")
             if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
                 key = self._resolve_key()                         # sets self._enc_salt on first save
@@ -6178,9 +6268,12 @@ class Inspeximus:
                     self._embedid_path.write_text(self.embed_id, encoding="utf-8")
                 except Exception as e:
                     self._sidecar_errors['embedid'] = f"{type(e).__name__}: {e}"
+            self._file_sig = self._stat_sig()        # our own write is not a conflict
             self._last_save = now
             self._dirty = False
             self._persist_error = None
+        except StoreChangedOnDisk:
+            raise                                    # the caller must see this one; it is not a disk failure
         except Exception as e:
             # Until 1.54.0 this was `pass`, and it also left _dirty False — so flush() became a no-op and
             # EVERY later write was lost too, while verify_writes() returned True. Measured: five records in
@@ -6290,7 +6383,7 @@ class _TenantView:
     #: by default. That is the whole point: the previous version forwarded EVERYTHING, and 54 of 79 public
     #: methods reached the parent as tenant=None (admin) — `A.history(B_key)` returned B's plaintext.
     _STORE_LEVEL = frozenset({
-        "flush", "reembed", "anchor", "witness", "ratify", "admit",
+        "flush", "reload", "reembed", "anchor", "witness", "ratify", "admit",
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
         "verify_attribution", "register_erasure_target",
         "detect_split_view", "check_self_narration", "classify_reversion",
