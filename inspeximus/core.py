@@ -1956,6 +1956,14 @@ class Inspeximus:
                 meta = r.get("meta")
                 if meta and meta.get("superseded_by_toggle") in target:
                     meta.pop("superseded_by_toggle", None)   # drop dangling toggle pointer (no ghost stale-derived)
+                if meta and meta.get("rederived_to") in target:
+                    # rederive() treats this as a single-shot "already corrected" guard. If the rederived copy
+                    # is erased, a live pointer to it locks the record on its KNOWN-WRONG value forever and
+                    # rederive returns 0/0 with no note. Only BEHAVIOUR-gating pointers are dropped here;
+                    # the history fields (derived_from, taint, revert_of, rederived_from, duplicate_of,
+                    # resolved_over) are deliberately KEPT — erasure_audit reports them as dangling_lineage,
+                    # and scrubbing them would delete the evidence and make the audit read clean.
+                    meta.pop("rederived_to", None)
         for tid in target:
             self._tok_cache.pop(tid, None)
             self._sig_cache.pop(tid, None)
