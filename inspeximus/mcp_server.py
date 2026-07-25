@@ -433,7 +433,8 @@ def forget(ids: list[str] | None = None, where_contains: str | None = None, dry_
 
 # ── GOVERNANCE / INTEGRITY tools (the surface a serious buyer checks — previously absent from the MCP) ──────
 @mcp.tool()
-def forget_subject(subject: str, basis: str = "", dry_run: bool = False) -> dict:
+def forget_subject(subject: str, basis: str = "", dry_run: bool = False,
+                   allow_ambiguous: bool = False) -> dict:
     """Right-to-erasure by SUBJECT (GDPR Art.17 / DSR): delete every memory about `subject` AND scrub its id from
     survivors' links/supersession pointers, so it can't resurface via recall or consolidation. `basis` records the
     legal/operational reason. Returns a receipt (forgotten count, ids, scrubbed_links) you can keep as evidence.
@@ -441,8 +442,15 @@ def forget_subject(subject: str, basis: str = "", dry_run: bool = False) -> dict
     RUN IT WITH dry_run=True FIRST. This cascades through inherited lineage, so it commonly erases more than the
     records that name the subject: the preview returns {would_erase, direct, inherited, sample, also_carrying}
     and changes nothing. `inherited` is the count you cannot predict, and `also_carrying` names the OTHER subjects
-    whose data goes down with this request — one erasure is quietly several more often than not."""
-    return _MEM.forget_subject(subject, basis=basis or None, dry_run=dry_run)
+    whose data goes down with this request — one erasure is quietly several more often than not.
+
+    If the call raises AmbiguousSubject, the subject you passed canonicalizes to the same key as a DIFFERENT
+    source in the store (e.g. two people under one host: crm.example.com/alice and crm.example.com/bob), so
+    erasing would delete a third party's records. Read the message, confirm which subject is meant, and pass
+    allow_ambiguous=True only if you really intend to erase all of them.
+    """
+    return _MEM.forget_subject(subject, basis=basis or None, dry_run=dry_run,
+                               allow_ambiguous=allow_ambiguous)
 
 
 @mcp.tool()

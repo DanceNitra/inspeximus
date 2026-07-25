@@ -3,6 +3,55 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.55.0 - round two: the same audit, run again after the fixes
+
+We re-ran the audit on the fixed code. Every 1.54.0 fix held **at the instance it was reported** and the
+**class survived in every case**. That is the finding worth keeping; the individual defects below are its
+evidence.
+
+**The tenant guard's own allow-list contained destructive methods.** 1.54.0 made `_TenantView.__getattr__`
+default-deny, then listed `apply_retention`, `shred`, `sleep`, `grade` and `erasure_certificate` as
+"store-level" passthroughs. They iterate the whole store, so from a tenant view they still reached every
+tenant. All are now tenant-bound, and a test fails if a destructive method reappears in that list — which it
+caught immediately: `sleep` was still there after the first pass.
+
+**A method that WAS rebound still leaked.** `revert()` scanned the shared list for its key, so
+`A.revert(B_key)` returned B's plaintext and wrote a copy of it into A. Rebinding a method does not scope it;
+the body has to use `_tenant_rows()`.
+
+**The collision guard covered erasure but not the standing levers.** Caught on `crm.example.com/alice`,
+`slash(scope='source')` forfeited `crm.example.com/bob` too — `slashed: 2`, Bob's standing inverted to bad.
+Now guarded by `_source_expansion_collisions`, with `allow_ambiguous=True` to proceed deliberately, and a
+test proving genuine sybil expansion still works.
+
+**The persistence fix covered the store file, not the evidence.** The receipt and tombstone sidecars still
+had `except Exception: pass`. Measured: 4 receipts in memory, `verify_writes() -> (True, [])`, **zero on
+reload**; and an erasure whose certificate said verified while a reload showed `erasures_total: 0` — the
+deletion record a DSAR response rests on, gone without a word. Both now surface and make `flush()` raise.
+They also needed their **own** error slot: the first version shared one with the store save, so the next
+successful write erased the record that the chain had never been persisted.
+
+**Two verifiers still passed vacuously.** `verify_bundle`'s empty-chain check only fired when *nothing* was
+receipted — five records written with receipts off, reopened with them on, one more written: 6 records,
+1 receipt, bundle clean, and forging one of the five changed nothing. And `governance_report` reported
+`proof.verified: True` on a store with no receipts at all, while its sibling surface refused the same store.
+
+**A guard with no escape hatch is its own defect.** `AmbiguousSubject` made a legitimate GDPR erasure
+*unreachable* through the MCP tool, which had no `allow_ambiguous`. Added, with the message telling the agent
+what to do when it fires.
+
+### Known limitation, stated rather than implied
+
+Tenant isolation is **not complete**. 46 methods still read the shared `self.items` list directly; many are
+legitimately store-wide (the receipt chain, the vector cache), but the boundary has not been verified
+method-by-method, and the correct fix is structural rather than another round of patches. What is now true:
+the confirmed leaks are closed, destructive methods are tenant-bound, and an **unclassified** method raises
+instead of silently running as admin. Treat multi-tenancy as a soft boundary for isolating *your own*
+workloads, not as a security boundary between mutually distrusting parties.
+
+379 tests pass; 7 mutations, each killed by its own test — including one that revealed a test covering only
+half the branch it claimed.
+
 ## 1.54.0 - what a full codebase audit found, and it was not flattering
 
 After 1.53.0 we audited the whole package for the defect CLASS we had just fixed, rather than for the defect.

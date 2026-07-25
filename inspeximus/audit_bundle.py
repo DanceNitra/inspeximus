@@ -174,6 +174,12 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     # (7) an empty chain proves nothing, and 'PASS' on nothing is the most misleading output here. A
     # receipts-disabled store exported a bundle that verified clean with writes=0.
     n_records = bundle.get("n_records")
+    if wc and isinstance(n_records, int) and n_records > len(wc):
+        # The empty-chain check below only fires when NOTHING is receipted. A store written with receipts
+        # OFF and later reopened with them ON has a chain that covers only the tail: 6 records, 1 receipt,
+        # and the bundle verified clean -- forging one of the 5 unreceipted records changed nothing.
+        bad(f"only {len(wc)} of {n_records} record(s) are covered by a write receipt -- the remaining "
+            f"{n_records - len(wc)} were written with receipts disabled and are NOT protected by this chain")
     if not wc and not tc:
         if n_records:
             bad(f"this bundle carries NO write or tombstone receipts, yet the store holds {n_records} "

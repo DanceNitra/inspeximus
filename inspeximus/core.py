@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.54.0"
+__version__ = "1.55.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -843,6 +843,9 @@ class Inspeximus:
         self._last_save = 0.0
         self._dirty = False
         self._persist_error = None   # last _save() failure, surfaced by verify_writes() and raised by flush()
+        # Sidecar failures live SEPARATELY: a successful main-store save must not erase the fact that the
+        # receipt or tombstone chain never reached disk. (It did, in the first version of this fix.)
+        self._sidecar_errors: dict = {}
         # ENCRYPTION-AT-REST (OPT-IN, default None -> plaintext JSON, byte-identical legacy). encrypt_key is a
         # raw 32-byte AES-256 key (from new_encryption_key()); encrypt_passphrase is stretched with scrypt.
         # inspeximus NEVER persists the key/passphrase — you hold it; lose it and the store is unrecoverable (that IS
@@ -1278,8 +1281,11 @@ class Inspeximus:
             try:
                 self._receipts_path.write_text(json.dumps(self._receipts, indent=2, ensure_ascii=False),
                                                encoding="utf-8")
-            except Exception:
-                pass
+            except Exception as e:
+                # The receipt chain IS the evidence. Losing it silently was worse than losing a record:
+                # measured, 4 receipts in memory, verify_writes() -> (True, []), and ZERO on reload — the
+                # store certified an integrity it could no longer demonstrate.
+                self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
         return r
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False) -> tuple[bool, list[str]]:
@@ -1287,6 +1293,15 @@ class Inspeximus:
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
         Requires receipts to have been enabled at write time."""
         problems: list[str] = []
+        if self.receipts_enabled and not self._receipts and self.items:
+            problems.append(f"receipts are enabled but the chain is EMPTY while the store holds "
+                            f"{len(self.items)} record(s) -- nothing here is covered by a write receipt")
+        elif not self.receipts_enabled and self.items:
+            problems.append(f"write receipts are DISABLED: {len(self.items)} record(s) exist with no write "
+                            f"chain, so there is nothing to verify -- which is not the same as verified")
+        for what, err in (getattr(self, "_sidecar_errors", None) or {}).items():
+            problems.append(f"the {what} chain was NOT persisted ({err}) — it exists in memory only, so the "
+                            f"evidence this store's integrity rests on will not survive a reload")
         if getattr(self, "_extractor_errors", 0):
             problems.append(f"the key/object extractor raised on {self._extractor_errors} write(s) "
                             f"(last: {self._extractor_last_error}) — those records are UNKEYED, so "
@@ -2062,8 +2077,11 @@ class Inspeximus:
             try:
                 self._tombstones_path.write_text(json.dumps(self._tombstones, indent=2, ensure_ascii=False),
                                                  encoding="utf-8")
-            except Exception:
-                pass
+            except Exception as e:
+                # A tombstone is the PROOF an erasure happened. Silently losing it meant forget_subject
+                # returned tombstones:1 and erasure_certificate said verified, while a reload showed
+                # erasures_total: 0 — the deletion record a DSAR response rests on, gone without a word.
+                self._sidecar_errors["tombstones"] = f"{self._tombstones_path}: {type(e).__name__}: {e}"
         return t
 
     def register_erasure_target(self, target) -> "Inspeximus":
@@ -2167,6 +2185,26 @@ class Inspeximus:
         """The record's own source string exactly as the writer passed it — NOT entity-resolved."""
         src = rec.get("source")
         return src.get("doc") if isinstance(src, dict) else (src if isinstance(src, str) else None)
+
+    def _source_expansion_collisions(self, caught: list, targets: list) -> dict:
+        """Targets pulled in by CANONICAL source that do not share a RAW source with the caught records.
+
+        slash() and monitor() expand from the records you name to every record sharing their canonical
+        source, which is right for a sybil publisher and wrong for two people under one host: caught on
+        'crm.example.com/alice', `slash` forfeited 'crm.example.com/bob' too (measured: slashed 2, Bob's
+        standing inverted to bad). Same lossy-key-as-selector defect as the erasure paths, one lever over."""
+        caught_raw = {self._raw_source(r) for r in caught if self._raw_source(r)}
+        if not caught_raw:
+            return {}
+        other = {}
+        for r in targets:
+            raw = self._raw_source(r)
+            if raw and raw not in caught_raw and Inspeximus._canon_source(raw) in {
+                    Inspeximus._canon_source(c) for c in caught_raw}:
+                other.setdefault(raw, []).append(r["id"])
+        if not other:
+            return {}
+        return {"sources": sorted(other), "ids": {i for v in other.values() for i in v}}
 
     def _resolve_subject(self, subject: str, allow_ambiguous: bool = False, destructive: bool = True):
         """THE one place a subject string becomes a set of records. Returns (cand, ids, collisions).
@@ -3026,7 +3064,7 @@ class Inspeximus:
         if not self._revert_authorized(key, capability):
             return {"ok": False, "reason": "authorization_required",
                     "challenge": self.revert_challenge(key)}
-        same_key = [r for r in self.items if r.get("key") == key]
+        same_key = [r for r in self._tenant_rows() if r.get("key") == key]
         active = [r for r in same_key if r.get("status") == "active"]
         if not active:
             return {"ok": False, "reason": "no active record for key"}
@@ -4999,7 +5037,7 @@ class Inspeximus:
                 "low_source_diversity": low_diversity, "adjudicated": adjudicated,
                 "notes": notes or ["no corroboration yet (claimed)"]}
 
-    def slash(self, ids, scope: str = "source") -> dict:
+    def slash(self, ids, scope: str = "source", allow_ambiguous: bool = False) -> dict:
         """Retroactive standing forfeiture — the accountability lever for a CAUGHT poison. When a memory is
         caught driving a bad outcome (the application detects/attributes it), slash() FORFEITS the entire
         accrued outcome-standing of its SOURCE (scope='source', default — every active memory sharing that
@@ -5024,8 +5062,13 @@ class Inspeximus:
             bad_sources = set().union(*(Inspeximus._rec_sources(r) for r in caught)) if caught else set()
             # a record is caught if its own source OR any inherited taint intersects the slashed sources ->
             # forfeiting a source also burns every derived summary/consolidation it fed (provenance-carried).
-            targets = [r for r in self.items if r.get("status") == "active"
+            targets = [r for r in self._tenant_rows() if r.get("status") == "active"
                        and (Inspeximus._rec_sources(r) & bad_sources)]
+            _coll = self._source_expansion_collisions(caught, targets)
+            if _coll and not allow_ambiguous:
+                raise Inspeximus._ambiguous_error(
+                    ", ".join(sorted({self._raw_source(r) for r in caught if self._raw_source(r)})),
+                    _coll, "slash(scope='source')")
             sources = sorted(bad_sources)
         else:                                    # scope='memory' — only the named records
             targets, sources = caught, []
@@ -6077,6 +6120,9 @@ class Inspeximus:
         if self._persist_error:
             raise OSError(f"inspeximus could not persist to {self._persist_error['path']}: "
                           f"{self._persist_error['error']}")
+        if self._sidecar_errors:
+            raise OSError("inspeximus could not persist: "
+                          + "; ".join(f"{k} -> {v}" for k, v in self._sidecar_errors.items()))
 
 
 # ── per-type decay priors (the half-life a memory's ranking value decays at, by kind) ──────────
@@ -6162,10 +6208,10 @@ class _TenantView:
     #: by default. That is the whole point: the previous version forwarded EVERYTHING, and 54 of 79 public
     #: methods reached the parent as tenant=None (admin) — `A.history(B_key)` returned B's plaintext.
     _STORE_LEVEL = frozenset({
-        "flush", "reembed", "sleep", "anchor", "witness", "ratify", "admit",
+        "flush", "reembed", "anchor", "witness", "ratify", "admit",
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
-        "verify_attribution", "erasure_certificate", "register_erasure_target", "apply_retention",
-        "shred", "grade", "detect_split_view", "check_self_narration", "classify_reversion",
+        "verify_attribution", "register_erasure_target",
+        "detect_split_view", "check_self_narration", "classify_reversion",
         "restore_intent", "revert_intent", "revert_capability", "believed_at",
     })
 
@@ -6191,6 +6237,11 @@ class _TenantView:
         return _TenantView(self._parent, str(tenant))
 
     # tenant-sensitive surface: rebound so `self` is the VIEW (its tenant), state stays the parent's
+    def apply_retention(self, *a, **k):       return Inspeximus.apply_retention(self, *a, **k)
+    def shred(self, *a, **k):                 return Inspeximus.shred(self, *a, **k)
+    def grade(self, *a, **k):                 return Inspeximus.grade(self, *a, **k)
+    def erasure_certificate(self, *a, **k):   return Inspeximus.erasure_certificate(self, *a, **k)
+    def sleep(self, *a, **k):           return Inspeximus.sleep(self, *a, **k)
     def remember(self, *a, **k):        return Inspeximus.remember(self, *a, **k)
     def history(self, *a, **k):             return Inspeximus.history(self, *a, **k)
     def provenance(self, *a, **k):          return Inspeximus.provenance(self, *a, **k)
