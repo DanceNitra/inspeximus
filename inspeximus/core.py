@@ -457,9 +457,11 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     # shipped in 1.63.0, and the test fixture could not see it because it only ever made one request.
     claimed_reqs = cert.get("request_ids")
     scope_toms = ([t for t in toms if t.get("request_id") in set(claimed_reqs)]
-                  if claimed_reqs else toms)
+                  if claimed_reqs is not None else toms)
     derived_ids = sorted({t.get("memory_id") for t in scope_toms if t.get("memory_id")})
-    derived_reqs = sorted({t.get("request_id") for t in scope_toms if t.get("request_id")})
+    # `is not None`, matching the producer at erasure_certificate(). Filtering on truthiness dropped an
+    # honest empty-string request_id, so a certificate declaring request_ids: [""] failed its own chain.
+    derived_reqs = sorted({t.get("request_id") for t in scope_toms if t.get("request_id") is not None})
     if sorted(set(cert.get("erased_memory_ids") or [])) != derived_ids:
         problems.append(f"erased_memory_ids does not match the tombstone chain "
                         f"(certificate claims {len(cert.get('erased_memory_ids') or [])}, "
@@ -499,7 +501,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.64.0"
+__version__ = "1.65.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -589,7 +591,12 @@ class Inspeximus:
         #     exist, so remember() returned an id, in-process recall worked, and a NEW process saw nothing.
         # Measured: no file, no directory, and over MCP not even a warning — a memory layer that forgets
         # everything between sessions, on the path its own docs tell you to use.
-        self.path = Path(os.path.expanduser(str(path))) if path else None
+        # os.fspath, not str: str() repr()s an os.PathLike into "<obj at 0x...>" and a bytes path
+        # into "b'...'". Path() honoured __fspath__ correctly before 1.64.0, so the expanduser
+        # change silently BROKE PathLike callers — the store went to a junk-named file, or on
+        # POSIX to a real one nobody meant. os.fspath raises TypeError on a genuinely bad type,
+        # which is the honest outcome.
+        self.path = Path(os.path.expanduser(os.fspath(path))) if path else None
         if self.path is not None and self.path.parent and not self.path.parent.exists():
             try:
                 self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -1502,6 +1509,24 @@ class Inspeximus:
         record is genuinely newer (later valid_from), the INCOMING rec is the stale one and is retired
         instead — a back-filled value never overwrites the current one. recall() hides superseded records
         by default, so a keyed store never surfaces a stale fact.
+
+        SUPERSESSION IS UNAUTHENTICATED, and that is the important limit to state. It branches on tenant,
+        valid_from, object and asserts_change — never on WHO wrote. So anyone who can call remember() and
+        knows the key string retires the current value:
+
+            remember("Payout wallet is 0xTRUE", key="payout::wallet", object="0xTRUE", source=finance)
+            remember("Payout wallet is 0xEVIL", key="payout::wallet", object="0xEVIL", source=attacker)
+            -> recall("payout wallet") returns 0xEVIL
+
+        This is the same shape as any last-write-wins store, but note the asymmetry: revert() is
+        capability-gated while the write path that achieves the same outcome is not. The mitigations are
+        trust_seeds + recall(trusted_only=True), which fails CLOSED with no trust root, and attestation=,
+        which binds a claim to a signing source. Neither is on by default, so a store that accepts writes
+        from an untrusted agent must configure one.
+
+        A far-future `valid_from` is the other side of the same coin: a write dated beyond every honest
+        correction wins the bi-temporal comparison permanently, and only finiteness is checked. Bound it
+        yourself if callers are untrusted.
 
         ECHO GUARD (self.echo_guard, default OFF): before the normal path, if the incoming rec asserts an
         OBJECT that has ALREADY been superseded for this key AND differs from the current active value, it
@@ -2814,9 +2839,21 @@ class Inspeximus:
                 "checked": {"subject": subject, "values_scanned": len(values or [])}, "limits": limits}
     def state_digest(self) -> str:
         """Deterministic SHA-256 fingerprint of the CURRENT store state. Order-independent (records are
-        sorted by id) and covers what retrieval can serve: id, status, ts, key, tenant, and the content
-        hash — so any supersession, revert, erasure, or out-of-band edit changes the digest. Zero-LLM,
-        O(n) hashing, no configuration. This is the "revision X" a hydration witness pins to."""
+        sorted by id) over exactly: id, status, ts, key, tenant, and the content hash — so a supersession,
+        revert, erasure, re-key or text edit changes the digest. Zero-LLM, O(n) hashing, no configuration.
+        This is the "revision X" a hydration witness pins to.
+
+        HONEST SCOPE — what it does NOT cover, and why. `value` and the outcome standing (`good`/`bad`) are
+        OUTSIDE the digest, and those are what RANKING uses. So an out-of-band edit of `value`, or a
+        `credit()` call, changes which record recall returns first WITHOUT changing the digest, and
+        `verify_witness()` still reports `valid: True`. Measured; an earlier version of this docstring said
+        "any out-of-band edit changes the digest", which was false in exactly the two fields that decide
+        which fact wins.
+
+        This is a deliberate trade, not an oversight: `recall()` itself bumps `value` and `last_access`, so a
+        digest covering them would change on every READ and a witness could never match anything. If you need
+        ranking-state integrity, pin it separately — the write receipts commit to content and attribution,
+        not to standing."""
         h = hashlib.sha256()
         for r in sorted(self._tenant_rows(), key=lambda x: x.get("id") or ""):
             line = "\x1f".join([
@@ -2832,7 +2869,9 @@ class Inspeximus:
         from — "this answer reflects store state as of revision X". Attach it to any answer assembled
         from recall() results; verify later with verify_witness(). When write receipts are enabled
         (receipts=True), the witness also carries the receipt-chain tip, anchoring the claimed state to
-        the tamper-evident write history. HONEST SCOPE: the witness pins the STORE + this store's view of
+        the tamper-evident write history. It inherits state_digest()'s blind spot: `value` and outcome
+        standing are not covered, so a tamper that only reorders RANKING leaves a witness verifying.
+        HONEST SCOPE: the witness pins the STORE + this store's view of
         its index inputs; it cannot attest external caches or copies it never saw."""
         act = sum(1 for r in self.items if r.get("status") == "active")
         w = {"inspeximus_hydration_witness": 1, "digest": self.state_digest(),

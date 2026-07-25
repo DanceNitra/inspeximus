@@ -3,6 +3,58 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.65.0 - a path regression of mine, and the first attacker-model pass
+
+### `os.PathLike` and `bytes` paths were silently corrupted
+
+1.64.0 added `expanduser` via `str(path)` — and `str()` REPR's an `os.PathLike` into `<object at 0x...>` and
+`bytes` into `"b'...'"`. `Path(x)` had honoured `__fspath__` correctly before, so the fix that made the
+documented install paths work **broke callers who were doing it right**: the store went to a junk-named file,
+or on POSIX to a real one nobody meant. Now `os.fspath`, which raises `TypeError` on a type the library does
+not accept rather than inventing a filename.
+
+### The first deliberate attacker-model pass
+
+Seven rounds hunted correctness defects. None had asked what someone who can WRITE to the store — a
+compromised agent, a hostile document in a RAG corpus — but does not hold `receipt_key` can actually do. Two
+findings, and both are answered by correcting a CLAIM rather than the mechanism, because both limits are
+inherent.
+
+**`state_digest` was blind to the two fields that decide which fact wins.** Its docstring said "any
+supersession, revert, erasure, or **out-of-band edit** changes the digest". Measured: editing `value`, or
+calling `credit()`, leaves the digest identical — and those are exactly what ranking uses, so they decide
+which record `recall()` returns first. `verify_witness()` still reports `valid: True` afterwards.
+
+The mechanism cannot simply be widened: `recall()` itself bumps `value` and `last_access`, so a digest
+covering them would change on every READ and no witness could ever match anything. The docstring now states
+the covered set exactly, names the blind spot, and says why it is a trade rather than an oversight. `witness()`
+carries the same note, since that is where a reader looks.
+
+**Supersession is unauthenticated, and never said so.** It branches on tenant, `valid_from`, `object` and
+`asserts_change` — never on WHO wrote:
+
+```
+remember("Payout wallet is 0xTRUE", key="payout::wallet", object="0xTRUE", source=finance)
+remember("Payout wallet is 0xEVIL", key="payout::wallet", object="0xEVIL", source=attacker)
+-> recall("payout wallet")  ->  0xEVIL
+```
+
+That is ordinary last-write-wins, but the asymmetry is worth stating: `revert()` is capability-gated while the
+write path that achieves the same outcome is not. The docstring now says so, names the mitigations
+(`trust_seeds` + `recall(trusted_only=True)`, which fails CLOSED with no trust root, and `attestation=`), and
+notes that a far-future `valid_from` is the same coin's other side — only finiteness is checked, so an
+unbounded future timestamp locks a key against every honest correction.
+
+Tests pin both: the limit itself, that the docstring states it, **and that the named mitigation actually
+works** — a disclosed limit whose mitigation does not work is worse than the limit.
+
+Also fixed: `verify_erasure_certificate` filtered `request_id` on truthiness while the producer used
+`is not None`, so an honest empty-string `request_id` failed its own certificate.
+
+509 tests pass; 3 mutations killed by their own tests. A fourth — removing the explicit
+`if not self.trust_seeds: pool = []` short-circuit — survives and is an **equivalent mutant**: with no seeds
+the trusted closure is empty, so the filter branch returns nothing either. Recorded rather than papered over.
+
 ## 1.64.0 - the documented install path silently lost everything
 
 Six rounds audited the source. This one audited the **shipped wheel, as a new user meets it** — install from
