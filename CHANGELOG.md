@@ -3,6 +3,30 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.65.1 - the mitigation I documented was overstated, and my test could not see it
+
+Caught while verifying 1.65.0 from the published wheel — the run printed `trusted_only: []` where I expected
+the true value.
+
+1.65.0 disclosed that supersession is unauthenticated and named `trust_seeds` + `recall(trusted_only=True)`
+as the mitigation. That is only half true. The attacker's write still **retires** the honest record, so:
+
+```
+recall(trusted_only=True)                          ->  []          # not the truth, nothing
+recall(trusted_only=True, include_superseded=True) ->  ["...0xTRUE"]
+```
+
+The guarantee is **"you will not be told the attacker's answer"**, not "you will be told the right one". A
+store taking writes from an untrusted agent needs an authenticated write path, not just a trusted read path.
+The docstring now says exactly that, with the measured output.
+
+**And the test I wrote to prove the mitigation could not see this**: it asserted only *"no 0xEVIL in the
+result"*, which passes trivially when the result is empty — and it was. Same weak-assertion shape this series
+keeps finding, this time in the test guarding a security claim. It now pins all three facts: the poison is not
+served, the truth is not served either, and the truth survives as history.
+
+509 tests pass.
+
 ## 1.65.0 - a path regression of mine, and the first attacker-model pass
 
 ### `os.PathLike` and `bytes` paths were silently corrupted

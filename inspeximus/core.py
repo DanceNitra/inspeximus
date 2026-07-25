@@ -501,7 +501,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.65.0"
+__version__ = "1.65.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1519,10 +1519,21 @@ class Inspeximus:
             -> recall("payout wallet") returns 0xEVIL
 
         This is the same shape as any last-write-wins store, but note the asymmetry: revert() is
-        capability-gated while the write path that achieves the same outcome is not. The mitigations are
-        trust_seeds + recall(trusted_only=True), which fails CLOSED with no trust root, and attestation=,
-        which binds a claim to a signing source. Neither is on by default, so a store that accepts writes
-        from an untrusted agent must configure one.
+        capability-gated while the write path that achieves the same outcome is not.
+
+        The mitigations are PARTIAL, and the exact shape matters. trust_seeds + recall(trusted_only=True)
+        stops the attacker's value being SERVED (it fails CLOSED with no trust root), and attestation= binds
+        a claim to a signing source. Neither stops the RETIREMENT: the true record is still superseded, so a
+        trusted-only recall returns NOTHING rather than the truth, and the honest value is reachable only
+        with include_superseded=True. Measured:
+
+            trust_seeds = {"financeinternal"} ; attacker writes the same key
+            recall(trusted_only=True)                         -> []
+            recall(trusted_only=True, include_superseded=True) -> ["...0xTRUE"]
+
+        So the guarantee these buy is "you will not be told the attacker's answer", not "you will be told the
+        right one". A store taking writes from an untrusted agent needs an authenticated write path, not just
+        a trusted read path.
 
         A far-future `valid_from` is the other side of the same coin: a write dated beyond every honest
         correction wins the bi-temporal comparison permanently, and only finiteness is checked. Bound it

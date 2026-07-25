@@ -127,9 +127,13 @@ def test_supersession_is_unauthenticated_and_says_so():
     assert "trusted_only" in doc, "the mitigation must be named next to the limit"
 
 
-def test_the_documented_mitigation_actually_works():
-    """A disclosed limit with a mitigation that does not work is worse than the limit. trust_seeds +
-    trusted_only must keep the attacker's record out of the answer."""
+def test_the_documented_mitigation_does_exactly_what_is_claimed_and_no_more():
+    """A disclosed limit whose mitigation is overstated is worse than the limit.
+
+    My first version of this test asserted only "no 0xEVIL in the result" — which passes TRIVIALLY when the
+    result is empty, and it is: the attacker's write RETIRES the true record, so a trusted-only recall
+    returns nothing at all. The guarantee is "you will not be told the attacker's answer", NOT "you will be
+    told the right one", and the docstring now says so."""
     m = Inspeximus(path=_path())
     m.trust_seeds = {Inspeximus._canon_source("finance.internal")}
     m.remember("Payout wallet is 0xTRUE", key="payout::wallet", object="0xTRUE",
@@ -138,7 +142,14 @@ def test_the_documented_mitigation_actually_works():
                source={"doc": "evil.example"})
 
     trusted = m.recall("payout wallet", trusted_only=True)
-    assert not any("0xEVIL" in h["text"] for h in trusted), trusted
+    assert not any("0xEVIL" in h["text"] for h in trusted), "the poison must not be served"
+    assert trusted == [], "and the true value is NOT served either — the attacker retired it"
+
+    with_history = m.recall("payout wallet", trusted_only=True, include_superseded=True)
+    assert any("0xTRUE" in h["text"] for h in with_history), "the truth survives, but only as history"
+
+    doc = Inspeximus._supersede_by_key.__doc__ or ""
+    assert "PARTIAL" in doc and "include_superseded=True" in doc,         "the mitigation's exact shape must be stated, not just its name"
 
 
 def test_trusted_only_fails_closed_with_no_trust_root():
