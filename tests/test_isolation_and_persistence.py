@@ -107,7 +107,12 @@ def test_a_failed_save_is_not_reported_as_a_successful_one():
 
 
 def test_verify_writes_reports_a_store_that_never_reached_disk():
-    p = os.path.join(tempfile.mkdtemp(), "sub", "m.json")     # parent dir does not exist -> save fails
+    # A missing parent no longer fails: 1.64.0 creates it, because not creating it silently lost every
+    # write on the install path the docs advertise. Use a parent that CANNOT become a directory — a file.
+    d = tempfile.mkdtemp()
+    blocker = os.path.join(d, "not-a-dir")
+    open(blocker, "w", encoding="utf-8").write("i am a file")
+    p = os.path.join(blocker, "m.json")
     m = Inspeximus(path=p, receipts=True)
     m.remember("fact 0")
     ok, problems = m.verify_writes()

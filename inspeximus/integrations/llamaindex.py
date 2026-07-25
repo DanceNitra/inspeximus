@@ -21,9 +21,14 @@ zero-dependency.
 """
 from __future__ import annotations
 from typing import Any, List, Optional
-from pydantic import Field, PrivateAttr
-from llama_index.core.memory import BaseMemoryBlock
-from llama_index.core.base.llms.types import ChatMessage
+
+try:                       # pydantic is pulled in BY llama-index-core, so a bare ImportError here named the
+    from pydantic import Field, PrivateAttr          # wrong package: the user installed pydantic, then hit
+    from llama_index.core.memory import BaseMemoryBlock              # the next missing import.
+    from llama_index.core.base.llms.types import ChatMessage
+except ImportError as e:
+    raise ImportError('the inspeximus LlamaIndex adapter needs LlamaIndex: '
+                      'pip install "inspeximus[llamaindex]"') from e
 
 from .governance import ComplianceMixin
 

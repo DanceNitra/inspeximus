@@ -3,6 +3,67 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.64.0 - the documented install path silently lost everything
+
+Six rounds audited the source. This one audited the **shipped wheel, as a new user meets it** — install from
+PyPI into a clean venv, follow the README verbatim, never look at the checkout. Two of the three findings mean
+the product forgot everything between sessions on the paths its own documentation tells you to use, with no
+error at all.
+
+### No directory was ever created
+
+The plugin advertises `.inspeximus/memory.json`. In a fresh project that folder does not exist, and nothing
+created it:
+
+```
+remember("My deploy key is ABC123")  ->  {"id": "27d7f73051"}      # looks fine
+recall("deploy key")  (same process) ->  ["My deploy key is ABC123"]
+recall("deploy key")  (new  process) ->  []
+disk                                 ->  nothing written, nothing printed
+```
+
+Over MCP there was not even a warning. A memory layer that forgets everything between sessions.
+
+### `~` was never expanded
+
+The README's headline MCP command is `INSPEXIMUS_PATH=~/.inspeximus_memory.json`, and so is the Claude
+Desktop / Cursor JSON. A literal `~` is not a directory, so **every documented MCP setup lost its memory on
+restart** — and over MCP the failure went to a log nobody reads.
+
+Both are fixed at the same place: the path is `expanduser`'d and its parent created. An *unwritable* parent
+still surfaces — a test pins that, so creating the directory cannot turn a real failure into a silent one.
+
+### The 1.63.0 certificate fix rejected honest certificates
+
+Mine, and the sharpest lesson here. `erasure_certificate(request_id=X)` summarises ONE request but ships the
+**whole** tombstone chain (deliberately, so the chain re-derives from genesis). 1.63.0 compared the scoped
+claim against the unscoped chain, so **any store that had served more than one DSAR failed its own honest
+certificate**:
+
+```
+cert claims count 1 reqs ['DSAR-ALICE']
+VALID: False  -  count says 1 but the tombstone chain holds 2
+```
+
+The derivation is now scoped by the certificate's own `request_ids`. Forgery is still caught, including the
+sharp case: keep the scope label, swap in the other request's erased ids.
+
+**The test I wrote for that fix could not see it** — its fixture created a single request, the one shape where
+scoped and unscoped are identical. A fixture that cannot express the failing shape is not coverage.
+
+### Smaller, all from the shipped artefact
+
+- **The update check pointed at a package that 404s.** `agora-inspeximus` is not on PyPI, so the notice could
+  never fire — and if it had, it would have told the user to install a package that does not exist. (The same
+  wrong name was in `claims_audit.py`, fixed in 1.54.0; this was its twin.)
+- **The MCP handshake reported the SDK's version as its own.** `FastMCP` takes no `version=`, so a client
+  asking which inspeximus it was talking to got `1.28.1` — the MCP SDK. Set on the inner server now.
+- **The LlamaIndex adapter named the wrong missing package.** Its first import was `pydantic`, which
+  llama-index pulls in, so a user without the extra installed pydantic and hit the next missing import. It
+  now says `pip install "inspeximus[llamaindex]"`.
+
+500 tests pass; 6 mutations, each killed by its own test.
+
 ## 1.63.0 - covering the surfaces that had no tests, and a certificate that could be forged
 
 ### The erasure certificate's summary was forgeable

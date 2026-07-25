@@ -187,8 +187,12 @@ def test_the_cli_does_not_report_a_write_it_could_not_persist():
     """It printed `remembered <id>` and exited 0 on a store that never reached disk, so a typo'd --path
     silently discarded every write for the whole session."""
     import subprocess
+    # A missing directory is created since 1.64.0; an unwritable one is the real failure to test.
+    d = tempfile.mkdtemp()
+    blocker = os.path.join(d, "not-a-dir")
+    open(blocker, "w", encoding="utf-8").write("i am a file")
     out = subprocess.run([sys.executable, "-m", "inspeximus.cli",
-                          "--path", os.path.join(tempfile.mkdtemp(), "nope", "deep", "m.json"),
+                          "--path", os.path.join(blocker, "m.json"),
                           "remember", "critical fact"], capture_output=True, text=True)
     assert out.returncode != 0
     assert "NOT PERSISTED" in out.stderr

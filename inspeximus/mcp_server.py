@@ -88,7 +88,15 @@ _MEM = Inspeximus(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_I
 # and it beats a real add-based system (mem0 0.57) at the answer level. Set INSPEXIMUS_ECHO_GUARD=0 to disable.
 _MEM.echo_guard = os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
 
+from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
+
 mcp = FastMCP("inspeximus")
+# FastMCP takes no version= argument, and without one it reports the MCP SDK's own version as
+# serverInfo.version — so a client asking which inspeximus it was talking to got "1.28.1", the SDK. Set it on
+# the inner Server, which is what the handshake actually reads.
+_inner = getattr(mcp, "_mcp_server", None)
+if _inner is not None:
+    _inner.version = _INSPEXIMUS_VERSION
 
 # ── recall payload economy (standard MCP/RAG context practice, applied to inspeximus) ─────────────────────
 # A memory server that returns every internal field (links, provenance, ISO stamps) burns the agent's context

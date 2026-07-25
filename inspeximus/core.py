@@ -451,16 +451,24 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     # The tombstones ARE hash-chained and signed; the summary is a claim about them, and a claim that does
     # not follow from its evidence is exactly what a certificate must not carry. Same defect as the
     # DeletionManifest verdict fixed in 1.59.0, one artifact over.
-    derived_ids = sorted({t.get("memory_id") for t in toms if t.get("memory_id")})
-    derived_reqs = sorted({t.get("request_id") for t in toms if t.get("request_id")})
+    # SCOPE FIRST. erasure_certificate(request_id=X) summarises ONE request but ships the WHOLE tombstone
+    # chain (deliberately, so the chain re-derives from genesis). Comparing a scoped claim against the
+    # unscoped chain rejected every honest certificate from a store that had served more than one DSAR —
+    # shipped in 1.63.0, and the test fixture could not see it because it only ever made one request.
+    claimed_reqs = cert.get("request_ids")
+    scope_toms = ([t for t in toms if t.get("request_id") in set(claimed_reqs)]
+                  if claimed_reqs else toms)
+    derived_ids = sorted({t.get("memory_id") for t in scope_toms if t.get("memory_id")})
+    derived_reqs = sorted({t.get("request_id") for t in scope_toms if t.get("request_id")})
     if sorted(set(cert.get("erased_memory_ids") or [])) != derived_ids:
         problems.append(f"erased_memory_ids does not match the tombstone chain "
                         f"(certificate claims {len(cert.get('erased_memory_ids') or [])}, "
                         f"the chain shows {len(derived_ids)})")
     if cert.get("count") is not None and cert.get("count") != len(derived_ids):
         problems.append(f"count says {cert.get('count')} but the tombstone chain holds {len(derived_ids)}")
-    if cert.get("request_ids") is not None and sorted(set(cert.get("request_ids") or [])) != derived_reqs:
-        problems.append(f"request_ids does not match the tombstone chain: {derived_reqs}")
+    if claimed_reqs is not None and sorted(set(claimed_reqs)) != derived_reqs:
+        problems.append(f"request_ids names {sorted(set(claimed_reqs))} but the chain holds "
+                        f"{derived_reqs} for them")
     checks["summary_derivable"] = not any(
         x.startswith(("erased_memory_ids", "count", "request_ids")) for x in problems)
 
@@ -491,7 +499,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.63.0"
+__version__ = "1.64.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -574,7 +582,19 @@ class Inspeximus:
         memory and the store would serve the altered text as original. The hash chain is zero-dependency;
         pass receipt_key (+ receipt_pubkey) from new_receipt_keypair() to also Ed25519-SIGN each receipt
         so a third party can verify it with the public key only. (Standalone version: agora-agent-receipts.)"""
-        self.path = Path(path) if path else None
+        # expanduser + mkdir. Neither existed, and together they broke every documented install path:
+        #   * the README's headline MCP command uses INSPEXIMUS_PATH=~/.inspeximus_memory.json, and a literal
+        #     "~" is not a directory, so every write failed;
+        #   * the plugin advertises .inspeximus/memory.json, and in a fresh project that folder does not
+        #     exist, so remember() returned an id, in-process recall worked, and a NEW process saw nothing.
+        # Measured: no file, no directory, and over MCP not even a warning — a memory layer that forgets
+        # everything between sessions, on the path its own docs tell you to use.
+        self.path = Path(os.path.expanduser(str(path))) if path else None
+        if self.path is not None and self.path.parent and not self.path.parent.exists():
+            try:
+                self.path.parent.mkdir(parents=True, exist_ok=True)
+            except OSError:
+                pass                     # unwritable parent: _save records it and flush() raises
         self.embed = embed
         self.embed_query = embed_query        # asymmetric query embedder (e.g. nomic search_query:); None -> use self.embed
         self.embed_id = embed_id              # opaque fingerprint of the embed recipe (model+prefix); guards persisted vecs

@@ -1,6 +1,6 @@
 """Deterministic, opt-out "a newer version exists" check — the standard pip/npm/gh courtesy.
 
-`check_for_update()` returns a one-line ASCII notice (or None) when the installed agora-inspeximus is behind the
+`check_for_update()` returns a one-line ASCII notice (or None) when the installed inspeximus is behind the
 latest on PyPI. It is:
   - throttled to at most once per 24h (cached in <cache_dir>/.update_check.json) so it never nags per-call;
   - fail-open: any network/parse error, or being offline, returns None silently and never blocks;
@@ -16,7 +16,9 @@ import os
 import time
 import urllib.request
 
-_PYPI_JSON = "https://pypi.org/pypi/agora-inspeximus/json"
+# The distribution is `inspeximus`. This said `agora-inspeximus`, which 404s — so the notice could
+# never fire, and if it had it would have told the user to install a package that does not exist.
+_PYPI_JSON = "https://pypi.org/pypi/inspeximus/json"
 _TTL_S = 24 * 3600
 
 
@@ -44,7 +46,7 @@ def _is_newer(latest, current):
 
 
 def check_for_update(current_version, cache_dir=None, timeout=1.5):
-    """Return a one-line notice if a newer agora-inspeximus is on PyPI, else None. Fully fail-open."""
+    """Return a one-line notice if a newer inspeximus is on PyPI, else None. Fully fail-open."""
     if os.environ.get("INSPEXIMUS_NO_UPDATE_CHECK", "").strip().lower() in ("1", "true", "yes"):
         return None
     try:
@@ -77,7 +79,7 @@ def check_for_update(current_version, cache_dir=None, timeout=1.5):
         if latest and _is_newer(latest, current_version):
             return (
                 f"[inspeximus] A new version is available: {latest} (you have {current_version}).\n"
-                "        Update:  pip install -U agora-inspeximus   |   "
+                "        Update:  pip install -U inspeximus   |   "
                 "changelog: https://github.com/DanceNitra/inspeximus/blob/main/CHANGELOG.md\n"
                 "        (silence this with INSPEXIMUS_NO_UPDATE_CHECK=1)")
     except Exception:
