@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.56.0"
+__version__ = "1.57.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -873,8 +873,15 @@ class Inspeximus:
             else:
                 try:
                     self._items = json.loads(raw.decode("utf-8"))    # legacy plaintext JSON
-                except Exception:
-                    self._items = []
+                except Exception as e:
+                    # NEVER swallow this. A truncated/corrupt file loaded as [] and the very next _save()
+                    # wrote that empty list over it: 5 records in, 0 loaded, 1 on disk after the next write.
+                    # The encrypted branch above has always raised here; the plaintext branch silently
+                    # destroyed the store instead. Refuse to open rather than overwrite what we cannot read.
+                    raise ValueError(
+                        f"cannot parse the store at {self.path} ({e}). Refusing to open it, because "
+                        f"continuing would overwrite the file with an empty store. Restore a backup, or "
+                        f"move the file aside if you meant to start fresh.") from None
         # EMBED-RECIPE GUARD (persist_vectors only): persisted vectors are only comparable to a query embedded the
         # SAME way. If the store was written with a different embed recipe than the one now in use — most importantly
         # an ASYMMETRIC upgrade (e.g. adding nomic's search_document:/search_query: prefixes) — a query in the new
@@ -2349,12 +2356,22 @@ class Inspeximus:
         `self._items`; only the handful of call sites that genuinely own it (load, append, forget, shred)
         touch that, and they are the ones a reviewer should look at.
 
-        Cached per (tenant, revision) so the filter is not re-run on every read of a hot path."""
+        Cached per (tenant, revision) so the filter is not re-run on every read of a hot path. A BOUND store
+        returns an immutable tuple; an unbound one returns the real list. The asymmetry is deliberate: a write
+        into a scoped view can only ever be a mistake, and it should raise rather than half-work.
+
+        MIGRATION: records written before tenancy carry no `tenant` field, so a bound handle does not see
+        them. Adopting tenancy on an existing store makes prior memories reachable only from the unbound
+        store -- stamp them first if you need them scoped."""
         if self.tenant is None:
             return self._items
         rev = (len(self._items), id(self._items))
         if getattr(self, "_items_view_rev", None) != (self.tenant, rev):
-            self._items_view = [r for r in self._items if r.get("tenant") == self.tenant]
+            # A TUPLE, not a list. The first version cached a list and returned the object itself, so
+            # `view.items.append(rec)` did not merely fail to persist -- it planted a PHANTOM record that
+            # every later reader saw, including fresh handles, and that recall ranked first. It was never on
+            # disk and vanished on the next write. Immutable means the mistake raises instead of haunting.
+            self._items_view = tuple(r for r in self._items if r.get("tenant") == self.tenant)
             self._items_view_rev = (self.tenant, rev)
         return self._items_view
 
@@ -5122,7 +5139,7 @@ class Inspeximus:
             self._save()
         return {"slashed": len(slashed), "sources": sources, "ids": slashed}
 
-    def restore(self, ids, scope: str = "source") -> dict:
+    def restore(self, ids, scope: str = "source", allow_ambiguous: bool = False) -> dict:
         """Undo a slash() — the safety valve. Detection is imperfect (a self-graded / MINJA-style oracle can be
         tricked into flagging a LEGIT source, so slash() can be WEAPONISED to knock out a rival's memory), so a
         forfeiture must be reversible. When a slashed source is exonerated, restore() recovers its EXACT
@@ -5137,6 +5154,14 @@ class Inspeximus:
         if scope == "source":
             srcs = set().union(*(Inspeximus._rec_sources(r) for r in seed)) if seed else set()
             targets = [r for r in self.items if (Inspeximus._rec_sources(r) & srcs) and (r.get("meta") or {}).get("slashed")]
+            _coll = self._source_expansion_collisions(seed, targets)
+            if _coll and not allow_ambiguous:
+                # Exonerating A silently exonerated B: measured, restore([alice], scope='source') cleared a
+                # slash B had earned on his OWN catch. The mirror of the slash() collision, and worse, because
+                # it RE-ADMITS a source that was correctly forfeited.
+                raise Inspeximus._ambiguous_error(
+                    ", ".join(sorted({self._raw_source(r) for r in seed if self._raw_source(r)})),
+                    _coll, "restore(scope='source')")
             sources = sorted(srcs)
         else:
             targets, sources = [r for r in seed if (r.get("meta") or {}).get("slashed")], []
@@ -5174,11 +5199,12 @@ class Inspeximus:
             try:
                 (self.path.with_name(self.path.name + ".cusum.json")).write_text(
                     json.dumps(self._cusum, ensure_ascii=False), encoding="utf-8")
-            except Exception:
-                pass
+            except Exception as e:
+                self._sidecar_errors['cusum'] = f"{type(e).__name__}: {e}"
 
     def monitor(self, ids, outcome, k: float = 0.3, h: float = 3.0,
-                auto_slash: bool = False, weight: float = 1.0) -> dict:
+                auto_slash: bool = False, weight: float = 1.0,
+                allow_ambiguous: bool = False) -> dict:
         """Per-SOURCE cumulative (CUSUM-type) poison DETECTOR — raises a case on a source whose cumulative
         bad-rate breaches a budget; you (or a human) then decide whether to slash(). This is the cumulative
         trigger the retroactive slash needs: slash can't fire per-slice (per-slice P(detected)~=0, and the
@@ -5216,6 +5242,14 @@ class Inspeximus:
         by_id = {x["id"]: x for x in self.items}
         recs = [by_id[i] for i in (ids or []) if i in by_id]
         srcs = set().union(*(Inspeximus._rec_sources(r) for r in recs)) if recs else set()
+        _peers = [r for r in self._tenant_rows() if Inspeximus._rec_sources(r) & srcs]
+        _coll = self._source_expansion_collisions(recs, _peers)
+        if _coll and not allow_ambiguous:
+            # The CUSUM bucket IS the canonical source, so two subjects under one host share one detector:
+            # 20 bad outcomes on Alice put Bob one call from an alarm he never earned.
+            raise Inspeximus._ambiguous_error(
+                ", ".join(sorted({self._raw_source(r) for r in recs if self._raw_source(r)})),
+                _coll, "monitor()")
         S = self._cusum_state()
         alarms = []
         for s in srcs:
@@ -5252,10 +5286,11 @@ class Inspeximus:
             try:
                 (self.path.with_name(self.path.name + ".irrev.json")).write_text(
                     json.dumps(self._irrev, ensure_ascii=False), encoding="utf-8")
-            except Exception:
-                pass
+            except Exception as e:
+                self._sidecar_errors['irrev'] = f"{type(e).__name__}: {e}"
 
     def spend_irreversible(self, ids, amount: float = 1.0, budget: float = 1.0,
+                           allow_ambiguous: bool = False,
                            provenance_lo: float | None = None, require_earned: bool = False,
                            tool=None, contained: bool | None = None) -> dict:
         """Per-source LIFETIME budget on IRREVERSIBLE influence — the integral cap that bounds the one residual
@@ -5299,6 +5334,13 @@ class Inspeximus:
         by_id = {x["id"]: x for x in self.items}
         recs = [by_id[i] for i in (ids or []) if i in by_id]
         srcs = sorted(set().union(*(Inspeximus._rec_sources(r) for r in recs)) if recs else set())
+        _peers = [r for r in self._tenant_rows() if Inspeximus._rec_sources(r) & set(srcs)]
+        _coll = self._source_expansion_collisions(recs, _peers)
+        if _coll and not allow_ambiguous:
+            # One lifetime budget per canonical source: Alice spending it left Bob `allowed: False`.
+            raise Inspeximus._ambiguous_error(
+                ", ".join(sorted({self._raw_source(r) for r in recs if self._raw_source(r)})),
+                _coll, "spend_irreversible()")
         B = self._budget_state()
         # UNIVERSAL-EXECUTOR gate (OPT-IN, 1.2.0; tool=None -> legacy path, byte-identical). If this irreversible
         # action routes through a verb-polymorphic universal executor (shell/eval/arbitrary-SQL/generic-HTTP), a
@@ -6134,8 +6176,8 @@ class Inspeximus:
                     and self.embed_id is not None:
                 try:
                     self._embedid_path.write_text(self.embed_id, encoding="utf-8")
-                except Exception:
-                    pass
+                except Exception as e:
+                    self._sidecar_errors['embedid'] = f"{type(e).__name__}: {e}"
             self._last_save = now
             self._dirty = False
             self._persist_error = None
@@ -6307,8 +6349,6 @@ class _TenantView:
     def erasure_report(self, *a, **k):      return Inspeximus.erasure_report(self, *a, **k)
     def governance_report(self, *a, **k):   return Inspeximus.governance_report(self, *a, **k)
     def forget(self, *a, **k):              return Inspeximus.forget(self, *a, **k)
-    def neighbors(self, *a, **k):           return Inspeximus.neighbors(self, *a, **k)
-    def get(self, *a, **k):                 return Inspeximus.get(self, *a, **k)
     def retract_lineage(self, *a, **k):     return Inspeximus.retract_lineage(self, *a, **k)
     def rederive(self, *a, **k):            return Inspeximus.rederive(self, *a, **k)
     def revert(self, *a, **k):              return Inspeximus.revert(self, *a, **k)

@@ -3,6 +3,56 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.57.0 - round three, including two regressions the previous fix introduced
+
+The pattern held a third time, and this round I was the source of half of it. **A fix is new code and carries
+the same defect rate as any other**; the round that audits the fix is not optional.
+
+### Two regressions from the 1.56.0 tenant work
+
+- **`view.items.append(rec)` planted a phantom record.** The scoped view was cached as a list and returned as
+  the object itself, so a write into it did not merely fail to persist — every later reader saw the record,
+  including freshly created handles, `recall` ranked it **first**, it was never on disk, and it vanished on
+  the next write. A bound store now returns an immutable **tuple**: the mistake raises instead of haunting.
+- **`get()` was rebound onto the tenant view and `Inspeximus.get` does not exist**, so every tenant-scoped
+  `get()` raised `AttributeError`. `neighbors` too — both are MCP-level tools, not core methods. A test now
+  fails if the view rebinds anything that is not there.
+
+### An unreadable store no longer destroys itself
+
+A truncated or corrupt plaintext store loaded as `[]` and the **very next save wrote that empty list over
+it**: 5 records in, 0 loaded, 1 on disk afterwards. The encrypted branch had always raised here; the plaintext
+one silently destroyed the file. It now refuses to open and leaves the file untouched. Receipts would have
+caught it — but they are off by default, so the default path was a silent total wipe.
+
+### The collision class, on the levers round two missed
+
+`monitor()`, `spend_irreversible()` and `restore(scope='source')` all expand from the records you name to
+every record sharing their **canonical** source. Measured: 20 bad outcomes on Alice left Bob one call from an
+alarm he never earned; Alice's spend left Bob `allowed: False` on his own lifetime budget; and restoring Alice
+**cleared a slash Bob had earned on his own catch** — the worst of the three, because it re-admits a source
+that was correctly forfeited. All three now refuse, with `allow_ambiguous=True` to proceed deliberately, and
+genuine sybil expansion still works.
+
+### Verifiers
+
+- **`compliance_check` did not see partial receipt coverage.** `verify_bundle` got that check in 1.54.0; its
+  sibling gate never did, so 5 unreceipted + 1 receipted records reported `ok: True, violations: []`.
+- **The forgeable checks are now labelled.** `bundle_hash` is an **unkeyed** SHA-256, so an exporter can set
+  `governance.proof.verified` to True or `n_records` to `len(write_chain)` and recompute it in three lines —
+  both demonstrated against our own 1.54/1.55 checks. Those checks stay, because the accidental case (a
+  good-faith export from a misconfigured store) is the common one, but they are documented as **ADVISORY**:
+  they prove nothing against a determined operator. Only the witness co-signature is operator-adversarial.
+
+### The last silent writes
+
+The `.cusum.json` and `.irrev.json` sidecars still swallowed write failures. Both promise **cross-session**
+state in their own docstrings — the poison detector and the lifetime irreversible budget — and both lost it
+without a word, so a restart reset the cap the budget exists to enforce. Now surfaced by `verify_writes()` and
+raised by `flush()`.
+
+403 tests pass; 5 mutations, each killed by its own test.
+
 ## 1.56.0 - tenant isolation, structurally
 
 1.54.0 and 1.55.0 patched tenant leaks one method at a time and each round found more, because the shape was

@@ -139,6 +139,18 @@ def compliance_check(store, require_receipts: bool = True, max_pii_age_days: flo
     n_receipts = len(getattr(store, "_receipts", []))
     has_content = any(r.get("status") == "active" for r in getattr(store, "items", []))
 
+    checked.append("receipts_coverage")
+    n_records = len(getattr(store, "items", []) or [])
+    if require_receipts and n_receipts and n_records > n_receipts:
+        # PARTIAL coverage passed this gate until 1.57.0: the check only fired when the chain was entirely
+        # empty, so a store written with receipts off and later reopened with them on (5 unreceipted + 1
+        # receipted) reported ok=True with no violations. verify_bundle got this check in 1.54.0; its sibling
+        # gate never did -- the same defect, one surface over.
+        violations.append({"code": "receipts_partial", "article": "Art. 12/19",
+                           "detail": f"only {n_receipts} of {n_records} record(s) carry a write receipt — the "
+                                     f"remaining {n_records - n_receipts} were written with receipts disabled "
+                                     f"and are not covered by the Art.12/19 chain"})
+
     checked.append("receipts_enabled")
     if require_receipts and has_content and n_receipts == 0:
         violations.append({"code": "receipts_disabled", "article": "Art. 12/19",

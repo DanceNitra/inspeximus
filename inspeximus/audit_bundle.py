@@ -98,7 +98,11 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     (5) if `witnesses` (allowlisted pubkeys) is given and the anchor carries co-signatures, k-of-n verifies.
     Returns {ok, checks:[...passed...], problems:[...failed...], summary:{...}}. `ok` is True iff no problems.
     Note: (5) is the only operator-ADVERSARIAL check; without a witnessed prior anchor, a key-holder rewrite is
-    internally consistent by construction -- 1-4 prove append-only INTEGRITY, not that the operator is honest."""
+    internally consistent by construction -- 1-4 prove append-only INTEGRITY, not that the operator is honest.
+    Checks (6) coverage-of-the-store and (7) chain-covers-every-record are ADVISORY for the same reason and
+    one step weaker: they read fields the exporter controls (`governance.proof.verified`, `n_records`) under an
+    UNKEYED bundle hash, so both can be forged by recomputing it. They catch a misconfigured or accidentally
+    altered export -- the common case -- and prove nothing against a determined one."""
     checks, problems = [], []
 
     def ok(msg): checks.append(msg)
@@ -160,6 +164,14 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         ok(f"anchor carries {len(cosigs)} co-signature(s) (pass witnesses= to verify them)")
 
     gov = bundle.get("governance") or {}
+
+    # (6) and (7) are ADVISORY, and the distinction matters. `bundle_hash` is an unkeyed SHA-256 over the
+    # bundle's own fields, so an exporter who wants to lie can set `governance.proof.verified` to True or
+    # `n_records` to len(write_chain) and recompute it in three lines -- both were demonstrated. These two
+    # checks therefore catch a MISCONFIGURED or accidentally-tampered export, never a determined operator.
+    # That is the same boundary checks 1-4 already have (internal consistency is not operator honesty); only
+    # the witness co-signature in (5) is operator-adversarial. Kept because the accidental case is the common
+    # one -- an unreceipted store exported in good faith -- and labelled so nobody reads them as proof.
 
     # (6) the bundle's OWN verdict on the store it came from. build_bundle() already wrote
     # governance.proof.verified, and until 1.54.0 the verifier never read it -- so a bundle exported from a
