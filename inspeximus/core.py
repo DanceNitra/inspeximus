@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.50.0"
+__version__ = "1.51.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1873,8 +1873,10 @@ class Inspeximus:
                 raise ValueError("no surfaced prior value to reaffirm")
             key = rec.get("key")
             rec.pop("reopened", None)                       # unflag; the reaffirm write will supersede it
+            # derived from the reopened record the prior value was surfaced from -- same principle as
+            # revert: a call site the store owns, where the parent is known rather than inferred.
             new_id = self.remember(f"the {key} is {prior}", key=key, object=prior, reaffirm=True,
-                                   capability=capability)
+                                   capability=capability, derived_from=[rid])
             return {"resolved": rid, "decision": "reaffirm_prior", "key": key, "reaffirmed_object": prior,
                     "new_id": new_id}
         raise ValueError("decision must be 'keep_current' or 'reaffirm_prior'")
@@ -2822,9 +2824,16 @@ class Inspeximus:
         if not prev:
             return {"ok": False, "reason": "no superseded predecessor for key"}
         tgt = max(prev, key=lambda r: r.get("valid_from", r["ts"]))
+        # THE STORE DECLARES ITS OWN DERIVATION. A revert rebuilds a record's text from a specific prior
+        # record, so the edge is not a guess -- it is already written two lines down as meta['revert_of'].
+        # Until 1.51.0 it lived ONLY there, and meta is not a field provenance() or erasure_audit() walk, so
+        # a restored value looked parentless to every lineage check. Measured across our own 27,290-record
+        # deployment, declared lineage was 0.00%; content-based inference was tried and withdrawn in 1.50.0
+        # at precision 0.06-0.23. This is the third option and the only one that is exact: at a call site the
+        # store OWNS, the parent is known, so state it.
         rid = self.remember(tgt["text"], tags=tgt.get("tags"), value=tgt.get("value", 1.0),
                             mtype=tgt.get("mtype"), key=key, object=tgt.get("object"),
-                            reaffirm=True, capability=capability,
+                            reaffirm=True, capability=capability, derived_from=[tgt["id"]],
                             meta={"revert_of": tgt["id"], "reverted_from": cur["id"]})
         return {"ok": True, "restored": rid, "superseded": cur["id"],
                 "reverted_to_object": tgt.get("object"), "reverted_to_text": tgt["text"]}
@@ -2928,7 +2937,7 @@ class Inspeximus:
             tgt = max(prev, key=lambda r: r.get("valid_from", r["ts"]))
             rid = self.remember(tgt["text"], tags=tgt.get("tags"), value=tgt.get("value", 1.0),
                                 mtype=tgt.get("mtype"), key=key, object=tgt.get("object"),
-                                reaffirm=True, capability=_SANCTIONED,
+                                reaffirm=True, capability=_SANCTIONED, derived_from=[tgt["id"]],
                                 meta={"revert_of": tgt["id"], "reverted_from": cur["id"],
                                       "revert_nonce": nonce, "instream": "relative"})
             return {"ok": True, "kind": "relative", "restored": rid, "superseded": cur["id"],
@@ -2953,7 +2962,7 @@ class Inspeximus:
             return {"ok": True, "kind": "absolute", "restored": None, "target": target,
                     "id_bound": id_bound, "note": "target already current (no-op land)"}
         rid = self.remember(f"restore {key} to {target}", key=key, object=target,
-                            reaffirm=True, capability=_SANCTIONED,
+                            reaffirm=True, capability=_SANCTIONED, derived_from=[tgt["id"]],
                             meta={"routed": "revert_named_instream", "revert_nonce": nonce,
                                   "instream": "absolute", "restore_of_id": tid or None})
         return {"ok": True, "kind": "absolute", "restored": rid, "target": target, "id_bound": id_bound}

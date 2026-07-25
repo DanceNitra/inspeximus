@@ -3,6 +3,38 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.51.0 - the store declares lineage where it owns the write, and revert stops hiding from erasure
+
+Third attempt at the same problem, and the first that is exact. Declared lineage measured **0.00%** across a
+real 27,290-record deployment (1.49.0); inferring it from content was withdrawn at **precision 0.06-0.23**
+(1.50.0). This does neither: at a write site *inside the library*, the store already knows the parent, so it
+states it.
+
+**The bug this closes is not a coverage number.** `revert()` rebuilds a record's text from a specific
+predecessor and recorded that parent in `meta['revert_of']` — a field no lineage check traverses. So a
+restored value looked parentless. Erase the subject the value came from and the reverted copy **survived,
+still carrying that subject's data**. `forget_subject()` missed it; `erasure_audit()` reported clean.
+
+Now:
+
+```python
+m.remember("billing uses api keys", key="billing::auth", source={"doc": "runbook-v1"})
+m.remember("billing uses oauth2",   key="billing::auth", source={"doc": "adr-014"})
+restored = m.revert("billing::auth")["restored"]
+
+m.provenance(id=restored)["origin"]["inherited_taint"]   # ['runbookv1'] - the ORIGIN rides the edge
+m.forget_subject("runbook-v1")                           # now erases the reverted copy too
+```
+
+**Audited every internal write site, and deliberately did not declare most of them.** Of 18 `self.remember`
+call sites in the library, **5 are genuine derivations** — `rederive` (already declared), `revert`,
+`submit_revert` (x2) and `resolve_reopened` — and the other 13 are not: a plain write, a decision, an admitted
+external record and the routing paths have no in-store parent, and inventing one would taint everything with
+everything. Over-declaring is its own failure mode, so the test pins the exact set.
+
+5 new tests, including the erasure hole as a regression. 316 passed, no behaviour change to any write a
+caller makes directly.
+
 ## 1.50.0 - CORRECTION: infer_lineage measured against ground truth, and it does not work
 
 **1.49.0 shipped four hours ago and oversold this feature. This entry withdraws the claim.**
