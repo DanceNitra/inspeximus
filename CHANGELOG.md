@@ -3,6 +3,60 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.52.0 - two more internal writes declare the record their text came from
+
+Erasure in inspeximus follows **declared** lineage edges. 1.51.0 fixed `revert()`, which rebuilt a record's
+text from a predecessor without declaring it. Two sibling sites had the same shape.
+
+**`rederive()` declared the wrong parent.** It builds new text out of a demoted record —
+`rewrite(r["text"], old, new)` — but declared only the *corrected root*, filing the actual text parent in
+`meta["rederived_from"]`, which nothing traverses. Measured on the pre-fix code:
+
+```
+forget_subject("alice-ticket")  ->  erased 1
+rederived copy still live      ->  True
+  its text                     ->  'alice bernard reaches the nightly backup with oauth2'
+erasure_audit verdict          ->  no_declared_residue
+```
+
+The erasure was reported as done, the copy carrying that subject's wording stayed, and the audit found no
+declared residue — a correctly scoped answer about declared edges, and blind to the undeclared copy. Now both
+parents are declared: taint carries `aliceticket`, `erased` goes 1 → 2, and the correction still works.
+
+**A stale `meta["rederived_to"]` froze a record on its corrected-away value.** That pointer is `rederive`'s
+single-shot guard, so it gates behaviour. Erase the rederived copy and the pointer outlived it: the derived
+fact stayed on the value just corrected away and `rederive` returned `{"rederived": 0, "skipped": 0}` with no
+note. `forget()` now drops it, like `superseded_by_toggle`. Re-applying the correction goes 0 → 1.
+
+**The other six id-bearing fields are deliberately KEPT** on erasure. `derived_from`, `taint`, `revert_of`,
+`rederived_from`, `duplicate_of` and `resolved_over` are history, and `erasure_audit` reports them as
+`dangling_lineage`. Scrubbing them would delete the evidence and turn the audit's answer into a false clean.
+A test fails on that tempting over-fix.
+
+**A CONSEQUENCE, stated rather than discovered later.** Because a repair now declares the demoted record it
+was rewritten from, it also inherits the *retracted source's* taint. Erasing that source takes the repair with
+it (`erased` 2 → 3), leaving neither the wrong value nor the right one. This is not new damage — before, the
+repair survived by being invisible to erasure, not by being judged safe — but `forget_subject()` has **no
+`dry_run`**, so there is no preview of the blast radius. Pinned by a test; a preview is not yet built.
+
+**A static guard against recurrence, and its honest scope.** A test walks the AST of every module in the
+package and fails on any `.remember()` whose text is lifted from a store record absent from `derived_from`.
+The first version of this guard was a regex; an adversarial review injected four offending shapes and it
+caught two, missed a multi-line call and an unfamiliar local name, and false-alarmed on a legitimate
+`pid = r["id"]; derived_from=[pid]`. The AST version catches 5 of 5 and is pinned by a negative control in
+both directions. It is **syntactic**: it cannot verify the declared parent is the semantically right one, and
+it cannot see text no static reader can attribute.
+
+**What this does not do.** Declared-edge lineage cannot follow a paraphrase written back as a fresh unparented
+record — the dominant production write path. In our own 27,290-record deployment, writer-declared lineage
+fields measured **0.00%**. This binds the library's own writes; it does not make erasure sound, and it is not
+a compliance control.
+
+Prior art this is an instance of, not a contribution to: deletion propagation through views is NP-hard for
+project–join and join–union queries under the source side-effect objective (Buneman, Khanna & Tan, PODS 2002);
+the missing-propagator failure is *under-tainting* (DTA++, NDSS 2011); the static rule is what the Checker
+Framework's Tainting Checker and Semgrep taint-mode propagators already express. 323 tests pass.
+
 ## 1.51.0 - the store declares lineage where it owns the write, and revert stops hiding from erasure
 
 Third attempt at the same problem, and the first that is exact. Declared lineage measured **0.00%** across a
