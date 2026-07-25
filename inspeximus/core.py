@@ -842,6 +842,7 @@ class Inspeximus:
         self._save_min_s = 5.0
         self._last_save = 0.0
         self._dirty = False
+        self._persist_error = None   # last _save() failure, surfaced by verify_writes() and raised by flush()
         # ENCRYPTION-AT-REST (OPT-IN, default None -> plaintext JSON, byte-identical legacy). encrypt_key is a
         # raw 32-byte AES-256 key (from new_encryption_key()); encrypt_passphrase is stretched with scrypt.
         # inspeximus NEVER persists the key/passphrase — you hold it; lose it and the store is unrecoverable (that IS
@@ -1045,6 +1046,15 @@ class Inspeximus:
         if self.max_text is not None and isinstance(text, str) and len(text) > self.max_text:
             _trunc_from = len(text)
             text = text[:self.max_text]
+        if meta is not None:
+            # Reject an unserialisable `meta` AT THE WRITE that carries it. Accepting it stored one poisoned
+            # record that made every subsequent _save() of the whole store fail — so the damage was not the
+            # bad record, it was every good record written after it. Fail the one call that is wrong.
+            try:
+                json.dumps(meta, ensure_ascii=False)
+            except (TypeError, ValueError) as e:
+                raise ValueError(f"remember(meta=...) must be JSON-serialisable, else the whole store stops "
+                                 f"persisting: {e}") from None
         mid = uuid.uuid4().hex[:10]
         now = time.time()
         rec = {"id": mid, "text": text, "tags": list(tags or []), "value": float(value),
@@ -1257,6 +1267,11 @@ class Inspeximus:
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
         Requires receipts to have been enabled at write time."""
         problems: list[str] = []
+        if getattr(self, "_persist_error", None):
+            # An unwritable store makes every other check here a statement about MEMORY, not about what an
+            # auditor would find on disk. Reported first because it invalidates the rest.
+            problems.append(f"store not persisted: {self._persist_error['error']} "
+                            f"(in-memory state has not reached {self._persist_error['path']})")
         prev = _GENESIS
         by_id = {it["id"]: it for it in self.items}
         for i, r in enumerate(self._receipts):
@@ -1844,7 +1859,7 @@ class Inspeximus:
         value, why it reopened, and the prior value offered to reaffirm. Read-only, tenant-scoped."""
         tv = self.tenant
         out = []
-        for r in self.items:
+        for r in self._tenant_rows():
             if not r.get("reopened") or r.get("status") != "active":
                 continue
             if tv is not None and r.get("tenant") != tv:
@@ -1940,15 +1955,19 @@ class Inspeximus:
         if ids is not None:
             target |= ({ids} if isinstance(ids, str) else set(ids))
         if where is not None:
-            for r in self.items:
+            for r in self._tenant_rows():
                 try:
                     if where(r):
                         target.add(r["id"])
                 except Exception:
                     pass
-        target &= {r["id"] for r in self.items}          # ignore ids not actually present
+        # Scope the SELECTION to this tenant, then delete from the shared list. Until 1.54.0 this filtered
+        # against self.items, so a tenant view could pass another tenant's id and hard-delete it —
+        # `beta.forget([acme_id])` returned {'forgotten': 1} and acme's row was gone. Ids not visible to this
+        # tenant are dropped exactly like ids that do not exist, so the call cannot probe for them either.
+        target &= {r["id"] for r in self._tenant_rows()}
         if dry_run:
-            by_id = {r["id"]: r for r in self.items}
+            by_id = {r["id"]: r for r in self._tenant_rows()}
             sample = [{"id": t, "text": (by_id[t].get("text") or "")[:120], "key": by_id[t].get("key")}
                       for t in sorted(target)[:10]]
             return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True}
@@ -2125,6 +2144,29 @@ class Inspeximus:
         src = rec.get("source")
         return src.get("doc") if isinstance(src, dict) else (src if isinstance(src, str) else None)
 
+    def _resolve_subject(self, subject: str, allow_ambiguous: bool = False, destructive: bool = True):
+        """THE one place a subject string becomes a set of records. Returns (cand, ids, collisions).
+
+        Every subject-scoped operation used to inline `cand = {subject, _canon_source(subject)}` and select
+        against it. 1.53.0 put a collision guard on `forget_subject` only — so the sibling paths kept the
+        defect: `forget_pii(subject=...)` still hard-deleted the other subject, `retract_lineage` demoted it,
+        and `rederive` REWROTE its text and re-emitted it (measured, all three). The guard has to live at the
+        resolution step, not at one caller, or "fixed" means fixed in one of five places."""
+        cand = {subject, Inspeximus._canon_source(subject)}
+        ids = [r["id"] for r in self._tenant_rows() if cand & Inspeximus._rec_sources(r)]
+        collisions = self._erasure_collisions(subject, cand, ids) if destructive else {}
+        if collisions and not allow_ambiguous:
+            ids = [rid for rid in ids if rid not in collisions["ids"]]
+        return cand, ids, collisions
+
+    @staticmethod
+    def _ambiguous_error(subject: str, collisions: dict, call: str) -> "AmbiguousSubject":
+        return AmbiguousSubject(
+            f"{call}: '{subject}' canonicalizes to '{Inspeximus._canon_source(subject)}', which is ALSO the "
+            f"canonical form of {sorted(collisions['sources'])} in this store. Proceeding would affect "
+            f"{len(collisions['ids'])} record(s) belonging to a different subject. Pass the exact source "
+            f"string, or allow_ambiguous=True to include them deliberately.")
+
     def _erasure_collisions(self, subject: str, cand: set, subj_ids: list) -> dict:
         """Records swept in by a subject whose RAW source is a different string that merely canonicalizes the
         same way.
@@ -2260,7 +2302,7 @@ class Inspeximus:
         return {"records_with_pii": n, "by_type": by_type, "ids": ids}
 
     def forget_pii(self, types=None, subject: str | None = None, request_id: str | None = None,
-                   basis: str | None = None) -> dict:
+                   basis: str | None = None, allow_ambiguous: bool = False) -> dict:
         """DATA-MINIMIZATION SWEEP: hard-delete (+ tombstone) every record carrying a PII tag, optionally
         restricted to specific `types` (e.g. ['email','ssn']) and/or a `subject` (a canonical source string,
         as in forget_subject). Tenant-scoped when the store is bound. Like forget_subject this genuinely REMOVES
@@ -2272,7 +2314,9 @@ class Inspeximus:
         want = set(types) if types is not None else None
         cand = None
         if subject is not None:
-            cand = {subject, Inspeximus._canon_source(subject)}
+            cand, _sel, _coll = self._resolve_subject(subject, allow_ambiguous)
+            if _coll and not allow_ambiguous:
+                raise Inspeximus._ambiguous_error(subject, _coll, "forget_pii")
         target = []
         for r in self._tenant_rows():
             tags = r.get("pii")
@@ -2390,7 +2434,7 @@ class Inspeximus:
 
         if subject is not None:
             cand = {subject, Inspeximus._canon_source(subject)}
-            for r in self.items:
+            for r in self._tenant_rows():
                 if cand & Inspeximus._rec_sources(r):
                     _add(True, "subject_still_attributable", r["id"],
                          f"still attributable to {subject!r} (status={r.get('status')})")
@@ -2470,7 +2514,7 @@ class Inspeximus:
         hash — so any supersession, revert, erasure, or out-of-band edit changes the digest. Zero-LLM,
         O(n) hashing, no configuration. This is the "revision X" a hydration witness pins to."""
         h = hashlib.sha256()
-        for r in sorted(self.items, key=lambda x: x.get("id") or ""):
+        for r in sorted(self._tenant_rows(), key=lambda x: x.get("id") or ""):
             line = "\x1f".join([
                 str(r.get("id") or ""), str(r.get("status") or "active"),
                 repr(r.get("ts")), str(r.get("key") or ""), str(r.get("tenant") or ""),
@@ -2519,7 +2563,7 @@ class Inspeximus:
         coherent=True means semantic recall on this store ranks against vectors that match the current
         store content and recipe."""
         has_embedder = self.embed is not None
-        act_text = [r for r in self.items if r.get("status") == "active" and r.get("text")]
+        act_text = [r for r in self._tenant_rows() if r.get("status") == "active" and r.get("text")]
         missing = sum(1 for r in act_text if not r.get("vec")) if has_embedder else 0
         sidecar = None
         if getattr(self, "_embedid_path", None) is not None and self._embedid_path.exists():
@@ -2771,7 +2815,8 @@ class Inspeximus:
                 "note": ("different-size heads: run verify_consistency against a replica to settle append-only"
                          if undetermined else "")}
 
-    def retract_lineage(self, subject: str, reason: str = "lineage_corrected") -> dict:
+    def retract_lineage(self, subject: str, reason: str = "lineage_corrected",
+                        allow_ambiguous: bool = False) -> dict:
         """Lineage-aware correction: the MIDDLE PATH between a value-only supersession (which leaves records
         DERIVED from a now-corrected fact still active — the knowledge-editing 'ripple effect', Cohen et al.
         RippleEdits, TACL 2024) and forget_subject (which HARD-DELETES the lineage, losing the legitimate
@@ -2786,8 +2831,12 @@ class Inspeximus:
         recorded — derived writes that never carried derived_from are invisible to it. `subject` matches
         canonical sources exactly like forget_subject. Returns {demoted, ids}. Reversible: nothing is deleted;
         only status + meta change."""
-        cand = {subject, Inspeximus._canon_source(subject)}
-        targets = [r for r in self.items if r.get("status") == "active" and (cand & Inspeximus._rec_sources(r))]
+        cand, _sel, _coll = self._resolve_subject(subject, allow_ambiguous)
+        if _coll and not allow_ambiguous:
+            raise Inspeximus._ambiguous_error(subject, _coll, "retract_lineage")
+        _ok = set(_sel)
+        targets = [r for r in self._tenant_rows()
+                   if r.get("status") == "active" and r["id"] in _ok]
         now = time.time()
         ids = []
         for r in targets:
@@ -2802,7 +2851,8 @@ class Inspeximus:
             self._save(force=True)
         return {"demoted": len(ids), "ids": sorted(ids)}
 
-    def rederive(self, subject: str, rewrite=None, key: str | None = None) -> dict:
+    def rederive(self, subject: str, rewrite=None, key: str | None = None,
+                 allow_ambiguous: bool = False) -> dict:
         """Complete the correction lifecycle: REGENERATE the derived facts that retract_lineage demoted, against
         the corrected root — so the payload entangled in a poisoned lineage (a connection-string location, a
         backup schedule) comes back as ACTIVE facts asserting the corrected value, with clean derived_from
@@ -2819,11 +2869,14 @@ class Inspeximus:
         a derived fact that does not contain the old value verbatim is SKIPPED (returned in `skipped`), never
         guessed. Each demoted record is stamped rederived_to (single-shot; a repeat call won't duplicate).
         Returns {rederived, skipped, ids, old_value, new_value}."""
-        cand = {subject, Inspeximus._canon_source(subject)}
-        flagged = [r for r in self.items
+        cand, _sel, _coll = self._resolve_subject(subject, allow_ambiguous)
+        if _coll and not allow_ambiguous:
+            raise Inspeximus._ambiguous_error(subject, _coll, "rederive")
+        _ok = set(_sel)
+        flagged = [r for r in self._tenant_rows()
                    if (r.get("meta") or {}).get("needs_rederivation")
                    and not (r.get("meta") or {}).get("rederived_to")
-                   and (cand & Inspeximus._rec_sources(r))]
+                   and r["id"] in _ok]
         if not flagged:
             return {"rederived": 0, "skipped": 0, "ids": []}
         root = next((r for r in flagged if r.get("key")), None)
@@ -3393,7 +3446,7 @@ class Inspeximus:
         agent believe when it acted", provably, without the later correction contaminating the reconstruction."""
         if as_recorded is None:
             best = None
-            for r in self.items:
+            for r in self._tenant_rows():
                 if r.get("key") != key:
                     continue
                 vf = r.get("valid_from", r["ts"])
@@ -3404,7 +3457,7 @@ class Inspeximus:
         else:
             # transaction-time filter: only records written by `as_recorded`; supersession recomputed within it
             # (a record is superseded only by a LATER-valid_from record that was itself already recorded by then).
-            cands = [r for r in self.items if r.get("key") == key
+            cands = [r for r in self._tenant_rows() if r.get("key") == key
                      and r.get("valid_from", r["ts"]) <= when and r["ts"] <= as_recorded]
             best = max(cands, key=lambda r: (r.get("valid_from", r["ts"]), r["ts"]), default=None)
         if best is None:
@@ -3413,7 +3466,7 @@ class Inspeximus:
                "valid_from": best.get("valid_from", best["ts"]),
                "invalidated_at": best.get("invalidated_at"), "id": best["id"]}
         if as_recorded is not None:
-            nxt = [r.get("valid_from", r["ts"]) for r in self.items
+            nxt = [r.get("valid_from", r["ts"]) for r in self._tenant_rows()
                    if r.get("key") == key and r["ts"] <= as_recorded
                    and r.get("valid_from", r["ts"]) > out["valid_from"]]
             out["invalidated_at"] = min(nxt) if nxt else None   # invalidation AS KNOWN at as_recorded
@@ -3469,7 +3522,7 @@ class Inspeximus:
         """The full validity timeline for `key`: every value it has held, in event-time order, each
         with its [valid_from, invalidated_at) interval, status, and — when it was retired — WHICH
         policy adjudicated the retirement (meta['superseded_by_policy']). The audit trail behind as_of()."""
-        recs = [r for r in self.items if r.get("key") == key]
+        recs = [r for r in self._tenant_rows() if r.get("key") == key]
         recs.sort(key=lambda r: r.get("valid_from", r["ts"]))
         return [{"object": r.get("object"), "text": r.get("text"), "status": r.get("status"),
                  "valid_from": r.get("valid_from", r["ts"]), "invalidated_at": r.get("invalidated_at"),
@@ -3508,13 +3561,13 @@ class Inspeximus:
         have anchor() witnessed externally, for the loud property to hold against a store-capable actor."""
         if (key is None) == (id is None):
             raise ValueError("provenance() takes exactly one of key= or id=")
-        by_id = {x["id"]: x for x in self.items}
+        by_id = {x["id"]: x for x in self._tenant_rows()}
         if id is not None:
             rec = by_id.get(str(id))
             key = rec.get("key") if rec is not None else None
         else:
             key = str(key)
-            same = [r for r in self.items if r.get("key") == key]
+            same = [r for r in self._tenant_rows() if r.get("key") == key]
             same.sort(key=lambda r: r.get("valid_from", r["ts"]))
             active = [r for r in same if r.get("status") == "active"]
             rec = active[-1] if active else (same[-1] if same else None)
@@ -3592,7 +3645,7 @@ class Inspeximus:
         conflict is inspectable per record — the write-time judge log TOKI (arXiv:2606.06240) points
         out most memory systems omit. Read-only; the raw rows stay untouched."""
         counts: dict = {}
-        for r in self.items:
+        for r in self._tenant_rows():
             if r.get("status") != "superseded":
                 continue
             p = (r.get("meta") or {}).get("superseded_by_policy") or "unstamped"
@@ -4715,7 +4768,7 @@ class Inspeximus:
         the same way a source string is (an attacker who can forge an outcome token can still warrant) — it
         raises attacker cost and is meant to be paired with verifiable provenance, not a proof of truth."""
         good = Inspeximus._outcome_good(outcome)
-        by_id = {x["id"]: x for x in self.items}
+        by_id = {x["id"]: x for x in self._tenant_rows()}
         key, updated = ("good" if good else "bad"), []
         for i in (ids or []):
             rec = by_id.get(i)
@@ -5293,7 +5346,7 @@ class Inspeximus:
         qtok = _tokens(query)
         ranked = self.recall(query, k=k)
         rank_of = {r["id"]: i + 1 for i, r in enumerate(ranked)}
-        _full = {x["id"]: x for x in self.items}          # recall() may return vec-less projections
+        _full = {x["id"]: x for x in self._tenant_rows()}          # recall() may return vec-less projections
 
         def _brk(rec):
             r = _full.get(rec["id"], rec)                 # resolve the full record so the vec is present
@@ -5306,7 +5359,7 @@ class Inspeximus:
                     "good": float(r.get("good", 0) or 0), "bad": float(r.get("bad", 0) or 0),
                     "stale_derived": bool(r.get("_stale_derived")), "rank": rank_of.get(r["id"])}
         if id is not None:
-            rec = next((r for r in self.items if r["id"] == id), None)
+            rec = next((r for r in self._tenant_rows() if r["id"] == id), None)
             if rec is None:
                 return {"id": id, "found": False}
             b = _brk(rec); b["surfaced"] = rec["id"] in rank_of
@@ -5319,8 +5372,8 @@ class Inspeximus:
         (active memories whose nearest active neighbour is >= dup_threshold, no value clash — sampled at 400 for
         cost). Read-only; the surface that proves a store did NOT accumulate 800 copies of one fact."""
         now = time.time()
-        act = [r for r in self.items if r.get("status") == "active"]
-        sup = [r for r in self.items if r.get("status") == "superseded"]
+        act = [r for r in self._tenant_rows() if r.get("status") == "active"]
+        sup = [r for r in self._tenant_rows() if r.get("status") == "superseded"]
         from collections import Counter
         by_type = dict(Counter(r.get("mtype", "episodic") for r in act))
         linked = sum(1 for r in act if r.get("links"))
@@ -5333,7 +5386,7 @@ class Inspeximus:
                 s = self._similarity(r["text"], other[0], self._qvec(r["text"]) if self.embed else None)
                 if s >= dup_threshold and not _value_clash(r["text"], other[0]["text"]):
                     redundant += 1
-        return {"total": len(self.items), "active": len(act), "superseded": len(sup), "by_type": by_type,
+        return {"total": len(self._tenant_rows()), "active": len(act), "superseded": len(sup), "by_type": by_type,
                 "consolidated": linked, "decayed": decayed, "redundant_estimate": redundant,
                 "redundant_frac": round(redundant / max(1, len(sample)), 3), "sampled": len(sample)}
 
@@ -5593,7 +5646,7 @@ class Inspeximus:
         """Flag mutually-incompatible memories among RELATED ones (similarity-gated) for human review.
         `incompatible(a_text, b_text)->bool` defaults to a negation/polarity heuristic."""
         inc = incompatible or _negation_clash
-        active = [r for r in self.items if r["status"] == "active"
+        active = [r for r in self._tenant_rows() if r["status"] == "active"
                   and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant-scoped
         flags = []
         for i, a in enumerate(active):
@@ -5787,7 +5840,7 @@ class Inspeximus:
         """Per-TAG value rollup. Deliberately not per-memory: at n-of-1, per-item value is noise;
         the cohort (tag / time-block) is where the signal is real."""
         out: dict[str, dict] = {}
-        for r in self.items:
+        for r in self._tenant_rows():
             if r["status"] != "active":
                 continue
             for tag in (r["tags"] or ["(untagged)"]):
@@ -5951,13 +6004,28 @@ class Inspeximus:
                     pass
             self._last_save = now
             self._dirty = False
-        except Exception:
-            pass
+            self._persist_error = None
+        except Exception as e:
+            # Until 1.54.0 this was `pass`, and it also left _dirty False — so flush() became a no-op and
+            # EVERY later write was lost too, while verify_writes() returned True. Measured: five records in
+            # memory, one on disk, integrity reported OK. A memory library that loses memories silently and
+            # then certifies itself is the worst failure it can have.
+            # The hot path still does not raise (one unserialisable meta value must not kill a running app),
+            # but the failure is now recorded, retried on the next save, surfaced by verify_writes(), and
+            # RAISED by flush() — the call whose whole purpose is "make sure it is on disk".
+            self._dirty = True
+            self._persist_error = {"at": now, "error": f"{type(e).__name__}: {e}", "path": str(self.path)}
 
     def flush(self):
-        """Force-persist any pending throttled changes (call on clean shutdown)."""
+        """Force-persist any pending throttled changes (call on clean shutdown).
+
+        RAISES if persistence fails. This is the explicit "make sure it is written" call, so a caller that
+        gets no exception is entitled to believe the store is on disk."""
         if self._dirty:
             self._save(force=True)
+        if self._persist_error:
+            raise OSError(f"inspeximus could not persist to {self._persist_error['path']}: "
+                          f"{self._persist_error['error']}")
 
 
 # ── per-type decay priors (the half-life a memory's ranking value decays at, by kind) ──────────
@@ -6037,8 +6105,30 @@ class _TenantView:
         object.__setattr__(self, "_parent", parent)
         object.__setattr__(self, "tenant", tenant)
 
-    def __getattr__(self, name):                 # anything not on the view -> the shared parent store
-        return getattr(self._parent, name)
+    #: Methods that are genuinely STORE-LEVEL — they operate on the shared file, index, receipt chain or
+    #: config, where "this tenant's slice" is not a meaningful scope. Passing these through is deliberate.
+    #: Anything NOT here and not rebound below raises, so a method added to Inspeximus tomorrow cannot leak
+    #: by default. That is the whole point: the previous version forwarded EVERYTHING, and 54 of 79 public
+    #: methods reached the parent as tenant=None (admin) — `A.history(B_key)` returned B's plaintext.
+    _STORE_LEVEL = frozenset({
+        "flush", "reembed", "sleep", "anchor", "witness", "ratify", "admit",
+        "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
+        "verify_attribution", "erasure_certificate", "register_erasure_target", "apply_retention",
+        "shred", "grade", "detect_split_view", "check_self_narration", "classify_reversion",
+        "restore_intent", "revert_intent", "revert_capability", "believed_at",
+    })
+
+    def __getattr__(self, name):
+        if name.startswith("_") or name in _TenantView._STORE_LEVEL:
+            return getattr(self._parent, name)       # private helpers + shared-store operations
+        attr = getattr(self._parent, name, None)
+        if callable(attr) and not name.startswith("__"):
+            raise AttributeError(
+                f"{name}() is not classified for tenant views. It would run on the shared store as tenant="
+                f"None (admin) and could read or delete another tenant's records. Add it to the rebound "
+                f"surface on _TenantView (and make it use self._tenant_rows()), or to _STORE_LEVEL if it is "
+                f"genuinely store-wide.")
+        return getattr(self._parent, name)           # data attributes (items, config, caches) stay shared
 
     def __setattr__(self, name, value):          # config writes go to the shared parent (tenant is slot-local)
         if name == "tenant":
@@ -6051,6 +6141,38 @@ class _TenantView:
 
     # tenant-sensitive surface: rebound so `self` is the VIEW (its tenant), state stays the parent's
     def remember(self, *a, **k):        return Inspeximus.remember(self, *a, **k)
+    def history(self, *a, **k):             return Inspeximus.history(self, *a, **k)
+    def provenance(self, *a, **k):          return Inspeximus.provenance(self, *a, **k)
+    def as_of(self, *a, **k):               return Inspeximus.as_of(self, *a, **k)
+    def why_recalled(self, *a, **k):        return Inspeximus.why_recalled(self, *a, **k)
+    def credit(self, *a, **k):              return Inspeximus.credit(self, *a, **k)
+    def memory_report(self, *a, **k):       return Inspeximus.memory_report(self, *a, **k)
+    def value_by_cohort(self, *a, **k):     return Inspeximus.value_by_cohort(self, *a, **k)
+    def index_coherence(self, *a, **k):     return Inspeximus.index_coherence(self, *a, **k)
+    def supersession_report(self, *a, **k): return Inspeximus.supersession_report(self, *a, **k)
+    def state_digest(self, *a, **k):        return Inspeximus.state_digest(self, *a, **k)
+    def erasure_report(self, *a, **k):      return Inspeximus.erasure_report(self, *a, **k)
+    def governance_report(self, *a, **k):   return Inspeximus.governance_report(self, *a, **k)
+    def forget(self, *a, **k):              return Inspeximus.forget(self, *a, **k)
+    def neighbors(self, *a, **k):           return Inspeximus.neighbors(self, *a, **k)
+    def get(self, *a, **k):                 return Inspeximus.get(self, *a, **k)
+    def retract_lineage(self, *a, **k):     return Inspeximus.retract_lineage(self, *a, **k)
+    def rederive(self, *a, **k):            return Inspeximus.rederive(self, *a, **k)
+    def revert(self, *a, **k):              return Inspeximus.revert(self, *a, **k)
+    def submit_revert(self, *a, **k):       return Inspeximus.submit_revert(self, *a, **k)
+    def revert_now(self, *a, **k):          return Inspeximus.revert_now(self, *a, **k)
+    def revert_challenge(self, *a, **k):    return Inspeximus.revert_challenge(self, *a, **k)
+    def restore(self, *a, **k):             return Inspeximus.restore(self, *a, **k)
+    def restore_now(self, *a, **k):         return Inspeximus.restore_now(self, *a, **k)
+    def slash(self, *a, **k):               return Inspeximus.slash(self, *a, **k)
+    def monitor(self, *a, **k):             return Inspeximus.monitor(self, *a, **k)
+    def spend_irreversible(self, *a, **k):  return Inspeximus.spend_irreversible(self, *a, **k)
+    def influence_gate_report(self, *a, **k): return Inspeximus.influence_gate_report(self, *a, **k)
+    def irreversible_budget_report(self, *a, **k): return Inspeximus.irreversible_budget_report(self, *a, **k)
+    def erasure_audit(self, *a, **k):       return Inspeximus.erasure_audit(self, *a, **k)
+    def convergence_report(self, *a, **k):  return Inspeximus.convergence_report(self, *a, **k)
+    def propagate_outcome(self, *a, **k):   return Inspeximus.propagate_outcome(self, *a, **k)
+    def recall_iterative(self, *a, **k):    return Inspeximus.recall_iterative(self, *a, **k)
     def recall(self, *a, **k):          return Inspeximus.recall(self, *a, **k)
     def forget_subject(self, *a, **k):  return Inspeximus.forget_subject(self, *a, **k)
     def forget_pii(self, *a, **k):      return Inspeximus.forget_pii(self, *a, **k)
