@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.55.0"
+__version__ = "1.56.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -640,7 +640,7 @@ class Inspeximus:
         # persist their nonce in the record meta, so single-use survives a reload; a conflicted-but-unlanded
         # nonce is only held in memory (honest boundary: after a restart it would conflict again, not land).
         self._consumed_revert_nonces: set[str] = set()
-        self.items: list[dict] = []
+        self._items: list[dict] = []
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -866,15 +866,15 @@ class Inspeximus:
                     raise ValueError("store is encrypted; pass encrypt_key= or encrypt_passphrase= to open it")
                 self._enc_salt = raw[5:21]                            # reuse the store's salt (passphrase re-derivation)
                 try:
-                    self.items = json.loads(_decrypt_blob(self._resolve_key(), raw))
+                    self._items = json.loads(_decrypt_blob(self._resolve_key(), raw))
                 except Exception as e:                                # wrong key / tampered / truncated -> never
                     raise ValueError("cannot decrypt store (wrong key/passphrase, or the file was tampered)") from e
                 #                                                       silently return [] (would risk overwriting real data)
             else:
                 try:
-                    self.items = json.loads(raw.decode("utf-8"))     # legacy plaintext JSON
+                    self._items = json.loads(raw.decode("utf-8"))    # legacy plaintext JSON
                 except Exception:
-                    self.items = []
+                    self._items = []
         # EMBED-RECIPE GUARD (persist_vectors only): persisted vectors are only comparable to a query embedded the
         # SAME way. If the store was written with a different embed recipe than the one now in use — most importantly
         # an ASYMMETRIC upgrade (e.g. adding nomic's search_document:/search_query: prefixes) — a query in the new
@@ -1202,7 +1202,7 @@ class Inspeximus:
                 rec["vec"] = list(self.embed(text))
             except Exception:
                 rec["vec"] = None
-        self.items.append(rec)
+        self._items.append(rec)
         if key is not None and not _is_candidate:
             self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
             #                                                  a candidate (low identity_confidence) never supersedes
@@ -2012,7 +2012,7 @@ class Inspeximus:
             return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True}
         if not target:
             return {"forgotten": 0, "ids": [], "scrubbed_links": 0, "tombstones": 0}
-        self.items = [r for r in self.items if r["id"] not in target]
+        self._items = [r for r in self._items if r["id"] not in target]
         scrubbed = 0
         if redact_links:
             for r in self.items:
@@ -2333,6 +2333,39 @@ class Inspeximus:
             man.register(t)
         return man.execute(subject, values, request_id=request_id, basis=basis,
                            authorized_by=authorized_by)
+
+    @property
+    def items(self) -> list:
+        """The records this store may see. **Tenant-scoped when the store is bound.**
+
+        This is the structural half of tenant isolation. It used to be a plain attribute holding every
+        tenant's records, and 46 methods read it directly — so isolation depended on each of them remembering
+        to filter, and an audit found `history`, `provenance`, `as_of`, `why_recalled`, `revert` and the
+        aggregate reports had not. Patching them one at a time fixed the instances and left the class: a
+        method added tomorrow would read the shared list again, silently.
+
+        Now the scoping lives under the reads instead of beside them. `self.items` cannot see another
+        tenant's rows, so a new method is isolated by construction rather than by review. The real list is
+        `self._items`; only the handful of call sites that genuinely own it (load, append, forget, shred)
+        touch that, and they are the ones a reviewer should look at.
+
+        Cached per (tenant, revision) so the filter is not re-run on every read of a hot path."""
+        if self.tenant is None:
+            return self._items
+        rev = (len(self._items), id(self._items))
+        if getattr(self, "_items_view_rev", None) != (self.tenant, rev):
+            self._items_view = [r for r in self._items if r.get("tenant") == self.tenant]
+            self._items_view_rev = (self.tenant, rev)
+        return self._items_view
+
+    @items.setter
+    def items(self, value):
+        """Assigning the whole list is how `forget` used to work, and under a tenant-scoped read that would
+        replace every tenant's records with this tenant's survivors. Route deliberate whole-list writes to
+        `_items` so the intent is visible at the call site."""
+        raise AttributeError(
+            "assign to _items, not items: a whole-list write from a tenant-bound store would drop every "
+            "other tenant's records. If you mean the shared list, say so explicitly.")
 
     def _tenant_rows(self) -> list:
         """The records THIS store is allowed to touch: all rows for an unbound (admin) store, else only the
@@ -6022,8 +6055,15 @@ class Inspeximus:
         self._enc_rawkey = None
         self._enc_passphrase = None
         self._enc_derived = None
-        n = len(self.items)
-        self.items = []
+        if self.tenant is not None:
+            # shred() destroys the encryption key, which is a property of the whole FILE. Dropping only this
+            # tenant's rows while making every other tenant's data unrecoverable is not a coherent operation,
+            # and it is not one a tenant should be able to perform on the others.
+            raise PermissionError(
+                "shred() destroys the store's encryption key for every tenant — call it on the unbound "
+                "store, not on a tenant view. To remove one tenant's data use forget()/forget_subject().")
+        n = len(self._items)
+        self._items = []
         self._mat = None
         self._tok_cache = {}
         return {"shredded": True, "records_dropped": n, "ts": time.time(),
@@ -6232,6 +6272,17 @@ class _TenantView:
             object.__setattr__(self, name, value)
         else:
             setattr(self._parent, name, value)
+
+    @property
+    def items(self) -> list:
+        """Scoped to THIS view's tenant. Without it, `view.items` resolved through __getattr__ to the parent's
+        property, which evaluates against the PARENT's tenant (None = admin) and handed back every tenant's
+        raw records — defeating the allow-list entirely. Measured before this."""
+        return Inspeximus.items.fget(self)
+
+    @property
+    def _items(self) -> list:
+        return self._parent._items              # the real, shared list (writes and audits go here)
 
     def for_tenant(self, tenant: str):           # re-scope from the same shared store
         return _TenantView(self._parent, str(tenant))

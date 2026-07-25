@@ -3,6 +3,50 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.56.0 - tenant isolation, structurally
+
+1.54.0 and 1.55.0 patched tenant leaks one method at a time and each round found more, because the shape was
+wrong: `self.items` was a plain attribute holding **every** tenant's records, and **46 methods read it
+directly**. Isolation therefore depended on each of them remembering to filter, and a method added tomorrow
+would read the shared list again, silently. 1.55.0 shipped with that stated as a known limitation.
+
+**`items` is now a tenant-scoped property over the real list.** The records live in `_items`; `items` returns
+only the bound tenant's rows (cached per tenant+revision). Scoping moved *under* the reads instead of sitting
+beside them, so a method is isolated **by construction** rather than by review. Only four call sites touch the
+real list — load, append, forget, shred — and those are what a reviewer should look at. The setter refuses a
+whole-list assignment, because `self.items = [...]` under a scoped read would replace every tenant's records
+with this tenant's survivors, which is exactly how `forget()` used to work.
+
+Measured after the change, from a tenant handle aimed at the other tenant's data: `history`, `provenance`,
+`as_of`, `why_recalled`, `revert`, `recall`, `contradictions`, `graph`, `memory_report`, `value_by_cohort`,
+`check_conflict`, `verify_claim`, `route`, `convergence_report`, `grade`, `consolidate` and **`items` itself**
+— no leak. The destructive paths are scoped by the same change: `apply_retention`, `sleep`, `forget`,
+`forget_pii`, `retract_lineage` and `consolidate` no longer reach another tenant's records, and the
+integration adapters (`langgraph`, `autogen`, `haystack`, `google_adk`, `code_guard`) that read `store.items`
+became correct without being touched.
+
+**`shred()` now refuses from a tenant view.** It destroys the encryption key for the whole file; dropping one
+tenant's rows while making every other tenant's data unrecoverable is not a coherent operation, and not one a
+tenant should be able to perform on the others.
+
+### The test that keeps this true as the API grows
+
+A sweep calls **every** public method from a tenant handle with arguments aimed at the other tenant and fails
+if their secret appears anywhere in the output. It runs over **both** ways to bind a tenant, because they are
+protected differently: `for_tenant()` returns a view whose default-deny `__getattr__` refuses an unclassified
+method, while `Inspeximus(path=..., tenant=...)` has no view at all and relies solely on the scoped property.
+A method that the sweep cannot drive must be named in `_UNSWEEPABLE` **with a reason** — the first version of
+this test skipped such methods on `TypeError`, so a newly added leaking method was invisible to it. Verified
+by injecting one: a new method reading `items` passes; the same method reading `_items` fails the sweep.
+
+### Honest scope, unchanged
+
+This is isolation between *your own* workloads on one store. It is not a substitute for separate stores
+between mutually distrusting parties: the file, the receipt chain, the anchor and the encryption key remain
+shared, and anything holding `_items` holds everything.
+
+391 tests pass; 6 mutations, each killed by its own test.
+
 ## 1.55.0 - round two: the same audit, run again after the fixes
 
 We re-ran the audit on the fixed code. Every 1.54.0 fix held **at the instance it was reported** and the

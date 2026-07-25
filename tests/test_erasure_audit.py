@@ -150,7 +150,7 @@ def test_value_scan_still_matches_a_value_that_ends_a_sentence():
 def test_a_removed_record_with_no_tombstone_at_all_is_residue():
     m = _store()
     rid = m.remember("a receipted fact", source={"doc": "runbook"})
-    m.items = [r for r in m.items if r["id"] != rid]      # out-of-band delete, no tombstone
+    m._items = [r for r in m._items if r["id"] != rid]    # out-of-band delete, no tombstone (the real list)
 
     audit = m.erasure_audit()
     assert "tombstone_gap" in _kinds(audit["residue"]) and audit["verdict"] == "residue_found"
