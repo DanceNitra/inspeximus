@@ -64,7 +64,10 @@ class InspeximusStorage(ComplianceMixin):
         extra_tags = metadata.pop("tags", None)
         if extra_tags:
             tags.extend(extra_tags if isinstance(extra_tags, (list, tuple)) else [extra_tags])
-        self.store.remember(text, key=key, object=obj, tags=tags, meta=metadata or None)
+        # source= is what makes this record erasable by subject later. Without it every adapter write fell
+        # back to `id:<record id>`, so forget_subject() for a user, a session or a namespace matched nothing.
+        self.store.remember(text, key=key, object=obj, tags=tags, meta=metadata or None,
+                            source={"doc": self._tag})
 
     def search(self, query: str, limit: int = 3,
                score_threshold: float = 0.35) -> List[Dict[str, Any]]:
@@ -83,6 +86,12 @@ class InspeximusStorage(ComplianceMixin):
         return out
 
     def reset(self) -> None:
-        for r in list(getattr(self.store, "items", [])):
-            if self._tag in (r.get("tags") or []):
-                r["status"] = "deleted"
+        """Erase this storage's records — for real.
+
+        It used to set `status="deleted"` in memory and stop: no forget(), no tombstone, no save. `search()`
+        looked right because recall filters on status, then a reload returned every record `active` with the
+        content still in the file — memory bleeding across CrewAI runs after an explicit reset."""
+        ids = [r["id"] for r in list(getattr(self.store, "items", []))
+               if self._tag in (r.get("tags") or [])]
+        if ids:
+            self.store.forget(ids=ids, basis="crewai_storage_reset")

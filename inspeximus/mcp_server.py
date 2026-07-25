@@ -434,7 +434,7 @@ def forget(ids: list[str] | None = None, where_contains: str | None = None, dry_
 # ── GOVERNANCE / INTEGRITY tools (the surface a serious buyer checks — previously absent from the MCP) ──────
 @mcp.tool()
 def forget_subject(subject: str, basis: str = "", dry_run: bool = False,
-                   allow_ambiguous: bool = False) -> dict:
+                   allow_ambiguous: bool = False, request_id: str = "") -> dict:
     """Right-to-erasure by SUBJECT (GDPR Art.17 / DSR): delete every memory about `subject` AND scrub its id from
     survivors' links/supersession pointers, so it can't resurface via recall or consolidation. `basis` records the
     legal/operational reason. Returns a receipt (forgotten count, ids, scrubbed_links) you can keep as evidence.
@@ -450,7 +450,7 @@ def forget_subject(subject: str, basis: str = "", dry_run: bool = False,
     allow_ambiguous=True only if you really intend to erase all of them.
     """
     return _MEM.forget_subject(subject, basis=basis or None, dry_run=dry_run,
-                               allow_ambiguous=allow_ambiguous)
+                               allow_ambiguous=allow_ambiguous, request_id=request_id or None)
 
 
 @mcp.tool()
@@ -550,10 +550,10 @@ def pii_report() -> dict:
 
 @mcp.tool()
 def forget_pii(types: list[str] | None = None, subject: str = "",
-               allow_ambiguous: bool = False) -> dict:
+               allow_ambiguous: bool = False, request_id: str = "") -> dict:
     """Erase detected PII — of the given `types` (default all), optionally scoped to a `subject`. Deletes the
     offending content deterministically (not an LLM guess). Returns what was erased."""
-    return _MEM.forget_pii(types=types, subject=subject or None, allow_ambiguous=allow_ambiguous)
+    return _MEM.forget_pii(types=types, subject=subject or None, allow_ambiguous=allow_ambiguous, request_id=request_id or None)
 
 
 @mcp.tool()

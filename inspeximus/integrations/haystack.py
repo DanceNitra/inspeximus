@@ -85,6 +85,7 @@ class InspeximusDocumentStore(ComplianceMixin):
                 self.store.forget(ids=[existing[hs_id]["id"]])
             text = payload.get("content") or ""
             self.store.remember(text if text else f"[document {hs_id}]",
+                                source={"doc": str(hs_id)},
                                 meta={"hs_doc": payload})
             written += 1
         if self.store.path:

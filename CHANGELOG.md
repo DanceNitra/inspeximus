@@ -3,6 +3,52 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.60.0 - the surfaces, brought in line with the library
+
+Four rounds hardened `core.py`. Everything here is one step out from it, and it shares a shape: **the library
+was correct and the thing the user actually touches was not.** A guarantee that holds in `Inspeximus` and
+fails in the CLI, the MCP tool or an adapter is not a guarantee, it is a footnote.
+
+### The two product surfaces disagreed on a flagship property
+
+`cli.py` and `mcp_server.py` are documented as sharing one store, and the echo guard was **on** in the MCP and
+**off** in the CLI (the library's legacy default). So one CLI write could resurrect a value the MCP had
+retired — undoing the measured 0.00 → 1.00 echo-resistance on the very store that advertises it. Both now read
+`INSPEXIMUS_ECHO_GUARD` with the same default; the library keeps its legacy default for compatibility.
+
+### A "clear" that left the data on disk
+
+`InspeximusChatMessageHistory.clear()` and `InspeximusStorage.reset()` (CrewAI) set `status="deleted"` on the
+in-memory records and stopped: no `forget()`, no tombstone, no save. `.messages` filters by TAG and never
+looked at status, so the history still returned them, and a reload brought every record back **active with the
+content still in the file**. Both now erase through `forget()`, which persists and tombstones.
+
+### Records nothing could erase
+
+Seven adapters wrote without `source=`, so every record fell back to `id:<record id>` and **no subject erasure
+could ever reach it** — the governance surface the integrations advertise did not apply to anything they
+themselves stored. All write sites now carry a subject: the storage tag (CrewAI), the session (LangChain,
+LlamaIndex), the namespace and thread (LangGraph), the document id (Haystack), an explicit argument
+(pydantic-ai).
+
+A per-user DSAR through LangGraph now works: `forget_subject("lg::users::u1")` erases u1 and leaves u2.
+
+**The trap that cost a round-trip:** the first version joined the namespace with `/`, and `_canon_source`
+keeps only the host of a path-shaped id — so `users/u1` and `users/u2` both resolved to `users` and every
+per-user erasure was refused as ambiguous by our own guard. **A path-shaped subject is a collision by
+construction.** The separator is `::`, which survives canonicalisation.
+
+### Smaller
+
+- The MCP `forget_subject` and `forget_pii` tools can now record a **`request_id`**. Without it the erasure
+  report keyed everything under `None`, `governance_report()["by_request"]` was `{None: {...}}` and
+  `erasure_certificate(request_id=…)` could never be scoped — on tools whose docstrings sell them as Art.17
+  evidence.
+- `inspeximus remember --source` exists. `forget-subject`'s own help had pointed at it for a release while
+  `remember` had no such flag, so nothing written from the CLI could ever be erased by subject.
+
+442 tests pass; 5 mutations, each killed by its own test.
+
 ## 1.59.0 - round four: three regressions from 1.58.0, and three verdicts that signed an untruth
 
 ### The concurrency guard had the shape of the bug it replaced

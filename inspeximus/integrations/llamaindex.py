@@ -40,13 +40,18 @@ class InspeximusMemoryBlock(BaseMemoryBlock[str], ComplianceMixin):
         default="Long-term memory with deterministic supersession: corrected facts are not re-injected.")
     k: int = Field(default=5, description="How many memories to inject.")
     _store: Any = PrivateAttr(default=None)
+    _subject: str = PrivateAttr(default="llamaindex")
 
-    def __init__(self, path: str | None = None, store: Any = None, extractor=None, **kwargs: Any):
+    def __init__(self, path: str | None = None, store: Any = None, extractor=None,
+                 subject: str = "llamaindex", **kwargs: Any):
         super().__init__(**kwargs)                      # only pydantic fields (name/description/priority/k)
         if store is None:
             from inspeximus import Inspeximus
             store = Inspeximus(path=path)
         self._store = store
+        # The subject these messages are attributable to, so forget_subject() can erase them.
+        # Pass a per-user or per-session value; the default groups every message under one id.
+        self._subject = str(subject)
         # OPT-IN extractor (text -> (key, object)): auto-keys _aput'd messages so _aget injects current-truth.
         if extractor is not None:
             self._store.extractor = extractor
@@ -64,7 +69,9 @@ class InspeximusMemoryBlock(BaseMemoryBlock[str], ComplianceMixin):
         for m in messages:
             t = self._text(m).strip()
             if t:
-                self._store.remember(t)
+                # source= is what makes this message erasable by subject; see the langgraph adapter for
+                # why the separator is "::" and not "/" (a path-shaped subject collides by construction).
+                self._store.remember(t, source={"doc": self._subject})
 
     async def _aget(self, messages: Optional[List[ChatMessage]] = None, **block_kwargs: Any) -> str:
         query = self._text(messages[-1]) if messages else ""

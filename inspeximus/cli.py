@@ -55,7 +55,13 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False):
     # file on every command). `reembed` opts in — persisting is the entire point of that command.
     # receipts (OPT-IN): builds the tamper-evident write/erasure chain (persisted to <path>.receipts.json) that
     # `audit-build` exports; reload needs it on too, so audit-build/governance force it regardless of the flag.
-    return Inspeximus(path=p, embed=_embedder(), persist_vectors=persist_vectors, receipts=receipts)
+    st = Inspeximus(path=p, embed=_embedder(), persist_vectors=persist_vectors, receipts=receipts)
+    # ECHO GUARD, matched to the MCP surface. The CLI and `inspeximus-mcp` are documented as sharing one
+    # store, and they disagreed: the MCP turned the guard ON, the CLI left the library's legacy default OFF.
+    # So one CLI write could resurrect a value the MCP had retired -- undoing the measured 0.00 -> 1.00
+    # echo-resistance on the very store that advertises it. Same env var, same default, one posture.
+    st.echo_guard = os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
+    return st
 
 
 def _out(obj, as_json):
@@ -92,6 +98,8 @@ def main(argv=None):
     r.add_argument("--key", help="supersession key (e.g. subject::relation) — a new value retires the old")
     r.add_argument("--object", dest="object", help="the value/object for this key")
     r.add_argument("--tags", help="comma-separated tags")
+    r.add_argument("--source", help="the origin id this fact is attributable to — REQUIRED for the record "
+                                    "to be erasable by subject later (see forget-subject)")
     r.add_argument("--type", dest="mtype", choices=["episodic", "semantic", "procedural"], help="memory type")
 
     q = sub.add_parser("recall", help="retrieve current-truth memories (superseded values hidden)")
@@ -316,7 +324,8 @@ def main(argv=None):
 
     if a.cmd == "remember":
         tags = [t.strip() for t in a.tags.split(",")] if a.tags else None
-        mid = m.remember(a.text, key=a.key, object=a.object, tags=tags, mtype=a.mtype)
+        mid = m.remember(a.text, key=a.key, object=a.object, tags=tags, mtype=a.mtype,
+                         source={"doc": a.source} if a.source else None)
         m._save(force=True)
         _out({"id": mid, "key": a.key}, a.json) or print(f"remembered {mid}" + (f" [key={a.key}]" if a.key else ""))
         return _flush_or_fail(m)

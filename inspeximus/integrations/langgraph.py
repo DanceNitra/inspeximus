@@ -108,10 +108,17 @@ class InspeximusStore(BaseStore, ComplianceMixin):
                         if not any((r.get("meta") or {}).get("nskey") == nsk for r in self.store.items):
                             self.store.remember("lg namespace " + "/".join(op.namespace), key=nsk,
                                                 tags=["_langgraph"],
+                                                source={"doc": "lg::" + "::".join(op.namespace)},
                                                 meta={"nskey": nsk, "lg_ns": list(op.namespace)})
                 else:
+                    # The NAMESPACE is LangGraph's per-user boundary — ("users", "u1") — so it is the
+                    # subject an erasure request names. Without it a DSAR for u1 matched zero records.
+                    # "::" not "/": _canon_source keeps only the host of a path-shaped id, so "users/u1" and
+                    # "users/u2" both resolve to "users" and every per-user erasure is refused as ambiguous.
+                    # A path-shaped subject is a collision by construction; this separator survives.
                     self.store.remember((op.key + " " + json.dumps(op.value, ensure_ascii=False, sort_keys=True))[:2000],
                                         key=mk, object=json.dumps(op.value, sort_keys=True),
+                                        source={"doc": "lg::" + "::".join(op.namespace)},
                                         meta={"mkey": mk, "lg_ns": list(op.namespace), "lg_key": op.key,
                                               "value": op.value})
                 results.append(None)
@@ -253,6 +260,7 @@ class InspeximusSaver(BaseCheckpointSaver):
         mtype, mblob = self.serde.dumps_typed(dict(metadata))
         self.store.remember(
             f"lg checkpoint {thread}/{ns}/{cid}", key=f"lgckpt::{thread}::{ns}::{cid}", tags=["_langgraph"],
+            source={"doc": f"lg::thread::{thread}"},
             meta={"kind": "lg_checkpoint", "thread": thread, "ns": ns, "cid": cid, "parent": parent,
                   "ctype": ctype, "cblob": _b(cblob), "mtype": mtype, "mblob": _b(mblob)})
         self.store._save()
@@ -265,6 +273,7 @@ class InspeximusSaver(BaseCheckpointSaver):
             self.store.remember(
                 f"lg write {thread}/{ns}/{cid}/{task_id}/{idx}",
                 key=f"lgwrite::{thread}::{ns}::{cid}::{task_id}::{idx}", tags=["_langgraph"],
+                source={"doc": f"lg::thread::{thread}"},
                 meta={"kind": "lg_write", "thread": thread, "ns": ns, "cid": cid, "task_id": task_id,
                       "task_path": task_path, "idx": idx, "channel": channel, "wtype": wtype, "wblob": _b(wblob)})
         self.store._save()

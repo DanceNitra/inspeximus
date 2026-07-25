@@ -54,6 +54,8 @@ class InspeximusRetriever(BaseRetriever, ComplianceMixin):
 
     # convenience: write a (supersedable) fact straight through the retriever
     def add(self, text: str, key: Optional[str] = None, **kw: Any) -> None:
+        # source= scopes this message to its session so forget_subject(session) can erase it (see crewai).
+        kw.setdefault("source", {"doc": getattr(self, "_tag", None) or "langchain"})
         self.store.remember(text, key=key, **kw)
 
 
@@ -85,9 +87,18 @@ class InspeximusChatMessageHistory(BaseChatMessageHistory, ComplianceMixin):
 
     def add_message(self, message: BaseMessage) -> None:
         import json as _json
-        self.store.remember(_json.dumps(message_to_dict(message)), tags=[self._tag])
+        # source= scopes the message to its session, so forget_subject(session tag) erases it.
+        self.store.remember(_json.dumps(message_to_dict(message)), tags=[self._tag],
+                            source={"doc": self._tag})
 
     def clear(self) -> None:
-        for r in list(getattr(self.store, "items", [])):
-            if self._tag in (r.get("tags") or []):
-                r["status"] = "deleted"
+        """Erase this session's messages — for real.
+
+        This used to set `status="deleted"` on the in-memory records and stop there: no forget(), no
+        tombstone, no save. `.messages` filters by TAG and never looked at status, so the history still
+        returned them; and a reload brought every record back `active` with the content still on disk. A
+        user-visible "clear" that leaves the data is the wrong way for this to fail."""
+        ids = [r["id"] for r in list(getattr(self.store, "items", []))
+               if self._tag in (r.get("tags") or [])]
+        if ids:
+            self.store.forget(ids=ids, basis="chat_history_clear")

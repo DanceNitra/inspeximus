@@ -75,7 +75,7 @@ class InspeximusMABMemory:
         # Each line is a candidate fact; a keyed (subject,relation) write supersedes the stale value.
         for line in [ln.strip() for ln in text.split("\n") if ln.strip()]:
             try:
-                m.remember(line)
+                m.remember(line, source={"doc": "memoryagentbench"})
             except Exception:
                 pass
         return {"results": []}

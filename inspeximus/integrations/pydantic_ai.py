@@ -26,9 +26,9 @@ def inspeximus_toolset(store: Any = None, path: str | None = None, k: int = 5, e
     if extractor is not None:
         store.extractor = extractor
 
-    def remember(text: str) -> str:
+    def remember(text: str, subject: str = "pydantic-ai") -> str:
         """Store a fact in long-term memory. Returns the stored memory's id."""
-        return store.remember(text)
+        return store.remember(text, source={"doc": subject})
 
     def recall(query: str) -> list[str]:
         """Retrieve the most relevant facts for a query. Superseded (corrected-away) values are not
