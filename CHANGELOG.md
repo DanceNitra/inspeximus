@@ -3,6 +3,70 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.63.0 - covering the surfaces that had no tests, and a certificate that could be forged
+
+### The erasure certificate's summary was forgeable
+
+Found on the first call while writing a test for it. `verify_erasure_certificate` echoed `count`,
+`erased_memory_ids` and `request_ids` straight from the certificate and never re-derived them from the
+tombstones — which ARE hash-chained and signed:
+
+```
+forged count             -> valid=True
+forged erased_memory_ids -> valid=True     # ids that never existed in the store
+forged request_ids       -> valid=True
+```
+
+An operator could hand an auditor a certificate claiming to have erased records that never existed, and the
+independent verifier said `valid: True` with no problems. That is the DeletionManifest defect fixed in 1.59.0,
+one artifact over — on the thing literally called a certificate. The summary is now re-derived from the
+tombstone chain and absence is checked against the CHAIN, not against the claim.
+
+**And the first cut of the fix did not work.** It appended the finding to `problems`, but `valid` is computed
+from `checks` alone, so a forged count still verified. A check absent from the verdict expression is
+decorative.
+
+### Coverage: 132 of 318 public functions had zero executed body lines
+
+Measured with `coverage`, counting only BODY lines — the `def` line executes at import, so including it makes
+every function in the package look covered (my first measurement said 2% uncovered instead of 42%).
+
+The uncovered set was not obscure. It was `verify_erasure_certificate` (62 lines), `submit_revert` (58),
+`erasure_certificate` (22), `witness` / `verify_witness`, the entire revert capability chain — and 58 of the
+MCP tools, the surface most users actually touch.
+
+Two new files, 21 tests: the crypto and capability surface (witness round-trip and its rejection after the
+state moves, honest and forged certificates, challenge/intent binding, capability minting refused without an
+authority, replay, `sign_revert` verified against a real Ed25519 public key), and an MCP sweep that calls
+**every** tool and fails if one cannot be driven or is not named in an exemption list with a reason.
+
+**Zero-body-coverage public functions: 132/318 (42%) → 56/318 (18%).**
+
+### Tests that ran in no environment at all
+
+`tests/test_haystack.py` skips locally (haystack-ai is optional) and its CI job ran a *different* file, so all
+9 of its tests — including `test_delete_removes_the_value_from_disk` — executed **nowhere**. Now wired in,
+plus a new `optional-adapters` job installing crewai and llama-index-core so those permanent skips un-skip
+somewhere. A skip that is never un-skipped is an untested path with a green tick next to it.
+
+### On the mutation score, honestly
+
+A fresh run over a **code-only** mutant population (docstrings and comments excluded via `tokenize`, since
+mutating prose produces dead mutants that always survive and deflate the number) gives **36.0% — 36 of 100,
+seed 1337, clean tree**. That is **not** comparable to the 32.8% quoted at 1.62.0: different population,
+different operators, different sample. Treat 36.0% as the new baseline and compare future runs to it.
+
+What *is* comparable is the coverage figure above, measured identically before and after, and the five
+specific survivors from the previous round, each re-applied and each now killed.
+
+**The harness itself failed open, and that is the finding worth keeping.** An earlier run reported **92.5%**
+— because a previous overlapping run had left three files mutated, so the suite was *already red* and every
+mutant looked killed. A measurement instrument that reports success when it is broken before the measurement
+is exactly the defect class this whole series has been about. The harness now refuses to start unless the
+suite is green.
+
+487 tests pass.
+
 ## 1.62.0 - three regressions from the last two releases, and what a mutation run said about the tests
 
 ### The 1.60.0 erasure fix turned under-erasure into OVER-erasure
