@@ -36,6 +36,11 @@ def _pair(direct: bool = False, **kw):
         a = Inspeximus(path=s.path, receipts=True, tenant="acme", **kw)
         b = Inspeximus(path=s.path, receipts=True, tenant="globex", **kw)
         a._items = b._items = s._items                      # one shared list, two bound handles
+        # ...and the concurrency guard switched off for them. These are a FIXTURE ARTIFACT: three handles
+        # faking one logical store by sharing `_items`, which the single-writer guard rightly reads as three
+        # competing writers. Real code binds a tenant with for_tenant() (covered by the other parametrisation)
+        # or opens one handle per process. Disabling it here keeps this test about ISOLATION, not concurrency.
+        a._file_sig = b._file_sig = s._file_sig = None
     else:
         a, b = s.for_tenant("acme"), s.for_tenant("globex")
     a.remember("acme row", key="a/k", object="x", source={"doc": "acme-src"})

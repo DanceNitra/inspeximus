@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.58.0"
+__version__ = "1.59.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1070,7 +1070,7 @@ class Inspeximus:
         rec = {"id": mid, "text": text, "tags": list(tags or []), "value": float(value),
                "ts": now, "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "valid_from": float(valid_from) if valid_from is not None else now,  # event-time (bi-temporal); defaults to ingest-time
-               "source": dict(source) if source else None,   # re-checkable origin (e.g. {"doc": id, "span": [start, end]}) so a recalled fact can be traced back, not trusted blind
+               "source": Inspeximus._check_source(source),   # re-checkable origin (e.g. {"doc": id, "span": [start, end]}) so a recalled fact can be traced back, not trusted blind
                "mtype": mtype or _infer_type(text), "last_access": now,
                "status": "active", "links": [], "meta": dict(meta or {})}
         if not rec_asserts_change:
@@ -2000,8 +2000,14 @@ class Inspeximus:
                 try:
                     if where(r):
                         target.add(r["id"])
-                except Exception:
-                    pass
+                except Exception as e:
+                    # A predicate that RAISED on one record used to be skipped silently, so an erasure that
+                    # had not examined every record returned the success shape of one that had. On a deletion
+                    # path a partial sweep must never look complete.
+                    raise ValueError(
+                        f"forget(where=...) raised on record {r['id']}: {type(e).__name__}: {e}. Refusing "
+                        f"to delete a partial match — an erasure that skipped records is not an erasure."
+                    ) from None
         # Scope the SELECTION to this tenant, then delete from the shared list. Until 1.54.0 this filtered
         # against self.items, so a tenant view could pass another tenant's id and hard-delete it —
         # `beta.forget([acme_id])` returned {'forgotten': 1} and acme's row was gone. Ids not visible to this
@@ -2181,6 +2187,23 @@ class Inspeximus:
             out["manifest"] = self._erasure_manifest(subject, values or [], targets, request_id,
                                                      basis, authorized_by, already_erased=res["forgotten"])
         return out
+
+    @staticmethod
+    def _check_source(source):
+        """A source dict must carry `doc` — that is the only key `_rec_sources` reads.
+
+        `source={"who": ..., "url": ...}` was accepted and then silently attributed to `id:<record id>`:
+        provenance gone, `slash(scope='source')` matching nothing, and `verify_attribution` reporting ok on a
+        relabel. Silent un-attribution on a library that sells provenance is the wrong default."""
+        if source is None:
+            return None
+        if not isinstance(source, dict):
+            raise ValueError(f"remember(source=...) must be a dict, got {type(source).__name__}")
+        if "doc" not in source:
+            raise ValueError(
+                f"remember(source=...) needs a 'doc' key — it is the identifier erasure, slashing and "
+                f"attribution all resolve on. Got keys {sorted(source)}; pass source={{'doc': <id>, ...}}.")
+        return dict(source)
 
     @staticmethod
     def _raw_source(rec: dict):
@@ -2375,7 +2398,10 @@ class Inspeximus:
             r.setdefault("meta", {})
             r.setdefault("value", 1.0)
             r.setdefault("text", "")
-            r.setdefault("ts", time.time())
+            # A FIXED fallback, never time.time(): inventing a timestamp at load made state_digest
+            # differ across two opens of identical bytes, so a witness or anchor pinned to such a
+            # store could never re-verify. An undated legacy record is honestly undated.
+            r.setdefault("ts", r.get("valid_from", 0.0))
             r.setdefault("last_access", r["ts"])
             r.setdefault("valid_from", r["ts"])
             r.setdefault("mtype", _infer_type(r.get("text") or ""))
@@ -2391,13 +2417,22 @@ class Inspeximus:
         tmp.write_text(text, encoding="utf-8")
         os.replace(tmp, path)
 
+    _ABSENT = ("absent",)          #: sentinel: the file did not exist when we looked
+
     def _stat_sig(self):
-        """(mtime_ns, size) of the store file, or None if it does not exist."""
+        """(mtime_ns, size) of the store file, or the ABSENT sentinel if it is not there.
+
+        A sentinel, not None. `None` meant "unknown" and `_save` skipped the guard on it, so two handles
+        opening a path that does not exist yet BOTH had an ungated first write — and the second silently
+        replaced the first. Two workers starting together on a fresh store is the commonest concurrency case
+        there is, and it was the one case with no guard at all."""
         try:
             st = self.path.stat()
             return (st.st_mtime_ns, st.st_size)
-        except (OSError, AttributeError):
-            return None
+        except AttributeError:
+            return None                                   # no path: a RAM-only store, nothing to guard
+        except OSError:
+            return Inspeximus._ABSENT
 
     def reload(self) -> dict:
         """Re-read the store from disk and re-apply any records THIS handle holds that are not on disk.
@@ -2405,18 +2440,44 @@ class Inspeximus:
         The recovery path after StoreChangedOnDisk: it keeps the other writer's records and re-adds ours by id
         (append-only union), so neither side loses a write. It cannot resurrect intent we never persisted —
         a deletion this handle made and could not save is simply not re-applied — so re-run it if it mattered.
-        Returns {reloaded, readded}."""
+        A record this handle TOMBSTONED is not resurrected, and where the merge leaves two active records
+        under one key the store's own last-write-wins rule is re-applied rather than left contradictory.
+        Returns {reloaded, readded, demoted, kept_buried}."""
         mine = {r["id"]: r for r in self._items}
         self._items = []
         self._file_sig = None
         self._load_from_disk()
+        buried = {t.get("memory_id") for t in (self._tombstones or [])}
+        # Drop what THIS handle deliberately erased, whichever side it came from. Filtering only the
+        # re-added set was not enough: the record came back from DISK, so a tombstoned erasure was undone by
+        # its own recovery path while the tombstone still claimed it had happened.
+        resurrected = [r["id"] for r in self._items if r["id"] in buried]
+        self._items = [r for r in self._items if r["id"] not in buried]
         on_disk = {r["id"] for r in self._items}
-        readded = [r for rid, r in mine.items() if rid not in on_disk]
+        readded = [r for rid, r in mine.items() if rid not in on_disk and rid not in buried]
         self._items.extend(readded)
+        # A union by id is not enough. The disk copy of a record THIS handle had superseded comes back
+        # ACTIVE, so a merged store ended up holding two contradictory active records under one key while
+        # verify_writes() reported True -- the recovery path breaking the one property the store exists for.
+        # Re-apply the store's own rule (last write wins by ts) per key.
+        by_key: dict = {}
+        for r in self._items:
+            if r.get("key") and r.get("status") == "active":
+                by_key.setdefault(r["key"], []).append(r)
+        demoted = 0
+        for key, rows in by_key.items():
+            if len(rows) < 2:
+                continue
+            rows.sort(key=lambda r: r.get("ts", 0.0))
+            for r in rows[:-1]:
+                r["status"] = "superseded"
+                r.setdefault("meta", {})["superseded_by_policy"] = "reload_merge_lww"
+                demoted += 1
         self._file_sig = self._stat_sig()
         self._items_view_rev = None
         self._save(force=True)
-        return {"reloaded": len(on_disk), "readded": len(readded)}
+        return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
+                "kept_buried": len(resurrected)}
 
     @property
     def items(self) -> list:
@@ -3476,9 +3537,15 @@ class Inspeximus:
         return chain
 
     def _route_key(self, low: str) -> str | None:
-        """match the utterance to a ledgered key by token presence (longest key wins)."""
+        """Match the utterance to a ledgered key at WORD BOUNDARIES (longest key wins).
+
+        Plain `in` was an unbounded substring test, and route() executes reverts and deletes on the result:
+        "go back to the earlier **heart** condition" matched the key `art` and reverted it, unconfirmed,
+        because a default store has no revert authority configured. A key must appear as a word, not as a
+        fragment of one — the same word-boundary rule the rest of this file already uses for values."""
         keys = {r["key"] for r in self.items if r.get("key") and r.get("object") is not None}
-        hits = [k for k in keys if k.lower() in low]
+        hits = [k for k in keys
+                if re.search(r"(?<![a-z0-9])" + re.escape(k.lower()) + r"(?![a-z0-9])", low)]
         return max(hits, key=len) if hits else None
 
     def route(self, text: str, key: str | None = None, object: str | None = None,

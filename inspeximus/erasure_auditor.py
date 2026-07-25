@@ -248,7 +248,10 @@ class ErasureAuditor:
             "subject": subject,
             "stores_audited": [p.name for p in self._probes],
             "results": results,
-            "erasure_verified": len(leaks) == 0,
+            # `bool(results) and ...`: with NO registered probes this said True and compliance_receipt()
+            # SIGNED it. Nothing audited is not erasure verified — DeletionManifest.execute already guards
+            # this exact case; audit() did not.
+            "erasure_verified": bool(results) and len(leaks) == 0,
             "leaking_stores": leaks,
             "scope": ("Audits ONLY the registered stores. 'erasure_verified' means no registered store still had "
                       "the data recoverable at audit time; it is NOT a proof of physical destruction, does not "

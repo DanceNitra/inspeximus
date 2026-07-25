@@ -67,6 +67,18 @@ def _out(obj, as_json):
     return False
 
 
+def _flush_or_fail(m) -> int:
+    """Persist and report. Without this the CLI printed `remembered <id>` and exited 0 on a store that never
+    reached disk — a typo'd --path or INSPEXIMUS_PATH silently discarded every write for the whole session,
+    while the library had recorded the failure all along."""
+    try:
+        m.flush()
+        return 0
+    except OSError as e:
+        print(f"NOT PERSISTED: {e}", file=sys.stderr)
+        return 3
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="inspeximus", description="inspeximus — the self-correcting memory layer (CLI).")
     ap.add_argument("--path", help="store file (default: $INSPEXIMUS_PATH or ./inspeximus_memory.json)")
@@ -307,6 +319,7 @@ def main(argv=None):
         mid = m.remember(a.text, key=a.key, object=a.object, tags=tags, mtype=a.mtype)
         m._save(force=True)
         _out({"id": mid, "key": a.key}, a.json) or print(f"remembered {mid}" + (f" [key={a.key}]" if a.key else ""))
+        return _flush_or_fail(m)
 
     elif a.cmd == "recall":
         hits = m.recall(a.query, k=a.k) or []
@@ -568,7 +581,7 @@ def main(argv=None):
         _out(res, a.json) or print(f"distilled: {res.get('captured',0)} kept "
                                    f"({res.get('decisions',0)} decisions, {res.get('facts',0)} facts, "
                                    f"{res.get('dropped',0)} dropped)")
-    return 0
+    return _flush_or_fail(m)
 
 
 if __name__ == "__main__":

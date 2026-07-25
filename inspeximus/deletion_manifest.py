@@ -112,8 +112,25 @@ class DeletionManifest:
         }
 
     def verify(self, manifest: dict) -> tuple[bool, list[str]]:
-        """Re-verify the manifest's hash chain (and signatures if present). Returns (ok, problems)."""
+        """Re-verify the manifest's hash chain AND that its top-level verdict follows from the entries.
+
+        The chain only ever covered the ENTRIES. `complete`, `residual_targets`, `subject` and
+        `authorized_by` sat outside it, so flipping `complete` to True, emptying `residual_targets` and
+        rewriting the authoriser produced a manifest that verified `(True, [])` — a signed lie, on the one
+        artifact whose entire job is to be evidence. An empty manifest verified clean too. Returns
+        (ok, problems)."""
         problems: list[str] = []
+        entries = manifest.get("entries") or []
+        if not entries:
+            problems.append("manifest has NO entries: nothing was audited, which is not the same as verified")
+        recomputed_complete = bool(entries) and all(x.get("verified_absent") for x in entries)
+        if manifest.get("complete") != recomputed_complete:
+            problems.append(f"`complete` is {manifest.get('complete')!r} but the entries say "
+                            f"{recomputed_complete!r} — the verdict does not follow from the evidence")
+        recomputed_leaks = sorted(x.get("target") for x in entries if not x.get("verified_absent"))
+        if sorted(manifest.get("residual_targets") or []) != recomputed_leaks:
+            problems.append(f"`residual_targets` is {manifest.get('residual_targets')!r} but the entries say "
+                            f"{recomputed_leaks!r}")
         prev = _GENESIS
         for i, e in enumerate(manifest.get("entries", [])):
             if e.get("prev") != prev:

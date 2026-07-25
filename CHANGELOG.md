@@ -3,6 +3,60 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.59.0 - round four: three regressions from 1.58.0, and three verdicts that signed an untruth
+
+### The concurrency guard had the shape of the bug it replaced
+
+`_file_sig = None` meant BOTH "this store has no path" and "the file is not there yet", and `_save` skipped
+the guard on `None`. So two handles opening a store that does not exist — **two workers starting together, the
+commonest concurrency case there is** — both had an ungated first write, and the second silently replaced the
+first. Absent is now a distinct sentinel.
+
+### The recovery path broke the property the store exists for
+
+`reload()` unions by id, and the disk copy of a record this handle had SUPERSEDED came back active:
+
+```
+after reload -> [('salary is 100','active'), ('city is Rome','active'), ('salary is 200','active')]
+verify_writes -> True
+```
+
+Two contradictory active values under one key, certified healthy. `reload()` now re-applies the store's own
+last-write-wins rule per key, and no longer resurrects a record this handle **tombstoned** — the first version
+of that filter only covered the re-added side, so a deliberate erasure was undone by its own recovery path
+while the tombstone still claimed it had happened.
+
+Load-time normalisation also used `time.time()` for a missing `ts`, so `state_digest()` differed across two
+opens of **identical bytes** and a witness or anchor pinned to such a store could never re-verify. An undated
+legacy record is now honestly undated.
+
+### Three verdicts that signed an untruth
+
+- **`DeletionManifest.verify` returned `(True, [])` on a forged manifest.** `complete`, `residual_targets`,
+  `subject` and `authorized_by` sat OUTSIDE the hash chain, so flipping `complete` to True and emptying the
+  residuals verified clean — on the one artifact whose entire job is to be evidence. An empty manifest
+  verified clean too. The verdict is now re-derived from the entries.
+- **`ErasureAuditor.audit()` with no registered probes returned `erasure_verified: True`**, and
+  `compliance_receipt()` signs that. `DeletionManifest.execute` had guarded this exact case for years;
+  `audit()` never did.
+- **The CLI printed `remembered <id>` and exited 0 on a store that never reached disk.** A typo'd `--path` or
+  `INSPEXIMUS_PATH` silently discarded every write for the whole session, while the library had recorded the
+  failure the whole time. Every command now confirms persistence and exits 3 if it failed.
+
+### Three more silent wrongs
+
+- **`forget(where=...)` swallowed a raising predicate** and reported the success shape of a complete sweep:
+  2 forgotten, and the record the predicate choked on left behind. On a deletion path a partial sweep must
+  never look complete — it now aborts without deleting.
+- **`source={"who": ...}` was accepted and silently un-attributed.** `_rec_sources` reads only `doc`, so the
+  record fell back to `id:<record id>`: provenance gone, `slash(scope='source')` matching nothing, and
+  `verify_attribution` reporting ok on a relabel. A source dict without `doc` is now refused.
+- **`route()` matched a key inside a longer word and executed on it.** "go back to the earlier **heart**
+  condition" reverted the key `art` — unconfirmed, because a default store has no revert authority
+  configured. Now word-bounded, the same rule the rest of the file uses for values.
+
+433 tests pass; 10 mutations, each killed by its own test.
+
 ## 1.58.0 - the known-and-unfixed list, cleared
 
 Every item below was reported, reproduced and carried in the handoff as **known and unfixed** for three
