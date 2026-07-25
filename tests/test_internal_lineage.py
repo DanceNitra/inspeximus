@@ -14,6 +14,7 @@ parentless: erase the subject its value came from, and the revert survived carry
 record's text without declaring where it came from.
 """
 import os
+import pathlib
 import sys
 import tempfile
 
@@ -195,73 +196,198 @@ def test_the_owned_sites_are_declared_and_the_rest_are_not():
     assert declaring == {"rederive", "revert", "submit_revert", "resolve_reopened"}, declaring
 
 
+def _copying_write_sites(pkg_dir):
+    """Every `.remember(...)` in the package whose TEXT argument is lifted out of another record, paired with
+    the record variable it came from and the parents that call declares.
+
+    Uses `ast`, not a regex over lines. The first version of this guard WAS a regex, and an adversarial review
+    injected four offending shapes into core.py: it caught two, was blind to a multi-line call and to a local
+    whose name was not on a hard-coded list, and raised a FALSE POSITIVE on the legitimate
+    `pid = r["id"]; derived_from=[pid]`. A guard with 50% recall that also cries wolf is worse than none,
+    because it reports safe.
+    """
+    import ast
+    sites = []
+    for path in sorted(pathlib.Path(pkg_dir).rglob("*.py")):
+        if "__pycache__" in str(path):
+            continue
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        except SyntaxError:                       # not ours to police
+            continue
+
+        def record_read_in(node):
+            """The variable X in X["text"] / X.get("text") anywhere inside `node`, else None."""
+            for n in ast.walk(node):
+                if (isinstance(n, ast.Subscript) and isinstance(n.value, ast.Name)
+                        and isinstance(n.slice, ast.Constant) and n.slice.value == "text"):
+                    return n.value.id
+                if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                        and n.func.attr == "get" and isinstance(n.func.value, ast.Name) and n.args
+                        and isinstance(n.args[0], ast.Constant) and n.args[0].value == "text"):
+                    return n.func.value.id
+            return None
+
+        def store_derived_names(fn):
+            """Names bound to something that came OUT OF the store.
+
+            Needed because `X.get("text")` alone does not mean X is a memory record. `distill_and_remember`
+            iterates dicts parsed from an LLM's JSON — external input with no in-store parent to declare, and
+            the first version of this guard reported it as an offence. A record is one that traces back to
+            `self.items` / `self.recall(...)` / `self.get(...)`, transitively through containers and loops.
+            """
+            roots, changed = set(), True
+            def from_store(node):
+                for n in ast.walk(node):
+                    if (isinstance(n, ast.Attribute) and n.attr == "items"
+                            and isinstance(n.value, ast.Name) and n.value.id == "self"):
+                        return True
+                    if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                            and n.func.attr in ("recall", "get", "history", "neighbors")
+                            and isinstance(n.func.value, ast.Name) and n.func.value.id == "self"):
+                        return True
+                    if isinstance(n, ast.Name) and n.id in roots:
+                        return True
+                return False
+            while changed:                                    # fixpoint: containers feed loops feed containers
+                changed = False
+                for n in ast.walk(fn):
+                    tgt = None
+                    if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+                        tgt, val = n.targets[0].id, n.value
+                    elif isinstance(n, ast.For) and isinstance(n.target, ast.Name):
+                        tgt, val = n.target.id, n.iter
+                    elif isinstance(n, ast.comprehension) and isinstance(n.target, ast.Name):
+                        tgt, val = n.target.id, n.iter
+                    if tgt and tgt not in roots and from_store(val):
+                        roots.add(tgt)
+                        changed = True
+            return roots
+
+        for fn in ast.walk(tree):
+            if not isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            records = store_derived_names(fn)
+            local_src, id_alias = {}, {}
+            for n in ast.walk(fn):
+                if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+                    name = n.targets[0].id
+                    got = record_read_in(n.value)
+                    if got and name not in local_src:     # first assignment that reads a record wins, so
+                        local_src[name] = got             # `nt = None` in an except branch cannot mask it
+                    if (isinstance(n.value, ast.Subscript) and isinstance(n.value.value, ast.Name)
+                            and isinstance(n.value.slice, ast.Constant) and n.value.slice.value == "id"):
+                        id_alias[name] = n.value.value.id  # `pid = r["id"]` is a legitimate way to declare
+
+            for call in ast.walk(fn):
+                if not (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                        and call.func.attr == "remember"):
+                    continue
+                text_arg = call.args[0] if call.args else next(
+                    (k.value for k in call.keywords if k.arg == "text"), None)
+                if text_arg is None:
+                    continue
+                source_var = (local_src.get(text_arg.id) if isinstance(text_arg, ast.Name)
+                              else record_read_in(text_arg))
+                if not source_var or source_var not in records:
+                    continue                      # not a store record -> no in-store parent exists to declare
+
+                declared = set()
+                for kw in call.keywords:
+                    if kw.arg != "derived_from" or kw.value is None:
+                        continue
+                    for n in ast.walk(kw.value):
+                        if (isinstance(n, ast.Subscript) and isinstance(n.value, ast.Name)
+                                and isinstance(n.slice, ast.Constant) and n.slice.value == "id"):
+                            declared.add(n.value.id)
+                        elif isinstance(n, ast.Name) and n.id in id_alias:
+                            declared.add(id_alias[n.id])
+                sites.append({"file": path.name, "line": call.lineno, "func": fn.name,
+                              "source_var": source_var, "declared": declared})
+    return sites
+
+
 def test_a_new_write_site_that_COPIES_TEXT_must_declare_where_it_came_from():
-    """THE test that closes the class rather than the two instances of it.
+    """The guard for the class rather than for the two instances of it.
 
     Both bugs had one shape: an internal write built its text out of another record and declared no edge to
-    it, so erasure could not follow the content. Pinning the current function names (above) does not stop a
-    SIXTH site being added tomorrow with the same defect. This one reads the source and fails on any
-    `self.remember(...)` whose text argument is lifted from an existing record without a `derived_from`.
+    THAT record, so erasure could not follow the content. Pinning today's function names does not stop a
+    sixth site being added tomorrow with the same defect.
 
-    Note what this does NOT do: it checks the parent is declared, not that the declaration is semantically
-    right. It is stricter than "has a derived_from" though — the rederive bug HAD one, pointing at the
-    corrected root instead of the record the wording came from, and this test fails on exactly that.
-
-    If this fails on a legitimately new site, the fix is to declare the parent — not to widen the allow-list.
+    Scope, stated plainly because the first version of this test overstated it: this is a SYNTACTIC check
+    over `.remember()` calls in the whole `inspeximus` package. It resolves a text argument passed through a
+    local and accepts a parent declared via an id alias. It CANNOT verify the declared parent is the
+    semantically correct one, and it cannot see text no static reader can attribute — an f-string over
+    several records, a helper in another package, or an LLM paraphrase written back as a fresh fact.
+    It closes the shape both known bugs had. It does not make erasure sound.
     """
-    import re
-    src = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                            "inspeximus", "core.py"), encoding="utf-8").read()
-    lines = src.split("\n")
-    # a text argument lifted from another record, directly (tgt["text"]) or via a local (nt = rewrite(r[...]))
-    COPIES = re.compile(r'^(nt|new_text|rewritten)$|\[["\']text["\']\]|\.get\(["\']text["\']')
-    READS_RECORD = re.compile(r'(\w+)\[["\']text["\']\]|(\w+)\.get\(["\']text["\']')
-
-    offenders = []
-    for i, line in enumerate(lines, 1):
-        if "self.remember(" not in line:
-            continue
-        arg = line.split("self.remember(", 1)[1].split(",")[0].strip()
-        if not COPIES.search(arg):
-            continue
-
-        m = READS_RECORD.search(arg)
-        if m:
-            source_var = m.group(1) or m.group(2)
-        else:                                   # a local — find the assignment that reads out of a record
-            source_var = None                   # (skipping `nt = None` in the except branch)
-            back = "\n".join(lines[max(0, i - 31):i - 1])
-            for rhs in re.findall(rf"^\s*{re.escape(arg)}\s*=\s*(.+)$", back, re.M):
-                mm = READS_RECORD.search(rhs)
-                if mm:
-                    source_var = mm.group(1) or mm.group(2)
-                    break
-
-        window = "\n".join(lines[i - 1:i + 4])
-        # ONLY the derived_from list counts. Scanning to the end of the window would accept the parent being
-        # named in `meta={"rederived_from": r["id"]}` — which is precisely the bug, a parent filed somewhere
-        # nothing traverses. (This test passed under the unfixed code until that was bounded.)
-        declared = ""
-        if "derived_from=" in window:
-            tail = window.split("derived_from=", 1)[1].lstrip()
-            if tail.startswith("["):
-                depth = 0
-                for pos, ch in enumerate(tail):
-                    depth += (ch == "[") - (ch == "]")
-                    if depth == 0:
-                        declared = tail[:pos + 1]
-                        break
-        if source_var and f'{source_var}["id"]' in declared:
-            continue
-
-        fn = next((re.match(r"    def (\w+)", lines[j - 1]).group(1)
-                   for j in range(i - 1, 0, -1) if re.match(r"    def (\w+)", lines[j - 1])), "?")
-        offenders.append(f'{fn} (core.py:{i}) writes text from `{source_var}` but does not declare '
-                         f'{source_var}["id"]' if source_var else
-                         f"{fn} (core.py:{i}) writes {arg}, whose source record could not be traced")
-
+    pkg = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "inspeximus")
+    offenders = [f'{s["file"]}:{s["line"]} {s["func"]}() writes text from `{s["source_var"]}` '
+                 f'but declares {sorted(s["declared"]) or "no parent"}'
+                 for s in _copying_write_sites(pkg) if s["source_var"] not in s["declared"]]
     assert not offenders, (
         "a write site copies another record's text without declaring THAT record as a parent. Erasure "
-        "follows declared edges only, so the copy survives erasure of the subject its wording came from "
-        "— and erasure_audit reports no residue, certifying the leak as clean:\n  "
-        + "\n  ".join(offenders))
+        "follows declared edges only, so the copy survives erasure of the subject its wording came from, "
+        "and erasure_audit reports no declared residue:\n  " + "\n  ".join(offenders))
+
+
+def test_the_guard_catches_the_shapes_the_regex_version_missed():
+    """Negative control, in both directions. The regex predecessor caught 2 of 4 offending shapes and
+    false-alarmed on a legitimate declaration; without this, a refactor could quietly restore that state."""
+    import ast
+    import textwrap
+
+    def offenders(code):
+        d = pathlib.Path(tempfile.mkdtemp())
+        (d / "m.py").write_text(textwrap.dedent(code), encoding="utf-8")
+        return [s for s in _copying_write_sites(d) if s["source_var"] not in s["declared"]]
+
+    LOOP = 'def f(self):\n    for r in self.items:\n        '
+    must_catch = {
+        "single line": LOOP + 'return self.remember(r["text"])',
+        "multi line":  LOOP + 'body = r["text"].upper()\n        return self.remember(\n            body)',
+        "other local": LOOP + 'summary = r["text"] + " x"\n        return self.remember(summary)',
+        "text= kwarg": LOOP + 'return self.remember(text=r["text"])',
+        "via .get":    LOOP + 't = r.get("text", "")\n        return self.remember(t)',
+        "via recall":  'def f(self, q):\n    for h in self.recall(q):\n        return self.remember(h["text"])',
+    }
+    for label, code in must_catch.items():
+        assert offenders(code), f"the guard is blind to: {label}"
+
+    must_pass = {
+        "declared direct": LOOP + 'return self.remember(r["text"], derived_from=[r["id"]])',
+        "declared alias":  LOOP + 'pid = r["id"]\n        return self.remember(r["text"], derived_from=[pid])',
+        "not a copy":      'def f(self):\n    return self.remember("an independent observation")',
+        # the false positive that made this discrimination necessary: an LLM's JSON payload is not a record
+        "external payload": ('def f(self, blob):\n    for it in json.loads(blob):\n'
+                             '        self.remember(it.get("text"))'),
+    }
+    for label, code in must_pass.items():
+        assert not offenders(code), f"the guard false-alarms on: {label}"
+
+
+def test_erasing_the_retracted_source_also_erases_the_repair():
+    """A CONSEQUENCE of the fix, pinned so it stays intentional.
+
+    rederive() repairs a derived fact by rewriting the demoted record's text. Declaring that record as a
+    parent means the repair also inherits the RETRACTED source's taint — so erasing that source now takes the
+    repair with it, and the store is left holding neither the wrong value nor the right one.
+
+    This is not a regression the fix introduced. Before it, the repair survived because it was INVISIBLE to
+    erasure, not because anything judged it safe. The fix makes a real inheritance visible, and an operator
+    can now see the blast radius — but only after the fact: forget_subject() has no dry_run, so there is no
+    preview. Recorded as a known limit rather than papered over.
+    """
+    m = _store()
+    root = m.remember("billing uses api-keys", key="billing::auth", object="api-keys",
+                      source={"doc": "runbook"})
+    m.remember("the nightly backup signs in with api-keys", derived=True, derived_from=[root],
+               source={"doc": "ops-notes"})
+    m.retract_lineage("runbook")
+    m.remember("billing uses oauth2", key="billing::auth", object="oauth2", source={"doc": "adr-014"})
+    repair = m.rederive("runbook")["ids"][0]
+
+    assert "runbook" in (_rec(m, repair).get("taint") or []), "the repair descends from the retracted source"
+    erased = m.forget_subject("runbook", request_id="REQ-4", basis="gdpr-art17")
+    assert repair in erased["ids"], "erasing the retracted source takes the repair with it — by design"
+    assert not hasattr(m.forget_subject, "dry_run")   # documents the gap: no preview of the blast radius
