@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.48.0"
+__version__ = "1.49.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -513,7 +513,8 @@ class Inspeximus:
                  tenant: str | None = None, pii_detect: bool = False,
                  encrypt_key: bytes | None = None, encrypt_passphrase: str | None = None,
                  support_authorities: list | None = None, persist_vectors: bool = False,
-                 embed_query=None, embed_id: str | None = None):
+                 embed_query=None, embed_id: str | None = None,
+                 infer_lineage: float = 0.0):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -790,6 +791,36 @@ class Inspeximus:
         # right after) can inherit them as parents -- the lineage EDGE carried by the STORE from the recall->write
         # flow, not supplied by the untrusted LLM. Transient (not persisted); see remember(derived=True).
         self._last_recall: list[str] = []
+        self._last_recall_text: str = ""            # normalized text of that recall, for infer_lineage
+        # INFER LINEAGE WITHOUT A FLAG (opt-in, default OFF = byte-identical legacy).
+        #
+        # The auto-stamp above only fires when the caller passes derived=True, and that flag is writer-set.
+        # Measured 2026-07-25 on our own 8-agent, 43-day, 27,290-record deployment: `derived_from` coverage
+        # was 0.00%, alongside `key`, `object`, `source` and `taint` -- while the fields the STORE computes
+        # for itself ran at 88-90% (links, superseded). The single write call in that deployment passes four
+        # arguments and none of them is a declaration. So the flag is not under-used, it is unused, in the
+        # deployment most motivated to use it. Anything the writer must declare reads zero.
+        #
+        # `infer_lineage` is a threshold in (0,1] on the NULL-ADJUSTED overlap: how much more the new text
+        # shares with what was just recalled than with a same-store baseline it was not built from. Clearing
+        # it stamps that recall as the parents. No flag, no embedding, no LLM.
+        #
+        # The null adjustment is not decoration -- measured on 27,342 real agent writes:
+        #   raw overlap threshold      median 1.000, and 0.8 still stamps 77% of writes  -> DEGENERATE
+        #   overlap vs a random window  0.860 vs 0.540                                   -> mostly vocabulary
+        #   null-adjusted (shipped)     ~22% stamped, stable across thresholds 0.10-0.50 -> calibrated
+        # Agents reuse a small vocabulary, so a raw score measures how repetitive the corpus is, not what the
+        # write came from. Subtracting the store's own baseline leaves the part that is about THIS recall.
+        #
+        # HONEST LIMITS. (1) There is no ground truth for "truly derived" in that corpus, so ~22% is a FIRING
+        # rate, not a precision. A separate null-model check put discrimination at 61.6% (chance = 50%), so a
+        # real share of stamped edges will be wrong. (2) It over-taints by design, and that is the deliberate
+        # direction: a false parent is visible in provenance(), a missing one is silent. (3) Default 0.0 =
+        # OFF, because silently changing a shipped write path is worse than either failure.
+        #
+        # Why it exists at all: the flagged path (derived=True) measured 0.00% over 27,290 writes. A mechanism
+        # that requires the writer to opt in is a mechanism that does not run.
+        self.infer_lineage = max(0.0, min(1.0, float(infer_lineage or 0.0)))
         # _save() THROTTLE: serializing the whole store (json.dumps of every item) is O(store size); doing
         # it on EVERY recall/remember froze callers once the store grew (recall mutates access value, so it
         # used to re-serialize everything each call). Coalesce disk writes to at most once / _save_min_s;
@@ -959,6 +990,19 @@ class Inspeximus:
         # value (signature-only 6/6 attacks -> 0/6 once lineage propagates); a caller-supplied source string is not.
         if derived and derived_from is None:
             derived_from = list(getattr(self, "_last_recall", []) or [])
+        # ...and the same stamp WITHOUT the flag, when the store can see the derivation itself. See the
+        # infer_lineage note in __init__ for why the flagged path measured 0.00% over 27,290 real writes.
+        elif (derived_from is None and self.infer_lineage > 0.0
+              and getattr(self, "_last_recall", None) and self._last_recall_text):
+            # NULL-ADJUSTED, not raw. Measured on 27,342 real agent writes: a raw overlap threshold is
+            # DEGENERATE -- median overlap against the true predecessor is 1.000 and a 0.8 threshold still
+            # stamps 77% of writes, because agents reuse a small vocabulary. Against a random window from
+            # the same store the overlap is still 0.54, so most of the raw score is vocabulary, not lineage.
+            # Subtracting that null leaves the part that is actually about THIS recall (mean lift +0.32).
+            if (self._overlap(text, self._last_recall_text)
+                    - self._overlap(text, self._null_context())) >= self.infer_lineage:
+                derived_from = list(self._last_recall)
+                derived = True                      # so the orphan/standing rules treat it as derived
         # WRITE-PATH EXTRACTOR: derive (key, object) from the text when the caller didn't supply a key and an
         # extractor is plugged, so the governance layer keys itself over free text. Fail-open (never break a write).
         rec_asserts_change = True
@@ -3244,6 +3288,39 @@ class Inspeximus:
         return {"object": best.get("object"), "text": best.get("text"),
                 "valid_from": best.get("valid_from", best["ts"]), "id": best["id"], "as_recorded": as_recorded}
 
+    def _null_context(self, n: int = 12) -> str:
+        """A same-store baseline for infer_lineage: text this write was NOT built from.
+
+        Deterministic (a fixed stride, no RNG) so a write is reproducible, and drawn from the store's own
+        records so it carries the same vocabulary — which is the whole point. Without it the overlap score
+        measures how repetitive the corpus is, not what the write came from.
+        """
+        pool = [r for r in self.items if r.get("text") and r["id"] not in set(self._last_recall)]
+        if len(pool) <= n:
+            return " ".join(str(r.get("text") or "") for r in pool)
+        stride = max(1, len(pool) // n)
+        return " ".join(str(pool[i]["text"] or "") for i in range(0, stride * n, stride))
+
+    @staticmethod
+    def _overlap(new_text: str, recalled: str) -> float:
+        """Fraction of the NEW text's content words that appeared in what was just recalled.
+
+        Asymmetric on purpose: the question is "was this write built out of that recall", so the denominator
+        is the new text. A short summary drawn from a long recall scores high (correct); a long new
+        observation that happens to mention one recalled word scores low (also correct). Stopwords are
+        dropped so shared grammar cannot carry the score, and a text with too few content words scores 0
+        rather than being decided by noise.
+        """
+        stop = {"the", "a", "an", "and", "or", "but", "is", "are", "was", "were", "be", "been", "to", "of",
+                "in", "on", "at", "for", "with", "that", "this", "it", "as", "by", "from", "has", "have",
+                "had", "not", "no", "so", "if", "then", "than", "we", "i", "you", "they", "he", "she"}
+        def words(s):
+            return {w for w in re.findall(r"[a-z0-9]+", str(s or "").lower()) if w not in stop and len(w) > 2}
+        nw = words(new_text)
+        if len(nw) < 4:                 # too short to judge; refuse rather than guess
+            return 0.0
+        return len(nw & words(recalled)) / len(nw)
+
     def history(self, key: str) -> list[dict]:
         """The full validity timeline for `key`: every value it has held, in event-time order, each
         with its [valid_from, invalidated_at) interval, status, and — when it was retired — WHICH
@@ -4180,6 +4257,8 @@ class Inspeximus:
         # AUTO-STAMP LINEAGE: remember what this recall surfaced, so a derived write built from it (a summary
         # written next) can inherit these as parents. Store-carried lineage from the recall->write flow.
         self._last_recall = [o["id"] for o in out]
+        # keep the recalled TEXT too, so infer_lineage can decide from content instead of a caller's flag
+        self._last_recall_text = " ".join(str(o.get("text") or "") for o in out) if self.infer_lineage else ""
         # NOTE: recall is a READ. It nudges in-memory access value / graduation, but must NOT persist the
         # whole store here — serializing (json.dumps) on every recall, across many agents' stores,
         # saturated the thread pool and FROZE the world. The in-memory nudges are persisted on the next

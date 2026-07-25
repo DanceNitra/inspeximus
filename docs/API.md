@@ -851,3 +851,27 @@ against a receipted store silently did **not** extend the receipt chain — the 
 evidence it exists to produce, and the next `verify_writes()` saw an unreceipted record. `_store()` now
 detects an existing `<path>.receipts.json` sidecar and keeps receipts on. Regression test:
 `test_cli_write_extends_an_existing_receipt_chain`.
+
+### Lineage without asking the writer: `infer_lineage` (1.49.0)
+`remember(derived=True)` stamps the last recall as a write's parents — the store carrying the edge so the
+untrusted model never holds the switch. Correct shape, wrong trigger: the flag is writer-set, and measured on
+our own 8-agent, 43-day, **27,290-record** deployment its coverage was **0.00%**, alongside `key`, `object`,
+`source`, `taint` and `attested_key` — while the fields the store computes for itself (`links`, `superseded`)
+ran at 88–90%. The single write call in that deployment passes four arguments, none of them a declaration.
+**Anything the writer must declare reads zero.**
+
+`Inspeximus(infer_lineage=0.2)` moves the decision into the store: on a write with no explicit parents, if the
+new text shares enough *more* with what was just recalled than with a same-store baseline it was not built
+from, that recall is stamped as the parents. No flag, no embedding, no LLM.
+
+The null adjustment is the design, not a refinement. On 27,342 real agent writes a raw overlap threshold is
+degenerate — median overlap against the true predecessor is **1.000**, and even 0.8 stamps **77%** of writes,
+because agents reuse a small vocabulary. Against a random same-store window the overlap is still 0.540, so
+most of a raw score is vocabulary rather than lineage. Null-adjusted, the firing rate is **~22%** and stable
+across thresholds 0.10–0.50.
+
+**Honest limits.** No ground truth for "truly derived" exists in that corpus, so ~22% is a firing rate, not a
+precision; a null-model check put discrimination at **61.6%** against a 50% chance line, so a real share of
+inferred edges will be wrong. It over-taints deliberately: a false parent is visible in `provenance()`, a
+missing one is silent. Default `0.0` = OFF (byte-identical legacy), and an explicit `derived_from` always
+wins. Receipt: `tests/test_infer_lineage.py` (8/8).

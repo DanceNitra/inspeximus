@@ -3,6 +3,38 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.49.0 - infer_lineage: stamp a derivation edge without asking the writer
+
+**The measurement that forced this.** `remember(derived=True)` auto-stamps the last recall as a write's
+parents - the right shape, since the store carries the edge and the untrusted model never holds the switch.
+But that flag is writer-set, and on our own 8-agent, 43-day, **27,290-record** deployment its coverage was
+**0.00%** - alongside `key`, `object`, `source`, `taint` and `attested_key`, all also 0.00%, while the fields
+the STORE computes for itself ran at 88-90% (`links`, `superseded`). One write call, four arguments, six
+weeks, nobody noticed. A mechanism that requires the writer to opt in does not run.
+
+**`Inspeximus(infer_lineage=0.2)`** stamps the edge from what the store can already see: how much more the new
+text shares with what was just recalled than with a same-store baseline it was not built from.
+
+**Null-adjusted, and that is the whole design.** Measured on 27,342 real agent writes:
+
+| | |
+|---|---|
+| raw overlap threshold | median **1.000**; 0.8 still stamps **77%** -> degenerate |
+| vs a random same-store window | 0.860 vs 0.540 -> most of the score is vocabulary |
+| null-adjusted (shipped) | **~22% stamped**, stable across thresholds 0.10-0.50 |
+
+Agents reuse a small vocabulary, so a raw score measures how repetitive the corpus is, not what the write
+came from. Subtracting the store's own baseline leaves the part that is about THIS recall.
+
+**Honest limits.** There is no ground truth for "truly derived" in that corpus, so ~22% is a FIRING rate, not
+a precision; a separate null-model check put discrimination at **61.6%** (chance 50%), so a real share of
+inferred edges will be wrong. It over-taints by design - a false parent is visible in `provenance()`, a
+missing one is silent. **Default 0.0 = OFF**, byte-identical legacy: silently changing a shipped write path
+is worse than either failure. An explicit `derived_from` always wins over the inference.
+
+8 new tests, including the regression that made the raw version unusable (shared vocabulary alone must not
+earn an edge) and a check that taint rides the inferred edge into `provenance()`.
+
 ## 1.48.0 - erasure_audit(): after a deletion, check what the lineage says survived
 
 Erasing the record is the easy half. The half that bites is the **summary built from it**, which no longer
