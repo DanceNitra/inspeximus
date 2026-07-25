@@ -3,6 +3,68 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.66.0 - four attacker findings, verified before acting
+
+All four were reported by an adversarial review and carried as UNVERIFIED. I reproduced each one first. All
+four hold. Three are inherent to a store with no writer identity, so they get an accurate disclosure and a
+test that keeps the disclosure true; the fourth turned one hostile write into a permanent block on a legal
+obligation, and that one got code.
+
+Attacker model throughout: someone who can call `remember()` / `credit()` through the normal API — a
+compromised agent, a hostile document in a RAG corpus — who does **not** hold `receipt_key`.
+
+### One hostile write blocked every later DSAR — fixed
+
+A single junk write whose source canonicalises onto a victim's (`User_42` vs `user-42`) made
+`forget_subject("user-42")` raise `AmbiguousSubject` forever. The only escape, `allow_ambiguous=True`, erases
+**both** subjects. So an attacker could deny a legal obligation with one write, and the guard we added to
+prevent over-erasure was the mechanism.
+
+`exact=True` now proceeds on the collision-safe subset the resolver had **already computed** — the victim's
+records and what inherited from them — leaving the colliding source untouched:
+
+```
+default             -> AmbiguousSubject (still right: erasing both is worse)
+exact=True          -> erased 2   (the record + its derived summary; attacker junk kept)
+allow_ambiguous=True-> erased 3   (blunt, unchanged)
+```
+
+A guard that cannot be satisfied is a denial of service with good intentions.
+
+### `credit()` leaves no evidence trail — disclosed
+
+It sets `good`, which the influence gate and corroboration check read, so it decides whether a record can be
+served under `recall(influence_only=True)`. Measured after `credit([poison], outcome=True, weight=1e6)`:
+receipts `1 -> 1`, `state_digest` unchanged, `verify_writes() -> True`. **The promotion is invisible to every
+integrity surface this library sells.** The self-grading risk was already disclaimed; the absence of any
+after-the-fact trace was not.
+
+### `derived_from` inherits a source you do not own — disclosed
+
+Taint inheritance is deliberate (a summary must charge its origins), but nothing checks the writer was
+entitled to derive from that parent. Measured:
+
+```
+evil = remember("Revenue is 900M", source=attacker, derived_from=[audited_record])
+_rec_sources(evil)                          -> {'evilexample', 'bigfourauditor'}
+spend_irreversible([evil],   1.0, budget=1)  -> allowed
+spend_irreversible([audited], 1.0, budget=1) -> DENIED
+```
+
+The attacker spends the auditor's irreversible budget. Same root as the unauthenticated write path, and now
+documented beside it.
+
+### `capacity=` is not a clean mitigation — SECURITY.md corrected
+
+SECURITY.md told you to set `capacity=` against resource exhaustion. Eviction ranks by `value`, which is
+caller-supplied and unbounded, and the two-tier policy protects the top slice **by raw value** — exactly what
+an attacker buys. Measured: `capacity=10`, fifty writes at `value=1000.0`, and **5 of 5** victim records at
+`value=1.0` were evicted. The recommended mitigation is the weapon. Now stated where the recommendation is
+made, with the measured number.
+
+516 tests pass; 4 mutations, each killed by its own test — after two of my mutations first had to be redone,
+because they replaced the opening line of a disclosure while the test asserted a phrase further down it.
+
 ## 1.65.1 - the mitigation I documented was overstated, and my test could not see it
 
 Caught while verifying 1.65.0 from the published wheel — the run printed `trusted_only: []` where I expected

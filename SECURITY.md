@@ -40,6 +40,14 @@ honest limits.
    scales with the active set). If you ingest untrusted content, set `capacity=` and cap input size at the
    application boundary. (A future minor release may add an opt-in per-record size guard.)
 
+   **But `capacity=` is not a clean mitigation — it converts a growth attack into a TARGETED DELETE.**
+   Eviction ranks by `value`, which is caller-supplied and unbounded, and the two-tier policy protects the
+   top `protect_frac` *by raw value* — exactly what an attacker buys. Measured: with `capacity=10`, fifty
+   writes at `value=1000.0` evicted **5 of 5** victim records held at `value=1.0`. So if writes come from
+   somewhere untrusted, capping the store size hands the attacker a way to delete specific memories, which
+   may be worse than the exhaustion it prevents. Clamp `value` at your application boundary too, or keep
+   untrusted writes in a separate store.
+
 3. **Erasure attests the act, not physical destruction.** `forget_subject()` / the deletion manifest / the
    erasure auditor make deletion tamper-evident and cross-store-auditable; they do not prove bytes were
    destroyed, and a retained embedding elsewhere can reconstruct content (see the erasure auditor + README).

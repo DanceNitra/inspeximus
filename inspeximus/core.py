@@ -501,7 +501,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.65.1"
+__version__ = "1.66.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1510,6 +1510,17 @@ class Inspeximus:
         instead — a back-filled value never overwrites the current one. recall() hides superseded records
         by default, so a keyed store never surfaces a stale fact.
 
+        Related, same root: `derived_from` lets a writer inherit ANY record's canonical source. Measured —
+        an attacker naming a trusted record as parent becomes attributable to it, and then SPENDS THAT
+        SOURCE'S irreversible budget, denying the real owner:
+
+            evil = remember("Revenue is 900M", source=attacker, derived_from=[audited_record])
+            _rec_sources(evil) -> {'evilexample', 'bigfourauditor'}
+            spend_irreversible([evil], 1.0, budget=1.0) -> allowed ; the auditor is then denied
+
+        Taint inheritance is deliberate (a summary must charge its origins), but nothing checks that the
+        writer was entitled to derive from that parent — the same missing writer identity as below.
+
         SUPERSESSION IS UNAUTHENTICATED, and that is the important limit to state. It branches on tenant,
         valid_from, object and asserts_change — never on WHO wrote. So anyone who can call remember() and
         knows the key string retires the current value:
@@ -2199,7 +2210,8 @@ class Inspeximus:
 
     def forget_subject(self, subject: str, request_id: str | None = None, basis: str | None = None,
                        authorized_by: str | None = None, authorization: str | None = None,
-                       values=None, dry_run: bool = False, allow_ambiguous: bool = False) -> dict:
+                       values=None, dry_run: bool = False, allow_ambiguous: bool = False,
+                       exact: bool = False) -> dict:
         """RIGHT-TO-ERASURE across provenance lineage, with a tamper-evident audit of the ACT. Hard-deletes
         every active memory ATTRIBUTABLE to `subject` — its own canonical source OR any record that inherited
         `subject` through derived_from taint (so a summary/consolidation built from the subject's data is erased
@@ -2218,6 +2230,12 @@ class Inspeximus:
         tombstones too — anchor the chain head externally for operator-adversarial audit). Prior art: crypto-
         shredding; Cassandra/event-sourcing tombstones; GDPR Art.30 erasure logs; Crosby-Wallach / Certificate
         Transparency tamper-evident logs.
+
+        `exact=True` proceeds on the collision-safe subset instead of refusing: only records whose RAW
+        source string equals `subject` (plus what inherited from them) are erased, and a different source
+        that merely canonicalises alike is left untouched. Use it when a DSAR must complete and the guard
+        has fired — refusing is right by default, but a guard that cannot be satisfied turns one hostile
+        write into a permanent block on a legal obligation.
 
         `dry_run=True` PREVIEWS the blast radius and touches NOTHING — no delete, no tombstone, no manifest
         cascade, no save. It returns {would_erase, ids, direct, inherited, sample, also_carrying, targets,
@@ -2246,6 +2264,13 @@ class Inspeximus:
             subj_ids = [rid for rid in subj_ids if rid not in collisions["ids"]]
         if dry_run:
             return self._erasure_preview(subject, cand, subj_ids, collisions, allow_ambiguous)
+        if collisions and exact and not allow_ambiguous:
+            # EXACT mode: erase only the records whose RAW source is this subject, leaving the colliding
+            # one alone. The safe set is already computed above — refusing outright meant a single junk
+            # write whose source canonicalises onto a victim's ("User_42" vs "user-42") made every later
+            # DSAR for that person unperformable, with allow_ambiguous the only escape and it deletes both.
+            # An attacker-triggerable denial of a legal obligation is worse than the collision it guards.
+            collisions = {}
         if collisions and not allow_ambiguous:
             raise AmbiguousSubject(
                 f"'{subject}' canonicalizes to '{Inspeximus._canon_source(subject)}', which is ALSO the "
@@ -5139,7 +5164,21 @@ class Inspeximus:
         a success): with no exogenous outcome to name, the self-grade raises good but never good_warranted, so
         it cannot promote the poison into the influence set. HONEST RESIDUAL: a warrant STRING is spoofable
         the same way a source string is (an attacker who can forge an outcome token can still warrant) — it
-        raises attacker cost and is meant to be paired with verifiable provenance, not a proof of truth."""
+        raises attacker cost and is meant to be paired with verifiable provenance, not a proof of truth.
+        NO EVIDENCE TRAIL, and this is the limit to know. A credit changes `good`/`bad`, which the influence
+        gate and corroboration check read — so it decides whether a record can be served under
+        recall(influence_only=True). But it emits NO write receipt, and `state_digest()` does not cover
+        standing, so after `credit([poison], outcome=True, weight=1e6)`:
+
+            receipts    1 -> 1        (unchanged)
+            state_digest              (unchanged)
+            verify_writes() -> True   (clean)
+
+        Measured. The promotion is invisible to every integrity surface this library sells. The self-grading
+        risk is already disclaimed via credit_requires_warrant (a warrant STRING is spoofable); what was not
+        said is that the promotion leaves no trace to audit afterwards. If outcomes come from anywhere an
+        attacker influences, gate them at the source — there is no after-the-fact check here.
+        """
         good = Inspeximus._outcome_good(outcome)
         by_id = {x["id"]: x for x in self._tenant_rows()}
         key, updated = ("good" if good else "bad"), []
