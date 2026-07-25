@@ -109,20 +109,23 @@ def test_rederive_still_actually_rederives():
 
 
 def test_resolve_reopened_declares_the_reopened_record():
+    """Drives the real path. The first version of this test could not: two plain writes never reopen
+    anything, so its `if not reopened:` branch was the one that ran — and that branch asserted a REGEX over
+    core.py as a string, which passes whatever the code does. The live branch was dead, and itself broken
+    (it read a key `reaffirmed` that resolve_reopened has never returned; the real key is `new_id`).
+    """
     m = _store()
     m.remember("tz is UTC", key="user::tz", object="UTC")
     m.remember("tz is PST", key="user::tz", object="PST")
-    reopened = m.reopened() if hasattr(m, "reopened") else []
-    if not reopened:                       # nothing surfaced a prior on this path; the site is still patched
-        import re
-        src = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                "inspeximus", "core.py"), encoding="utf-8").read()
-        assert re.search(r"capability=capability, derived_from=\[rid\]", src), \
-            "resolve_reopened must declare the reopened record as parent"
-        return
-    rid = reopened[0]["id"]
-    new_id = m.resolve_reopened(rid, "reaffirm_prior")["reaffirmed"]
-    assert _rec(m, new_id).get("derived_from") == [rid]
+    # a corroborated contradiction is what actually surfaces a prior
+    m.observe("tz is UTC", key="user::tz", object="UTC")
+    m.observe("tz is UTC", key="user::tz", object="UTC")
+
+    reopened = m.reopened()
+    assert reopened, "the fixture must actually reopen something, or this test asserts nothing"
+
+    res = m.resolve_reopened(reopened[0]["id"], "reaffirm_prior")
+    assert _rec(m, res["new_id"]).get("derived_from") == [reopened[0]["id"]]
 
 
 def test_writes_that_are_NOT_derivations_stay_clean():
@@ -390,4 +393,17 @@ def test_erasing_the_retracted_source_also_erases_the_repair():
     assert "runbook" in (_rec(m, repair).get("taint") or []), "the repair descends from the retracted source"
     erased = m.forget_subject("runbook", request_id="REQ-4", basis="gdpr-art17")
     assert repair in erased["ids"], "erasing the retracted source takes the repair with it — by design"
-    assert not hasattr(m.forget_subject, "dry_run")   # documents the gap: no preview of the blast radius
+    # This line used to read `assert not hasattr(m.forget_subject, "dry_run")` — an attribute lookup on a
+    # BOUND METHOD, so it could never fail, and it pinned a "limitation" 1.53.0 had already removed. Assert
+    # the preview EXISTS and agrees with the real call, on a fresh store built the same way.
+    fresh = _store()
+    r2 = fresh.remember("billing uses api-keys", key="billing::auth", object="api-keys",
+                        source={"doc": "runbook"})
+    fresh.remember("the nightly backup signs in with api-keys", derived=True, derived_from=[r2],
+                   source={"doc": "ops-notes"})
+    fresh.retract_lineage("runbook")
+    fresh.remember("billing uses oauth2", key="billing::auth", object="oauth2", source={"doc": "adr-014"})
+    fresh.rederive("runbook")
+    preview = fresh.forget_subject("runbook", dry_run=True)
+    real = fresh.forget_subject("runbook", request_id="REQ-5", basis="gdpr-art17")
+    assert preview["would_erase"] == real["erased"] and preview["ids"] == real["ids"]

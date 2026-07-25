@@ -85,7 +85,12 @@ class InspeximusDocumentStore(ComplianceMixin):
                 self.store.forget(ids=[existing[hs_id]["id"]])
             text = payload.get("content") or ""
             self.store.remember(text if text else f"[document {hs_id}]",
-                                source={"doc": str(hs_id)},
+                                # NAMESPACED. The raw document id as a subject collides with a
+                                # real one: forget_subject("user_42") for a person also
+                                # hard-deleted the corpus document whose id happened to be
+                                # "user_42". Adding source= turned under-erasure into
+                                # irreversible OVER-erasure until this prefix.
+                                source={"doc": "haystack::" + str(hs_id)},
                                 meta={"hs_doc": payload})
             written += 1
         if self.store.path:

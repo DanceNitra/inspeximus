@@ -67,7 +67,9 @@ class InspeximusStorage(ComplianceMixin):
         # source= is what makes this record erasable by subject later. Without it every adapter write fell
         # back to `id:<record id>`, so forget_subject() for a user, a session or a namespace matched nothing.
         self.store.remember(text, key=key, object=obj, tags=tags, meta=metadata or None,
-                            source={"doc": self._tag})
+                            # NAMESPACED: the bare tag defaults to "crewai", which erased a
+                            # user's own note sourced with that word.
+                            source={"doc": "crewai::" + str(self._tag)})
 
     def search(self, query: str, limit: int = 3,
                score_threshold: float = 0.35) -> List[Dict[str, Any]]:

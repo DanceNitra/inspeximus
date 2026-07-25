@@ -71,7 +71,7 @@ class InspeximusMemoryBlock(BaseMemoryBlock[str], ComplianceMixin):
             if t:
                 # source= is what makes this message erasable by subject; see the langgraph adapter for
                 # why the separator is "::" and not "/" (a path-shaped subject collides by construction).
-                self._store.remember(t, source={"doc": self._subject})
+                self._store.remember(t, source={"doc": "llamaindex::" + self._subject})
 
     async def _aget(self, messages: Optional[List[ChatMessage]] = None, **block_kwargs: Any) -> str:
         query = self._text(messages[-1]) if messages else ""

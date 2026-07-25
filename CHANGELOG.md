@@ -3,6 +3,62 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.62.0 - three regressions from the last two releases, and what a mutation run said about the tests
+
+### The 1.60.0 erasure fix turned under-erasure into OVER-erasure
+
+Giving every adapter write a `source=` made those records erasable — and two of the subjects were **not
+namespaced**, so they collided with real ones. Measured: a Haystack document whose id happened to be
+`user_42`, and a CrewAI store whose default tag is the bare word `crewai`:
+
+```
+forget_subject("user_42")  ->  erased 2   # the person's record AND the corpus document
+forget_subject("crewai")   ->  erased 1   # a user's own note that used that word
+```
+
+Before 1.60.0 a DSAR matched nothing; after it, a DSAR matched too much and **hard-deleted a third party** —
+which is the worse of the two failures. Every adapter subject is now prefixed (`haystack::`, `crewai::`,
+`lc::`, `lg::`, `llamaindex::`, `mab::`).
+
+### A read failure was reported as a persistence failure
+
+1.61.0 made an unreadable `.irrev.json` fail closed, correctly — but recorded it in `_sidecar_errors`, which
+`flush()` raises on. So a store that had persisted perfectly reported `OSError: could not persist`, and under
+1.60.0's CLI check that is `exit 3 NOT PERSISTED` with every write safely on disk. Read failures now have
+their own channel: `verify_writes()` reports them, `flush()` does not raise on them.
+
+### A reader needed write access
+
+1.60.0's `_flush_or_fail` ran on every command, and `recall` bumps `last_access` — so on a read-only store
+`inspeximus recall` printed the right answer and then exited 3. Read commands now warn on stderr and exit 0;
+write commands still exit 3.
+
+### The mutation run, and what it says
+
+A systematic pass over **400 single-point mutants** killed 131 — a **32.8% mutation score**, and **54.9%** on
+lines the suite executes at all (165 mutants sat on lines it never reaches). The survivors clustered on the
+predicates this product is sold on: `verify_attribution`'s source-hash comparison could be **inverted** with
+the suite green; three of `verify_bundle`'s tamper checks could have `or` changed to `and`; the MCP echo-guard
+default could be flipped to **off**; and tenant-scope comparisons in `contradictions`, `resolve_reopened` and
+`_stale_by_value` could be inverted. Thirteen new tests target those specific mutants, each naming the
+mutation in its docstring, and all five re-checked survivors now die.
+
+**Three of our own tests could not fail**, and are fixed:
+
+- `test_resolve_reopened_declares_the_reopened_record` — two plain writes never reopen anything, so the
+  early-return branch was the one that ran, and it asserted a **regex over `core.py` as a string**. The live
+  branch was dead *and* broken: it read a key `resolve_reopened` has never returned.
+- `assert not hasattr(m.forget_subject, "dry_run")` — an attribute lookup on a bound method, so it could
+  never fail, and it pinned a limitation **1.53.0 had already removed**.
+- `assert A and B if False else C` — the `if False` made the whole first clause dead.
+
+And a test that asserted a **spelling**: "the CLI and the MCP agree on the echo guard" grepped both files for
+the env-var name, which is exactly why flipping the default survived. It now imports the module and reads the
+resulting value.
+
+466 tests pass. The honest number to carry forward is not that one — it is the mutation score, and 32.8% is
+the real measure of what this suite currently proves.
+
 ## 1.61.0 - three controls that failed OPEN
 
 The last of round four's sweep. All three share a shape worse than a crash: each **silently granted what it

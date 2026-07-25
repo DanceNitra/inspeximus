@@ -73,16 +73,23 @@ def _out(obj, as_json):
     return False
 
 
-def _flush_or_fail(m) -> int:
+def _flush_or_fail(m, required: bool = True) -> int:
     """Persist and report. Without this the CLI printed `remembered <id>` and exited 0 on a store that never
     reached disk — a typo'd --path or INSPEXIMUS_PATH silently discarded every write for the whole session,
-    while the library had recorded the failure all along."""
+    while the library had recorded the failure all along.
+
+    `required=False` for READ commands. A recall bumps `last_access`, which marks the store dirty, so on a
+    read-only file `inspeximus recall` exited 3 "NOT PERSISTED" after printing the right answer — a reader
+    should not need write access. The warning still goes to stderr; only the exit code differs."""
     try:
         m.flush()
         return 0
     except OSError as e:
-        print(f"NOT PERSISTED: {e}", file=sys.stderr)
-        return 3
+        if required:
+            print(f"NOT PERSISTED: {e}", file=sys.stderr)
+            return 3
+        print(f"warning: could not update access bookkeeping ({e})", file=sys.stderr)
+        return 0
 
 
 def main(argv=None):
@@ -590,7 +597,7 @@ def main(argv=None):
         _out(res, a.json) or print(f"distilled: {res.get('captured',0)} kept "
                                    f"({res.get('decisions',0)} decisions, {res.get('facts',0)} facts, "
                                    f"{res.get('dropped',0)} dropped)")
-    return _flush_or_fail(m)
+    return _flush_or_fail(m, required=False)
 
 
 if __name__ == "__main__":

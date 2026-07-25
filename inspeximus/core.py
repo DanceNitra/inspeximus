@@ -468,7 +468,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": cert.get("count")}
 
 
-__version__ = "1.61.0"
+__version__ = "1.62.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -858,6 +858,7 @@ class Inspeximus:
         # Sidecar failures live SEPARATELY: a successful main-store save must not erase the fact that the
         # receipt or tombstone chain never reached disk. (It did, in the first version of this fix.)
         self._sidecar_errors: dict = {}
+        self._read_errors: dict = {}      # unreadable sidecars: surfaced, but NOT a persist failure
         # ENCRYPTION-AT-REST (OPT-IN, default None -> plaintext JSON, byte-identical legacy). encrypt_key is a
         # raw 32-byte AES-256 key (from new_encryption_key()); encrypt_passphrase is stretched with scrypt.
         # inspeximus NEVER persists the key/passphrase — you hold it; lose it and the store is unrecoverable (that IS
@@ -1301,6 +1302,9 @@ class Inspeximus:
         elif not self.receipts_enabled and self.items:
             problems.append(f"write receipts are DISABLED: {len(self.items)} record(s) exist with no write "
                             f"chain, so there is nothing to verify -- which is not the same as verified")
+        for what, err in (getattr(self, "_read_errors", None) or {}).items():
+            problems.append(f"the {what} sidecar is UNREADABLE ({err}) — the state it holds cannot be "
+                            f"consulted, so anything gated on it fails closed")
         for what, err in (getattr(self, "_sidecar_errors", None) or {}).items():
             problems.append(f"the {what} chain was NOT persisted ({err}) — it exists in memory only, so the "
                             f"evidence this store's integrity rests on will not survive a reload")
@@ -5440,7 +5444,11 @@ class Inspeximus:
                     # 1.0 budget was allowed a SECOND time (cumulative 1.8) — the exact "reset by spanning
                     # sessions" the docstring says must not happen, reachable by corrupting one file. If we
                     # cannot read how much was spent, we must not authorise more.
-                    self._sidecar_errors["irrev"] = f"{_bp}: unreadable ({type(e).__name__}: {e})"
+                    # A READ failure, not a write one. Recording it in _sidecar_errors made
+                    # flush() raise OSError "could not persist" on a store that had persisted
+                    # perfectly — and under the CLI's persistence check, exit 3 NOT PERSISTED.
+                    # Reporting the wrong failure is its own defect.
+                    self._read_errors["irrev"] = f"{_bp}: unreadable ({type(e).__name__}: {e})"
                     self._irrev = None
                     raise RuntimeError(
                         f"the irreversible-influence budget at {_bp} is unreadable ({e}). Refusing to "

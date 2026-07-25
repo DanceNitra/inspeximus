@@ -55,7 +55,7 @@ class InspeximusRetriever(BaseRetriever, ComplianceMixin):
     # convenience: write a (supersedable) fact straight through the retriever
     def add(self, text: str, key: Optional[str] = None, **kw: Any) -> None:
         # source= scopes this message to its session so forget_subject(session) can erase it (see crewai).
-        kw.setdefault("source", {"doc": getattr(self, "_tag", None) or "langchain"})
+        kw.setdefault("source", {"doc": "lc::" + str(getattr(self, "_tag", None) or "retriever")})
         self.store.remember(text, key=key, **kw)
 
 
@@ -89,7 +89,7 @@ class InspeximusChatMessageHistory(BaseChatMessageHistory, ComplianceMixin):
         import json as _json
         # source= scopes the message to its session, so forget_subject(session tag) erases it.
         self.store.remember(_json.dumps(message_to_dict(message)), tags=[self._tag],
-                            source={"doc": self._tag})
+                            source={"doc": "lc::" + str(self._tag)})
 
     def clear(self) -> None:
         """Erase this session's messages — for real.

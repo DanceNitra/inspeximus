@@ -76,4 +76,7 @@ def test_support_mode_does_not_affect_value_mode_legacy(tmp_path):
     m = _store(tmp_path)
     m.remember("v is 1", key="k/v", object="1")
     m.observe("2", key="k/v", object="2"); r = m.observe("2", key="k/v", object="2")   # no support -> legacy
-    assert r["reopened"] is True and r["reason"] if False else m.reopened()[0]["reason"] == "corroborated_contradiction"
+    # The original line was `assert A and B if False else C` — the `if False` made the whole A-and-B clause
+    # dead, so `r["reopened"]` was never checked. Both halves are asserted now.
+    assert r["reopened"] is True
+    assert m.reopened()[0]["reason"] == "corroborated_contradiction"
