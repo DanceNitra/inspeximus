@@ -1,0 +1,97 @@
+{
+ "scenario": "oracle_separation_density",
+ "theta": 2.0,
+ "densities": [
+  1,
+  2,
+  4,
+  8
+ ],
+ "results": {
+  "1": {
+   "clean": {
+    "reduction": 1.0,
+    "legit_block": 0.5097087378640777,
+    "ratio": 1.9619047619047618,
+    "poison_earn_ever": 0.0
+   },
+   "blind": {
+    "reduction": 1.0,
+    "legit_block": 0.5072815533980582,
+    "ratio": 1.9712918660287082,
+    "poison_earn_ever": 0.03472222222222222
+   },
+   "minja1": {
+    "reduction": 0.4294871794871795,
+    "legit_block": 0.46116504854368934,
+    "ratio": 0.9313090418353577,
+    "poison_earn_ever": 1.0
+   }
+  },
+  "2": {
+   "clean": {
+    "reduction": 1.0,
+    "legit_block": 0.2538265306122449,
+    "ratio": 3.9396984924623113,
+    "poison_earn_ever": 0.0
+   },
+   "blind": {
+    "reduction": 0.704225352112676,
+    "legit_block": 0.25892857142857145,
+    "ratio": 2.7197668771248176,
+    "poison_earn_ever": 0.05555555555555555
+   },
+   "minja1": {
+    "reduction": 0.217741935483871,
+    "legit_block": 0.2372448979591837,
+    "ratio": 0.9177939646201874,
+    "poison_earn_ever": 1.0
+   }
+  },
+  "4": {
+   "clean": {
+    "reduction": 1.0,
+    "legit_block": 0.13353658536585367,
+    "ratio": 7.488584474885844,
+    "poison_earn_ever": 0.0
+   },
+   "blind": {
+    "reduction": 0.6385542168674698,
+    "legit_block": 0.1420731707317073,
+    "ratio": 4.494544702414809,
+    "poison_earn_ever": 0.10416666666666667
+   },
+   "minja1": {
+    "reduction": 0.09707446808510634,
+    "legit_block": 0.12621951219512195,
+    "ratio": 0.7690924041525333,
+    "poison_earn_ever": 1.0
+   }
+  },
+  "8": {
+   "clean": {
+    "reduction": 1.0,
+    "legit_block": 0.06023002421307506,
+    "ratio": 16.603015075376884,
+    "poison_earn_ever": 0.0
+   },
+   "blind": {
+    "reduction": 0.4365079365079365,
+    "legit_block": 0.06234866828087167,
+    "ratio": 7.001078748651564,
+    "poison_earn_ever": 0.10416666666666667
+   },
+   "minja1": {
+    "reduction": 0.05539772727272729,
+    "legit_block": 0.05871670702179177,
+    "ratio": 0.9434746954076854,
+    "poison_earn_ever": 1.0
+   }
+  }
+ },
+ "dense_clean_separates": true,
+ "sparse_clean_fails": true,
+ "minja_collapses_dense": true,
+ "blind_never": false,
+ "verdict": "SUPPORTED (with a self-caught tautology flagged) — the credit-sparsity caveat is REMOVED and was a DENSITY effect. TWO non-trivial measured findings, plus one near-tautology to NOT oversell: (1) DENSITY sets AFFORDABILITY: the gate's legit cost falls monotonically as queries/fact grow 1->8 (legit-block 51% -> 6%); in sparse memory (LoCoMo-like D=1) the gate blocks ~half of legit high-stakes actions and is unusable, only dense credit makes it cheap. (2) ORACLE INTEGRITY is load-bearing: a MINJA-style self-grading oracle COLLAPSES the gate at EVERY density (poison earn 100%, sep ratio 0.94 < 1 — the gate blocks legit MORE than poison, i.e. worse than useless), even at D=8. (TAUTOLOGY, do NOT oversell): the clean-oracle '100% poison reduction' is near-definitional — a perfect per-item correctness oracle IS a perfect poison detector (a poison is never the correct answer), so 'clean oracle separates' is not a surprising property of the GATE; the real variable is the ORACLE. NET, honest: standing-gating is only usable when memory is dense AND the outcome oracle is unforgeable — and an unforgeable per-item oracle is exactly the thing MINJA removes, so the gate's protection rides entirely on a signal the attacker gets to touch. Prior art: whitewashing/cheap-pseudonyms (Friedman & Resnick 2001; Feldman et al. 2006); Cheng & Friedman 2005; MINJA 2503.03704. Scope: a CONTROLLED synthetic corpus with real nomic embeddings (isolates density), paired; LoCoMo is the D~1 real anchor where a BROAD poison also defeats the blind oracle. INCREMENTAL, not a breakthrough."
+}

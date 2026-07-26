@@ -38,7 +38,8 @@ Run: LOCOMO_PATH=agora_output/lab/data/locomo10.json \
 """
 import json, re, ast, time, hashlib, os, urllib.request, collections, random, sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from inspeximus import Inspeximus, _PREFER_GAIN
+from inspeximus import Inspeximus
+from inspeximus.core import _PREFER_GAIN   # internal constant: lives in core, not re-exported
 
 DATA = os.environ.get("LOCOMO_PATH", "agora_output/lab/data/locomo10.json")
 CACHE = os.environ.get("LOCOMO_CACHE", "agora_output/lab/data/locomo_confweighted_cache.json")

@@ -1,0 +1,10 @@
+{
+  "global": {
+    "active": 0,
+    "exposed": 0,
+    "earned": 0,
+    "earned_unexposed": 0,
+    "conversion_pct": 0.0
+  },
+  "per_store": {}
+}
