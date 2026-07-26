@@ -207,8 +207,9 @@ from inspeximus.witness_pool import collect_cosignatures, http_witness, Witness
 anchor = store.anchor()                                  # signed tree head of the whole history
 witnesses = [http_witness("http://hostA:9700"), http_witness("http://hostB:9701"), Witness()]
 out = collect_cosignatures("my-store", anchor, witnesses)
+allowlist = ["<witness-A-pubkey-hex>", "<witness-B-pubkey-hex>"]   # your allowlist
 ok = Inspeximus.verify_cosigned_anchor(anchor, out["cosignatures"],
-                                       witnesses=[...pubkeys...], threshold=2)["ok"]
+                                       witnesses=allowlist, threshold=2)["ok"]
 # a forked head -> honest witnesses REFUSE (surfaced in out["refused"]) -> it never reaches threshold;
 # Inspeximus.detect_split_view(...) turns two co-signed inconsistent heads into a cryptographic fork proof.
 ```
