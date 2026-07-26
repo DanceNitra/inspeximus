@@ -25,6 +25,21 @@ NEEDS = {
 }
 
 
+def _run(script):
+    """Run an example the way a reader would -- but against THIS repository.
+
+    Without PYTHONPATH the subprocess imports whatever pip happens to have installed. Locally that meant
+    these tests passed against the published 1.78.0 while the working tree was never exercised at all; in
+    CI, where nothing is installed, every example failed with ModuleNotFoundError. CI caught a test that
+    was not testing the code in front of it, which is the worse of the two problems.
+    """
+    return subprocess.run(
+        [sys.executable, os.path.join("examples", script)],
+        cwd=ROOT, capture_output=True, text=True, timeout=180,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8",
+             "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", "")})
+
+
 def _scripts():
     if not os.path.isdir(EXAMPLES):
         return []
@@ -43,9 +58,7 @@ def test_example_runs_clean(script):
     if dep:
         pytest.importorskip(dep, reason=f"{script} needs {dep}")
 
-    r = subprocess.run([sys.executable, os.path.join("examples", script)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=180,
-                       env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    r = _run(script)
     assert r.returncode == 0, (
         f"{script} exited {r.returncode}\n--- stdout tail ---\n{r.stdout[-1500:]}"
         f"\n--- stderr tail ---\n{r.stderr[-1500:]}")
@@ -58,9 +71,7 @@ def test_example_prints_something(script):
     if NEEDS.get(script):
         pytest.importorskip(NEEDS[script], reason=f"{script} needs {NEEDS[script]}")
 
-    r = subprocess.run([sys.executable, os.path.join("examples", script)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=180,
-                       env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    r = _run(script)
     assert r.stdout.strip(), f"{script} produced no output"
 
 
