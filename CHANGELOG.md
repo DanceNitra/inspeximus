@@ -3,6 +3,51 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.74.0 - an auditor can now bind a bundle to CONTENT, not just to a chain
+
+Two things an adversarial review of this project's own audit story said were missing, built.
+
+### `bind_content(bundle, store_items)` — the check nobody had
+
+`verify_bundle` proves the chain re-walks from genesis and matches the signed anchor. It proves NOTHING
+about what the store now says, because the bundle is content-free by design: it carries hashes, never
+text. So an auditor holding a bundle can be shown a clean chain over substituted content — which is
+exactly the shape an out-of-band edit followed by a legitimate amendment produces, and exactly how a
+public `slash()` cleared this library's own tamper alarm under <=1.67.
+
+`bind_content` closes it without putting content in the bundle. Hand it the bundle AND a store dump; it
+re-derives each record's commitment and compares it against the **EARLIEST** receipt covering that record
+— deliberately not the latest, because the latest is precisely what an amendment rewrites. It separates
+three outcomes rather than lumping them: `mismatched` (content changed under an intact chain),
+`unreceipted` (the store grew after the bundle was taken — not tampering), and `orphaned` (the chain
+covers a record the store no longer holds — check the tombstone chain, a legitimate erasure leaves one).
+
+Measured: an auditor's bundle taken while everything was honest still passes `verify_bundle` after the
+record's text is edited, and `bind_content` against the same store fails, naming the record and the field.
+
+Worth stating plainly: `verify_bundle` catching a *fresh* export of a tampered store is a SELF-REPORT —
+`build_bundle` records the store's own verdict at export time, and the module already calls those checks
+advisory. It is worth nothing against a store that reads clean, which is what laundering produces. That
+is why the content check had to be separate.
+
+### `receipt_signer=` — an opt-in write-authority boundary
+
+The signing key can now live outside the process (KMS, HSM, a signing sidecar): pass a callable
+`sign(hash_hex) -> sig_hex` and the store can ASK for a signature but never mint one. A signer that fails
+or returns nothing REFUSES the write rather than appending an unsigned receipt, which is the fail-open
+this exists to prevent. `receipt_key` and `receipt_signer` together are rejected — holding the key
+in-process defeats the boundary.
+
+**Honest scope, because this is where audit logging gets oversold:** it stops an attacker with FILE access
+only. It does NOT stop one who can call the API in-process — they ask the signer exactly as the
+application does. Separating those is a deployment property, not something a library can assert.
+
+Prior art, cited rather than reinvented: RFC 6962 (a log proves inclusion, never validity) and Schneier &
+Kelsey, USENIX Security 1998 (post-compromise entries are attacker-chosen by construction). The
+contribution is not the principle — it is that the check is now a function an auditor can run.
+
+794 tests.
+
 ## 1.73.0 - a tamper laundered under <=1.67 stayed invisible forever (BEHAVIOUR CHANGE)
 
 **If you ever ran <=1.67.0 with receipts on, `verify_writes()` may now report a problem it previously did

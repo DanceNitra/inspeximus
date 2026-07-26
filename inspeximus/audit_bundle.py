@@ -103,6 +103,76 @@ def _rewalk(records: list, kind: str) -> tuple[str, int]:
     return prev, -1
 
 
+def bind_content(bundle: dict, store_items: list) -> dict:
+    """Bind a bundle's commitments to the CONTENT a store is serving today.
+
+    `verify_bundle` proves the chain is internally consistent and matches the signed anchor. It proves
+    nothing about what the store now says, because the bundle is content-free by design -- it carries
+    hashes, never text. So an auditor holding only a bundle can be shown a clean chain over substituted
+    content, which is exactly what an out-of-band edit followed by a legitimate amendment produces.
+
+    This closes that gap without putting content in the bundle: hand it the bundle AND a dump of the
+    store, and it re-derives each record's commitment and compares it to the EARLIEST receipt that
+    covers that record -- the original commitment, not the latest one, because the latest is precisely
+    what an amendment would have rewritten.
+
+    Returns {ok, checked, mismatched, unreceipted, orphaned, problems}:
+      mismatched  -- the record is present but no longer hashes to what its first receipt committed to;
+      unreceipted -- the store holds a record the chain never covered (added out of band);
+      orphaned    -- the chain covers a record the store no longer holds (deleted out of band, and NOT
+                     explained by a tombstone: a legitimate erasure leaves one, so check the tombstone
+                     chain before reading this as tampering).
+
+    HONEST SCOPE. This binds content to the chain; it does not tell you the content was ever TRUE, and it
+    cannot help if the attacker controls both the store and the bundle. Its value is that a bundle
+    witnessed or held externally becomes usable against a store dump produced later -- the independent
+    source of truth that log integrity alone never supplies (RFC 6962's inclusion-is-not-validity, in
+    small).
+    """
+    problems: list = []
+    chain = bundle.get("write_chain") or []
+    if not chain:
+        return {"ok": False, "checked": 0, "mismatched": [], "unreceipted": [], "orphaned": [],
+                "problems": ["the bundle carries no write chain, so there is nothing to bind content to"]}
+
+    first: dict = {}                      # memory_id -> the EARLIEST commitment for it
+    for r in sorted(chain, key=lambda x: x.get("seq", 0)):
+        first.setdefault(r.get("memory_id"), (r.get("commit") or {}))
+
+    by_id = {r.get("id"): r for r in (store_items or [])}
+    mismatched, unreceipted, orphaned = [], [], []
+
+    for mid, commit in first.items():
+        rec = by_id.get(mid)
+        if rec is None:
+            orphaned.append(mid)
+            continue
+        now = Inspeximus._write_commit(rec)
+        # Compare only the fields the bundle actually carries, so a bundle written by an older version
+        # (no immutable_sha256) is checked on what it does commit to rather than reported as broken.
+        for field in ("immutable_sha256", "content_sha256", "attrib_sha256"):
+            if field in commit and commit[field] != now.get(field):
+                mismatched.append({"memory_id": mid, "field": field})
+                break
+
+    for mid in by_id:
+        if mid not in first:
+            unreceipted.append(mid)
+
+    if mismatched:
+        problems.append(f"{len(mismatched)} record(s) no longer match the commitment their FIRST receipt "
+                        f"made: the chain is intact but the content it covers has changed")
+    if unreceipted:
+        problems.append(f"{len(unreceipted)} record(s) in the store are covered by NO receipt in this "
+                        f"bundle -- written out of band, or the bundle predates them")
+    if orphaned:
+        problems.append(f"{len(orphaned)} record(s) the chain covers are absent from the store; a "
+                        f"legitimate erasure leaves a tombstone, so check the tombstone chain before "
+                        f"reading this as tampering")
+    return {"ok": not mismatched, "checked": len(first), "mismatched": mismatched,
+            "unreceipted": unreceipted, "orphaned": orphaned, "problems": problems}
+
+
 def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1) -> dict:
     """STANDALONE offline verification of an audit bundle -- needs only the file (no store, no receipt key).
     Checks, in order: (1) the bundle's own hash; (2) the write chain re-walks from genesis and its tip+count

@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.73.0"
+__version__ = "1.74.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -580,6 +580,7 @@ class StoreChangedOnDisk(RuntimeError):
 class Inspeximus:
     def __init__(self, path: str | None = None, embed=None, receipts: bool = False,
                  receipt_key: str | None = None, receipt_pubkey: str | None = None,
+                 receipt_signer=None,
                  capacity: int | None = None, revert_authority: str | None = None,
                  revert_pubkey: str | None = None, max_text: int | None = None,
                  tenant: str | None = None, pii_detect: bool = False,
@@ -989,8 +990,14 @@ class Inspeximus:
                 self._mat = None                                    # invalidate the cached matrix
                 self._realigned = True                              # -> persisted ONCE at the end of __init__
         # OPT-IN write receipts (default OFF -> zero behavior change; no sidecar created)
-        self.receipts_enabled = bool(receipts or receipt_key)
+        self.receipts_enabled = bool(receipts or receipt_key or receipt_signer)
         self._receipt_sk = receipt_key
+        # OPT-IN write-authority boundary: a callable `sign(hash_hex) -> sig_hex` whose key this process
+        # does not hold. When set, `receipt_key` is not used and never needs to exist here.
+        self._receipt_signer = receipt_signer
+        if receipt_signer is not None and receipt_key:
+            raise ValueError("pass receipt_key OR receipt_signer, not both: holding the key in-process "
+                             "defeats the boundary the signer exists to create")
         # The public half is DERIVED when it is not supplied. Without this, passing receipt_key alone signed
         # every receipt with `"pubkey": None`, so verify_writes() could never check the signature and reported
         # "invalid signature" on records the store had just written itself -- a false tampering alarm, which
@@ -1324,7 +1331,8 @@ class Inspeximus:
             self.forget(evict_ids)                            # hard delete + link/toggle scrub
 
     # ── write receipts (OPT-IN: tamper-evident write history) ─────────────────
-    def _write_commit(self, rec: dict) -> dict:
+    @staticmethod
+    def _write_commit(rec: dict) -> dict:
         """What a receipt commits to for a stored memory: its id, a hash of its content-bearing fields, AND a hash
         of its ATTRIBUTION (canonical sources = own source + inherited derived_from taint). Binding attribution into
         the receipt is what makes a later RELABEL detectable: k, the influence budget, the influence gate and slash
@@ -1360,7 +1368,34 @@ class Inspeximus:
         if amends:
             r["amends"] = sorted(amends)
         r["hash"] = _sha256_hex(_canon(Inspeximus._chain_core(r, "write")))
-        if self._receipt_sk and _HAVE_ED:
+        if self._receipt_signer is not None:
+            # WRITE-AUTHORITY BOUNDARY. The signing key lives OUTSIDE this process (KMS, HSM, a signing
+            # sidecar), so the store can ASK for a signature but can never mint one. That is the property
+            # a hash chain alone does not give you: with the key in-process, anyone who can write the
+            # store file can also rewrite the chain and re-sign it, and the log degrades to a checksum of
+            # whatever the attacker last wrote.
+            #
+            # HONEST SCOPE, because this is exactly where audit logging gets oversold: it stops an
+            # attacker who has FILE access only. It does NOT stop one who can call this API in-process --
+            # they ask the signer just as the application does, and the signer has no way to know the
+            # difference. Separating those two is a deployment property (who may run the process), not
+            # something a library can assert. Prior art for the class: Schneier & Kelsey, USENIX Security
+            # 1998, on why post-compromise entries are attacker-chosen by construction.
+            try:
+                sig = self._receipt_signer(r["hash"])
+            except Exception as e:
+                # A signer that is unreachable must not silently produce an UNSIGNED receipt that later
+                # verifies as "no signature required" -- that is the failure open this boundary exists to
+                # prevent. Refuse the write instead.
+                raise RuntimeError(f"receipt signer failed ({type(e).__name__}: {e}); refusing to append "
+                                   f"an unsigned receipt while a signer is configured") from e
+            if not sig:
+                raise RuntimeError("receipt signer returned no signature; refusing to append an unsigned "
+                                   "receipt while a signer is configured")
+            r["sig"] = sig
+            if self.receipt_pubkey:
+                r["pubkey"] = self.receipt_pubkey
+        elif self._receipt_sk and _HAVE_ED:
             sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._receipt_sk))
             r["pubkey"] = self.receipt_pubkey
             r["sig"] = sk.sign(bytes.fromhex(r["hash"])).hex()
