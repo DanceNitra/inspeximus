@@ -105,7 +105,9 @@ def _optional_third_party():
 OPTIONAL_THIRD_PARTY = _optional_third_party()
 
 
-def _missing_module(stderr: str) -> str | None:
+def _missing_module(stderr):
+    # No `str | None` annotation: the CI matrix includes Python 3.9, where that is a runtime TypeError at
+    # import unless the module opts into postponed evaluation. Local 3.13 can never show it.
     m = re.search(r"No module named '([\w.]+)'", stderr or "")
     return m.group(1).split(".")[0] if m else None
 
