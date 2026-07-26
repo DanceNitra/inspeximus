@@ -33,9 +33,12 @@ def fetch_all() -> list:
         entries += payload.get("servers", [])
         cursor = (payload.get("metadata") or {}).get("nextCursor")
         if not cursor or cursor in seen:
-            break
+            return entries
         seen.add(cursor)
-    return entries
+    # Cap reached with a cursor still pending: we have a PARTIAL view, and answering "not listed" from a
+    # partial view is exactly the failure this loop was written to fix. Say so instead of looking calm.
+    raise RuntimeError(f"registry paging hit the {MAX_PAGES}-page cap with more pages pending; "
+                       f"read {len(entries)} entries — refusing to answer from a partial view")
 
 
 def main(argv: list[str]) -> int:
