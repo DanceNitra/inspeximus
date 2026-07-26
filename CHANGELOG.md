@@ -3,6 +3,33 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.78.0 - the residue check where you can actually reach it: CLI and MCP
+
+A capability nobody can run in three seconds may as well not exist. `erasure_residue` was Python-only in
+1.76-1.77; now it is a command and an agent tool.
+
+```
+inspeximus residue --root ./deployment --value alice@example.com
+#   PLAIN        trace.jsonl                fp=337961f64779
+#   LIVE         v.sqlite [t.x x1]          fp=337961f64779
+#   ! the value is still held in a LIVE row: the system retained it
+#   RESULT: residue found
+```
+
+It **exits non-zero when residue is found**, so it drops straight into a CI job or a DSAR runbook as a
+gate rather than something a human has to read and interpret.
+
+As an MCP tool it is reachable from any agent: `erasure_residue(root, values)`. Same three verdicts, same
+refusal to echo what it was given — findings carry a fingerprint, because a tool that hunts a secret and
+then prints it into a chat transcript is itself the leak. There is a test asserting exactly that on the
+MCP path.
+
+Our own surface guards did the work again, and this is why they exist: adding the tool failed the MCP
+sweep until it was driveable, and the sweep now points it at a real temp directory rather than being told
+to skip it. A tool silently skipped is a tool with no coverage at all.
+
+825 tests.
+
 ## 1.77.0 - forget(verify_residue_in=...): prove the bytes went, at the only moment you can
 
 1.76.0 shipped a residue check you run yourself. This wires it into erasure, because of a constraint that

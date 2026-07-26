@@ -69,6 +69,10 @@ def _args_for(name, sig, mod):
         "because": "it was decided", "topic": "ops", "session_id": "s1", "namespace": "ns",
         "when": 9e9, "question": "what is the deploy channel", "decision": "ship on friday",
         "max_age_days": 3650.0,
+        # erasure_residue scans a directory; point it at a real, empty temp dir so the sweep drives it
+        # for real rather than declaring it undriveable. `values` must be non-empty, since an empty
+        # search is deliberately not a clean result.
+        "root": tempfile.mkdtemp(), "values": ["a-value-that-is-not-anywhere"],
     }
     args = []
     for pname, p in sig.parameters.items():

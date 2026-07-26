@@ -177,3 +177,31 @@ def test_check_code_does_not_flag_a_substring_of_another_identifier(mod):
     mod.deprecate_symbol("helper", "helper_v2", reason="renamed")
     assert not any(f.get("symbol") == "helper"
                    for f in (mod.check_code("call_the_helper_function(x)\n") or []))
+
+
+def test_erasure_residue_tool_reports_the_three_kinds(mod, tmp_path):
+    """The residue check reachable from an agent. Behaviour, not just "did not raise": an agent that gets
+    a clean verdict from a store that still holds the value is worse than no tool."""
+    import json as _json
+    import sqlite3
+
+    d = tmp_path / "deployment"
+    d.mkdir()
+    secret = "alice-mcp-probe@example.com"
+    (d / "trace.jsonl").write_text(_json.dumps({"pii": secret}), encoding="utf-8")
+    con = sqlite3.connect(str(d / "v.sqlite"))
+    con.execute("CREATE TABLE t(x TEXT)")
+    con.execute("INSERT INTO t VALUES(?)", (secret,))
+    con.commit()
+    con.close()
+
+    rep = mod.erasure_residue(str(d), [secret])
+    kinds = {f["kind"] for f in rep["findings"]}
+    assert rep["ok"] is False
+    assert {"PLAIN", "LIVE"} <= kinds, rep["findings"]
+    assert secret not in _json.dumps(rep), "the tool must not echo the secret back into the transcript"
+
+
+def test_erasure_residue_tool_is_clean_on_a_clean_directory(mod, tmp_path):
+    rep = mod.erasure_residue(str(tmp_path), ["nothing-here-at-all"])
+    assert rep["ok"] is True, rep

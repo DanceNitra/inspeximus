@@ -151,6 +151,12 @@ def main(argv=None):
 
     sub.add_parser("contradictions", help="list mutually-incompatible memories (flagged, not auto-resolved)")
     sub.add_parser("governance", help="governance/erasure/tamper-evidence snapshot")
+    rz = sub.add_parser("residue", help="did the bytes actually go? scan ANY directory for values that "
+                                        "should be erased (works on other vendors' stores too)")
+    rz.add_argument("--root", required=True, help="directory to search")
+    rz.add_argument("--value", action="append", default=[], help="a value that should be gone (repeatable)")
+    rz.add_argument("--value-file", help="file with one value per line")
+    rz.add_argument("--max-file-mb", type=float, default=512.0)
 
     co = sub.add_parser("consolidate", help="run the dedup/consolidation pass (optionally prune to --keep)")
     co.add_argument("--keep", type=int, default=None)
@@ -458,6 +464,25 @@ def main(argv=None):
         else:
             for p in pairs:
                 print(f"- {p.get('a_text','')}  <>  {p.get('b_text','')}")
+
+    elif a.cmd == "residue":
+        from .erasure_residue import scan_residue
+        values = list(a.value)
+        if a.value_file:
+            with open(a.value_file, encoding="utf-8") as fh:
+                values += [ln.strip() for ln in fh if ln.strip()]
+        rep = scan_residue(a.root, values, max_file_mb=a.max_file_mb)
+        if not _out(rep, a.json):
+            print(f"checked {rep['checked_files']} file(s) under {a.root}")
+            for f in rep["findings"]:
+                where = (f" [{f.get('table')}.{f.get('column')} x{f.get('rows')}]"
+                         if f["kind"] == "LIVE" else "")
+                print(f"  {f['kind']:12s} {f['path']}{where}   fp={f['fingerprint']}")
+            for problem in rep["problems"]:
+                print(f"  ! {problem}")
+            print("RESULT:", "clean - no residue found" if rep["ok"] else "residue found (see above)")
+        # a non-zero exit so this is usable as a gate in CI or a DSAR runbook
+        raise SystemExit(0 if rep["ok"] else 1)
 
     elif a.cmd == "governance":
         _out(m.governance_report(), a.json) or print(json.dumps(m.governance_report(), indent=2, default=str))

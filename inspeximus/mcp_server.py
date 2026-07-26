@@ -635,6 +635,24 @@ def verify_audit_bundle(bundle: dict, witnesses: list | None = None, threshold: 
 
 
 @mcp.tool()
+def erasure_residue(root: str, values: list[str], max_file_mb: float = 512.0) -> dict:
+    """DID THE BYTES ACTUALLY GO? (read-only, no LLM) Scan a directory for values that should have been
+    erased — ANY store, not just this one: a vector database, a sqlite history, a JSONL trace, another
+    library's data dir. `delete()` returning success is not the same as the value being gone from disk.
+
+    Separates three outcomes, and the distinction is the point: LIVE (a table still holds it in a row —
+    the system retained it), UNRECLAIMED (in the bytes but in no row — the storage engine has not
+    reclaimed the page; run VACUUM/compact, and do NOT report this as a vendor defect), PLAIN (a JSON,
+    log or backup still has it; nothing reclaims that on its own).
+
+    Never echoes the values you pass — findings carry a 12-char fingerprint, because a tool that hunts a
+    secret and then prints it into a transcript is itself the leak. A file it could not read makes the
+    verdict False: "clean" must never mean "we did not look at that part"."""
+    from .erasure_residue import scan_residue
+    return scan_residue(root, values, max_file_mb=max_file_mb)
+
+
+@mcp.tool()
 def deprecate_symbol(old: str, new: str, reason: str = "") -> dict:
     """CODING-AGENT REFACTOR RECORD (write, deterministic, no LLM): record that a code symbol `old` was replaced
     by `new` (a function/method/constant renamed or removed in a refactor). This is the fix for the single most
