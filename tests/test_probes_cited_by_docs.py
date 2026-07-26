@@ -112,6 +112,30 @@ def _optional_third_party():
 
 OPTIONAL_THIRD_PARTY = _optional_third_party()
 
+#: Two different questions, which I collapsed into one and CI caught within the hour:
+#:   OPTIONAL_THIRD_PARTY -- "may a probe be SKIPPED because this is absent?"  `openai` must NOT be here:
+#:       the probe that needs it also needs a live endpoint, so `pip install openai` would not make it
+#:       runnable, and listing it would say otherwise.
+#:   KNOWN_THIRD_PARTY    -- "is this somebody else's package, or an uncommitted module of OURS?"  `openai`
+#:       obviously belongs here.
+#: The first version answered the second question with "can I import it?", which is a property of the
+#: machine: green here, red in CI, for the third time today.
+#: Environment-independent on 3.10+; the CI matrix still runs 3.9, where the attribute does not exist, so
+#: the fallback lists what these probes actually import. Deliberately not `__import__`: that answers "is it
+#: installed HERE", which is the question that produced the false failure.
+_STDLIB = set(getattr(sys, "stdlib_module_names", ())) or {
+    "json", "os", "sys", "re", "time", "math", "random", "hashlib", "itertools", "collections",
+    "subprocess", "argparse", "typing", "pathlib", "statistics", "copy", "functools", "tempfile",
+    "urllib", "datetime", "csv", "sqlite3", "string", "textwrap", "warnings", "dataclasses", "glob",
+    "io", "pickle", "shutil", "uuid", "threading", "traceback", "importlib", "inspect", "platform",
+    "gzip", "base64", "binascii", "heapq", "bisect", "unicodedata", "contextlib", "operator", "struct",
+}
+
+KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
+    "openai", "torch", "transformers", "sentence_transformers", "datasets", "tiktoken",
+    "requests", "httpx", "tqdm", "matplotlib", "seaborn", "sklearn", "scipy",
+}
+
 
 def _missing_module(stderr):
     # No `str | None` annotation: the CI matrix includes Python 3.9, where that is a runtime TypeError at
@@ -169,14 +193,12 @@ def test_no_citation_rests_on_a_module_we_never_committed():
         with open(os.path.join(PROBES, name), encoding="utf-8") as fh:
             src = fh.read()
         for sibling in re.findall(r"^\s*(?:import|from)\s+([a-z_][a-z_0-9]*)", src, re.M):
-            if sibling in OPTIONAL_THIRD_PARTY or sibling == "inspeximus":
+            if sibling in KNOWN_THIRD_PARTY or sibling == "inspeximus" or sibling in _STDLIB:
                 continue
             if os.path.exists(os.path.join(PROBES, sibling + ".py")):
                 continue
-            try:                                  # stdlib and installed packages are fine
-                __import__(sibling)
-            except ImportError:
-                ours.append(f"{name} imports {sibling!r}, which is not in probes/ and not installable")
+            ours.append(f"{name} imports {sibling!r}: not in probes/, not stdlib, and not a declared "
+                        f"third-party package")
     assert not ours, ("a cited probe depends on something of ours that was never committed; commit it "
                       "rather than describing it: " + "; ".join(ours))
     assert not [v for v in NOT_STANDALONE.values() if v.startswith("MISSING DEPENDENCY")], \
@@ -216,3 +238,15 @@ def test_a_probe_that_fails_for_any_other_reason_still_fails():
     assert _missing_module("ZeroDivisionError: division by zero") is None
     assert _missing_module("FileNotFoundError: agora_output/lab/data/locomo10.json") is None
     assert _missing_module("") is None
+
+
+def test_the_ownership_discriminator_does_not_depend_on_this_machine():
+    """It answered "is it installed here?", which is green on the maintainer's box and red in CI -- the
+    third time in one day that a check measured the environment instead of the repository."""
+    assert _STDLIB and "json" in _STDLIB and "os" in _STDLIB
+    assert "openai" in KNOWN_THIRD_PARTY, "a real PyPI package is not an uncommitted module of ours"
+    assert "openai" not in OPTIONAL_THIRD_PARTY, \
+        "but it must NOT excuse a probe run: that probe needs a live endpoint, which no install provides"
+    assert "echo_attack_probe" not in KNOWN_THIRD_PARTY and \
+           "agentpoison_multiretriever_check" not in KNOWN_THIRD_PARTY, \
+        "the two modules this whole check exists for must never be declared third-party"
