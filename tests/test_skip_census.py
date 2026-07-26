@@ -20,16 +20,23 @@ import skip_census  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#: Measured 2026-07-26 against a simulated CI base image (pytest + cryptography only): 155 test functions
-#: across 16 modules. A rise means a new module became invisible to the base job -- decide it deliberately.
-MAX_HIDDEN_IN_BASE_ENV = 160
+#: Measured 2026-07-26 against a simulated CI base image (pytest + cryptography only).
+#: It is INTERPRETER-DEPENDENT, and pinning one number for the whole matrix failed on 3.9 within minutes:
+#: `tomllib` entered the standard library in 3.11, so on 3.9 `test_install.py` (13 tests) is hidden too.
+#: That is a real, explainable stdlib fact rather than a silent exclusion, so the pin follows it instead of
+#: being raised to the maximum -- a pin set to the worst leg stops constraining the others.
+MAX_HIDDEN_IN_BASE_ENV = 160 if sys.version_info >= (3, 11) else 175
 
 
 def _base_env_census():
     """What the base CI image would see. Simulated by making the optional packages unfindable, so the
     number does not depend on what happens to be installed on the machine running this test -- the exact
     mistake that put a false failure in CI twice today."""
-    base = {"pytest", "cryptography", "tomllib", "inspeximus", "json", "os", "sys"}
+    # `tomllib` is stdlib from 3.11 only, so whether it is "in the base image" is a property of the
+    # interpreter. Deriving it rather than hard-coding it keeps this honest on every matrix leg.
+    base = {"pytest", "cryptography", "inspeximus", "json", "os", "sys"}
+    if sys.version_info >= (3, 11):
+        base.add("tomllib")
     real = importlib.util.find_spec
     try:
         importlib.util.find_spec = lambda n, *a, **k: (real(n, *a, **k)
@@ -46,6 +53,17 @@ def test_the_amount_hidden_from_the_base_job_is_pinned():
         f"{MAX_HIDDEN_IN_BASE_ENV}. A whole module skipped shows up as one line, so this grows without "
         f"anyone noticing. Modules: "
         + ", ".join(f"{r['module']}({r['tests']})" for r in c["hidden_modules"]))
+
+
+def test_the_three_nine_leg_hides_exactly_one_more_module_and_we_know_which():
+    """The matrix legs must differ for a REASON we can name. If 3.9 ever starts hiding something else, the
+    difference stops being explainable and this fails rather than being absorbed by a bigger pin."""
+    c = _base_env_census()
+    hidden = {r["module"] for r in c["hidden_modules"]}
+    if sys.version_info >= (3, 11):
+        assert "test_install.py" not in hidden, "tomllib is stdlib here; nothing should hide it"
+    else:
+        assert "test_install.py" in hidden, "on 3.9 tomllib is absent, so this module cannot collect"
 
 
 def test_the_census_is_not_measuring_nothing():
