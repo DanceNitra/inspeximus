@@ -3,6 +3,52 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.80.0 - three verifiers that answered "yes" about input they never looked at
+
+**BEHAVIOUR CHANGE, and a safety fix.** An adversarial audit of our own verifiers found one shape
+repeated: a verdict that reads as assurance while the check was structurally incapable of failing. All
+three reproduce on 1.79.0.
+
+**`verify_claim` returned `supported` for a claim its own evidence contradicted.** With no `object` on
+either side -- the state most stores are in, since `object=` is optional on `remember()` -- the match test
+was `not (numeric_clash or negation_clash)`. Two different nouns clash neither way:
+
+```
+store:  "the patient is allergic to shellfish"
+claim:  "the patient is allergic to peanuts"
+1.79.0: {'verdict': 'supported', 'matched': {...'allergic to shellfish'}}
+1.80.0: {'verdict': 'unverifiable', 'matched': {...'allergic to shellfish'}}
+```
+
+"I found nothing that disagrees" was being returned as "the store says so" -- by the gate an agent calls
+immediately BEFORE asserting something to a person, with a citation attached. There is a new verdict,
+`unverifiable`: a similar record exists, does not refute the claim, and nothing here can confirm it.
+**Only `supported` means the store backs the claim.** A genuine restatement is still `supported`, a
+fabrication still `unsupported`, a real contradiction still `contradicted`, and the keyed path -- which
+has a real value axis -- is unchanged. The keyed path could also be undecidable (a key does not imply a
+value) and now says so instead of falling through to `contradicted`, which would have made the store
+disagree with a user who was right.
+
+**`scan_residue` reported "clean" while the value sat in `.git`.** Six directories were pruned from the
+walk with nothing appended to `skipped`: `ok:True`, exit 0, byte-identical to a genuinely clean scan --
+and `.git` is where a deleted store survives longest. The module already applied the right rule to a file
+too large to read ("a store is not clean because part of it was not looked at"); a pruned directory is the
+same claim at larger scale. `skip_dirs` now REPLACES the default instead of being unioned with it, so
+`skip_dirs=set()` can finally search those directories. A root that does not exist no longer returns
+`ok:True` with zero files -- a typo in a DSAR runbook was producing a clean bill of health, which is the
+erasure-certificate defect of 1.70.0 in a second place. An existing but EMPTY root stays clean, with the
+caveat attached: failing it would cry wolf on the ordinary case.
+
+**`bind_content` passed an audit in which nothing was compared.** `checked` counted RECEIPTS, not
+comparisons, and `ok` was `not mismatched`. Hand the auditor an empty store -- or re-mint the ids while
+rewriting the text -- and every record lands in `orphaned`, zero records are re-hashed, and
+`audit-verify --store` printed "content checked ... VERDICT: PASS" and exited 0. `checked` is now the
+number actually re-hashed, zero comparisons is a FAIL, and the orphan list says when it has been
+truncated instead of showing five of twenty.
+
+Found by a six-lens adversarial audit whose findings were each re-run by a skeptic; every one above was
+then reproduced by hand before being fixed. Mutation-verified 28/28.
+
 ## 1.79.0 - verify_bundle says what it did NOT check
 
 **BEHAVIOUR CHANGE.** `verify_bundle()` gains `store_items=` and returns a new `limits` list plus

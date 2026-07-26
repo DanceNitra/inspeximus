@@ -160,5 +160,95 @@
     "tests": [
       "tests/test_skip_census.py"
     ]
+  },
+  {
+    "name": "absence of a clash is reported as support again",
+    "file": "inspeximus/core.py",
+    "old": "            return _restates(text, rec_text or \"\")                          # True, or None for \"cannot tell\"",
+    "new": "            return True",
+    "tests": [
+      "tests/test_verify_claim_undecidable.py"
+    ]
+  },
+  {
+    "name": "the restatement test accepts any overlap",
+    "file": "inspeximus/core.py",
+    "old": "            return True if overlap >= 0.9 else None",
+    "new": "            return True",
+    "tests": [
+      "tests/test_verify_claim_undecidable.py"
+    ]
+  },
+  {
+    "name": "the undecidable case is folded back into 'supported'",
+    "file": "inspeximus/core.py",
+    "old": "            return _out(\"unverifiable\", undecidable.get(\"object\"),",
+    "new": "            return _out(\"supported\", undecidable.get(\"object\"),",
+    "tests": [
+      "tests/test_verify_claim_undecidable.py"
+    ]
+  },
+  {
+    "name": "the keyed path stops distinguishing cannot-tell",
+    "file": "inspeximus/core.py",
+    "old": "            if m is None:\n                # Neither side carries a value, and the claim is not a restatement. The honest answer is\n                # that this store cannot tell -- with the record attached so the caller can judge.",
+    "new": "            if False:\n                # disabled",
+    "tests": [
+      "tests/test_verify_claim_undecidable.py"
+    ]
+  },
+  {
+    "name": "a pruned directory goes unreported again",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "        for d in pruned:",
+    "new": "        for d in []:",
+    "tests": [
+      "tests/test_erasure_residue.py"
+    ]
+  },
+  {
+    "name": "skip_dirs goes back to being unioned (caller cannot opt out)",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)",
+    "new": "    skip = set(skip_dirs or ()) | _SKIP_DIRS",
+    "tests": [
+      "tests/test_erasure_residue.py"
+    ]
+  },
+  {
+    "name": "a nonexistent root returns clean again",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "    if not os.path.isdir(root):",
+    "new": "    if False:",
+    "tests": [
+      "tests/test_erasure_residue.py"
+    ]
+  },
+  {
+    "name": "zero comparisons pass again",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "    return {\"ok\": bool(compared) and not mismatched, \"checked\": compared, \"receipted\": len(first),",
+    "new": "    return {\"ok\": not mismatched, \"checked\": compared, \"receipted\": len(first),",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "'checked' counts receipts instead of comparisons",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "        compared += 1",
+    "new": "        compared += 0",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "the orphan truncation stops announcing itself",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "        if len(orph) > 5:",
+    "new": "        if False:",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
   }
 ]

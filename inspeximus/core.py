@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.79.0"
+__version__ = "1.80.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -6475,6 +6475,12 @@ class Inspeximus:
           - 'stale_superseded' : the claim asserts a RETIRED value whose key now holds a DIFFERENT current value
                                  — the reply is citing a corrected fact (the dangerous case; 'current' = truth now)
           - 'contradicted'     : asserts against the CURRENT active value
+          - 'unverifiable'     : a similar record exists and does NOT refute the claim, but neither side
+                                 carries a value and the claim is not a restatement -- so nothing here can
+                                 confirm it. Until 1.80.0 this returned 'supported', which is how
+                                 "allergic to shellfish" licensed the claim "allergic to peanuts" and
+                                 attached the contradicting record as its evidence. Treat it as NOT
+                                 grounded; pass `key`/`object` for a decidable answer.
           - 'unsupported'      : no matching memory (possible fabrication)
         HONEST LIMIT: on the KEYLESS path a categorical contradiction with no matching retired value may report
         'unsupported' rather than 'contradicted' (without a key there is no value axis to contradict on);
@@ -6485,6 +6491,23 @@ class Inspeximus:
         vs-history catches the same corrected fact being re-ASSERTED in the generated reply."""
         inc = incompatible or (lambda a, b: _value_clash(a, b) or _negation_clash(a, b))
         low = (text or "").lower()
+
+        def _restates(claim: str, rec_text: str):
+            """With no value on either side, is the claim a RESTATEMENT of this record, or merely
+            unrefuted by it? Returns True (restatement), or None for "no value axis -- cannot tell".
+
+            Never False: a non-restatement is not evidence against, only absence of evidence for.
+            Deliberately strict, because the failure it exists to stop is answering `supported` on the
+            strength of two sentences sharing a subject."""
+            def _words(s):
+                return {w for w in re.findall(r"[a-z0-9]+", (s or "").lower()) if w not in _STOP}
+            a, b = _words(claim), _words(rec_text)
+            if not a or not b:
+                return None
+            if a == b or a <= b or b <= a:                  # one is the other, possibly with filler
+                return True
+            overlap = len(a & b) / len(a | b)
+            return True if overlap >= 0.9 else None
         def _matches(rec_object, rec_text):
             # Does the CLAIM assert this record's value? Use the stored object as the discriminator so a
             # CATEGORICAL correction (Berlin->Munich; no number, no negation) is caught, not only numeric ones
@@ -6504,7 +6527,16 @@ class Inspeximus:
             if rec_object is not None:
                 v = str(rec_object).lower().strip()                         # record's known value in the claim?
                 return bool(v) and re.search(r"(?<![a-z0-9])" + re.escape(v) + r"(?![a-z0-9])", low) is not None
-            return not inc(text, rec_text or "")                            # no object anywhere -> clash heuristic
+            # NO VALUE AXIS ANYWHERE. This used to return `not inc(...)` -- absence of a numeric or negation
+            # clash reported as support. "the patient is allergic to shellfish" therefore verdicted the claim
+            # "the patient is allergic to peanuts" as SUPPORTED, and attached the contradicting record as the
+            # evidence. Two nouns do not clash numerically, and `object=` is optional on remember(), so most
+            # real stores sit on exactly this path. This is the gate an agent calls before asserting something
+            # to a person; "I found nothing that disagrees" is not "the store says so", and returning the
+            # stronger of the two is how a fabrication gets licensed.
+            if inc(text, rec_text or ""):
+                return False                                                # positive evidence AGAINST
+            return _restates(text, rec_text or "")                          # True, or None for "cannot tell"
         def _out(verdict, cur, matched):
             return {"verdict": verdict,
                     "current": (cur.get("object") if isinstance(cur, dict) else cur),
@@ -6512,11 +6544,18 @@ class Inspeximus:
         # (1) keyed path — precise and supersession-aware
         if key is not None:
             cur = self._current_active(key)
-            if cur is not None and _matches(cur.get("object"), cur["text"]):
+            m = _matches(cur.get("object"), cur["text"]) if cur is not None else False
+            if m is True:
                 return _out("supported", cur, {"id": cur["id"], "object": cur.get("object"),
                                                 "text": cur["text"][:200]})
+            if m is None:
+                # Neither side carries a value, and the claim is not a restatement. The honest answer is
+                # that this store cannot tell -- with the record attached so the caller can judge.
+                return _out("unverifiable", cur, {"id": cur["id"], "object": cur.get("object"),
+                                                  "text": cur["text"][:200]})
             stale = next((h for h in self.history(key)
-                          if h["status"] != "active" and _matches(h.get("object"), h.get("text"))), None)
+                          if h["status"] != "active"
+                          and _matches(h.get("object"), h.get("text")) is True), None)
             if stale is not None:
                 return _out("stale_superseded", (cur.get("object") if cur else None),
                             {"id": stale["id"], "object": stale.get("object"),
@@ -6529,25 +6568,36 @@ class Inspeximus:
         # (2) keyless path — similarity search: active (support / contradict), then retired (stale)
         tvec = self._qvec(text)
         rows = [r for r in self.items if self.tenant is None or r.get("tenant") == self.tenant]
-        contra = None
+        contra = undecidable = None
         for r in rows:
             if r.get("status") != "active":
                 continue
             if self._similarity(text, r, tvec) >= sim_threshold:
-                if _matches(r.get("object"), r["text"]):                    # claim asserts THIS record's value
+                m = _matches(r.get("object"), r["text"])                    # claim asserts THIS record's value?
+                if m is True:
                     return _out("supported", r.get("object"),
                                 {"id": r["id"], "object": r.get("object"), "text": r["text"][:200]})
+                if m is None and undecidable is None:
+                    undecidable = r                     # similar, unrefuted, but nothing to check it against
                 if contra is None and inc(text, r["text"]):
                     contra = r
         for r in rows:
             if r.get("status") == "active":
                 continue
-            if self._similarity(text, r, tvec) >= sim_threshold and _matches(r.get("object"), r["text"]):
+            if (self._similarity(text, r, tvec) >= sim_threshold
+                    and _matches(r.get("object"), r["text"]) is True):
                 return _out("stale_superseded", None,
                             {"id": r["id"], "object": r.get("object"), "text": r["text"][:200]})
         if contra is not None:
             return _out("contradicted", contra.get("object"),
                         {"id": contra["id"], "object": contra.get("object"), "text": contra["text"][:200]})
+        if undecidable is not None:
+            # A similar record exists and does not refute the claim, but nothing here can confirm it either.
+            # Reported as its own verdict rather than folded into `supported` (which would license the
+            # claim) or `unsupported` (which would call a real memory a fabrication).
+            return _out("unverifiable", undecidable.get("object"),
+                        {"id": undecidable["id"], "object": undecidable.get("object"),
+                         "text": undecidable["text"][:200]})
         return _out("unsupported", None, None)
 
     def selection_integrity(self, query: str, k: int = 6, pool: int = 50) -> dict:

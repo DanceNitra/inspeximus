@@ -179,3 +179,49 @@ def test_the_json_output_carries_the_scope_too(store_and_bundle):
     payload = json.loads(r.stdout)
     assert payload["summary"]["content_checked"] is False
     assert any("CONTENT NOT CHECKED" in lim for lim in payload["limits"]), payload["limits"]
+
+
+# ── zero comparisons is not a clean content check ───────────────────────────────────────────────────
+def test_an_audit_that_compared_nothing_is_not_a_pass(store_and_bundle):
+    """The hole in yesterday's fix. `checked` counted RECEIPTS, not comparisons, and `ok` was
+    `not mismatched` -- so a store where nothing matched by id produced zero re-hashes, ok=True, and
+    "content checked, PASS" printed beside the verdict. Hand the auditor the wrong store, or re-mint the
+    ids while rewriting the text, and the strongest possible check-that-cannot-fail results: an audit that
+    compared nothing and said so in the affirmative."""
+    _, bundle, _, _ = store_and_bundle
+    res = verify_bundle(bundle, store_items=[])
+    assert res["ok"] is False, "an audit with zero comparisons must not read as a pass"
+    assert any("no content was compared" in p for p in res["problems"]), res["problems"]
+
+
+def test_the_affirmative_line_counts_comparisons_not_receipts(store_and_bundle):
+    store, bundle, _, _ = store_and_bundle
+    res = verify_bundle(bundle, store_items=list(store.items))
+    assert res["ok"] is True
+    line = next(c for c in res["checks"] if "binds to the receipts" in c)
+    assert " of " in line, f"the line must state comparisons OF receipted records: {line}"
+
+    from inspeximus.audit_bundle import bind_content
+    b = bind_content(bundle, list(store.items))
+    assert b["checked"] == b["receipted"] == 2
+    assert bind_content(bundle, [])["checked"] == 0, "nothing was re-hashed, so nothing was checked"
+
+
+def test_re_minted_ids_do_not_launder_rewritten_text(store_and_bundle):
+    """The attack the zero-comparison hole enabled: keep the chain, replace every record with a rewritten
+    one under a fresh id. Every original lands in `orphaned`, nothing is compared."""
+    store, bundle, _, _ = store_and_bundle
+    forged = [dict(r, id="re" + r["id"][2:], text="Revenue is 900M") for r in store.items]
+    res = verify_bundle(bundle, store_items=forged)
+    assert res["ok"] is False, res
+
+
+def test_a_truncated_orphan_list_says_it_was_truncated(store_and_bundle):
+    """Twenty substituted records used to print five NOTE lines and nothing about the other fifteen."""
+    _, bundle, _, _ = store_and_bundle
+    import copy
+    big = copy.deepcopy(bundle)
+    for i in range(20):
+        big["write_chain"].append(dict(big["write_chain"][0], memory_id=f"ghost{i}", seq=100 + i))
+    res = verify_bundle(big, store_items=[])
+    assert any("more record(s) in the chain are absent" in lim for lim in res["limits"]), res["limits"]

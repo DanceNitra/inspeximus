@@ -96,7 +96,19 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
                 "problems": ["no values were given, so nothing was searched for -- an empty search is "
                              "not a clean result"]}
 
-    skip = set(skip_dirs or ()) | _SKIP_DIRS
+    # REPLACE, not union. The default prunes .git/.venv/node_modules because they are usually noise, but a
+    # caller who passes skip_dirs=set() is asking to look everywhere and used to be overruled silently --
+    # there was no way to scan the one directory where a deleted store most reliably survives forever.
+    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)
+
+    # A path that is not there searches nothing and used to answer "clean": ok=True, 0 files, no problems --
+    # byte-identical to a real all-clear. That is how a typo in a DSAR runbook becomes a clean bill of
+    # health, and it is the same defect the erasure certificate had when its absence proof pointed at a
+    # path that did not exist. Fail closed and name the cause.
+    if not os.path.isdir(root):
+        return {"ok": False, "checked_files": 0, "skipped": [], "findings": [],
+                "problems": [f"{root!r} is not a directory, so nothing was searched -- an unsearched "
+                             f"location is not a clean one"]}
     findings: list[dict] = []
     problems: list[str] = []
     skipped: list[dict] = []
@@ -104,7 +116,16 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
     limit = int(max_file_mb * 1024 * 1024)
 
     for dirpath, dirnames, filenames in os.walk(root, followlinks=follow_symlinks):
+        pruned = [d for d in dirnames if d in skip]
         dirnames[:] = [d for d in dirnames if d not in skip]
+        for d in pruned:
+            # NOT LOOKED AT is not CLEAN. This subtree was dropped without a word, so a secret sitting in
+            # .git/objects -- where a deleted store survives longest -- produced "RESULT: clean" and exit 0.
+            # The file already applies this rule to a file that was too large; a directory is the same claim
+            # at larger scale. `skipped` forces ok=False, which is the honest verdict for "I did not check".
+            skipped.append({"path": os.path.relpath(os.path.join(dirpath, d), root),
+                            "why": "directory not searched (in skip_dirs); pass skip_dirs=set() to "
+                                   "include it"})
         for name in filenames:
             path = os.path.join(dirpath, name)
             rel = os.path.relpath(path, root)
@@ -159,6 +180,13 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
     if skipped:
         problems.append(f"{len(skipped)} file(s) could not be read or were skipped; a store is not clean "
                         f"because part of it was not looked at")
+
+    if checked == 0 and not skipped:
+        # Reported, not failed. A root that does not exist is a typo and fails closed above; a root that
+        # EXISTS and holds nothing is a real location an operator pointed at, and calling that unclean
+        # would be a false alarm on the ordinary case -- and a check that cries wolf gets switched off.
+        problems.append("no files were searched under this root: it exists but is empty. That is a clean "
+                        "result about nothing; confirm the path is the one you meant")
 
     return {"ok": not findings and not skipped, "checked_files": checked,
             "skipped": skipped, "findings": findings, "problems": problems}

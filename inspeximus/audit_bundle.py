@@ -142,11 +142,14 @@ def bind_content(bundle: dict, store_items: list) -> dict:
     by_id = {r.get("id"): r for r in (store_items or [])}
     mismatched, unreceipted, orphaned = [], [], []
 
+    compared = 0                          # records actually RE-HASHED, which is the only number that
+                                          # evidences anything -- len(first) counts receipts, not checks
     for mid, commit in first.items():
         rec = by_id.get(mid)
         if rec is None:
             orphaned.append(mid)
             continue
+        compared += 1
         now = Inspeximus._write_commit(rec)
         # Compare only the fields the bundle actually carries, so a bundle written by an older version
         # (no immutable_sha256) is checked on what it does commit to rather than reported as broken.
@@ -169,8 +172,17 @@ def bind_content(bundle: dict, store_items: list) -> dict:
         problems.append(f"{len(orphaned)} record(s) the chain covers are absent from the store; a "
                         f"legitimate erasure leaves a tombstone, so check the tombstone chain before "
                         f"reading this as tampering")
-    return {"ok": not mismatched, "checked": len(first), "mismatched": mismatched,
-            "unreceipted": unreceipted, "orphaned": orphaned, "problems": problems}
+    if compared == 0 and first:
+        # ZERO COMPARISONS, reported as a pass. Hand it an empty store -- or one whose ids were re-minted
+        # while the text was rewritten -- and every record lands in `orphaned`, nothing is re-hashed, and
+        # `ok` came back True with "content checked" printed beside the verdict. An audit that compared
+        # nothing is the strongest possible version of a check that cannot fail.
+        problems.append(f"NOT ONE of the {len(first)} record(s) in this bundle was found in the store, so "
+                        f"no content was compared at all -- this is not a clean content check, it is the "
+                        f"absence of one (wrong store, or the ids were re-minted)")
+    return {"ok": bool(compared) and not mismatched, "checked": compared, "receipted": len(first),
+            "mismatched": mismatched, "unreceipted": unreceipted, "orphaned": orphaned,
+            "problems": problems}
 
 
 def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1,
@@ -305,9 +317,13 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             bad(f"{len(mismatched)} record(s) no longer match the commitment their FIRST receipt made: "
                 + ", ".join(f"{m.get('memory_id')} ({m.get('field')})" for m in mismatched[:5])
                 + (" ..." if len(mismatched) > 5 else ""))
+        elif not b.get("ok"):
+            for pr in (b.get("problems") or []):
+                if "no content was compared" in pr:
+                    bad(pr)
         else:
-            ok(f"content binds to the receipts: {b.get('checked', 0)} record(s) still hash to what their "
-               f"earliest receipt committed to")
+            ok(f"content binds to the receipts: {b.get('checked', 0)} of {b.get('receipted', 0)} "
+               f"receipted record(s) still hash to what their earliest receipt committed to")
         # A store that GREW since the bundle was taken, or a record erased since, is ordinary operation --
         # the bundle is a snapshot, not a lease. Only `mismatched` is a tamper signal, which is why
         # bind_content itself defines ok as `not mismatched`. Reporting the other two as failures would
@@ -315,9 +331,13 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         for mid in (b.get("unreceipted") or [])[:5]:
             limits.append(f"record {mid} is covered by no receipt in this bundle (written after it was "
                           f"taken, or with receipts disabled) -- not checked, not an accusation")
-        for mid in (b.get("orphaned") or [])[:5]:
+        orph = b.get("orphaned") or []
+        for mid in orph[:5]:
             limits.append(f"record {mid} is in the chain but absent from the store today; check the "
                           f"tombstone chain before reading it as a deletion out of band")
+        if len(orph) > 5:
+            # Truncating to five without saying so turned twenty substituted records into five lines.
+            limits.append(f"...and {len(orph) - 5} more record(s) in the chain are absent from the store")
     else:
         limits.append("CONTENT NOT CHECKED: this bundle is content-free by design, so a clean chain over "
                       "substituted text verifies here. Pass store_items= (or call bind_content) to close it.")

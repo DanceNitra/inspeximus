@@ -2,12 +2,12 @@
   "rows": [
     {
       "policy": "safe",
-      "echo_blocked": 0.0,
-      "reaffirm_honored": 1.0
+      "echo_blocked": 1.0,
+      "reaffirm_honored": 0.0
     },
     {
       "policy": "context",
-      "echo_blocked": 0.0,
+      "echo_blocked": 1.0,
       "reaffirm_honored": 1.0
     },
     {
@@ -22,8 +22,6 @@
     }
   ],
   "problems": [
-    "safe blocks 0.00 of echoes, the docstring says 1.00",
-    "safe honors 1.00 of reaffirms, the docstring says 0.00",
     "the DEFAULT policy blocks 0.00 of echoes; the docstring says safe is the default, so it must match safe's 1.00"
   ]
 }

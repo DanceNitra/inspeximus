@@ -14,6 +14,7 @@ it was given (it is a secret by construction), and a file that could not be read
 skipped, because "clean" must not mean "we did not look".
 """
 import json
+import json
 import os
 import sqlite3
 import sys
@@ -154,13 +155,54 @@ def test_it_finds_residue_in_nested_directories():
 
 
 @pytest.mark.parametrize("skip", [".git", "__pycache__", "node_modules"])
-def test_noise_directories_are_skipped(skip):
+def test_a_skipped_directory_is_reported_and_is_not_a_clean_verdict(skip):
+    """This test used to assert `ok is True` -- it PINNED the defect. A value sitting in `.git` produced
+    "RESULT: clean" and exit 0, byte-identical to a genuinely clean scan, and `.git` is where a deleted
+    store survives longest. The module already applies the right rule to a file that was too large to read
+    ("a store is not clean because part of it was not looked at"); a pruned directory is the same claim at
+    larger scale."""
     d = _dir()
     junk = os.path.join(d, skip)
     os.makedirs(junk)
     with open(os.path.join(junk, "x.txt"), "w", encoding="utf-8") as fh:
         fh.write(SECRET)
-    assert scan_residue(d, [SECRET])["ok"] is True
+
+    rep = scan_residue(d, [SECRET])
+    assert rep["ok"] is False, "not looked at is not clean"
+    assert any(s["path"].endswith(skip) for s in rep["skipped"]), rep["skipped"]
+    assert SECRET not in json.dumps(rep), "and it still must not echo the value"
+
+
+@pytest.mark.parametrize("skip", [".git", "__pycache__", "node_modules"])
+def test_the_caller_can_ask_for_those_directories_to_be_searched(skip):
+    """`skip_dirs` was UNIONED with the default, so no caller could opt out -- there was no way to scan the
+    one directory most likely to hold the residue. It now replaces."""
+    d = _dir()
+    junk = os.path.join(d, skip)
+    os.makedirs(junk)
+    with open(os.path.join(junk, "x.txt"), "w", encoding="utf-8") as fh:
+        fh.write(SECRET)
+
+    rep = scan_residue(d, [SECRET], skip_dirs=set())
+    assert rep["ok"] is False
+    assert any(f["kind"] == "PLAIN" for f in rep["findings"]), rep
+
+
+def test_a_root_that_does_not_exist_is_not_clean():
+    """A typo in a DSAR runbook used to return ok=True with zero files and no problems -- indistinguishable
+    from an all-clear. Exactly the erasure-certificate defect (valid:True while the absence proof pointed at
+    a path that was not there) in a second place."""
+    rep = scan_residue(os.path.join(_dir(), "no-such-subdir"), [SECRET])
+    assert rep["ok"] is False
+    assert rep["problems"] and "not a directory" in rep["problems"][0]
+
+
+def test_an_empty_but_real_directory_is_still_clean_with_a_caveat():
+    """The other direction, deliberately. Failing an existing-but-empty root would cry wolf on the ordinary
+    case, and a check that cries wolf gets switched off -- so it stays clean and says what it means."""
+    rep = scan_residue(_dir(), [SECRET])
+    assert rep["ok"] is True
+    assert any("empty" in p for p in rep["problems"]), rep["problems"]
 
 
 # ── the check wired into erasure itself, which is the only moment it can run ────────────────────────

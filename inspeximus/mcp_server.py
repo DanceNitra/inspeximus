@@ -379,8 +379,12 @@ def verify_claim(text: str, key: str | None = None, object: str | None = None) -
     complement to check_conflict. Returns {'verdict', 'current', 'matched'} where verdict is: 'supported'
     (matches an active memory), 'stale_superseded' (matches a value that has since been CORRECTED/reverted —
     the reply is citing an outdated fact; 'current' is the truth now), 'contradicted' (clashes with current
-    truth), or 'unsupported' (no matching memory — possible fabrication). Supersession-aware, so it catches a
-    corrected fact re-surfacing in the reply — the case a write-gate cannot see. Detects, never writes."""
+    truth), 'unverifiable' (a similar record neither confirms nor refutes it — treat as NOT grounded), or
+    'unsupported' (no matching memory — possible fabrication). ONLY 'supported' means the store backs the
+    claim: until 1.80.0 the absence of a numeric or negation clash was reported as support, so a record
+    saying "allergic to shellfish" verdicted the claim "allergic to peanuts" as 'supported'. Pass `key` and
+    `object` when you have them — that is the decidable path. Supersession-aware, so it catches a corrected
+    fact re-surfacing in the reply — the case a write-gate cannot see. Detects, never writes."""
     return _MEM.verify_claim(text, key=key, object=object)
 
 
