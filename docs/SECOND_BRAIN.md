@@ -29,12 +29,7 @@ NOTES_DIR=/path/to/your/vault python second_brain_mcp.py      # run after a flat
 
 ### See it run (no setup)
 
-![second_brain demo — your notes, thinking](../examples/demo.gif)
-
-`python examples/demo.py` runs every tool against a tiny bundled sample vault — no MCP client, no
-key, no embedder. (Regenerate the GIF with `python examples/_make_gif.py` (Pillow) or
-[`examples/demo.tape`](../examples/demo.tape) + [`vhs`](https://github.com/charmbracelet/vhs).)
-The same session in text:
+A session in text:
 
 ```text
 ▸ relevant_notes("how does feedback speed up learning", k=3)

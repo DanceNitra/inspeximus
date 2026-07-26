@@ -12,7 +12,7 @@ zero-dependency, and the framework is imported lazily only when you use its adap
 | [LangChain](#current-truth-retriever-for-langchain-inspeximusretriever-1110) | `InspeximusRetriever` | `pip install "inspeximus[langchain]"` |
 | [OpenAI Agents SDK](#drop-in-memory-for-the-openai-agents-sdk-inspeximussession-0620) | `InspeximusSession` | `pip install "inspeximus[openai-agents]"` |
 | [AutoGen](#current-truth-memory-for-autogen-inspeximusmemory-070) | `InspeximusMemory` | `pip install "inspeximus[autogen]"` |
-| [LangGraph / LangMem](#langgraph-store-with-queryable-history-inspeximusstore-071) | `InspeximusStore` | `pip install "inspeximus[langgraph]"` · [runnable example](examples/07_langgraph_memory.py) |
+| [LangGraph / LangMem](#langgraph-store-with-queryable-history-inspeximusstore-071) | `InspeximusStore` | `pip install "inspeximus[langgraph]"` · [runnable example](../examples/07_langgraph_memory.py) |
 | [LlamaIndex](#current-truth-long-term-memory-for-llamaindex-inspeximusmemoryblock-073) | `InspeximusMemoryBlock` | `pip install "inspeximus[llamaindex]"` |
 | [Google ADK](#persistent-memory-for-google-adk-inspeximusmemoryservice-074) | `InspeximusMemoryService` | `pip install "inspeximus[google-adk]"` |
 | [Pydantic AI](#memory-as-tools-for-pydantic-ai-inspeximus_toolset-078) | `inspeximus_toolset` | `pip install "inspeximus[pydantic-ai]"` |

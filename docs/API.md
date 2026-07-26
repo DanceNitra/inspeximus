@@ -47,7 +47,7 @@ when a fact is corrected, can the store *undo* the correction on command, and do
 *resurrect* it? inspeximus treats correction as a first-class channel — `revert(key)`, `revert_now` /
 `revert_intent`, `retract_lineage`, `echo_guard`, and the `route()` intent tagger — and we measured it against
 mem0 and Graphiti in their **native configs** with a shared, **ground-truth-blind** judge (harness +
-methodology: [`probes/INTEGRITY_BENCHMARK.md`](probes/INTEGRITY_BENCHMARK.md)):
+methodology: [`probes/INTEGRITY_BENCHMARK.md`](../probes/INTEGRITY_BENCHMARK.md)):
 
 | value-obscuring revert · undo a correction from an unmarked "go back" (n=20) | success | 95% CI |
 |---|---|---|
@@ -102,7 +102,7 @@ grounds to be **Ed25519-signed by an allowlisted key** (self-minted grounds then
 `{pubkey: class}` mapping counts distinct provenance *classes*, so two keys sharing one upstream source count
 once). Honest limit, credited: this is exogenous-trust-root / anti-Sybil (Douceur 2002; DKIM / W3C VC — a
 signature attests *source*, not *truth*); it makes the steward's independence judgement *enforceable*, it does
-not certify independence. Runnable: [`examples/05_review_trigger.py`](examples/05_review_trigger.py).
+not certify independence. Runnable: [`examples/05_review_trigger.py`](../examples/05_review_trigger.py).
 
 ## Governance, erasure & audit
 
@@ -172,7 +172,7 @@ forgiving lexical match so it **runs anywhere, today**. Once the store grows pas
 **fuses lexical (BM25) + semantic with Reciprocal Rank Fusion**. On high-lexical-overlap agent memory
 (e.g. LoCoMo) the fused hybrid *measurably* beats either channel alone (recall@20 **+0.06** over the best
 single channel, 9/10 conversations, conversation-level bootstrap CI excludes 0; receipt:
-[`probes/locomo_retrieval_map.py`](probes/locomo_retrieval_map.py)); where the embedder already dominates
+[`probes/locomo_retrieval_map.py`](../probes/locomo_retrieval_map.py)); where the embedder already dominates
 (paraphrase-heavy corpora, see benchmarks) fusion adds little. `mode='auto'` fuses; `mode='lexical'` /
 `'semantic'` force a single channel.
 
@@ -192,15 +192,15 @@ use — and it generalizes precisely because it lives in **provenance metadata, 
 Honest cost (a calibration tradeoff): a rare-but-true memory that hasn't earned corroboration is filtered
 too (recall 1.00 corroborated vs 0.08 uncorroborated), so this is for **adversarial / untrusted-ingestion**
 use. It raises attacker cost (defeating it needs ≥3 coordinated records with ≥2 forged independent
-provenances), it does not make poisoning impossible. Receipts: [`probes/agentpoison_influence_gate.py`](probes/agentpoison_influence_gate.py),
-[`probes/agentpoison_influence_gate_validation.py`](probes/agentpoison_influence_gate_validation.py).
+provenances), it does not make poisoning impossible. Receipts: [`probes/agentpoison_influence_gate.py`](../probes/agentpoison_influence_gate.py),
+[`probes/agentpoison_influence_gate_validation.py`](../probes/agentpoison_influence_gate_validation.py).
 
 ### Know before you gate: `influence_gate_report()` (0.4.3)
 
 The influence gate is not free, and its cost is **density-dependent** — so check it before you rely on it.
 `influence_gate_report()` returns the gate's **live cost on your store** (`would_block_frac` = the fraction of
 active memories it would filter, plus the corroboration breakdown and an `advice` string). Why it matters, and
-both measured on [`probes/oracle_separation_density.py`](probes/oracle_separation_density.py) (controlled corpus,
+both measured on [`probes/oracle_separation_density.py`](../probes/oracle_separation_density.py) (controlled corpus,
 real embeddings): **(1) density = affordability** — the fraction of *legitimate* high-stakes recalls the gate
 blocks falls from **~51% when each memory is used ~once (sparse)** to **~6% when each is used ~8× (dense)**,
 because a legit memory only earns standing through repeated successful use; in a thin store the gate can't tell a
@@ -221,8 +221,8 @@ bond; one catch turns the attacker's patience into its largest exposed stake. Un
 nothing (records stay recallable for context and audit via `meta['slashed']`); unlike `credit(bad)` it can't be
 out-banked. This makes cost-of-corruption scale with accrued-standing × detectability (the classic
 expected-penalty result — penalty must beat gain / P(caught)), the lever that bites a time-rich attacker a
-per-action cap only lets him amortize. Receipts: [`probes/triad_attacker_split.py`](probes/triad_attacker_split.py),
-[`probes/reversibility_gate_frontier.py`](probes/reversibility_gate_frontier.py).
+per-action cap only lets him amortize. Receipts: [`probes/triad_attacker_split.py`](../probes/triad_attacker_split.py),
+[`probes/reversibility_gate_frontier.py`](../probes/reversibility_gate_frontier.py).
 
 Because detection is imperfect — a self-graded / MINJA-style oracle can be *tricked* into flagging a legitimate
 source, so `slash()` can be **weaponised** to knock out a rival's memory — the forfeiture is reversible:
@@ -240,7 +240,7 @@ sources** as a `taint` (transitively — a summary-of-a-summary still carries th
 matches on *own source OR inherited taint*, so forfeiting a source also burns every derived summary it fed. The
 honest boundary: the app has to *declare* the derivation at the transformation step — `inspeximus` can carry the taint
 through, but it can't recover provenance an opaque summary threw away. This is the substrate everything else is
-deterrence math on top of. Receipt: [`probes/triad_attacker_split.py`](probes/triad_attacker_split.py).
+deterrence math on top of. Receipt: [`probes/triad_attacker_split.py`](../probes/triad_attacker_split.py).
 
 **The cumulative trigger the slash needs — as a case-raiser, not an auto-executioner: `monitor()` (0.4.7,
 hardened 0.4.8).** Retroactive `slash()` *cannot* fire per-slice against a slow salami attacker: per-slice
@@ -266,8 +266,8 @@ attacker-influenceable (MINJA) the auto-trigger becomes a *framing weapon* (feed
 rival → auto-slash the rival; cf. RepTrap / bad-mouthing). Recommended: on a case, cap/freeze the source's
 forward influence (reversible) and queue a **human** review; confirm the `slash()` by hand; keep `restore()` one
 call away. `auto_slash=True` is an explicit opt-in for a high-integrity, un-self-gradable oracle only. Receipts:
-[`probes/triad_attacker_split.py`](probes/triad_attacker_split.py),
-[`probes/reversibility_gate_frontier.py`](probes/reversibility_gate_frontier.py).
+[`probes/triad_attacker_split.py`](../probes/triad_attacker_split.py),
+[`probes/reversibility_gate_frontier.py`](../probes/reversibility_gate_frontier.py).
 
 **Bound the one residual the rate-detector can't: `spend_irreversible()` (0.4.9).** `monitor`'s `k` is a
 tolerated *rate*, so the **strictly-below-`k`** attacker gives the CUSUM negative drift → no detection power above
@@ -282,7 +282,7 @@ permanent (raise a reviewed source's ceiling by hand, not by a cheap auto-refund
 remove the residual, you **price it (`k`), bound it (this lifetime budget), and put a reversible human gate
 (`slash`/`restore`) on the irreversible tail** — but this is **not a closed decomposition**, because all three
 lean on a fourth, unbounded axis: **sound attribution** (correctly assigning an action to its source and labeling
-its irreversibility). Measured: [`probes/lifetime_budget_bound.py`](probes/lifetime_budget_bound.py) shows the
+its irreversibility). Measured: [`probes/lifetime_budget_bound.py`](../probes/lifetime_budget_bound.py) shows the
 same undetectable below-`k` attacker's total blast go from unbounded (50→800 over the horizon) to **capped at
 `budget` regardless of horizon**, while a good source keeps 10 000 free reversible uses.
 
@@ -310,7 +310,7 @@ poisoned origin) doesn't *degrade* the other three, it **voids all of them at on
 layer to appeal to. So bind attribution into the tamper-evident write-receipt chain (enable `receipts=True` /
 `receipt_key=…`): the receipt now commits to each write's canonical sources, and `verify_attribution()` reports any
 active memory whose *current* sources no longer match what was committed. **A relabel becomes loud, not silent.**
-Measured: [`probes/attribution_floor.py`](probes/attribution_floor.py) — a source relabel and a taint-strip are
+Measured: [`probes/attribution_floor.py`](../probes/attribution_floor.py) — a source relabel and a taint-strip are
 both **detected**; a legitimate `slash` does **not** false-alarm; editing a past receipt breaks the hash chain.
 
 **Two honest limits — read this as tamper-EVIDENT, not tamper-PROOF.** (1) **Tamper-evidence ≠ correctness.** A
@@ -340,7 +340,7 @@ carries `attested_key`. Independence is then measured by distinct **Ed25519 publ
 forge** — N sybil variants of one origin collapse to one witness unless the attacker holds N distinct keys (a
 costly identity; Douceur 2002). This is the **exogenous trust root** the attribution problem bottoms out on:
 "can I trust the label" becomes "can I trust the root", i.e. the identity axis. Measured:
-[`probes/attribution_verified_key.py`](probes/attribution_verified_key.py) — a two-string spoof that passes the
+[`probes/attribution_verified_key.py`](../probes/attribution_verified_key.py) — a two-string spoof that passes the
 default gate is **rejected** under strict; two distinct signed witnesses pass; the same key used twice collapses
 to one; forged and claim-replayed attestations are refused at write time. **Honest limit:** this buys unforgeable
 **independence**, not **correctness** — an attested source can still sign a *false* claim (a wrong-at-write-time /
@@ -359,7 +359,7 @@ ratifications + corroboration + `credit()` outcomes, so there is nothing to spoo
 records an external event (`independent_witness` / `reproduction` / `prior_art_empty` / `audit`); a ratifier whose
 `by_key` is the claim's own author is **rejected**, and a duplicate `(by_key, kind, lens)` does not stack, so a
 correlated or repeat auditor adds nothing. The top grade requires a reproduction **plus two distinct lenses** — the
-correlated-auditor guard. Receipt: [`probes/evidence_grade_ratchet.py`](probes/evidence_grade_ratchet.py) shows (1)
+correlated-auditor guard. Receipt: [`probes/evidence_grade_ratchet.py`](../probes/evidence_grade_ratchet.py) shows (1)
 the ratchet holds (a generator upgrading its own claim does nothing), (2) forge-cost — one identity is stuck at
 `claimed`, every rung up needs another distinct key (Douceur; pair with `attestation` to make those keys
 unforgeable), and (3) a replay of our own 32 adversarially-audited posts through the ratchet reproduces the audit's
@@ -378,7 +378,7 @@ write within seconds of each other, but a coordinated forgery writes its witness
 (opt-in, `m.temporal_gate = 60.0` seconds; default `None` → **zero behavior change**, suggested by **hannune** on
 r/RAG) collapses corroborating links that **co-arrive** (timestamps within the window of each other) to **one
 anchor** before the `≥2-distinct-source` count — exactly as source canonicalisation collapses `Wikipedia` /
-`wikipedia.org` to one, but on **time**. Measured ([`probes/temporal_gate_demo.py`](probes/temporal_gate_demo.py)):
+`wikipedia.org` to one, but on **time**. Measured ([`probes/temporal_gate_demo.py`](../probes/temporal_gate_demo.py)):
 a genuine recovery whose witnesses are spread out in time is untouched, a **co-arrival burst is blocked**, and — the
 **honest limit** — a **patient** attacker who spaces the forged writes beyond the window still passes (a timing
 signal can't catch patience; the sleeper again). It's a soft, **decorrelated** layer — timing is orthogonal to both
@@ -391,7 +391,7 @@ A corroborating link proves *independence of source*, never that the witness is 
 2-source poison whose "witnesses" are off-topic filler still clears the `≥2-distinct-source` bar. `coherence_gate`
 (opt-in, `m.coherence_gate = 0.18`; default `None` → **zero behavior change**) makes a link count toward that bar
 only if its witness is **coherent with the claim** — embedder cosine if you passed an `embed` fn, else lexical
-token-Jaccard — above the threshold. Measured ([`probes/coherence_gate_demo.py`](probes/coherence_gate_demo.py)):
+token-Jaccard — above the threshold. Measured ([`probes/coherence_gate_demo.py`](../probes/coherence_gate_demo.py)):
 a genuine on-topic recovery is untouched (no false-withhold), a **lazy off-topic forgery is blocked**, and — the
 **honest limit** — a *sophisticated* forgery with **on-topic** witnesses still passes. So this **raises the forger's
 bar** from "2 distinct source strings" to "2 distinct source strings + on-topic witness text"; it does **not** close
@@ -410,7 +410,7 @@ provenance (MINJA, [arXiv:2503.03704](https://arxiv.org/abs/2503.03704), NeurIPS
 (AgentPoison, NeurIPS 2024). The form that actually **measures** is **store-carried lineage**: `recall()` records what
 it surfaced, and `remember(..., derived=True)` with no explicit parent **auto-stamps `derived_from` from that recall**,
 so a summary written right after a recall inherits its ancestors' taint **by the store** — the untrusted LLM only
-supplies the text and never holds the switch. Measured ([`probes/autostamp_lineage.py`](probes/autostamp_lineage.py)):
+supplies the text and never holds the switch. Measured ([`probes/autostamp_lineage.py`](../probes/autostamp_lineage.py)):
 the laundered summary inherits the root's taint, is not an orphan, and **falls with a `slash()` on the root** (reversible);
 a derived write with **no** preceding recall stays an **orphan** (fail-closed). This lines up with **MemLineage**
 ([arXiv:2605.14421](https://arxiv.org/abs/2605.14421): signature-only 6/6 attacks → 0/6 once ancestor lineage propagates).
@@ -462,7 +462,7 @@ preference). Pass a **low** `prefer_trust` when the match is weak/ambiguous so t
 plain recall. The point is to weight by the **a-priori reliability of the extraction** (e.g. alias-match
 strength: exact-name hit → ~1.0, no-name/ambiguous guess → ~0.0), *not* by the extractor model's own
 self-reported confidence (which is corrupted exactly when it's wrong). MEASURED end-to-end through
-`recall()` on LoCoMo (receipt: [`probes/locomo_soft_prefer_filter.py`](probes/locomo_soft_prefer_filter.py)):
+`recall()` on LoCoMo (receipt: [`probes/locomo_soft_prefer_filter.py`](../probes/locomo_soft_prefer_filter.py)):
 with an extractor that is reliable on exact-name questions (5% wrong) but guesses on ambiguous ones (67%
 wrong), alias-strength-weighted `prefer` scores **recall@20 0.718 (+0.144 over no filter, best of all,
 10/10 conversations)** and — on the subset where the extractor picked the wrong speaker — recovers to
@@ -477,7 +477,7 @@ than one cue at once — e.g. a resolved time window *and* a named speaker:
 of neutral-at-1.0 factors, so a memory matching both is boosted more than one matching a single cue, and a
 non-matching cue is inert. Cap the total with `prefer_max_boost` (a ceiling on the product, like
 Elasticsearch `function_score`'s `max_boost`). A single `dict` + scalar `prefer_trust` is the one-dimension
-case, unchanged. MEASURED (receipt: [`probes/locomo_composed_soft_filters.py`](probes/locomo_composed_soft_filters.py),
+case, unchanged. MEASURED (receipt: [`probes/locomo_composed_soft_filters.py`](../probes/locomo_composed_soft_filters.py),
 self-check 0/1568 vs the shipped path): on LoCoMo questions carrying two independent cues (n=183), the
 product composition scores **recall@20 0.865 vs 0.755 for the best single cue (+0.110, bootstrap CI excludes
 0)**, while a summed boost *capped at one dimension's trust* crowds out (−0.053 — the cap flattens the joint
@@ -486,7 +486,7 @@ compose as a **product**, and if you cap, cap the product — the same choice pr
 (Elasticsearch defaults `score_mode=multiply`). Honest scope: one benchmark, one embedder, near-orthogonal
 cues. Reversible: a single dict / `None` behaves exactly as before.
 
-**Compose only cues you trust** (receipt: [`probes/locomo_correlated_cue_composition.py`](probes/locomo_correlated_cue_composition.py)).
+**Compose only cues you trust** (receipt: [`probes/locomo_correlated_cue_composition.py`](../probes/locomo_correlated_cue_composition.py)).
 A product inherits the product-of-experts *veto* (Hinton 2002): a near-zero factor vetoes, so a target that
 misses *either* cue collapses far below an additive sum or the trusted cue alone — measured, on the subset
 where the second cue is wrong-for-the-query, product recall@20 **0.10 vs sum 0.52 vs one-cue 0.70**. So an
