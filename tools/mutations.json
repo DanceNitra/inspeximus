@@ -4,27 +4,134 @@
     "file": "inspeximus/core.py",
     "old": "policy: str = \"safe\"",
     "new": "policy: str = \"trusting\"",
-    "tests": ["tests/test_echo_policy_panel.py"]
+    "tests": [
+      "tests/test_echo_policy_panel.py"
+    ]
   },
   {
     "name": "the docstring number is edited away from the measurement",
     "file": "inspeximus/core.py",
     "old": "1.00 echo-blocked",
     "new": "0.50 echo-blocked",
-    "tests": ["tests/test_echo_policy_panel.py"]
+    "tests": [
+      "tests/test_echo_policy_panel.py"
+    ]
   },
   {
     "name": "the citation points back at the unrunnable probe",
     "file": "inspeximus/core.py",
     "old": "probes/echo_policy_panel.py",
     "new": "probes/echo_attack_probe_v2.py",
-    "tests": ["tests/test_echo_policy_panel.py"]
+    "tests": [
+      "tests/test_echo_policy_panel.py"
+    ]
   },
   {
     "name": "the echo guard stops blocking a replayed superseded value",
     "file": "probes/echo_policy_panel.py",
     "old": "m.echo_guard = True",
     "new": "m.echo_guard = False",
-    "tests": ["tests/test_echo_policy_panel.py"]
+    "tests": [
+      "tests/test_echo_policy_panel.py"
+    ]
+  },
+  {
+    "name": "the content check stops seeing mismatches",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "mismatched = b.get(\"mismatched\") or []",
+    "new": "mismatched = []",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "the verdict claims content was checked when it was not",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "content_checked = store_items is not None",
+    "new": "content_checked = True",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "ordinary growth is escalated into a failure (false alarm)",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "limits.append(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
+    "new": "bad(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "the CLI stops printing the scope next to the verdict",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "    for lim in res.get(\"limits\") or []:\n        print(f\"  NOTE {lim}\")",
+    "new": "    for lim in []:\n        print(f\"  NOTE {lim}\")",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "the headline CLI stops passing the store through",
+    "file": "inspeximus/cli.py",
+    "old": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)",
+    "new": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold)",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "a mistyped store path is created instead of refused",
+    "file": "inspeximus/cli.py",
+    "old": "            if not os.path.exists(a.store):",
+    "new": "            if False:",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "the headline CLI stops printing the scope",
+    "file": "inspeximus/cli.py",
+    "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")",
+    "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")",
+    "tests": [
+      "tests/test_verify_bundle_content_scope.py"
+    ]
+  },
+  {
+    "name": "torch creeps back to module level (mechanism arm dies)",
+    "file": "probes/agentpoison_influence_gate.py",
+    "old": "import json\nimport os\nimport random\nimport sys",
+    "new": "import json\nimport os\nimport random\nimport sys\nimport torch",
+    "tests": [
+      "tests/test_influence_gate_probes.py"
+    ]
+  },
+  {
+    "name": "the influence gate stops filtering uncorroborated memory",
+    "file": "probes/agentpoison_influence_gate.py",
+    "old": "        return [h for h in hits if corroborated(by_id[h[\"id\"]], by_id)]",
+    "new": "        return list(hits)",
+    "tests": [
+      "tests/test_influence_gate_probes.py"
+    ]
+  },
+  {
+    "name": "the dense arm becomes the default again",
+    "file": "probes/agentpoison_influence_gate.py",
+    "old": "    want_dense = \"--dense\" in argv",
+    "new": "    want_dense = _have_torch()",
+    "tests": [
+      "tests/test_influence_gate_probes.py"
+    ]
+  },
+  {
+    "name": "the hashing embedder stops being normalised",
+    "file": "probes/agentpoison_influence_gate.py",
+    "old": "    return [v / norm for v in vec] if norm else vec",
+    "new": "    return vec",
+    "tests": [
+      "tests/test_influence_gate_probes.py"
+    ]
   }
 ]

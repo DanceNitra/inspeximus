@@ -24,29 +24,81 @@ Metrics (natural-sentence trigger, semantic recall, long dilution queries):
   influence_hijack      : poison is rank-1 among CORROBORATED-only recall (action)   -> expect ~0
   utility_corroborated  : benign query surfaces its corroborated correct memory      -> expect high
   utility_rare          : a deliberately-uncorroborated true memory is still found   -> the honest COST
+
+RUN
+  python probes/agentpoison_influence_gate.py            # the mechanism arm: no torch, no download, ~2s
+  python probes/agentpoison_influence_gate.py --dense    # the three dense retrievers (needs torch)
+
+TWO ARMS, AND THEY ARE NOT THE SAME MEASUREMENT. The three dense retrievers are the headline. The
+deterministic hashing arm exists because this evidence was unreproducible for anyone without a GPU box for
+as long as it needed three model downloads -- and evidence nobody can re-run is, in practice, no evidence.
+It swaps only the embedding space; the corpus, the trigger, the gate and every metric are identical.
+
+  arm                        raw_hijack   influence_hijack   utility_gated_top3
+  all-MiniLM-L6-v2 (dense)        0.938               0.000                0.90
+  bge-small-en-v1.5 (dense)       1.000               0.000                0.90
+  contriever (dense)              0.875               0.000                1.00
+  hashing-256 (mechanism)         1.000               0.000                0.70
+
+The claim -- retrieval is hijacked, influence is not -- holds identically in all four. The hashing arm is
+HARSHER on utility (0.70 vs 0.90-1.00) because it has no synonymy, so a topic query matches only on shared
+words: it understates what the gate costs a real deployment, which is the safe direction for a cheap arm to
+err in. Results are written to separate files and carry `measurement_class`, so the two can never be
+quoted as one number.
 """
 import json
 import os
 import random
 import sys
 
-import torch
-from transformers import AutoModel, AutoTokenizer
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
 from inspeximus import Inspeximus
 import agentpoison_multiretriever_check as M
 
+# torch/transformers are imported INSIDE load(), not here. The claim this file makes -- that a
+# corroboration gate filters an uncorroborated poison at the influence layer, and what that costs a
+# rare-but-true memory -- is about the GATE, not about any particular encoder. Requiring three model
+# downloads before the mechanism can be observed made the evidence unreproducible for everyone without a
+# GPU box, which is the same as having no evidence. The dense-retriever arms are unchanged and still the
+# headline; the deterministic arm below lets anyone watch the mechanism in two seconds.
+
 random.seed(20260702)
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+HASH_DIM = 256
+
+
+def deterministic_embed(text):
+    """A stdlib-only hashing embedder: token -> SHA-1 -> bucket, L2-normalised. No model, no download,
+    identical on every machine and every run.
+
+    It is NOT a dense retriever and no number produced with it may be reported as one -- it has no
+    synonymy, so it can only see lexical overlap. That is enough for THIS mechanism, because the attack
+    works by planting a trigger phrase the carrier queries repeat verbatim, and the gate it defeats is
+    corroboration, which never looks at the embedding at all. Results carry
+    measurement_class="mechanism" so the two arms can never be quoted as one number.
+    """
+    import hashlib
+    import re as _re
+
+    vec = [0.0] * HASH_DIM
+    for tokn in _re.findall(r"[a-z0-9]+", text.lower()):
+        h = hashlib.sha1(tokn.encode()).digest()
+        vec[h[0] % HASH_DIM] += 1.0 if h[1] & 1 else -1.0
+    norm = sum(v * v for v in vec) ** 0.5
+    return [v / norm for v in vec] if norm else vec
 
 
 def load(hf, pool):
+    """The dense-retriever arm. Imported here so the deterministic arm needs neither torch nor a download."""
+    import torch
+    from transformers import AutoModel, AutoTokenizer
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     tok = AutoTokenizer.from_pretrained(hf)
-    mdl = AutoModel.from_pretrained(hf).to(DEVICE).eval()
+    mdl = AutoModel.from_pretrained(hf).to(device).eval()
     def embed(t):
-        e = tok([t], padding=True, truncation=True, max_length=128, return_tensors="pt").to(DEVICE)
+        e = tok([t], padding=True, truncation=True, max_length=128, return_tensors="pt").to(device)
         with torch.no_grad():
             v = M.pooled(mdl, pool, mdl(**e), e["attention_mask"])
         return v[0].cpu().tolist()
@@ -66,8 +118,8 @@ def corroborated(rec, by_id):
     return Inspeximus._distinct_sources(rec.get("links"), by_id) >= 2
 
 
-def run(label, hf, pool, rare_frac=0.2):
-    embed = load(hf, pool)
+def run(label, hf, pool, rare_frac=0.2, embed_fn=None):
+    embed = embed_fn or load(hf, pool)
     st = Inspeximus(None, embed=embed); st.semantic_threshold = 1
     id2topic, ids_by_topic = {}, {}
     for s, t in M.CORPUS:
@@ -133,6 +185,7 @@ def run(label, hf, pool, rare_frac=0.2):
 
     poison_corr = corroborated(by_id[pid], by_id)
     res = {"retriever": label, "natural_trigger_ppl_class": "low (441, evades perplexity filter)",
+           "measurement_class": "mechanism" if embed_fn is not None else "dense-retriever",
            "raw_hijack": round(raw_hj, 3), "influence_hijack": round(inf_hj, 3),
            "utility_gated_top3": round(util, 3),
            "poison_is_corroborated": poison_corr, "rare_frac": rare_frac,
@@ -142,9 +195,43 @@ def run(label, hf, pool, rare_frac=0.2):
     return res
 
 
-OUT = [run("all-MiniLM-L6-v2", "sentence-transformers/all-MiniLM-L6-v2", "mean"),
-       run("bge-small-en-v1.5", "BAAI/bge-small-en-v1.5", "cls"),
-       run("contriever", "facebook/contriever", "mean")]
-print("\n=== INFLUENCE-GATE RESULT ===")
-print(json.dumps(OUT, indent=1))
-json.dump(OUT, open(os.path.join(os.path.dirname(__file__), "agentpoison_influence_gate_result.json"), "w"), indent=1)
+DENSE = [("all-MiniLM-L6-v2", "sentence-transformers/all-MiniLM-L6-v2", "mean"),
+         ("bge-small-en-v1.5", "BAAI/bge-small-en-v1.5", "cls"),
+         ("contriever", "facebook/contriever", "mean")]
+
+
+def _have_torch():
+    import importlib.util
+    return all(importlib.util.find_spec(m) for m in ("torch", "transformers"))
+
+
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else argv
+    # The MECHANISM arm is the default, deliberately. A probe whose default downloads three models behaves
+    # one way on the maintainer's box and another in CI, and "it passed for me" is exactly how eight CI
+    # failures happened earlier today. The dense arms are opt-in; their numbers are committed as the
+    # reference, and the default run is the one anyone can reproduce.
+    want_dense = "--dense" in argv
+    if want_dense and not _have_torch():
+        raise SystemExit("--dense needs torch + transformers:  pip install torch transformers\n"
+                         "(the default run needs neither)")
+
+    if want_dense:
+        out = [run(label, hf, pool) for label, hf, pool in DENSE]
+    else:
+        out = [run("hashing-256 (mechanism, NOT a dense retriever)", None, None,
+                   embed_fn=deterministic_embed)]
+
+    print("\n=== INFLUENCE-GATE RESULT ===")
+    print(json.dumps(out, indent=1))
+    # Separate files per arm. One run of the mechanism arm must not overwrite the dense-retriever
+    # reference -- that is how a cheap number quietly becomes the cited one.
+    name = ("agentpoison_influence_gate_result.json" if want_dense
+            else "agentpoison_influence_gate_mechanism_result.json")
+    with open(os.path.join(os.path.dirname(__file__), name), "w", encoding="utf-8") as fh:
+        json.dump(out, fh, indent=1)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

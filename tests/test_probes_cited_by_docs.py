@@ -6,8 +6,11 @@ of thing:
 
   * 2 imported `_PREFER_GAIN` from the `inspeximus` package, where it is not re-exported -- it lives in
     `inspeximus.core`. Stale evidence: cited, and could not execute. Fixed.
-  * 3 import a sibling module that was NEVER committed (`echo_attack_probe.py`,
-    `agentpoison_multiretriever_check.py`). The citation points at something nobody can run.
+  * 3 imported a sibling module that was NEVER committed (`echo_attack_probe.py`,
+    `agentpoison_multiretriever_check.py`) -- the citation pointed at something nobody could run. FIXED:
+    both modules existed in the research tree all along and had never been copied across. Two of the three
+    probes now run standalone with a deterministic embedder; the third still needs a 71 MB embedding cache,
+    and the claim it carried is re-measured by `echo_policy_panel.py`.
   * the rest need an external dataset (LoCoMo, benchmark output) that this repository does not and should
     not ship.
 
@@ -45,13 +48,14 @@ NOT_STANDALONE = {
     # makes it runnable in CI. Recorded as the precondition it is rather than added to the optional-
     # dependency allow-list, which would have implied `pip install openai` was enough.
     "memory_defense_layer_probe.py": "needs a live LLM endpoint (OPENAI_API_KEY + OPENAI_BASE_URL)",
-    # These three cite a sibling module that is not in this repository at all. Recorded as the defect it
-    # is rather than hidden: the citation currently points at something nobody can execute.
-    "echo_attack_probe_v2.py": "MISSING DEPENDENCY: imports echo_attack_probe.py, never committed",
-    "agentpoison_influence_gate.py":
-        "MISSING DEPENDENCY: imports agentpoison_multiretriever_check.py, never committed",
-    "agentpoison_influence_gate_validation.py":
-        "MISSING DEPENDENCY: imports agentpoison_multiretriever_check.py, never committed",
+    # These three imported a sibling module that was not in this repository at all -- recorded here for a
+    # day as "MISSING DEPENDENCY", which is a defect wearing the costume of a precondition. The modules
+    # existed the whole time in the research tree and had simply never been copied across; they are now
+    # committed, the imports resolve, and what remains is an ordinary data/runtime precondition like the
+    # LoCoMo entries above. Fixing beat re-describing.
+    "echo_attack_probe_v2.py": "needs the MemBench knowledge_update fixture and a local embedder "
+                               "(the 71 MB embedding cache is not redistributable); the policy numbers it "
+                               "produced are re-measured standalone by echo_policy_panel.py",
 }
 
 
@@ -151,13 +155,32 @@ def test_no_stale_entries_in_the_exclusion_list():
     assert not stale, f"NOT_STANDALONE names probes the docs no longer cite: {stale}"
 
 
-def test_the_missing_dependency_probes_are_recorded_as_such():
-    """Three citations point at scripts whose sibling module was never committed. That is a defect, not a
-    precondition, and it should read as one until it is fixed or the citation is dropped."""
-    broken = {k: v for k, v in NOT_STANDALONE.items() if v.startswith("MISSING DEPENDENCY")}
-    assert broken, "if these were fixed, remove them from NOT_STANDALONE rather than leaving the note"
-    for name in broken:
-        assert os.path.exists(os.path.join(PROBES, name))
+def test_no_citation_rests_on_a_module_we_never_committed():
+    """This test used to assert the OPPOSITE -- that three `MISSING DEPENDENCY` entries were present -- and
+    it failed the moment they were fixed, which is what it was written to do.
+
+    The two sibling modules (`echo_attack_probe.py`, `agentpoison_multiretriever_check.py`) had existed in
+    the research tree the whole time and were simply never copied across. They are committed now. The rule
+    they leave behind: a dependency of OURS that is not in the repository is a defect, and describing it in
+    an exclusion list is not a fix. An exclusion may only ever name something outside our control -- a
+    dataset we cannot redistribute, a model download, a live endpoint."""
+    ours = []
+    for name in sorted(NOT_STANDALONE):
+        with open(os.path.join(PROBES, name), encoding="utf-8") as fh:
+            src = fh.read()
+        for sibling in re.findall(r"^\s*(?:import|from)\s+([a-z_][a-z_0-9]*)", src, re.M):
+            if sibling in OPTIONAL_THIRD_PARTY or sibling == "inspeximus":
+                continue
+            if os.path.exists(os.path.join(PROBES, sibling + ".py")):
+                continue
+            try:                                  # stdlib and installed packages are fine
+                __import__(sibling)
+            except ImportError:
+                ours.append(f"{name} imports {sibling!r}, which is not in probes/ and not installable")
+    assert not ours, ("a cited probe depends on something of ours that was never committed; commit it "
+                      "rather than describing it: " + "; ".join(ours))
+    assert not [v for v in NOT_STANDALONE.values() if v.startswith("MISSING DEPENDENCY")], \
+        "MISSING DEPENDENCY is a defect wearing the costume of a precondition; fix it instead"
 
 
 # ── the skip above must not become a way to not look ────────────────────────────────────────────────

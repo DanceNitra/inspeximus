@@ -21,35 +21,58 @@ import os
 import random
 import sys
 
-import torch
-from transformers import AutoModel, AutoTokenizer
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
 from inspeximus import Inspeximus
 import agentpoison_multiretriever_check as M
+import agentpoison_influence_gate as G          # the deterministic embedder lives with the gate probe
 
 random.seed(20260702)
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-tok = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-mdl = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2").to(DEVICE).eval()
+
+# The encoder is swappable and lazy. all-MiniLM stays the reference arm (--dense), but nothing in the three
+# questions this file asks -- what the gate costs a rare memory, what it costs an attacker, whether it
+# holds at 10k -- is a property of MiniLM. Requiring a model download before any of it could be observed
+# made the validation unreproducible for everyone without a GPU box, which is the same as unvalidated.
+_DENSE = {}
+
+
+def _dense_pair():
+    if not _DENSE:
+        import torch
+        from transformers import AutoModel, AutoTokenizer
+        dev = "cuda" if torch.cuda.is_available() else "cpu"
+        _DENSE["torch"] = torch
+        _DENSE["tok"] = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+        _DENSE["mdl"] = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2").to(dev).eval()
+        _DENSE["dev"] = dev
+    return _DENSE
+
+
+def _dense_embed_batch(texts, bs=256):
+    d = _dense_pair(); torch = d["torch"]
+    out = []
+    for i in range(0, len(texts), bs):
+        e = d["tok"](texts[i:i + bs], padding=True, truncation=True, max_length=64,
+                     return_tensors="pt").to(d["dev"])
+        with torch.no_grad():
+            v = M.pooled(d["mdl"], "mean", d["mdl"](**e), e["attention_mask"])
+        out.extend(v.cpu().tolist())
+    return out
+
+
+ARM = "hashing-256 (mechanism, NOT a dense retriever)"
 
 
 def embed(t):
-    e = tok([t], padding=True, truncation=True, max_length=128, return_tensors="pt").to(DEVICE)
-    with torch.no_grad():
-        v = M.pooled(mdl, "mean", mdl(**e), e["attention_mask"])
-    return v[0].cpu().tolist()
+    if ARM.startswith("hashing"):
+        return G.deterministic_embed(t)
+    return _dense_embed_batch([t])[0]
 
 
 def embed_batch(texts, bs=256):
-    out = []
-    for i in range(0, len(texts), bs):
-        e = tok(texts[i:i + bs], padding=True, truncation=True, max_length=64, return_tensors="pt").to(DEVICE)
-        with torch.no_grad():
-            v = M.pooled(mdl, "mean", mdl(**e), e["attention_mask"])
-        out.extend(v.cpu().tolist())
-    return out
+    if ARM.startswith("hashing"):
+        return [G.deterministic_embed(t) for t in texts]
+    return _dense_embed_batch(texts, bs)
 
 
 TRIG = "the old lighthouse still guides ships along the rocky coast"
@@ -196,14 +219,35 @@ def scale_sweep(sizes=(60, 500, 2000, 10000)):
     return rows
 
 
-print("(1) rare-memory cost:")
-rc = rare_cost(); print("   ", json.dumps(rc))
-print("(2) attacker-corroboration ladder:")
-al = attacker_ladder(); print("   ", json.dumps(al))
-print("(3) scale sweep:")
-ss = scale_sweep()
+def main(argv=None):
+    global ARM
+    argv = sys.argv[1:] if argv is None else argv
+    dense = "--dense" in argv
+    if dense:
+        ARM = "all-MiniLM-L6-v2 (dense)"
+    # 10k stays opt-in: it is the answer to the skeptic's scale question, and it is also the slowest thing
+    # here. The default run must stay fast enough that people actually run it.
+    sizes = (60, 500, 2000, 10000) if (dense or "--full" in argv) else (60, 500, 2000)
 
-out = {"rare_cost": rc, "attacker_ladder": al, "scale_sweep": ss}
-json.dump(out, open(os.path.join(os.path.dirname(__file__), "agentpoison_influence_gate_validation_result.json"), "w"), indent=1)
-print("\n=== VALIDATION SUMMARY ===")
-print(json.dumps(out, indent=1))
+    print(f"arm: {ARM}")
+    print("(1) rare-memory cost:")
+    rc = rare_cost(); print("   ", json.dumps(rc))
+    print("(2) attacker-corroboration ladder:")
+    al = attacker_ladder(); print("   ", json.dumps(al))
+    print("(3) scale sweep:")
+    ss = scale_sweep(sizes=sizes)
+
+    out = {"arm": ARM, "measurement_class": "dense-retriever" if dense else "mechanism",
+           "rare_cost": rc, "attacker_ladder": al, "scale_sweep": ss}
+    # Separate files per arm, so a cheap run can never overwrite the cited reference.
+    name = ("agentpoison_influence_gate_validation_result.json" if dense
+            else "agentpoison_influence_gate_validation_mechanism_result.json")
+    with open(os.path.join(os.path.dirname(__file__), name), "w", encoding="utf-8") as fh:
+        json.dump(out, fh, indent=1)
+    print("\n=== VALIDATION SUMMARY ===")
+    print(json.dumps(out, indent=1))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
