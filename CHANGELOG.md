@@ -10,20 +10,25 @@ run.** Those stores currently publish a truncated anchor and export a bundle nob
 the version that wrote it.
 
 1.68.0 put `amends` into a write receipt's hash preimage. It reached `_emit_write_receipt` and
-`verify_writes`, and NOT `_chain_core` -- which is what `anchor()` and the offline bundle verifier use --
-nor `_content_free_writes`, which decides what actually travels in the bundle. Four consumers of one
-preimage; the change reached two. Measured after a single `slash()`:
+`verify_writes`, and NOT `_chain_core` -- which the offline bundle verifier uses -- nor
+`_content_free_writes`, which decides what actually travels in the bundle. Measured after a single
+`slash()`, against the installed 1.68.0 and 1.71.0 packages:
 
 ```
 verify_writes()   -> True          the store says it is fine
 verify_bundle()   -> False         "write chain breaks at index 1"
-anchor()          -> n_writes = 1  with TWO receipts present
 ```
 
-Both halves matter. `anchor()` is the externally-publishable signed tree head, so under-counting it means
-the operator commits to a truncated history and an auditor comparing against it later sees a store that
-grew unexplainably. `audit_bundle` is what an auditor verifies OFFLINE with no store and no key, and it
-could not be verified at all.
+`audit_bundle` is what an auditor verifies OFFLINE with no store and no key, so for any store where
+standing had ever been revoked, the offline audit path did not work -- not even under the version that
+produced the bundle.
+
+**CORRECTION to the first version of this entry.** It also claimed `anchor()` was committing to a
+truncated chain ("n_writes = 1 with TWO receipts present"). That was WRONG, and it was my own misreading:
+the fixture behind it used a record that never graduated, so `slash()` changed no committed field, no
+amendment was emitted, and the store genuinely held ONE receipt. Re-measured against the installed
+packages with a fixture that does graduate: `anchor_n_writes=2` with `receipts=2` on 1.68.0, 1.71.0 AND
+1.72.0 alike. The anchor was never affected. The bundle defect and the fix are unchanged.
 
 The fix is one fix, not four: `Inspeximus._chain_core` is now THE definition of the preimage, and the
 emitter and the verifier both call it. The bundle exporter carries `amends` the way it already carried the

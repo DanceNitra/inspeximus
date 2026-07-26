@@ -4,16 +4,21 @@
 and NOT in `_chain_core` -- which is what `anchor()` and the offline `audit_bundle` verifier use. Nor in
 `_content_free_writes`, which decides what actually travels in the bundle.
 
-Measured on 1.71.0, after a single slash():
+Measured against the INSTALLED 1.68.0 and 1.71.0 packages, after a single slash():
 
     verify_writes()      -> True          (the store says it is fine)
     verify_bundle()      -> False         "write chain breaks at index 1"
-    anchor()             -> n_writes = 1  with TWO receipts present
 
-The anchor is the externally-publishable signed tree head. Under-counting it means the operator commits to
-a truncated history and an auditor comparing against it sees a store that grew "unexplainably". And the
-bundle is the artefact an auditor verifies offline with no store and no key -- so the offline audit path
-was broken for every store where standing had ever been revoked, including by the version that wrote it.
+The bundle is the artefact an auditor verifies offline with no store and no key, so the offline audit path
+was broken for every store where standing had ever been revoked -- including under the version that wrote
+the bundle.
+
+A CORRECTION belongs here too. The first version of this file also claimed `anchor()` was committing to a
+truncated chain, "n_writes = 1 with TWO receipts present". That was my own misreading: the fixture behind
+it used a record that never graduated, so `slash()` changed no committed field, no amendment was emitted,
+and the store really did hold one receipt. Re-measured with a fixture that graduates, the anchor reports
+n_writes=2 of 2 on 1.68.0, 1.71.0 and 1.72.0 alike -- it was never affected. The anchor assertion below is
+kept as a genuine invariant, but it is NOT a regression test: it passes before and after.
 
 The fix is not four fixes: `_chain_core` is now THE definition and the emitter and verifier both call it.
 These tests assert the surfaces AGREE, because that is the property that was violated -- each one on its
