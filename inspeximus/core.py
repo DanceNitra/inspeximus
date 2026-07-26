@@ -3986,7 +3986,8 @@ class Inspeximus:
           - "safe" (default): treat as an echo — never restores. With echo_guard on it lands retired
             (judge-logged 'echo_guard'); with echo_guard off it is written WITHOUT the key so it cannot
             LWW-clobber the current value. Cost: a legitimate unmarked reaffirm is refused (measured
-            1.00 echo-blocked / 0.00 reaffirm-honored).
+            1.00 echo-blocked / 0.00 reaffirm-honored — reproduce with
+            `python probes/echo_policy_panel.py`, which needs no dataset, no network and no LLM).
           - "context": restore when `context` (the preceding turn) shows change-awareness (a change word
             + the current value). Separates honest twins (1.00/1.00) but is FORGEABLE — an attacker who
             writes two turns walks through it (forged-context echo restored 100%). Use only when the

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "route()'s default policy drifts from safe to trusting",
+    "file": "inspeximus/core.py",
+    "old": "policy: str = \"safe\"",
+    "new": "policy: str = \"trusting\"",
+    "tests": ["tests/test_echo_policy_panel.py"]
+  },
+  {
+    "name": "the docstring number is edited away from the measurement",
+    "file": "inspeximus/core.py",
+    "old": "1.00 echo-blocked",
+    "new": "0.50 echo-blocked",
+    "tests": ["tests/test_echo_policy_panel.py"]
+  },
+  {
+    "name": "the citation points back at the unrunnable probe",
+    "file": "inspeximus/core.py",
+    "old": "probes/echo_policy_panel.py",
+    "new": "probes/echo_attack_probe_v2.py",
+    "tests": ["tests/test_echo_policy_panel.py"]
+  },
+  {
+    "name": "the echo guard stops blocking a replayed superseded value",
+    "file": "probes/echo_policy_panel.py",
+    "old": "m.echo_guard = True",
+    "new": "m.echo_guard = False",
+    "tests": ["tests/test_echo_policy_panel.py"]
+  }
+]
