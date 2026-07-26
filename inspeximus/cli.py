@@ -221,6 +221,9 @@ def main(argv=None):
     av.add_argument("bundle", help="the bundle json to verify")
     av.add_argument("--witnesses", default=None, help="comma-separated allowlisted witness pubkeys (hex)")
     av.add_argument("--threshold", type=int, default=1, help="k-of-n witness threshold")
+    av.add_argument("--store", default=None,
+                    help="the store file the bundle came from; binds the receipts to the CONTENT it "
+                         "serves today. Without it a clean chain over substituted text still reads PASS.")
 
     ins = sub.add_parser("install", help="register the MCP server in an editor's own config file")
     ins.add_argument("--ide", required=True,
@@ -253,7 +256,17 @@ def main(argv=None):
         with open(a.bundle, encoding="utf-8") as f:
             bundle = json.load(f)
         wl = [w.strip() for w in a.witnesses.split(",")] if a.witnesses else None
-        res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold)
+        items = None
+        if a.store:
+            # Opening a store CREATES it when the path does not exist, and an auditor who mistyped would
+            # then be handed a clean verdict over the empty store they had just made -- the same shape as
+            # the erasure certificate that reported valid while its absence proof pointed at a typo.
+            if not os.path.exists(a.store):
+                print(f"  FAIL --store {a.store} does not exist; refusing to create a store while "
+                      f"verifying, because an empty one verifies clean")
+                return 1
+            items = list(_store(a.store, receipts=True).items)
+        res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)
         if a.json:
             _out(res, True)
         else:
@@ -261,9 +274,12 @@ def main(argv=None):
                 print(f"  OK   {c}")
             for pr in res["problems"]:
                 print(f"  FAIL {pr}")
+            for lim in res.get("limits") or []:
+                print(f"  NOTE {lim}")
             s = res["summary"]
             print(f"\nVERDICT: {'PASS' if res['ok'] else 'FAIL'}  "
                   f"({s.get('writes')} writes, {s.get('erasures')} erasures"
+                  f", content {'checked' if s.get('content_checked') else 'NOT checked'}"
                   f"{', operator-adversarial' if s.get('operator_adversarial') else ''})")
         return 0 if res["ok"] else 1
 

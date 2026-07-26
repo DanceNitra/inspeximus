@@ -11,7 +11,7 @@ attests it unaltered. The self-correcting memory layer for AI agents.*
 back — deterministically, with no LLM on the write path. Extracted from an autonomous research OS that has run
 it daily over 10,000 notes.*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.78.0
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.79.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -231,12 +231,16 @@ store nor the receipt key**:
 inspeximus --receipts remember "retention policy is 90 days" --key policy::retention --object 90d
 inspeximus audit-build --out bundle.json        # operator exports (content-free: hashes + surrogate ids, no text)
 inspeximus audit-verify bundle.json             # auditor runs this — offline, exit 0 = PASS, 1 = FAIL
+inspeximus audit-verify bundle.json --store m.json   # ...and bind it to the CONTENT served today
 ```
 
 `audit-verify` re-walks the entire write **and** erasure history from genesis, confirms every hash and
-prev-link, checks the tips/counts against the signed anchor, and fails on any post-export alteration — with
-nothing but the file. Pass `--witnesses <pubkeys>` to also verify external co-signatures (the operator-adversarial
-check from the witness network above). It is a tamper-evident **record-keeping artifact, not a compliance
+prev-link, checks the tips/counts against the signed anchor, and fails on any alteration **of the chain** —
+with nothing but the file. It does **not** check content: the bundle carries hashes and never text, so a
+clean chain over substituted text reads PASS. That limit is now printed next to the verdict (`content NOT
+checked`) instead of left to be inferred; pass `--store` to close it, and a record that no longer matches
+its earliest receipt fails the verdict. Pass `--witnesses <pubkeys>` to also verify external co-signatures
+(the operator-adversarial check from the witness network above). It is a tamper-evident **record-keeping artifact, not a compliance
 certification** — it proves the *acts* (a write with this commitment at T; a record erased at T for request R)
 and their append-only integrity, never the content (a hash of PII is still PII). Full demo:
 `examples/09_audit_bundle.py`.

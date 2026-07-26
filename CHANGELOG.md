@@ -3,6 +3,39 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.79.0 - verify_bundle says what it did NOT check
+
+**BEHAVIOUR CHANGE.** `verify_bundle()` gains `store_items=` and returns a new `limits` list plus
+`summary.content_checked`. Passing the store can now turn a PASS into a FAIL. The CLI prints `NOTE` lines
+and the verdict line gained `content checked / content NOT checked`. No existing call changes its verdict:
+without `store_items` the result is what it always was, now with its scope stated.
+
+The bundle is content-free by design -- it carries hashes, never text -- so checks 1-7 are structurally
+blind to what the store serves today. That is defensible. The output was not: an auditor holding a
+substituted store ran the documented command, read `VERDICT: PASS`, and nothing said the one question they
+came to ask had gone unasked. Measured against every published version: a record edited after export
+verified clean.
+
+```
+inspeximus.audit_bundle verify bundle.json
+#   OK   write chain verifies from genesis: 2 append-only records -> anchor tip
+#   NOTE CONTENT NOT CHECKED: this bundle is content-free by design, so a clean chain over
+#        substituted text verifies here. Pass store_items= (or call bind_content) to close it.
+#   VERDICT: PASS  (2 writes, 0 erasures, content NOT checked)
+
+inspeximus.audit_bundle verify bundle.json --store m.json
+#   FAIL 1 record(s) no longer match the commitment their FIRST receipt made: 966d756909 (immutable_sha256)
+#   VERDICT: FAIL  (2 writes, 0 erasures, content checked)     # exit 1, so it gates CI
+```
+
+Only `mismatched` fails the verdict. A store that GREW since the bundle was taken, or a record erased
+since, is ordinary operation -- a bundle is a snapshot, not a lease -- so those are `NOTE` lines. Calling
+them failures would false-alarm on every normal write, which is the same defect as the naive anchor-tip
+comparison that looked like detection and fired on benign growth.
+
+`bind_content` (1.74.0) already did the content half. It was a separate function nobody was routed to,
+which is why this is a defect in the verdict rather than a missing capability.
+
 ## 1.78.0 - the residue check where you can actually reach it: CLI and MCP
 
 A capability nobody can run in three seconds may as well not exist. `erasure_residue` was Python-only in

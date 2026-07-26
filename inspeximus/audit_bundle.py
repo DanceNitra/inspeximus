@@ -173,7 +173,8 @@ def bind_content(bundle: dict, store_items: list) -> dict:
             "unreceipted": unreceipted, "orphaned": orphaned, "problems": problems}
 
 
-def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1) -> dict:
+def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1,
+                  store_items: list | None = None) -> dict:
     """STANDALONE offline verification of an audit bundle -- needs only the file (no store, no receipt key).
     Checks, in order: (1) the bundle's own hash; (2) the write chain re-walks from genesis and its tip+count
     match the anchor; (3) same for the tombstone chain; (4) the anchor's sth_hash is internally consistent;
@@ -184,7 +185,15 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     Checks (6) coverage-of-the-store and (7) chain-covers-every-record are ADVISORY for the same reason and
     one step weaker: they read fields the exporter controls (`governance.proof.verified`, `n_records`) under an
     UNKEYED bundle hash, so both can be forged by recomputing it. They catch a misconfigured or accidentally
-    altered export -- the common case -- and prove nothing against a determined one."""
+    altered export -- the common case -- and prove nothing against a determined one.
+
+    CONTENT. The bundle carries hashes and never text, so none of the above says anything about what the
+    store is serving today: a clean chain over substituted content verifies PASS here, which is precisely
+    what an out-of-band edit plus a legitimate amendment produces. Pass `store_items=` (a dump of the
+    store) and check (8) re-derives each record's commitment against the EARLIEST receipt covering it, and
+    a mismatch becomes a problem like any other. Without it the verdict is still returned -- the chain
+    genuinely did verify -- but `summary.content_checked` is False and `limits` says so in words, because
+    an `ok` that quietly omits the one thing an auditor came to ask is worse than a refusal."""
     checks, problems = [], []
 
     def ok(msg): checks.append(msg)
@@ -285,11 +294,44 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             bad("this bundle carries NO write or tombstone receipts -- nothing here to verify, which is "
                 "not the same as verified")
 
+    # (8) CONTENT -- the one thing checks 1-7 structurally cannot see. Folded in only when the caller hands
+    # over the store; otherwise the omission is stated rather than left to be inferred from an absent line.
+    limits = []
+    content_checked = store_items is not None
+    if content_checked:
+        b = bind_content(bundle, store_items)
+        mismatched = b.get("mismatched") or []
+        if mismatched:
+            bad(f"{len(mismatched)} record(s) no longer match the commitment their FIRST receipt made: "
+                + ", ".join(f"{m.get('memory_id')} ({m.get('field')})" for m in mismatched[:5])
+                + (" ..." if len(mismatched) > 5 else ""))
+        else:
+            ok(f"content binds to the receipts: {b.get('checked', 0)} record(s) still hash to what their "
+               f"earliest receipt committed to")
+        # A store that GREW since the bundle was taken, or a record erased since, is ordinary operation --
+        # the bundle is a snapshot, not a lease. Only `mismatched` is a tamper signal, which is why
+        # bind_content itself defines ok as `not mismatched`. Reporting the other two as failures would
+        # false-alarm on every normal write, the same defect as the naive anchor-tip comparison.
+        for mid in (b.get("unreceipted") or [])[:5]:
+            limits.append(f"record {mid} is covered by no receipt in this bundle (written after it was "
+                          f"taken, or with receipts disabled) -- not checked, not an accusation")
+        for mid in (b.get("orphaned") or [])[:5]:
+            limits.append(f"record {mid} is in the chain but absent from the store today; check the "
+                          f"tombstone chain before reading it as a deletion out of band")
+    else:
+        limits.append("CONTENT NOT CHECKED: this bundle is content-free by design, so a clean chain over "
+                      "substituted text verifies here. Pass store_items= (or call bind_content) to close it.")
+    if not (witnesses and cosigs):
+        limits.append("NOT OPERATOR-ADVERSARIAL: without witness co-signatures on a prior anchor, a "
+                      "key-holder rewrite is internally consistent by construction.")
+
     return {
         "ok": not problems,
         "checks": checks,
         "problems": problems,
+        "limits": limits,
         "summary": {
+            "content_checked": content_checked,
             "writes": anchor.get("n_writes"),
             "erasures": anchor.get("n_tombstones"),
             "erasure_requests": len(gov.get("by_request") or {}),
@@ -313,6 +355,9 @@ def _cli(argv=None):
     v.add_argument("bundle", help="the bundle json to verify")
     v.add_argument("--witnesses", default=None, help="comma-separated allowlisted witness pubkeys (hex)")
     v.add_argument("--threshold", type=int, default=1, help="k-of-n witness threshold")
+    v.add_argument("--store", default=None,
+                   help="the store file the bundle came from; binds the receipts to the CONTENT it serves "
+                        "today. Without it a clean chain over substituted text still reads PASS.")
     a = ap.parse_args(argv)
 
     if a.cmd == "build":
@@ -332,13 +377,21 @@ def _cli(argv=None):
     with open(a.bundle, encoding="utf-8") as f:
         bundle = json.load(f)
     wl = [w.strip() for w in a.witnesses.split(",")] if a.witnesses else None
-    res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold)
+    items = None
+    if a.store:
+        items = list(Inspeximus(path=a.store, receipts=True).items)
+    res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)
     for c in res["checks"]:
         print(f"  OK   {c}")
     for pr in res["problems"]:
         print(f"  FAIL {pr}")
+    # Printed with the verdict, never below it: a PASS whose scope is only visible to someone who read the
+    # docstring is the same silent assurance this check exists to remove.
+    for lim in res.get("limits") or []:
+        print(f"  NOTE {lim}")
     print(f"\nVERDICT: {'PASS' if res['ok'] else 'FAIL'}  "
           f"({res['summary'].get('writes')} writes, {res['summary'].get('erasures')} erasures"
+          f", content {'checked' if res['summary'].get('content_checked') else 'NOT checked'}"
           f"{', operator-adversarial' if res['summary'].get('operator_adversarial') else ''})")
     return 0 if res["ok"] else 1
 
