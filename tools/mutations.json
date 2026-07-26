@@ -133,5 +133,32 @@
     "tests": [
       "tests/test_influence_gate_probes.py"
     ]
+  },
+  {
+    "name": "the census stops seeing module-level guards",
+    "file": "tools/skip_census.py",
+    "old": "        if \"importorskip\" in seg:",
+    "new": "        if False:",
+    "tests": [
+      "tests/test_skip_census.py"
+    ]
+  },
+  {
+    "name": "the census counts by importing (environment-dependent again)",
+    "file": "tools/skip_census.py",
+    "old": "        absent = [d for d in deps if importlib.util.find_spec(d) is None]",
+    "new": "        absent = []",
+    "tests": [
+      "tests/test_skip_census.py"
+    ]
+  },
+  {
+    "name": "the integrations CI job is deleted",
+    "file": ".github/workflows/ci.yml",
+    "old": "  integrations:",
+    "new": "  integrations_disabled:",
+    "tests": [
+      "tests/test_skip_census.py"
+    ]
   }
 ]

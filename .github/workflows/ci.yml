@@ -18,5 +18,31 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest cryptography
+      # The BASE environment on purpose: the core is zero-dependency and this leg proves it stays that way.
+      # It is not the whole suite -- see the `integrations` job.
       - name: Run tests
         run: python -m pytest tests/ -q
+
+  # 240 tests across 21 modules sit behind module-level import guards. In the base job a 29-test module
+  # collects as ONE skip line, so the suite reported "993 passed, 43 skipped" while the local run collected
+  # 1137 -- roughly a hundred tests that had never run in CI at all, and nothing said so. Excluding them
+  # was never a decision anyone made; it was the default. This job installs the optional dependencies so
+  # they actually run.
+  integrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install with every optional dependency
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest cryptography numpy
+          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]"
+          pip install haystack-ai
+      - name: Run tests
+        run: python -m pytest tests/ -q -rs
+      - name: How much is still not running here
+        if: always()
+        run: python tools/skip_census.py
