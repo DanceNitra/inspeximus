@@ -82,15 +82,57 @@ def test_every_cited_probe_exists(probe):
         f"docs cite probes/{probe} as evidence and the file is not in the repository"
 
 
+#: Third-party modules a probe may legitimately need and a bare environment may legitimately lack. Read
+#: from the declared extras, plus the scientific packages the analysis probes use. DECLARED, not inferred:
+#: an unrecognised missing module is a defect, because `echo_attack_probe.py` -- a sibling that was never
+#: committed -- fails with exactly the same ModuleNotFoundError as an absent pip package. Skipping on the
+#: shape of the error would have quietly swallowed the one finding this file exists to surface.
+def _optional_third_party():
+    import re as _re
+
+    names = {"numpy", "scipy", "pandas", "matplotlib", "sklearn", "yaml"}
+    with open(os.path.join(ROOT, "pyproject.toml"), encoding="utf-8") as fh:
+        block = fh.read().split("[project.optional-dependencies]", 1)
+    if len(block) == 2:
+        for dep in _re.findall(r'"([A-Za-z0-9_.\[\]-]+)', block[1].split("\n[", 1)[0]):
+            names.add(dep.split("[")[0].split(">")[0].split("=")[0].replace("-", "_"))
+    # distribution name -> import name, where they differ
+    names |= {"langchain_core", "llama_index", "autogen_core", "autogen_agentchat",
+              "google", "agents", "pydantic_ai", "crewai", "pydantic", "mcp", "langgraph"}
+    return names
+
+
+OPTIONAL_THIRD_PARTY = _optional_third_party()
+
+
+def _missing_module(stderr: str) -> str | None:
+    m = re.search(r"No module named '([\w.]+)'", stderr or "")
+    return m.group(1).split(".")[0] if m else None
+
+
 @pytest.mark.parametrize("probe", _standalone())
 def test_a_standalone_cited_probe_still_runs(probe):
     """Against THIS repository, not whatever pip installed -- the same mistake that made the examples
-    suite pass while never exercising the working tree."""
+    suite pass while never exercising the working tree.
+
+    Locally every one of these passed; in CI eight failed, because this box has langgraph, autogen,
+    pydantic-ai and numpy installed and the CI base environment has none of them. Local green is not CI
+    green whenever an optional dependency is in reach -- a lesson this repository had already written
+    down and I repeated anyway. The skip below is therefore narrow and declared."""
     r = subprocess.run([sys.executable, os.path.join("probes", probe)],
                        cwd=ROOT, capture_output=True, text=True, timeout=180,
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
                             + os.environ.get("PYTHONPATH", "")})
+
+    missing = _missing_module(r.stderr) if r.returncode != 0 else None
+    if missing and missing in OPTIONAL_THIRD_PARTY:
+        pytest.skip(f"{probe} needs the optional third-party module {missing!r}, "
+                    f"which this environment does not have")
+    assert not (missing and missing not in OPTIONAL_THIRD_PARTY), (
+        f"probes/{probe} cannot import {missing!r}, and that is not a declared optional dependency. If it "
+        f"is one, add it to the extras; if it is a sibling module of ours that was never committed, that "
+        f"is the defect -- do not skip it away.")
     assert r.returncode == 0, (
         f"probes/{probe} is cited as evidence and exits {r.returncode}. If it needs a dataset or a "
         f"prepared store, add it to NOT_STANDALONE with the reason instead of leaving the citation "
@@ -110,3 +152,38 @@ def test_the_missing_dependency_probes_are_recorded_as_such():
     assert broken, "if these were fixed, remove them from NOT_STANDALONE rather than leaving the note"
     for name in broken:
         assert os.path.exists(os.path.join(PROBES, name))
+
+
+# ── the skip above must not become a way to not look ────────────────────────────────────────────────
+def test_the_optional_list_is_declared_not_guessed():
+    """It is built from pyproject's extras. If those are renamed and this silently empties, every probe
+    failure would turn back into a hard failure -- noisy, but honest. The dangerous direction is the
+    other one, so the assertion is on the content, not merely the size."""
+    assert {"langgraph", "numpy", "pydantic_ai", "autogen_core"} <= OPTIONAL_THIRD_PARTY
+    assert "echo_attack_probe" not in OPTIONAL_THIRD_PARTY
+
+
+def test_a_missing_sibling_of_ours_is_not_skipped_away():
+    """THE discriminator. A never-committed sibling module raises exactly the same ModuleNotFoundError as
+    an absent pip package, so skipping on the shape of the error would have swallowed the finding this
+    file exists to report -- three cited probes import `echo_attack_probe.py` /
+    `agentpoison_multiretriever_check.py`, which are not in this repository at all."""
+    for ours in ("echo_attack_probe", "agentpoison_multiretriever_check", "inspeximus"):
+        stderr = f"ModuleNotFoundError: No module named '{ours}'"
+        assert _missing_module(stderr) == ours
+        assert _missing_module(stderr) not in OPTIONAL_THIRD_PARTY, \
+            f"a missing {ours} must fail the suite, never skip it"
+
+
+def test_a_missing_optional_dependency_is_recognised():
+    assert _missing_module("ModuleNotFoundError: No module named 'langgraph.store.base'") == "langgraph"
+    assert _missing_module("ModuleNotFoundError: No module named 'langgraph.store.base'") \
+        in OPTIONAL_THIRD_PARTY
+
+
+def test_a_probe_that_fails_for_any_other_reason_still_fails():
+    """A crash, a bad assertion, a missing dataset -- none of those name a module, so none of them can
+    reach the skip. If this ever returned a module name, every failure would become skippable."""
+    assert _missing_module("ZeroDivisionError: division by zero") is None
+    assert _missing_module("FileNotFoundError: agora_output/lab/data/locomo10.json") is None
+    assert _missing_module("") is None
