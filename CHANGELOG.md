@@ -3,6 +3,41 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.72.0 - the anchor truncated and the offline bundle would not verify (AUDIT PATH)
+
+**Upgrade if you use `anchor()` or `audit_bundle()` on a store where `slash()` or `restore()` has ever
+run.** Those stores currently publish a truncated anchor and export a bundle nobody can verify -- including
+the version that wrote it.
+
+1.68.0 put `amends` into a write receipt's hash preimage. It reached `_emit_write_receipt` and
+`verify_writes`, and NOT `_chain_core` -- which is what `anchor()` and the offline bundle verifier use --
+nor `_content_free_writes`, which decides what actually travels in the bundle. Four consumers of one
+preimage; the change reached two. Measured after a single `slash()`:
+
+```
+verify_writes()   -> True          the store says it is fine
+verify_bundle()   -> False         "write chain breaks at index 1"
+anchor()          -> n_writes = 1  with TWO receipts present
+```
+
+Both halves matter. `anchor()` is the externally-publishable signed tree head, so under-counting it means
+the operator commits to a truncated history and an auditor comparing against it later sees a store that
+grew unexplainably. `audit_bundle` is what an auditor verifies OFFLINE with no store and no key, and it
+could not be verified at all.
+
+The fix is one fix, not four: `Inspeximus._chain_core` is now THE definition of the preimage, and the
+emitter and the verifier both call it. The bundle exporter carries `amends` the way it already carried the
+tombstone chain's optional `auth` block.
+
+Nothing changes for a chain that never amended, so existing anchors and bundles keep verifying -- there is
+a test for exactly that. Seven tests assert the surfaces AGREE, which is the property that was violated:
+each one was internally self-consistent while disagreeing with the others.
+
+Found by auditing the day's own fixes rather than a new area, on the evidence that every defect found today
+was created inside the previous fix.
+
+779 tests.
+
 ## 1.71.0 - the Claude Code installer destroyed your settings.json (DATA LOSS)
 
 **Upgrade if you used `python -m inspeximus.claude_code --install`.**

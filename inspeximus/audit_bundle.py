@@ -36,8 +36,20 @@ def _bundle_hash(bundle: dict) -> str:
 
 
 def _content_free_writes(store) -> list:
-    return [{k: r.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev", "hash")}
-            for r in store._receipts]
+    """Every field the write receipt's hash commits to, plus the hash itself, so an offline verifier can
+    re-derive it. Content-free: `commit` is hashes, never text.
+
+    `amends` is OPTIONAL and part of the preimage since 1.68.0 (see Inspeximus._chain_core). Exporting a
+    fixed field list dropped it, so a bundle from any store where slash()/restore() had ever run could not
+    be verified -- by any version, including the one that produced it. The tombstone exporter below already
+    handles its optional `auth` block for exactly this reason."""
+    out = []
+    for r in store._receipts:
+        rec = {k: r.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev", "hash")}
+        if r.get("amends"):
+            rec["amends"] = r["amends"]
+        out.append(rec)
+    return out
 
 
 def _content_free_tombstones(store) -> list:

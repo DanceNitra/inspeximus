@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.71.0"
+__version__ = "1.72.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1359,8 +1359,7 @@ class Inspeximus:
              "commit": self._write_commit(rec), "prev": prev}
         if amends:
             r["amends"] = sorted(amends)
-        r["hash"] = _sha256_hex(_canon({k: r[k] for k in ("seq", "ts", "memory_id", "commit", "prev")}
-                                       | ({"amends": r["amends"]} if amends else {})))
+        r["hash"] = _sha256_hex(_canon(Inspeximus._chain_core(r, "write")))
         if self._receipt_sk and _HAVE_ED:
             sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._receipt_sk))
             r["pubkey"] = self.receipt_pubkey
@@ -1406,13 +1405,11 @@ class Inspeximus:
         prev = _GENESIS
         by_id = {it["id"]: it for it in self.items}
         for i, r in enumerate(self._receipts):
-            core = {k: r.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev")}
-            if r.get("amends"):
-                # `amends` decides which fields a later receipt forgives, so it MUST be inside the hash —
-                # otherwise an attacker appends "amends": ["immutable_sha256"] to an existing receipt and
-                # the chain still verifies while the text check is switched off. It is the fix's own
-                # authorisation, and an unhashed authorisation is not one.
-                core["amends"] = r["amends"]
+            # ONE definition, shared with anchor() and the offline bundle verifier -- see _chain_core.
+            # `amends` must be inside the hash: it decides which fields a later receipt forgives, so an
+            # attacker who could append it to an existing receipt would switch the text check off while the
+            # chain still verified. An unhashed authorisation is not an authorisation.
+            core = Inspeximus._chain_core(r, "write")
             if r.get("prev") != prev:
                 problems.append(f"receipt {i}: broken chain link (a prior receipt was altered/removed)")
             if _sha256_hex(_canon(core)) != r.get("hash"):
@@ -3151,8 +3148,19 @@ class Inspeximus:
 
     @staticmethod
     def _chain_core(rec: dict, kind: str) -> dict:
+        """THE definition of a receipt's hash preimage. Every producer and every verifier must use this one.
+
+        `amends` was added to the hash in 1.68.0 in `_emit_write_receipt` and `verify_writes` only, and this
+        function -- shared by `_recompute_tip` (which `anchor()` uses) and `audit_bundle._rewalk` -- was
+        left behind. The result: after any slash()/restore(), verify_writes() said clean while
+        verify_bundle() reported "write chain breaks", and anchor() silently committed to a TRUNCATED chain
+        (n_writes=1 with two receipts present), because _recompute_tip falls back to the last prefix it can
+        re-derive. Four definitions of one preimage, and the fix reached two of them."""
         if kind == "write":
-            return {k: rec.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev")}
+            core = {k: rec.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev")}
+            if rec.get("amends"):
+                core["amends"] = rec["amends"]
+            return core
         return Inspeximus._tombstone_core(rec)                                                   # tombstone
 
     def _recompute_tip(self, records, n: int, kind: str):
