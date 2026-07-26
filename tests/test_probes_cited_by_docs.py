@@ -41,6 +41,10 @@ NOT_STANDALONE = {
     "operating_point_memory.py": "needs a prepared store outside the repo",
     "outcome_propagation_probe.py": "long-running; exceeds the suite's per-probe budget",
     "forget_subject_tombstone_probe.py": "needs a prepared store outside the repo",
+    # Not a missing pip package: it calls a live OpenAI-compatible endpoint, so no amount of installing
+    # makes it runnable in CI. Recorded as the precondition it is rather than added to the optional-
+    # dependency allow-list, which would have implied `pip install openai` was enough.
+    "memory_defense_layer_probe.py": "needs a live LLM endpoint (OPENAI_API_KEY + OPENAI_BASE_URL)",
     # These three cite a sibling module that is not in this repository at all. Recorded as the defect it
     # is rather than hidden: the citation currently points at something nobody can execute.
     "echo_attack_probe_v2.py": "MISSING DEPENDENCY: imports echo_attack_probe.py, never committed",
