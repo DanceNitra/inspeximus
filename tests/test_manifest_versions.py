@@ -67,3 +67,25 @@ def test_the_plugin_description_reflects_what_ships():
     assert "correct" in desc and "receipt" in desc, desc
     assert "erasure_residue" in desc or "residue" in desc, \
         "the residue check is a shipped capability the plugin description should name"
+
+
+# ── the public homepage carries factual claims nobody pinned either ─────────────────────────────────
+def _index_html():
+    with open(os.path.join(ROOT, "index.html"), encoding="utf-8") as fh:
+        return fh.read()
+
+
+def test_the_homepage_tool_count_matches_the_server():
+    """It said "15 tools any MCP host can call" while 56 shipped -- off by 41, on the public page, for
+    however many releases. Same class as the stale manifests: a number a human had to remember."""
+    src = open(os.path.join(ROOT, "inspeximus", "mcp_server.py"), encoding="utf-8").read()
+    actual = len(re.findall(r"^@mcp\.tool\(\)", src, re.M))
+    claimed = re.search(r"(\d+) tools any MCP host can call", _index_html())
+    assert claimed, "the homepage no longer states a tool count; if it did, this test should check it"
+    assert int(claimed.group(1)) == actual, \
+        f"the homepage claims {claimed.group(1)} MCP tools, the server defines {actual}"
+
+
+def test_the_homepage_names_the_residue_check():
+    assert "inspeximus residue" in _index_html(), \
+        "a shipped capability absent from the homepage does not exist for anyone who visits it"

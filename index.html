@@ -276,7 +276,7 @@
         <div class="mcp__grid">
           <div class="mcp__copy reveal">
             <p class="eyebrow">model context protocol</p>
-            <h2 class="section__title">15 tools any MCP host can call</h2>
+            <h2 class="section__title">56 tools any MCP host can call</h2>
             <p class="section__lede">Point Claude, Cursor, or any MCP agent at inspeximus and it gets a real memory with a correction channel — no glue code.</p>
             <div class="code-block scanlines">
               <div class="code-block__bar"><span>Claude Code — one command</span>
@@ -332,6 +332,15 @@
           <article class="card spotlight">
             <h3>Reconstruction audit</h3>
             <p>The <code>ErasureAuditor</code> asks the adversarial question: after deletion, is the content still reconstructible? It catches the soft-delete residue a <code>200 OK</code> leaves behind — Qdrant points under the optimizer threshold, pgvector dead tuples, an S3 delete-marker over a live version.</p>
+          </article>
+          <article class="card spotlight">
+            <h3>Did the bytes actually go?</h3>
+            <p><code>inspeximus residue --root ./deployment --value alice@example.com</code> answers for
+            <em>your</em> stack, and for stores we did not write — a vector database, a sqlite history, a
+            JSONL trace. It separates a <strong>retained row</strong> from an <strong>unreclaimed
+            page</strong> (a storage property, not a vendor defect) from a <strong>plain file</strong>
+            nothing will ever reclaim. Exits non-zero, so it drops into a CI job or a DSAR runbook as a
+            gate. It never prints the value you asked it to hunt.</p>
           </article>
           <article class="card spotlight">
             <h3>Crypto-shred erasure</h3>
