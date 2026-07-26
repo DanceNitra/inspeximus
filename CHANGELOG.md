@@ -3,6 +3,38 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.77.0 - forget(verify_residue_in=...): prove the bytes went, at the only moment you can
+
+1.76.0 shipped a residue check you run yourself. This wires it into erasure, because of a constraint that
+is easy to miss and impossible to work around: **after `forget()` the value is gone with the row, so it can
+never be searched for afterwards.** A residue check bolted on later has nothing to look for. During the
+erasure is the only moment it can run at all.
+
+```python
+res = store.forget(ids=[rid], request_id="DSAR-1", verify_residue_in="./deployment")
+res["residue"]["ok"]        # False if the value survives anywhere under that root
+res["residue"]["findings"]  # [{path, kind: LIVE|UNRECLAIMED|PLAIN, fingerprint}, ...]
+```
+
+Opt-in, because it walks a filesystem: an erasure that silently scanned a directory would be a surprise,
+and on a large deployment an expensive one. It routes through `forget()`, so `forget_subject()` and
+`forget_pii()` get it too.
+
+**The limit, pinned by its own test rather than only documented.** By default the search uses the erased
+records' own text, which catches VERBATIM copies — backups, WAL files, a log that logged the whole row.
+A FRAGMENT is not matched by the full text: `"Alice contact is alice@example.com"` does not find a backup
+containing only `alice@example.com`. Only the caller knows which part was the sensitive one, so name it:
+
+```python
+store.forget(ids=[rid], verify_residue_in="./deployment", residue_values=["alice@example.com"])
+```
+
+The values are captured into a local, written nowhere, and dropped when the call returns. The result never
+carries them — findings hold a 12-char fingerprint — and there is a test asserting the erasure result does
+not reintroduce what it just erased.
+
+820 tests.
+
 ## 1.76.0 - erasure_residue: did the bytes actually go? (works on ANY store, not just ours)
 
 You called `delete()`. It returned success and the value stopped being served. That is not the same as the

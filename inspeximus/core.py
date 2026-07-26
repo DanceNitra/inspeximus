@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.76.0"
+__version__ = "1.77.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2200,7 +2200,8 @@ class Inspeximus:
     def forget(self, ids=None, where=None, redact_links: bool = True,
                request_id: str | None = None, basis: str | None = None,
                authorized_by: str | None = None, authorization: str | None = None,
-               dry_run: bool = False) -> dict:
+               dry_run: bool = False,
+               verify_residue_in: str | None = None, residue_values=None) -> dict:
         """HARD-DELETE memories — the one operation that genuinely REMOVES content. inspeximus is otherwise
         append-only: supersession / invalidation only DEMOTE a record (it still exists, recallable with
         include_superseded). forget() is for the cases where demotion is not enough: a right-to-be-forgotten
@@ -2255,6 +2256,18 @@ class Inspeximus:
             return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True}
         if not target:
             return {"forgotten": 0, "ids": [], "scrubbed_links": 0, "tombstones": 0}
+        # Capture what we are about to destroy, ONLY if the caller asked for a residue check. After the
+        # rows are gone the values are gone with them, so this is the one moment it can be done at all --
+        # which is why a residue check bolted on afterwards can never work. Held in a local, written
+        # nowhere, and dropped when this call returns.
+        _residue_values = list(residue_values or [])
+        if verify_residue_in:
+            for r in self._items:
+                if r["id"] in target:
+                    for field in ("text", "object"):
+                        v = r.get(field)
+                        if isinstance(v, str) and v.strip():
+                            _residue_values.append(v)
         self._items = [r for r in self._items if r["id"] not in target]
         scrubbed = 0
         if redact_links:
@@ -2283,8 +2296,13 @@ class Inspeximus:
                                  authorized_by=authorized_by, authorization=authorization)
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
-        return {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
-                "tombstones": len(target)}
+        out = {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
+               "tombstones": len(target)}
+        if verify_residue_in:
+            # Prove the bytes went, not just the rows. The report carries fingerprints, never the values.
+            from .erasure_residue import scan_residue
+            out["residue"] = scan_residue(verify_residue_in, _residue_values)
+        return out
 
     @staticmethod
     def _tombstone_core(t: dict) -> dict:

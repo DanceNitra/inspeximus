@@ -151,3 +151,68 @@ def test_noise_directories_are_skipped(skip):
     with open(os.path.join(junk, "x.txt"), "w", encoding="utf-8") as fh:
         fh.write(SECRET)
     assert scan_residue(d, [SECRET])["ok"] is True
+
+
+# ── the check wired into erasure itself, which is the only moment it can run ────────────────────────
+def _planted(fragment_only: bool):
+    """A store plus a stray file elsewhere in the deployment that still holds the value."""
+    from inspeximus import Inspeximus
+
+    d = _dir()
+    m = Inspeximus(path=os.path.join(d, "m.json"), receipts=True)
+    rid = m.remember(f"Alice contact is {SECRET}", source={"doc": "user-42"})
+    m.remember("an unrelated record")
+    m.flush()
+    with open(os.path.join(d, "stray_backup.jsonl"), "w", encoding="utf-8") as fh:
+        fh.write(json.dumps({"pii": SECRET}) if fragment_only else f"Alice contact is {SECRET}")
+    return m, rid, d
+
+
+def test_forget_can_prove_the_bytes_went_from_the_whole_deployment():
+    """After forget() the value is gone with the row, so it can never be searched for afterwards. Running
+    the check DURING erasure is the only moment it is possible at all."""
+    m, rid, d = _planted(fragment_only=False)
+    res = m.forget(ids=[rid], request_id="DSAR-1", verify_residue_in=d)
+
+    assert res["forgotten"] == 1
+    assert res["residue"]["ok"] is False, "a verbatim copy elsewhere must be found"
+    assert [f["kind"] for f in res["residue"]["findings"]] == ["PLAIN"], res["residue"]["findings"]
+
+
+def test_a_clean_deployment_reports_clean():
+    from inspeximus import Inspeximus
+
+    d = _dir()
+    m = Inspeximus(path=os.path.join(d, "m.json"), receipts=True)
+    rid = m.remember(f"Alice contact is {SECRET}")
+    m.flush()
+    res = m.forget(ids=[rid], verify_residue_in=d)
+    assert res["residue"]["ok"] is True, res["residue"]["findings"]
+
+
+def test_a_FRAGMENT_needs_naming_and_the_limit_is_pinned_here():
+    """The honest limit. By default the search uses the record's own text, which catches verbatim copies
+    -- backups, WAL files, logs that logged the whole row. A fragment (the email inside a sentence) is not
+    matched by the full text, and only the caller knows which part was the sensitive one."""
+    m, rid, d = _planted(fragment_only=True)
+
+    default = m.forget(ids=[rid], verify_residue_in=d)["residue"]
+    assert default["ok"] is True, "documented: the full text does not match a fragment"
+
+    m2, rid2, d2 = _planted(fragment_only=True)
+    named = m2.forget(ids=[rid2], verify_residue_in=d2, residue_values=[SECRET])["residue"]
+    assert named["ok"] is False, "naming the fragment finds it"
+    assert named["findings"][0]["kind"] == "PLAIN"
+
+
+def test_the_erasure_result_never_carries_the_value():
+    m, rid, d = _planted(fragment_only=True)
+    res = m.forget(ids=[rid], verify_residue_in=d, residue_values=[SECRET])
+    assert SECRET not in json.dumps(res), "the erasure result must not reintroduce what it erased"
+
+
+def test_no_residue_check_runs_unless_asked():
+    """It walks the filesystem, so it must stay opt-in: an erasure that silently scanned a directory
+    would be a surprise, and on a large deployment an expensive one."""
+    m, rid, _d = _planted(fragment_only=False)
+    assert "residue" not in m.forget(ids=[rid])
