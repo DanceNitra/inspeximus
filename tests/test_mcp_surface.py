@@ -9,6 +9,12 @@ tool whose docstring promised keys the call never returns).
 The sweep below calls every `@mcp.tool()` function with synthesised arguments and asserts only that it does
 not blow up and returns a JSON-serialisable shape. That is a low bar deliberately — its value is that it
 covers the whole surface and fails the moment a tool is added that cannot be driven at all.
+
+IT IS NOT VERIFICATION, and the gap is measured. Five plausible sabotages of the server — recall ignoring
+`k`, `get` returning some other record, `forget` reporting success without deleting, `verify_writes`
+hard-coded to clean, `memory_report` inflating its active count — ALL pass this file. Every one of them is
+caught by `tests/test_mcp_behaviour.py`, which asserts what the tools actually do. Keep both: this one for
+breadth, that one for truth.
 """
 import inspect
 import json
