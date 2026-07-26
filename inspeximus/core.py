@@ -485,6 +485,12 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
 
     erased = set(derived_ids)                # check ABSENCE against the chain, not against the claim
     checks["store_absent"] = None
+    # Did the CALLER ask for the absence proof? Not asking is honest chain-only verification. Asking and
+    # not getting it is not, and it used to return valid=True: a typo in `store_path` silently downgraded
+    # the strongest check in this function -- the 'read the raw store' proof soft-delete systems fail --
+    # to "not performed", while the verdict still said valid. Measured on a missing path and on an
+    # encrypted store: both returned valid=True with store_absent=None.
+    store_requested = store_items is not None or bool(store_path)
     if store_items is None and store_path:
         try:
             raw = Path(store_path).read_bytes()
@@ -505,12 +511,16 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     # `valid` is computed from the CHECKS, and a check absent from this expression is decorative — the
     # summary-derivability finding was recorded in `problems` and ignored here in the first cut of this fix,
     # so a forged count still verified. `count` in the return is the DERIVED one, not the claim.
+    if store_requested and checks["store_absent"] is None:
+        problems.append("the absence proof was REQUESTED but could not run (store unreadable or "
+                        "encrypted) — this certificate is NOT verified against a store")
     valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"]
-             and checks["summary_derivable"] and (checks["store_absent"] is not False))
+             and checks["summary_derivable"]
+             and (checks["store_absent"] is True or not store_requested))
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.69.0"
+__version__ = "1.70.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.

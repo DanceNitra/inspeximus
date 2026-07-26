@@ -3,6 +3,42 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.70.0 - the erasure certificate said "valid" when the absence proof did not run (BEHAVIOUR CHANGE)
+
+**Read this if you verify certificates with `store_path`.** Some certificates that returned `valid: True`
+now return `valid: False`. That is the fix, not a regression.
+
+`verify_erasure_certificate` runs four checks. The fourth is the one this product is sold on: given the
+store, every erased id is genuinely ABSENT from it -- the "read the raw store" proof that soft-delete
+systems fail. Its verdict line read `checks["store_absent"] is not False`, so a check that never RAN
+counted as a pass. Measured:
+
+```
+correct plaintext path   valid=True   store_absent=True
+WRONG/missing path       valid=True   store_absent=None    <- typo the path, get a clean verdict
+ENCRYPTED store          valid=True   store_absent=None    <- proof skipped, still "valid"
+no store given at all    valid=True   store_absent=None
+```
+
+An auditor reads `valid`. A typo in `store_path` silently downgraded the strongest check in the function
+to "not performed" while the verdict stayed clean. The explanation was in `problems`, which `valid`
+ignored.
+
+The distinction that was missing: NOT asking for the absence proof is honest chain-only verification;
+asking and not getting it is not. `valid` now requires `store_absent is True` whenever a store was
+supplied (`store_path` or `store_items`), and stays True for a caller who supplied neither. A new problem
+line says so explicitly rather than leaving the caller to compare fields.
+
+- **If you pass an encrypted `store_path`**, you now get `valid: False`. Supply decrypted `store_items`,
+  or rely on `shred()` (crypto-erasure) for the encrypted case -- the same advice the old problem text
+  gave while returning valid.
+- The `store_path` branch had NO test, and inverting its encryption-magic check survived the whole suite.
+  Seven tests now cover it, and five mutations of the repaired logic each fail their own test -- including
+  a check that the proof reads the RAW FILE rather than the live process, which is the reason `store_path`
+  exists at all.
+
+619 tests.
+
 ## 1.69.0 - the absolute revert path was dead on arrival (BUGFIX)
 
 **Upgrade if you use `restore_now()` or an absolute `submit_revert()` intent.** Both raised
