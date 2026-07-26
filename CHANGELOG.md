@@ -3,6 +3,34 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.69.0 - the absolute revert path was dead on arrival (BUGFIX)
+
+**Upgrade if you use `restore_now()` or an absolute `submit_revert()` intent.** Both raised
+`UnboundLocalError` on every call that had something to do.
+
+`submit_revert`'s ABSOLUTE branch (`restore:key=value#nonce`) ended in
+`derived_from=[tgt["id"]]`, but `tgt` is bound only in the RELATIVE branch, which returns before reaching
+it. So any absolute restore to an existing, non-current target crashed -- and `restore_now()`, documented
+as the "mint + submit in ONE call" liveness primitive written precisely so a caller cannot wedge writes
+into the mint->submit window, crashed with it. The store's "maximum bypass of a submitted revert is ZERO"
+guarantee was a guarantee about a function that could not be called.
+
+572 tests did not catch it: every existing revert test exercises the relative path. An entire documented
+half of a public API had no test that reached its final statement.
+
+The fix resolves the source record explicitly -- id-bound intents already hold it, legacy value-resolved
+intents take the most recent record that actually held the value -- so the restore keeps a real lineage
+edge instead of dropping provenance to silence the crash. A mutation that drops the edge instead of fixing
+it now fails its own test.
+
+Found while writing tests for unrelated mutation survivors.
+
+- 13 tests for the absolute path: land, no-op land on an already-current target, refusal of a value that
+  never held the key, nonce consumed on evaluation even when refused, ABA-immunity of an id-bound intent
+  against a same-value look-alike, and a relative revert refusing to revive an `echo_blocked` row.
+- Five mutations of the repaired logic each fail their own test.
+- 585 tests (up from 572).
+
 ## 1.68.0 - the accountability lever laundered the tamper (SECURITY)
 
 **Upgrade if you rely on `verify_writes()`.** 1.67.0 (a few hours old) let any caller clear a tamper alarm

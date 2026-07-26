@@ -510,7 +510,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.68.0"
+__version__ = "1.69.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3612,6 +3612,7 @@ class Inspeximus:
         # exact instance must still exist and still have held `target` — a re-asserted same-value look-alike is
         # a different id and will NOT satisfy it. Fall back to value resolution only for legacy id-less intents.
         id_bound = bool(tid)
+        rec = None
         if id_bound:
             rec = next((r for r in self.items if r.get("id") == tid and r.get("key") == key
                         and r.get("object") == target), None)
@@ -3625,8 +3626,19 @@ class Inspeximus:
         if chain and chain[-1] == target:
             return {"ok": True, "kind": "absolute", "restored": None, "target": target,
                     "id_bound": id_bound, "note": "target already current (no-op land)"}
+        # The ABSOLUTE path has no `tgt` -- that name is bound only in the RELATIVE branch above, which
+        # returns before reaching here. Referencing it raised UnboundLocalError on EVERY absolute restore
+        # that had something to do (an existing, non-current target), so submit_revert's absolute half and
+        # restore_now -- the documented "mint + submit in ONE call" liveness primitive -- were both dead on
+        # arrival. 572 tests covered the relative path only. Resolve the source record explicitly:
+        # id-bound intents already have it; legacy value-resolved intents take the most recent record that
+        # actually held the value, so the lineage edge points at real history rather than nothing.
+        src_rec = rec if rec is not None else max(
+            (r for r in self.items if r.get("key") == key and r.get("object") == target),
+            key=lambda r: r.get("valid_from", r.get("ts", 0.0)), default=None)
         rid = self.remember(f"restore {key} to {target}", key=key, object=target,
-                            reaffirm=True, capability=_SANCTIONED, derived_from=[tgt["id"]],
+                            reaffirm=True, capability=_SANCTIONED,
+                            derived_from=([src_rec["id"]] if src_rec else None),
                             meta={"routed": "revert_named_instream", "revert_nonce": nonce,
                                   "instream": "absolute", "restore_of_id": tid or None})
         return {"ok": True, "kind": "absolute", "restored": rid, "target": target, "id_bound": id_bound}
