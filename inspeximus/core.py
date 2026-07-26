@@ -510,7 +510,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.67.0"
+__version__ = "1.68.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1324,16 +1324,33 @@ class Inspeximus:
         verify_attribution() flags it. Honest limit: this makes a relabel tamper-EVIDENT, not attribution CORRECT —
         a wrong source asserted at write time (an attacker who controls the labeling channel, e.g. MINJA) is
         committed faithfully and uselessly; that oracle problem is untouched."""
+        # SPLIT, since 1.68.0. text+key are IMMUTABLE in this store (append-only; raw text is never edited),
+        # so they must bind for the life of the record. `mtype` is NOT: slash() revokes graduation by
+        # rewriting it, which is why 1.67.0 added amendment receipts. With all three in ONE hash, "only the
+        # latest receipt binds" had to forgive text as well — and that was a laundering path: tamper the
+        # text out of band, call the public slash(), and verify_writes() went False -> True with the forged
+        # text standing. Measured. Separate hashes let the amendment forgive exactly the field it rewrites.
+        # `content_sha256` is kept so pre-1.68 verifiers still check something meaningful.
         return {"id": rec["id"],
                 "content_sha256": _sha256_hex(_canon({"text": rec.get("text"), "key": rec.get("key"),
                                                       "mtype": rec.get("mtype")})),
+                "immutable_sha256": _sha256_hex(_canon({"text": rec.get("text"), "key": rec.get("key")})),
+                "mtype": rec.get("mtype"),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
 
-    def _emit_write_receipt(self, rec: dict) -> dict:
+    def _emit_write_receipt(self, rec: dict, amends: tuple = ()) -> dict:
+        """`amends` names the committed fields this receipt legitimately rewrites (slash/restore -> mtype).
+        It is DECLARED, not inferred, and verification forgives an earlier receipt for exactly the declared
+        fields and nothing else. Inferring it — "the latest receipt wins" — is what let a public slash()
+        launder a forged text past verify_writes() in 1.67.0, and the same shape silently forgave a RELABEL
+        (attrib_sha256), which is the one thing committing attribution exists to catch."""
         prev = self._receipts[-1]["hash"] if self._receipts else _GENESIS
         r = {"seq": len(self._receipts), "ts": rec.get("ts"), "memory_id": rec["id"],
              "commit": self._write_commit(rec), "prev": prev}
-        r["hash"] = _sha256_hex(_canon({k: r[k] for k in ("seq", "ts", "memory_id", "commit", "prev")}))
+        if amends:
+            r["amends"] = sorted(amends)
+        r["hash"] = _sha256_hex(_canon({k: r[k] for k in ("seq", "ts", "memory_id", "commit", "prev")}
+                                       | ({"amends": r["amends"]} if amends else {})))
         if self._receipt_sk and _HAVE_ED:
             sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._receipt_sk))
             r["pubkey"] = self.receipt_pubkey
@@ -1380,6 +1397,12 @@ class Inspeximus:
         by_id = {it["id"]: it for it in self.items}
         for i, r in enumerate(self._receipts):
             core = {k: r.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev")}
+            if r.get("amends"):
+                # `amends` decides which fields a later receipt forgives, so it MUST be inside the hash —
+                # otherwise an attacker appends "amends": ["immutable_sha256"] to an existing receipt and
+                # the chain still verifies while the text check is switched off. It is the fix's own
+                # authorisation, and an unhashed authorisation is not one.
+                core["amends"] = r["amends"]
             if r.get("prev") != prev:
                 problems.append(f"receipt {i}: broken chain link (a prior receipt was altered/removed)")
             if _sha256_hex(_canon(core)) != r.get("hash"):
@@ -1410,16 +1433,29 @@ class Inspeximus:
                 # earlier receipt made our own accountability lever raise a tamper alarm (measured: 27 of 45
                 # random operation sequences). Append-only is preserved: every receipt stays in the chain and
                 # the amendment is itself the evidence of when standing changed.
-                _latest = max((x for x in self._receipts if x["memory_id"] == r["memory_id"]),
-                              key=lambda x: x.get("seq", 0), default=r)
-                # NOTE: no `continue` here. The first version of this used one, and it skipped the
-                # `prev = r.get("hash")` at the end of the loop body — so the chain walk stopped advancing
-                # and every later receipt reported "broken chain link". A guard that jumps over the loop's
-                # own bookkeeping breaks the thing it was added beside.
-                if _latest is r:                 # only the LATEST receipt's commitment binds the record
-                    cc = self._write_commit(cur)
-                    if any(cc.get(k) != v for k, v in (r.get("commit") or {}).items()):
-                        problems.append(f"memory {r['memory_id']}: stored content no longer matches its write receipt (edited after write)")
+                # NOTE: no `continue` here — an early version used one and skipped the `prev = r["hash"]`
+                # at the end of the loop body, so every later receipt reported "broken chain link".
+                cc = self._write_commit(cur)
+                rc = r.get("commit") or {}
+                if "immutable_sha256" in rc:
+                    # A receipt is forgiven for exactly the fields a LATER receipt DECLARED it was amending,
+                    # and for nothing else. text+key (immutable_sha256) and attribution are never declared by
+                    # any call site, so they bind on every receipt for the life of the record.
+                    forgiven = {f for x in self._receipts
+                                if x["memory_id"] == r["memory_id"] and x.get("seq", 0) > r.get("seq", 0)
+                                for f in (x.get("amends") or ())}
+                    bad = any(rc.get(k) != cc.get(k) for k in ("immutable_sha256", "mtype", "attrib_sha256")
+                              if k not in forgiven)
+                elif max((x.get("seq", 0) for x in self._receipts
+                          if x["memory_id"] == r["memory_id"]), default=r.get("seq", 0)) == r.get("seq", 0):
+                    # pre-1.68 receipt: text/key/mtype are one hash, so it can only be checked as a whole,
+                    # and only against the latest. A store written by 1.67.0 with amendments keeps that
+                    # weaker guarantee; re-write it (any new write re-commits) to get the split.
+                    bad = any(cc.get(k) != v for k, v in rc.items())
+                else:
+                    bad = False
+                if bad:
+                    problems.append(f"memory {r['memory_id']}: stored content no longer matches its write receipt (edited after write)")
             prev = r.get("hash")
         # verify the DELETION-TOMBSTONE chain too — else a forged tombstone could hide a real out-of-band delete
         tprev = _GENESIS
@@ -5489,7 +5525,7 @@ class Inspeximus:
                 # operation sequences, first at op 3. The code already called this mutation legitimate in a
                 # comment; the honest follow-through is to RECORD it, not to stop committing to mtype.
                 # Append-only, so the amendment is itself evidence of when standing was revoked.
-                self._emit_write_receipt(r)
+                self._emit_write_receipt(r, amends=("mtype",))
         if slashed:
             self._save()
         return {"slashed": len(slashed), "sources": sources, "ids": slashed}
@@ -5537,7 +5573,7 @@ class Inspeximus:
                 # Same amendment as slash(): restoring graduation rewrites a COMMITTED field, so without a
                 # new receipt the chain still asserts the slashed mtype and verify_writes() reports tampering
                 # after a legitimate exoneration. slash and restore must be symmetric here.
-                self._emit_write_receipt(r)
+                self._emit_write_receipt(r, amends=("mtype",))
         if restored:
             self._save()
         return {"restored": len(restored), "sources": sources, "ids": restored}

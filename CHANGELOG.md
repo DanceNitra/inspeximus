@@ -3,6 +3,39 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.68.0 - the accountability lever laundered the tamper (SECURITY)
+
+**Upgrade if you rely on `verify_writes()`.** 1.67.0 (a few hours old) let any caller clear a tamper alarm
+through the public API. Found by our own round-nine audit; no report from a user.
+
+**The defect.** 1.67.0 fixed a false positive: `slash()` revokes graduation by rewriting `mtype`, a field the
+write receipt commits to, so a legitimate revocation made `verify_writes()` report "edited after write" (it
+fired in 27 of 45 random operation sequences). The fix let `slash()`/`restore()` AMEND the receipt chain, and
+had verification bind only the LATEST receipt.
+
+But a receipt's commit was ONE hash over text+key+mtype, and `_emit_write_receipt` recomputes it from the
+record's CURRENT state. "Only the latest binds" therefore forgave the text too. Measured: edit the stored
+text out of band (`verify_writes()` -> False), call `slash()` — no key, no privilege, documented API — and it
+returned True with the forged text standing. It also propagated into `erasure_certificate`'s `self_check`,
+the document handed to an auditor. (`audit_bundle` is content-free and was never on this path.)
+
+**The fix is structural, not a patch on the instance.** A receipt now DECLARES the fields it legitimately
+rewrites (`"amends": ["mtype"]`), and verification forgives exactly what was declared and nothing else. The
+declaration is inside the receipt hash — an unhashed authorisation is not one, and without that an attacker
+could append `"amends": ["immutable_sha256"]` to an existing receipt and switch the text check off while the
+chain still verified. `slash()`/`restore()` are the only call sites and they declare only `mtype`.
+
+The first version of this fix bound text+key on every receipt but still forgave **attribution** on an
+amendment — and detecting a later RELABEL is the entire reason attribution is committed. Dropping the
+attribution check from `verify_writes()` survived all 541 tests, so the gap was invisible. Both are covered
+now; six mutations of the new logic each fail their own test.
+
+- `_write_commit` gains `immutable_sha256` (text+key, bound on every receipt for the life of the record) and
+  a plain `mtype`, alongside the existing `content_sha256` and `attrib_sha256`.
+- Stores written by <= 1.67 keep verifying under the old whole-commit rule; any new write re-commits with the
+  split. A 1.67.0 store that already contains amendments keeps the weaker 1.67 guarantee until then.
+- 546 tests (up from 529).
+
 ## 1.67.0 - what testing SEQUENCES found, and four defects inside my own recent fixes
 
 Eight rounds tested functions. This one tested **sequences**: 2,700 random operations over a small pool of
