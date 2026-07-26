@@ -195,13 +195,13 @@ jobs:
         run: ./mcp-publisher publish
       - name: the version we just released must actually be listed
         run: |
-          # The registry keeps every version and does NOT return them newest-first; the check confirms OUR
-          # version is present rather than reading servers[0]. It polls because the index catches up a little
-          # after the publish returns.
+          # The registry keeps every version, does NOT return them newest-first, and PAGES at 30 — so the
+          # verifier follows nextCursor to the end. Reading one page meant that past 30 published versions
+          # this step could not see the new one and failed every release. It polls because the index catches
+          # up a little after the publish returns.
           VERSION="$(python -c "import json;print(json.load(open('server.json'))['version'])")"
           for i in $(seq 1 20); do
-            curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=inspeximus" -o r.json
-            if python packages/_registry_verify.py r.json "$VERSION"; then exit 0; fi
+            if python packages/_registry_verify.py "$VERSION"; then exit 0; fi
             echo "not indexed yet ($i/20)"; sleep 15
           done
           echo "::error::published, but the registry does not list $VERSION"

@@ -31,9 +31,39 @@ Zero extra dependencies; the OpenAI Agents SDK is matched structurally and never
 """
 from __future__ import annotations
 import json
+import os
+import weakref
+from pathlib import Path
 from typing import Any
 
 from .governance import ComplianceMixin
+
+
+_OPEN_STORES: "weakref.WeakValueDictionary[str, Any]" = weakref.WeakValueDictionary()
+
+
+def _store_for_path(path):
+    """One store HANDLE per file, per process — every session opened on the same `path` shares it.
+
+    Two `InspeximusSession(path=same_file)` used to build two independent `Inspeximus` handles, and the
+    single-writer guard then (correctly) raised `StoreChangedOnDisk` on the second one's first write: two
+    handles on one file each believe they hold the whole store, so whichever saves last erases the other's
+    records. That guard is right about separate PROCESSES and wrong to fire here — the reference
+    `SQLiteSession` keeps one connection per DB file and many sessions over it, and "one store, many
+    sessions" is what this class's own docstring promises. Sharing the handle satisfies both: sessions stay
+    isolated by `session_id`, and cross-process writers still get the guard.
+
+    Weak-valued, so the handle is released when the last session on it goes away."""
+    if path is None:                                    # an in-memory store is private by construction
+        from inspeximus import Inspeximus
+        return Inspeximus(path=None)
+    from inspeximus import Inspeximus
+    k = str(Path(os.path.expanduser(os.fspath(path))).resolve())
+    st = _OPEN_STORES.get(k)
+    if st is None:
+        st = Inspeximus(path=path)
+        _OPEN_STORES[k] = st
+    return st
 
 
 class InspeximusSession(ComplianceMixin):
@@ -50,8 +80,7 @@ class InspeximusSession(ComplianceMixin):
         is then current-truth. See Inspeximus.extractor."""
         self.session_id = str(session_id)
         if store is None:
-            from inspeximus import Inspeximus
-            store = Inspeximus(path=path)
+            store = _store_for_path(path)
         self.store = store
         if extractor is not None:
             self.store.extractor = extractor
