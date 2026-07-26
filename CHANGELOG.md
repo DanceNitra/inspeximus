@@ -3,6 +3,47 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.76.0 - erasure_residue: did the bytes actually go? (works on ANY store, not just ours)
+
+You called `delete()`. It returned success and the value stopped being served. That is not the same as the
+value being gone from disk, and for anyone with an erasure obligation it is the only part that matters.
+
+```
+python -m inspeximus.erasure_residue --root ./data --value alice@example.com
+```
+
+Point it at any directory — a vector store, a sqlite history, a JSONL trace, another library's data dir —
+and it answers for THAT deployment. It reports three outcomes and keeping them apart is the entire point:
+
+- **LIVE** — a SQLite table still holds it in a row. The system retained it.
+- **UNRECLAIMED** — in the file's bytes but in no live row. SQLite and most embedded stores do not zero a
+  page on delete, so the record is gone logically and the bytes linger until VACUUM or compaction. This is
+  a property of the storage engine, **not a vendor defect**.
+- **PLAIN** — a JSON/JSONL/log/backup still contains it. Nothing reclaims this on its own.
+
+That distinction is not theoretical. Building this, we ran the same instrument against mem0 2.0.11 with a
+local qdrant: after its documented `delete()` and `reset()`, **no live row anywhere held the value** — it
+survived only as unreclaimed bytes in the vector store's sqlite. Calling that retention would have been a
+false accusation. Its `history()` surface also reported ADD/UPDATE/DELETE faithfully with the old value
+recoverable. We went looking for a class and found an honest null, which is why the tool ships as a
+measuring instrument rather than an argument.
+
+Turned on ourselves with the same script: after `forget()` the value is gone from every file, and the
+erasure certificate's absence proof confirms it. There is a test asserting exactly that, so the claim
+cannot outlive the behaviour.
+
+Two properties are tested as hard as the detection:
+
+- **it never echoes the value.** You are searching for a secret; findings carry a 12-char SHA-256
+  fingerprint. A tool that hunts for a secret and then prints it into a log or a ticket is itself the leak.
+- **a file it could not read spoils the verdict.** Unreadable or oversized files are reported and make
+  `ok` False, because "clean" must never mean "we did not look at that part."
+
+Six mutations die, including one that collapses LIVE into UNRECLAIMED and one that lets an empty search
+report clean.
+
+815 tests.
+
 ## 1.75.0 - explain_growth(): the chain never said the new entries were ones you asked for
 
 A hash chain proves nobody rewrote the PAST. It says nothing about whether what was APPENDED since is
