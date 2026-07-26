@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.72.0"
+__version__ = "1.73.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1376,11 +1376,18 @@ class Inspeximus:
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
         return r
 
-    def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False) -> tuple[bool, list[str]]:
+    def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
+                      legacy_strict: bool = True) -> tuple[bool, list[str]]:
         """Verify the write-receipt chain AND that each stored memory still matches its write receipt.
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
-        Requires receipts to have been enabled at write time."""
+        Requires receipts to have been enabled at write time.
+
+        `legacy_strict` (default True, a BEHAVIOUR CHANGE in 1.73.0) checks PRE-1.68 receipts against
+        EVERY receipt rather than only the latest. It fails closed on the <=1.67 laundering path, at the
+        cost of a false positive on a legitimate pre-1.68 slash()/restore(), which is indistinguishable
+        from the attack by construction. Pass False to restore the previous, quieter behaviour."""
         problems: list[str] = []
+        legacy_flagged: set = set()
         if self.receipts_enabled and not self._receipts and self.items:
             problems.append(f"receipts are enabled but the chain is EMPTY while the store holds "
                             f"{len(self.items)} record(s) -- nothing here is covered by a write receipt")
@@ -1453,11 +1460,29 @@ class Inspeximus:
                                 for f in (x.get("amends") or ())}
                     bad = any(rc.get(k) != cc.get(k) for k in ("immutable_sha256", "mtype", "attrib_sha256")
                               if k not in forgiven)
+                elif legacy_strict:
+                    # PRE-1.68 receipt, checked STRICTLY: text/key/mtype are one hash here, so the only
+                    # way to bind the original content is to check EVERY receipt, not just the latest.
+                    #
+                    # This is the difference between failing closed and failing open, and it is measured.
+                    # Under <=1.67.0 an attacker could edit the stored text out of band and then call the
+                    # PUBLIC slash(), which appended a fresh receipt committing to the FORGED text. Nothing
+                    # in the past was rewritten, so append-only held, the receipt chain stayed internally
+                    # consistent, and an externally witnessed anchor still re-derives its prefix intact --
+                    # the tamper is invisible to the chain, to the anchor, and to every later version.
+                    # Checking only the latest receipt (the 1.68-1.72 fallback) carried that invisibility
+                    # forward forever for stores written before the split.
+                    #
+                    # The cost is a FALSE POSITIVE on a LEGITIMATE slash()/restore() performed under
+                    # <=1.67, which is indistinguishable from the attack by construction -- same shape,
+                    # same append. That is the honest trade: an alarm you must investigate, instead of
+                    # silence you cannot trust. Pass legacy_strict=False if you know your pre-1.68
+                    # amendments were legitimate, or re-write the record once to upgrade its receipt.
+                    bad = any(cc.get(k) != v for k, v in rc.items())
+                    if bad:
+                        legacy_flagged.add(r["memory_id"])
                 elif max((x.get("seq", 0) for x in self._receipts
                           if x["memory_id"] == r["memory_id"]), default=r.get("seq", 0)) == r.get("seq", 0):
-                    # pre-1.68 receipt: text/key/mtype are one hash, so it can only be checked as a whole,
-                    # and only against the latest. A store written by 1.67.0 with amendments keeps that
-                    # weaker guarantee; re-write it (any new write re-commits) to get the split.
                     bad = any(cc.get(k) != v for k, v in rc.items())
                 else:
                     bad = False
@@ -1490,6 +1515,15 @@ class Inspeximus:
                 any("sig" in r for r in self._receipts) or any("sig" in t for t in self._tombstones)):
             problems.append("signatures present but expected_pubkey not pinned: a store-rewriter can swap the "
                             "key and still pass — pass expected_pubkey, or witness anchor() externally")
+        if legacy_flagged:
+            problems.append(
+                f"{len(legacy_flagged)} record(s) carry PRE-1.68 receipts that no longer match their stored "
+                f"content. Under <=1.67.0 a public slash() re-committed a receipt to whatever the text said "
+                f"AT THAT MOMENT, so an out-of-band edit could be laundered into the chain without breaking "
+                f"append-only — invisible to the chain, to a witnessed anchor, and to every later version. "
+                f"A LEGITIMATE slash()/restore() under <=1.67 looks identical, so this may be benign: check "
+                f"the text against a copy you trust. Re-writing a record upgrades its receipt; pass "
+                f"legacy_strict=False to silence this once you have checked.")
         return (len(problems) == 0, problems)
 
     def verify_attribution(self) -> dict:

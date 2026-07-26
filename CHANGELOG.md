@@ -3,6 +3,46 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.73.0 - a tamper laundered under <=1.67 stayed invisible forever (BEHAVIOUR CHANGE)
+
+**If you ever ran <=1.67.0 with receipts on, `verify_writes()` may now report a problem it previously did
+not. Read this before assuming a regression.**
+
+1.68.0 fixed the laundering path: under <=1.67.0 you could edit a stored text out of band and then call
+the PUBLIC `slash()`, which appended a receipt committing to the FORGED text, and `verify_writes()` went
+False -> True. What that fix did NOT address is what the attack leaves behind, and this audit measured it
+end to end with installed packages:
+
+```
+1.67.0: after tamper=False   after public slash=True   text now='Revenue is 900M'
+1.72.0: opening that store -> verify_writes=True   serves='Revenue is 900M'
+        audit bundle from it -> ok=True
+```
+
+Nothing in the past is rewritten -- a new, well-formed receipt is appended -- so append-only holds, the
+chain stays internally consistent, and **an externally witnessed anchor still re-derives its prefix
+intact**. We checked that specifically: the precise test (does the witnessed prefix still re-derive?)
+returns "prefix intact" for the laundered store AND for ordinary growth. There was no detection path at
+all, and upgrading did not create one, because 1.68-1.72 checked pre-split receipts only against the
+LATEST receipt -- which is exactly the forged one.
+
+**What changed.** `verify_writes(..., legacy_strict=True)` -- the new default -- checks pre-1.68 receipts
+against EVERY receipt instead of only the latest. It fails CLOSED.
+
+**The cost, stated plainly.** A LEGITIMATE `slash()`/`restore()` performed under <=1.67 produces the same
+shape as the attack and is indistinguishable from it on disk. So this can be a false positive, and the
+message says so rather than accusing anyone: it names the version range, says the finding may be benign,
+tells you to compare the text against a copy you trust, and names `legacy_strict=False` to silence it once
+you have. Re-writing a record upgrades its receipt to the split format and removes the ambiguity for good.
+
+Stores written by 1.68.0 or later are unaffected: their receipts carry the split fields and are checked by
+the stronger field-wise rule, which never had this hole.
+
+Five mutations die, including a default flipped back to off and a note that accuses instead of scoping --
+the wording is part of the fix, because an alarm that overstates gets switched off.
+
+786 tests.
+
 ## 1.72.0 - the anchor truncated and the offline bundle would not verify (AUDIT PATH)
 
 **Upgrade if you use `anchor()` or `audit_bundle()` on a store where `slash()` or `restore()` has ever
