@@ -53,6 +53,33 @@ honest limits.
    destroyed, and a retained embedding elsewhere can reconstruct content (see the erasure auditor + README).
    The compliant fix for a leaking store is hard-delete + reindex or crypto-shredding.
 
+### MIXED LIBRARY VERSIONS ON ONE STORE FILE SILENTLY LOSE WRITES
+
+The single-writer guard (`StoreChangedOnDisk`) shipped in **1.67.0**. It fires when a handle is about to
+save over a file that changed underneath it. A handle from an OLDER release does not have it and saves
+anyway, erasing whatever the newer one wrote.
+
+Measured, 1.51.0 alongside 1.69.0 on one store file:
+
+```
+1.51.0 opens a handle  ->  1.69.0 writes and flushes  ->  1.51.0 flushes
+final store: ['baseline record', 'written by OLD after the fact']
+                                  the 1.69.0 record is GONE, no error, no warning
+
+same interleave, both handles on 1.69.0:
+final store: ['baseline record', 'written by NEW while OLD held a handle']
+                                  the guard refuses the clobber
+```
+
+This cannot be fixed from our side: 1.51.0 is published and has no guard. **Do not let processes on
+different inspeximus versions share a store file** — pin one version per store, or give each writer its
+own file. Upgrading every writer at once removes the exposure; upgrading one of them does not, and the
+partially-upgraded state is the dangerous one.
+
+The guard is an enforcement, not a solution, even between matching versions: two writers are told about
+the conflict and `reload()` merges them, but they still cannot proceed concurrently. A real fix is a lock
+or a different storage format.
+
 ## Reporting
 
 Open a GitHub issue (or a private security advisory) on https://github.com/DanceNitra/inspeximus. This is an
