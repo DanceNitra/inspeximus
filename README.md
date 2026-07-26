@@ -51,7 +51,8 @@ memory that keeps a correction corrected and can show, with an offline-verifiabl
 | **Write path** | deterministic — **no LLM** | LLM extraction on every `add()` |
 | **Correction (a fact changes)** | keyed supersession serves current truth; a restated stale value can't creep back (`echo_guard`); `revert()` | LLM re-extract / bitemporal invalidation |
 | **Verifiable erasure** | **signed, content-free tombstone + an offline-verifiable receipt** | `delete()` — unverified |
-| **Tamper-evident record-keeping** | hash-linked receipts + a signed anchor, verified offline | SOC 2 audit logs (not cryptographic) / none |
+| **Did the bytes actually go?** | **`inspeximus residue` — checks ANY store, exits non-zero on residue** | not offered |
+| **Tamper-evident record-keeping** | hash-linked receipts + a signed anchor + **content bound across time** | SOC 2 audit logs (not cryptographic) / none |
 | **EU AI Act / GDPR evidence** | **`inspeximus compliance` overlay + audit bundle** | not framed |
 | **Dependencies** | **zero required — pure-Python package** | server / DB / vector / graph stack |
 | **MCP server** | yes (one-command install) | varies |
@@ -60,6 +61,59 @@ To our knowledge the only agent-memory library that ships verifiable erasure **a
 record-keeping (a scan of nine products — [details](docs/AI_ACT.md); honest: Zep has a real SOC 2/HIPAA surface,
 just not verifiable erasure or AI-Act framing). And it doesn't cost you recall — the [measured integrity
 number](#correction-is-a-first-class-operation-measured-across-systems) below is a number no competitor we scanned publishes.
+
+## Don't take our word for it — three commands that answer about YOUR stack
+
+Every claim above is a claim. These are checks you run yourself, and two of the three work on stores we
+did not write.
+
+**1. Did the bytes actually go?** `delete()` returning success is not the same as the value being gone
+from disk. Point this at any directory — a vector database, a sqlite history, a JSONL trace, another
+library's data dir:
+
+```
+inspeximus residue --root ./deployment --value alice@example.com
+#   PLAIN        trace.jsonl              fp=337961f64779
+#   LIVE         v.sqlite [t.x x1]        fp=337961f64779
+#   RESULT: residue found                 → exit 1
+```
+
+It separates three verdicts, and the distinction is the whole point: **LIVE** (a table still holds it — the
+system retained it), **UNRECLAIMED** (in the bytes but in no row — the storage engine has not reclaimed the
+page; run `VACUUM`, and this is *not* a vendor defect), **PLAIN** (a log or backup still has it). It never
+echoes the value you gave it — findings carry a fingerprint, because a tool that hunts a secret and then
+prints it into your terminal is itself the leak. It exits non-zero, so it works as a CI or DSAR gate.
+
+We ran it against **mem0 2.0.11** with a local qdrant while building it: after its documented `delete()`
+and `reset()`, **no live row anywhere held the value** — only unreclaimed sqlite pages, which is a storage
+property, not a defect. We went looking for a difference and found an honest null. That is why this ships
+as a measuring instrument and not as an argument.
+
+**2. Prove the erasure at the only moment you can.** After `forget()` the value is gone with the row, so it
+can never be searched for afterwards — the check has to run *during* the erasure:
+
+```python
+res = store.forget(ids=[rid], request_id="DSAR-1", verify_residue_in="./deployment")
+res["residue"]["ok"]      # False if it survived anywhere under that root
+```
+
+**3. Bind an audit bundle to CONTENT, not just to a chain.** A hash chain proves nobody rewrote the past.
+It does not prove the store is serving what it committed to — the bundle is content-free by design, so a
+clean chain over substituted content verifies fine:
+
+```python
+from inspeximus.audit_bundle import build_bundle, bind_content
+witnessed = build_bundle(store)                      # the auditor takes this away
+bind_content(witnessed, list(store.items))["ok"]     # False if the content no longer matches
+store.explain_growth(prior_anchor, writes=2)         # and did the chain grow by what you did?
+```
+
+`bind_content` compares against the **earliest** receipt for each record, not the latest — the latest is
+precisely what an amendment would have rewritten. `explain_growth` supplies the denominator only your
+application has. Prior art we build on rather than reinvent: [RFC 6962](https://www.rfc-editor.org/rfc/rfc6962)
+(a log proves inclusion, never validity) and Schneier & Kelsey, *Secure Audit Logs to Support Computer
+Forensics* (USENIX Security 1998) — post-compromise entries are attacker-chosen by construction. The
+contribution isn't the principle; it's that the check is a function you can run.
 
 ## New — the EU AI Act compliance-evidence layer for agent memory
 
