@@ -3,6 +3,37 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.71.0 - the Claude Code installer destroyed your settings.json (DATA LOSS)
+
+**Upgrade if you used `python -m inspeximus.claude_code --install`.**
+
+`install()` read your `./.claude/settings.json`, and on ANY parse error fell back to `cfg = {}` -- then
+wrote that empty dict over the file. A trailing comma, the usual hand-edit mistake, and you lost your
+`model`, your `permissions`, and **your own hooks**. From a function whose docstring says "merging, not
+clobbering". Measured on a realistic settings file: model gone, permissions gone, the user's own linter
+hook gone, ours the only thing left.
+
+`uninstall()` then called bare `json.load` with no guard and RAISED on the same file, so a user whose
+settings had been broken could not even undo the install.
+
+Both now refuse and change nothing, printing what is wrong and what to fix. Neither ever overwrites a
+config it could not read.
+
+The write is also atomic now (temp file + `os.replace` + fsync): `json.dump(open(p, "w"))` truncates the
+target the instant it opens it, so a crash or a full disk mid-write left a half-written settings.json --
+and this is not our file.
+
+`inspeximus/claude_code.py` is first-party, needs no optional dependency, and had SEVEN functions with zero
+executed body lines (111 of them). Twenty tests now cover install/uninstall merge, idempotence, round-trip,
+refusal, atomicity, and the three hook entry points actually storing and recalling. Six mutations of the
+repaired logic each fail their own test -- including one that reverts the write to the truncating form,
+which needed a test that makes the write FAIL, because "no leftover temp file" passes either way.
+
+Found by measuring coverage rather than trusting the carried figure: 77 of 373 public functions (21%) have
+no executed body line, not the recorded 56/318 (18%).
+
+659 tests.
+
 ## 1.70.0 - the erasure certificate said "valid" when the absence proof did not run (BEHAVIOUR CHANGE)
 
 **Read this if you verify certificates with `store_path`.** Some certificates that returned `valid: True`

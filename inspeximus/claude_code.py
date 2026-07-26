@@ -247,6 +247,18 @@ _HOOK = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_c
 _HOOK_MARKERS = ("inspeximus.claude_code", "inspeximus.claude_code")
 
 
+def _atomic_write_json(path, obj):
+    """Write via a temp file in the same directory, then replace. A direct `json.dump(open(p,"w"))`
+    truncates the target the moment it opens it, so a crash or a full disk mid-write leaves the user with
+    a half-written settings.json -- and this one is not our file."""
+    tmp = path + ".inspeximus-tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(obj, fh, indent=2)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+
+
 def install(cwd=None):
     """Write the three hooks into ./.claude/settings.json (merging, not clobbering)."""
     cwd = cwd or os.getcwd()
@@ -257,28 +269,41 @@ def install(cwd=None):
     if os.path.exists(p):
         try:
             cfg = json.load(open(p, encoding="utf-8"))
-        except Exception:
-            cfg = {}
+        except Exception as e:
+            # REFUSE. The previous version fell back to `cfg = {}` and then WROTE it, so an unparseable
+            # settings.json -- a trailing comma is the usual cause -- silently lost the user's model,
+            # permissions and their OWN hooks, in a file we do not own, from a function whose docstring
+            # says "merging, not clobbering". Measured. Never overwrite a config you could not read.
+            print(f"inspeximus: {p} is not valid JSON ({type(e).__name__}), so nothing was changed.")
+            print("            Fix the file (a trailing comma is the usual cause) and re-run --install.")
+            return False
     hooks = cfg.setdefault("hooks", {})
     for evt in ("PostToolUse", "UserPromptSubmit", "SessionStart"):
         existing = json.dumps(hooks.get(evt, []))
         if not any(mark in existing for mark in _HOOK_MARKERS):
             hooks.setdefault(evt, []).append(dict(_HOOK))
-    json.dump(cfg, open(p, "w", encoding="utf-8"), indent=2)
+    _atomic_write_json(p, cfg)
     print(f"inspeximus: installed Claude Code hooks into {p}")
     print("Restart Claude Code in this project. Memory lands in ./.inspeximus/coding_memory.json (deterministic, "
           "no LLM, provably erasable). Run `python -m inspeximus.claude_code --uninstall` to remove.")
+    return True
 
 
 def uninstall(cwd=None):
     p = os.path.join(cwd or os.getcwd(), ".claude", "settings.json")
     if not os.path.exists(p):
-        return
-    cfg = json.load(open(p, encoding="utf-8"))
+        return False
+    try:
+        cfg = json.load(open(p, encoding="utf-8"))
+    except Exception as e:
+        # The bare json.load here RAISED on a malformed file, so a user whose settings.json had been
+        # broken could not even undo the install.
+        print(f"inspeximus: {p} is not valid JSON ({type(e).__name__}), so nothing was changed.")
+        return False
     for evt, arr in list(cfg.get("hooks", {}).items()):
         cfg["hooks"][evt] = [h for h in arr
                              if not any(mark in json.dumps(h) for mark in _HOOK_MARKERS)]
-    json.dump(cfg, open(p, "w", encoding="utf-8"), indent=2)
+    _atomic_write_json(p, cfg)
     print(f"inspeximus: removed Claude Code hooks from {p}")
 
 
