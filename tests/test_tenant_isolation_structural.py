@@ -66,6 +66,9 @@ _ARGS = {                                     # plausible arguments that would r
     "retract_lineage": ("globex-src",), "rederive": ("globex-src",),
     "remember": ("a new acme row",), "remember_decision": ("d", "because", "ctx"),
     "admit": ("x",),
+    # store-level, but still swept: it reports receipt seqs and memory_ids, so if it ever grew a
+    # text-bearing field a tenant view could read another tenant's content through it.
+    "explain_growth": ({"n_writes": 0, "writes_tip": "", "n_tombstones": 0},),
     "apply_retention": (0.0,), "sleep": (), "reembed": (), "consolidate": (),
     "distill_and_remember": ("text", lambda t: []),
     "observe": (f"GLOBEX_SECRET {SECRET}", "b/k"),

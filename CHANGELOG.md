@@ -3,6 +3,47 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.75.0 - explain_growth(): the chain never said the new entries were ones you asked for
+
+A hash chain proves nobody rewrote the PAST. It says nothing about whether what was APPENDED since is
+yours — and that is the whole of the post-compromise gap (Schneier & Kelsey, USENIX Security 1998): once
+an attacker can write, new entries are attacker-chosen and internally valid. Laundering an edited record
+costs exactly ONE extra receipt, and the chain cannot flag it, because from the chain's point of view it
+is an ordinary amendment.
+
+The missing piece is a DENOMINATOR, and only the application has it.
+
+```python
+a = store.anchor()                       # witness this externally
+... your application does its work ...
+store.explain_growth(a, writes=2, amendments=0)
+# -> {'ok': False, 'actual': {'writes': 2, 'amendments': 1, ...},
+#     'unexplained': [{'seq': 3, 'memory_id': 'ee0326ee62', 'kind': 'amendment', 'amends': ['mtype']}]}
+```
+
+It itemises the surplus with `seq` and `memory_id`, so an operator gets somewhere to look rather than a
+count, and it separates four different failures instead of lumping them: unexplained writes, unexplained
+amendments, unaccounted erasures (each leaves a signed tombstone, so they are attributable), and a
+SHORTFALL — receipts you expected that are missing, which an append-only chain should not be able to do.
+It also re-derives the witnessed prefix, and reports a rewritten past separately from unexpected growth,
+because those are different properties and conflating them hides which one broke.
+
+**Honest scope, asserted by its own tests rather than only documented:** it detects unexpected GROWTH. It
+is blind to substitution that appends nothing — editing a record without touching the chain is
+`bind_content`'s job, and there is a test that pins exactly that division of labour. And a caller who
+passes whatever makes it pass has built a gate that cannot fail; the denominator is only worth what the
+honesty of the caller is worth.
+
+Together with 1.74.0 this closes the three procedures an adversarial review named as the ones that would
+have caught our own laundering defect and that we did not offer: bind content across time
+(`bind_content`), reconcile growth against expectation (`explain_growth`), and move the signing key out
+of the writing process (`receipt_signer`).
+
+Our own structural guard caught the new method before the tests did: adding a public method fails the
+tenant-isolation sweep until it is classified, which is why it exists.
+
+802 tests.
+
 ## 1.74.0 - an auditor can now bind a bundle to CONTENT, not just to a chain
 
 Two things an adversarial review of this project's own audit story said were missing, built.

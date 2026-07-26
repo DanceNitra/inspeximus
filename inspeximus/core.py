@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.74.0"
+__version__ = "1.75.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3245,6 +3245,79 @@ class Inspeximus:
                 return None
             prev = h
         return prev
+
+    def explain_growth(self, prior_anchor: dict, writes: int = 0, amendments: int = 0,
+                       erasures: int = 0) -> dict:
+        """Reconcile the chain's GROWTH since an anchor against what the caller says it did.
+
+        A hash chain proves nobody rewrote the past. It says nothing about whether the entries appended
+        SINCE are ones you asked for -- and that is the whole of the post-compromise gap (Schneier &
+        Kelsey, USENIX Security 1998): after an attacker can write, new entries are attacker-chosen and
+        internally valid. Laundering a record costs exactly ONE extra receipt, and nothing in the chain
+        marks it as unexpected, because from the chain's point of view it is an ordinary amendment.
+
+        The missing piece is a DENOMINATOR, and only the application has it: you know how many writes,
+        amendments (slash/restore) and erasures you performed. This compares that against what the chain
+        actually grew by, and itemises the difference.
+
+        `prior_anchor` is an anchor you took earlier -- ideally one witnessed externally, since an
+        attacker who can edit the store can also edit an anchor you left beside it.
+
+        Returns {ok, expected, actual, unexplained, prefix_intact, problems}. `unexplained` itemises the
+        surplus receipts (seq, memory_id, kind) so an operator gets a place to look, not just a count.
+
+        HONEST SCOPE: this detects UNEXPECTED growth. It cannot tell an attacker's amendment from your
+        own if you under-count, and a caller who passes whatever makes it pass has built a gate that
+        cannot fail. It is also blind to an attacker who appends nothing -- content substitution with no
+        new receipt is `bind_content`'s job, not this one.
+        """
+        problems: list = []
+        n_before = int((prior_anchor or {}).get("n_writes") or 0)
+        witnessed_tip = str((prior_anchor or {}).get("writes_tip") or "")
+
+        prefix_intact = True
+        if witnessed_tip:
+            redrived = self._recompute_tip(self._receipts, n_before, "write")
+            prefix_intact = (redrived == witnessed_tip)
+            if not prefix_intact:
+                problems.append(
+                    "the witnessed history no longer re-derives: the receipts up to this anchor do not "
+                    "reproduce its tip, so the past was rewritten (not merely appended to)")
+
+        added = self._receipts[n_before:]
+        n_amend = sum(1 for r in added if r.get("amends"))
+        n_plain = len(added) - n_amend
+        n_tomb_before = int((prior_anchor or {}).get("n_tombstones") or 0)
+        n_erased = max(0, len(self._tombstones) - n_tomb_before)
+
+        expected = {"writes": int(writes), "amendments": int(amendments), "erasures": int(erasures)}
+        actual = {"writes": n_plain, "amendments": n_amend, "erasures": n_erased}
+
+        unexplained: list = []
+        surplus_plain = n_plain - int(writes)
+        surplus_amend = n_amend - int(amendments)
+        if surplus_plain > 0:
+            for r in [x for x in added if not x.get("amends")][-surplus_plain:]:
+                unexplained.append({"seq": r.get("seq"), "memory_id": r.get("memory_id"), "kind": "write"})
+        if surplus_amend > 0:
+            for r in [x for x in added if x.get("amends")][-surplus_amend:]:
+                unexplained.append({"seq": r.get("seq"), "memory_id": r.get("memory_id"),
+                                    "kind": "amendment", "amends": r.get("amends")})
+        if surplus_plain > 0 or surplus_amend > 0:
+            problems.append(
+                f"the chain grew by more than you accounted for: {surplus_plain} unexplained write(s) and "
+                f"{surplus_amend} unexplained amendment(s). An amendment you did not make is what "
+                f"laundering an edited record costs.")
+        if actual["erasures"] > expected["erasures"]:
+            problems.append(f"{actual['erasures'] - expected['erasures']} erasure(s) you did not account "
+                            f"for; each leaves a signed tombstone, so they are attributable")
+        if surplus_plain < 0 or surplus_amend < 0:
+            problems.append(
+                "the chain grew by LESS than you accounted for -- receipts you expected are missing, which "
+                "is not something an append-only chain should be able to do")
+
+        return {"ok": not problems, "expected": expected, "actual": actual,
+                "unexplained": unexplained, "prefix_intact": prefix_intact, "problems": problems}
 
     def anchor(self, sign=None) -> dict:
         """Emit a Certificate-Transparency-style SIGNED TREE HEAD — a compact, EXTERNALLY-publishable commitment
@@ -6821,7 +6894,7 @@ class _TenantView:
     _STORE_LEVEL = frozenset({
         "flush", "reload", "reembed", "anchor", "witness", "ratify", "admit",
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
-        "verify_attribution", "register_erasure_target",
+        "verify_attribution", "register_erasure_target", "explain_growth",
         "detect_split_view", "check_self_narration", "classify_reversion",
         "restore_intent", "revert_intent", "revert_capability", "believed_at",
     })
