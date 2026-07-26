@@ -1,4 +1,4 @@
-"""Pin server.json's versions to the version we actually released.
+"""Pin every version-carrying manifest to the version we actually released.
 
 Run as:  python packages/_pin_server_json.py 1.28.1
 Or with no argument, to take the version from pyproject.toml.
@@ -6,6 +6,11 @@ Or with no argument, to take the version from pyproject.toml.
 The MCP registry stores only metadata and resolves the package from PyPI, so a server.json left behind at
 an older version advertises a listing that points at something else. Ours sat at 1.24.4 while 1.28.0 was
 the released package, which is exactly the drift this removes from human hands.
+
+The Claude Code plugin manifests have the same failure mode and were NOT covered: `.claude-plugin/
+plugin.json` and `marketplace.json` sat at 1.25.0 while the package was 1.78.0 -- fifty-two releases of
+drift, because nothing pinned them and a human had to remember. Fixing the instance would have left the
+class alive, so they are pinned here too.
 """
 import json
 import pathlib

@@ -1,7 +1,7 @@
 {
   "name": "inspeximus",
-  "version": "1.25.0",
-  "description": "Self-correcting memory for Claude Code. Facts you correct stay corrected, deletions leave a signed receipt, and storing something never calls a model.",
+  "version": "1.78.0",
+  "description": "Self-correcting memory for Claude Code. Facts you correct stay corrected, deletions leave a signed receipt you can verify offline, and storing something never calls a model. Also ships the checks: erasure_residue asks whether the bytes actually went — on any store, not just this one.",
   "author": {
     "name": "Rastislav Drahos",
     "url": "https://github.com/DanceNitra"
@@ -15,7 +15,10 @@
     "agent-memory",
     "supersession",
     "erasure",
-    "provenance"
+    "provenance",
+    "audit",
+    "gdpr",
+    "tamper-evident"
   ],
   "mcpServers": {
     "inspeximus": {
