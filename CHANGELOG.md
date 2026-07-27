@@ -3,6 +3,87 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.86.0 - a correction could be undone through any adapter, and the store then refused to be put right
+
+**BEHAVIOUR CHANGE, and the reason to upgrade: through any of the nine framework adapters, one restatement
+of a corrected value UNDID the correction — and then wedged the store, because the honest re-correction
+looked like an echo of the value the guard had just retired.** Measured on one store file, before:
+
+```
+1. the CLI corrects the payout wallet 0xAAA -> 0xBBB     store serves 0xBBB
+2. an adapter restates the OLD value                     store serves 0xAAA   <- correction undone
+3. the CLI corrects it again                             store serves 0xAAA   <- and now it is STUCK
+```
+
+After: `0xBBB` at all three steps. "Correct a fact once and it stays corrected" — the first line of the
+README — was false through the ordinary integration path, and only through it.
+
+The guard was not broken. `echo_guard` and the receipts-sidecar rule were re-declared at every entry
+point, and the adapters were never told: `cli._store` and `mcp_server` turned the guard on (with a comment
+in the CLI explaining why those two had to agree), while the nine adapters built `Inspeximus(path=...)`
+directly and inherited the LIBRARY default, which is OFF. `inspeximus/_surface.py` now holds both rules and
+every write surface calls it — twelve adapter sites, the CLI, the MCP server, the Claude Code hook.
+
+**The library default is deliberately unchanged.** A caller who constructs `Inspeximus` directly still gets
+exactly what they wrote; surfaces are what needed one posture. If an adapter-backed workflow relied on a
+restatement resurrecting a retired value, set `INSPEXIMUS_ECHO_GUARD=0` — it now reaches every surface,
+which it did not before.
+
+**Receipts, the same shape.** A store that already has a `.receipts.json` sidecar keeps receipts ON. That
+rule lived in `cli._store` alone, so an MCP or hook write against a receipted store did not extend the
+chain and the next `verify_writes()` reported an uncovered record — the surface punching a hole in the
+evidence it exists to produce. Nothing is created unasked: no sidecar, no receipts.
+
+**Three surfaces could not reach the check they advertised.** All one shape — a clean answer about input
+the surface structurally never examined — and in each case the check already existed one file over:
+
+- MCP `verify_audit_bundle` never passed `store_items`, so content was never compared. A bundle is
+  content-free by design, so a clean chain over SUBSTITUTED text verifies PASS — and the returned `limits`
+  told the auditor to "pass `store_items=`", a parameter this surface did not have. New `store_path=`; a
+  path that does not exist is REFUSED rather than downgraded to the content-blind verdict, because opening
+  a store creates it and a typo would otherwise return `ok` over an empty store the call had just made.
+- MCP `compliance_check` dropped `prior_anchor`, so `not_append_only` (Art. 12/19) could never fire there
+  however the history was rewritten — while the tool's own docstring listed it among the violations it
+  returns. It is the only operator-adversarial check of the four; the CLI has had `--prior-anchor` all
+  along.
+- `inspeximus audit-verify`'s `--store` existence guard reached one of its two entry points. One
+  implementation now, called from both.
+
+**And the smaller true things:**
+
+- `memory_report` sampled the OLDEST 400 records and called the result a sample. The same store reported
+  1.0 / 0.245 / 0.99 depending on insertion order. Seeded random sample now.
+- The CLI `revert` exited 0 on a REFUSED revert, so `inspeximus revert key && echo done` printed `done`
+  after nothing had happened.
+- `docs/API.md` published precision 0.06–0.23 and "43 wrong parents" where the cited probe prints 1.000
+  and ZERO false parents. Corrected, with the CHANGELOG annotated rather than rewritten.
+- The CHANGELOG cited two probes that were never committed; it is now inside the citation guard.
+- README claimed "one exception" to every number tracing to a runnable probe. There were three.
+
+**The gate that certifies all of this was itself reporting a clean result over work it had not done.**
+Found by running it: `74/75 killed, 0 survived, 1 skipped` — and exit code **0**, which is all CI reads. A
+skip now fails the run. The skip's cause was worth more than the exit code: the allowlist of files a run
+may restore keyed on the filename shape `*_result.json`, a convention a fifth of the receipts do not
+follow, so `probes/governance_sufficiency_bytes.json` was left dirty by every run (45 lines of it were
+committed as churn). Dirt that survives a run is then recorded as pre-existing by the NEXT run, protected
+as though a human had written it, and read as fact — so a test compared our published echo-policy receipt
+against a MUTANT's output, went red, and took its mutation out of the count. Reproduced deliberately
+before fixing. The rule is now the directory plus the extension, asserted against the tree rather than a
+remembered list.
+
+**Tests.** 50 new, **1394 passing**. The wedge is pinned as a CONTROL as well as a fix — the failing
+sequence is asserted against the library default, so the passing tests cannot pass for a trivial reason —
+and all twelve adapter construction sites are checked with the opener SPIED on rather than replaced, so
+the assertion is about the store that actually reaches the adapter. An AST guard fails if any write
+surface constructs `Inspeximus` itself again: the fix landing while the class lives one file over is the
+shape this repository meets most often, and it is a test now rather than a habit. 77 mutations in the
+committed spec.
+
+One older test had to be rewritten. It asserted the literal `INSPEXIMUS_ECHO_GUARD` appeared in both
+`cli.py` and `mcp_server.py`, so it went RED at the moment those two surfaces — plus nine adapters and the
+hook — came into agreement for the first time. It reads the posture off the surfaces now, in both
+directions.
+
 ## 1.85.0 - recall is deterministic, and two policies that were running on luck are now declared
 
 **BEHAVIOUR CHANGE.** Two identical stores, one query, and 7% of the time a different answer. That is now

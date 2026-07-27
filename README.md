@@ -11,7 +11,7 @@ attests it unaltered. The self-correcting memory layer for AI agents.*
 back — deterministically, with no LLM on the write path. Extracted from an autonomous research OS that has run
 it daily over 10,000 notes.*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.85.0
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.86.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -474,6 +474,10 @@ The MCP `remember` exposes `key` (deterministic supersession) plus `object` / `r
 runs with **`echo_guard` ON by default** (0.6.11) so a corrected fact stays corrected even if the old value
 is re-stated later — the failure mode a plain keyed/add-based store shows on RAMR's ECHO-RESISTANCE
 (keyed-without-guard 0.00, a real add-based system 0.57, guard 1.00). Set `INSPEXIMUS_ECHO_GUARD=0` to disable.
+Since **1.86.0 every SURFACE shares that posture** — the CLI, the MCP server, the Claude Code hook and all
+nine framework adapters — because until then the adapters inherited the library default (OFF), and one
+restatement through an adapter undid a correction and then wedged the store against being put right. The
+LIBRARY default is unchanged: construct `Inspeximus` directly and you get exactly what you wrote.
 Install and run the server straight from PyPI (the `[mcp]` extra pulls the MCP SDK; the core library stays
 dependency-free):
 

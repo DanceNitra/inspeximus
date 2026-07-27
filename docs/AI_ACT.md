@@ -55,6 +55,12 @@ The same surface is callable **over MCP** — `compliance_report`, `compliance_c
 its own AI-Act evidence. Start the server with `INSPEXIMUS_RECEIPTS=1` to keep the tamper-evident chain those
 tools evidence.
 
+Two of those take the argument that makes the check adversarial, and until 1.86.0 the MCP wrappers dropped
+both: pass `compliance_check(prior_anchor=…)` with an anchor you pinned earlier out of band, or
+`not_append_only` can never fire; pass `verify_audit_bundle(…, store_path="…")`, or the bundle's content is
+never compared and a clean chain over substituted text verifies PASS. A `store_path` that does not exist is
+refused rather than answered.
+
 ### Keep it enforced — the continuous compliance gate
 
 A one-time report drifts. `inspeximus compliance --check` is a **CI gate** that exits non-zero the moment the
