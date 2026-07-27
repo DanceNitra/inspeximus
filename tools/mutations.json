@@ -675,6 +675,15 @@
     ]
   },
   {
+    "name": "a mutant's falsified receipt is left in the tree for the rest of the run",
+    "file": "tools/mutation_check.py",
+    "old": "            for _p in _restore(_dirty_tracked() - dirty_before):\n                restored_all.add(_p)",
+    "new": "            pass",
+    "tests": [
+      "tests/test_mutation_check_harness.py"
+    ]
+  },
+  {
     "name": "the receipt allowlist goes back to a suffix a fifth of the probes ignore",
     "file": "tools/mutation_check.py",
     "old": "_ARTIFACT = re.compile(r\"^probes/[\\w.-]+\\.json$\")",

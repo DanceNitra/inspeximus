@@ -167,6 +167,34 @@ def test_a_mutation_run_leaves_no_tracked_file_dirty():
     assert dirty() == before, "the mutation run left tracked files modified"
 
 
+def test_a_mutants_receipt_does_not_survive_into_the_next_mutation(capsys):
+    """The falsified receipt used to live in the tree for the REST of the run.
+
+    Source was restored per mutation; the probe RECEIPTS the mutant's tests wrote were collected once,
+    after the whole loop. So the echo-guard mutant wrote an inverted
+    `probes/echo_policy_panel_result.json` (safe = 0.00 echo-blocked, where we publish 1.00) and every
+    later mutation's PRE-FLIGHT read it. `test_the_receipt_still_holds_the_number_we_publish` then went
+    red, and whichever mutation ran under it was SKIPPED — 76/77 with the 77th never evaluated, twice,
+    and the second time only because a skip had been made to fail the gate.
+
+    So: run the receipt-writing mutant FIRST, then a mutation whose tests include the receipt check. If
+    the artifact is not restored between them, the second is skipped as "not green before mutating".
+    """
+    flip = {"name": "flip the echo guard (its probe writes a tracked receipt)",
+            "file": "probes/echo_policy_panel.py",
+            "old": "m.echo_guard = True", "new": "m.echo_guard = False",
+            "tests": ["tests/test_echo_policy_panel.py"]}
+    after = {"name": "anything judged while the receipt must be intact",
+             "file": "inspeximus/core.py",
+             "old": 'policy: str = "safe"', "new": 'policy: str = "trusting"',
+             "tests": ["tests/test_mutation_check_harness.py::test_the_receipt_still_holds_the_number_we_publish",
+                       "tests/test_echo_policy_panel.py::test_the_default_policy_is_the_safe_one"]}
+
+    mutation_check.run([flip, after], verbose=True)
+    out = capsys.readouterr().out
+    assert "SKIPPED (not green before mutating)" not in out, out
+
+
 def test_the_receipt_still_holds_the_number_we_publish():
     """The concrete artifact, checked by value. If a mutation run ever leaves this inverted again, this
     fails rather than waiting for someone to notice a published receipt disagreeing with the product."""

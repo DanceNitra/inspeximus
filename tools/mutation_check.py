@@ -102,7 +102,7 @@ def _restore(paths) -> list:
 def run(mutations: list[dict], verbose: bool = True) -> int:
     env = {**os.environ, "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", ""),
            "PYTHONIOENCODING": "utf-8"}
-    survived, skipped = [], []
+    survived, skipped, restored_all = [], [], set()
     # A mutant does not only change code -- the tests it runs execute PROBES, and probes write their
     # result files, which are TRACKED. Restoring only the mutated source left
     # `probes/echo_policy_panel_result.json` holding the mutant's output: safe = 0.00 echo-blocked /
@@ -147,6 +147,16 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             killers = _killers(_pytest(tests, env).stdout)
         finally:
             io.open(path, "w", encoding="utf-8").write(src)
+            # RESTORE THE MUTANT'S ARTIFACTS NOW, NOT AT THE END OF THE RUN. The source was always put
+            # back per mutation; its RECEIPTS were not -- collateral was collected once, after the whole
+            # loop. So a mutant that flips the echo guard writes an INVERTED
+            # probes/echo_policy_panel_result.json (safe = 0.00 echo-blocked where we publish 1.00) and
+            # that falsified receipt then sits in the tree for every remaining mutation. The pre-flight
+            # of a later one reads it, `test_the_receipt_still_holds_the_number_we_publish` goes red,
+            # and the mutation is SKIPPED -- measured: 76/77 with the 77th never evaluated, twice.
+            # The run's own collateral was changing what its later checks saw. Same window, per mutation.
+            for _p in _restore(_dirty_tracked() - dirty_before):
+                restored_all.add(_p)
 
         if killers:
             if verbose:
@@ -157,11 +167,11 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             if verbose:
                 print(f"  {name[:58]:58s} -> SURVIVES <<< NO TEETH")
 
-    collateral = _dirty_tracked() - dirty_before
-    if collateral:
-        restored = _restore(collateral)
-        if verbose and restored:
-            print(f"  restored {len(restored)} tracked file(s) the run dirtied: {', '.join(restored)}")
+    for _p in _restore(_dirty_tracked() - dirty_before):      # anything a skip path left behind
+        restored_all.add(_p)
+    if verbose and restored_all:
+        print(f"  restored {len(restored_all)} tracked file(s) the run dirtied: "
+              f"{', '.join(sorted(restored_all))}")
 
     if verbose:
         total = len(mutations)
