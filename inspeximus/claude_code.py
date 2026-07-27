@@ -91,19 +91,22 @@ def _make_embedder(cwd):
 
 
 def _store(cwd):
-    from inspeximus import Inspeximus
+    from ._surface import open_store
     d = os.path.join(cwd or os.getcwd(), ".inspeximus")
     os.makedirs(d, exist_ok=True)
     emb_doc, emb_query, emb_id = _make_embedder(cwd)
+    # Opened through the SHARED SURFACE opener (inspeximus/_surface.py). This hook set echo_guard=True by
+    # hand and never applied the receipts-sidecar rule, so a hook write against a receipted coding store
+    # left the record uncovered by the chain — the same hole the CLI had, at the surface that writes most
+    # often. The guard's posture is unchanged except that INSPEXIMUS_ECHO_GUARD=0 now reaches here too,
+    # which is the point of having one posture.
     # persist_vectors is ALWAYS on: a store that acquired vectors during a semantic session must keep them
     # across a lexical open — persist_vectors=False strips vecs on save, so one hook run with the embedder
     # off would silently erase every persisted vector. On a store that never had vecs it is a no-op. The
     # matching core guarantee: _save leaves the .embedid sidecar untouched when embed_id is None, so a
     # lexical open can never mislabel (or blank) the recipe the persisted vectors were made with.
-    m = Inspeximus(path=os.path.join(d, "coding_memory.json"), embed=emb_doc, embed_query=emb_query,
-              embed_id=emb_id, persist_vectors=True)
-    m.echo_guard = True
-    return m
+    return open_store(os.path.join(d, "coding_memory.json"), embed=emb_doc, embed_query=emb_query,
+                      embed_id=emb_id, persist_vectors=True)
 
 
 def _rel(p, cwd):

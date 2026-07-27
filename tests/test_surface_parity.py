@@ -224,10 +224,14 @@ def test_resolve_true_falls_back_to_the_documented_default(tmp_path, monkeypatch
 # ── the class guard ───────────────────────────────────────────────────────────────────────────────────
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INTEGRATIONS = os.path.join(HERE, "inspeximus", "integrations")
+PKG = os.path.join(HERE, "inspeximus")
+INTEGRATIONS = os.path.join(PKG, "integrations")
+# Every surface a user WRITES through: the nine adapters, the CLI, the MCP server, the editor hook.
+# `audit_bundle.py` is deliberately not here — it opens a store to VERIFY one, holds no write posture,
+# and already refuses a path that does not exist.
 SURFACE_FILES = sorted(
     os.path.join(INTEGRATIONS, f) for f in os.listdir(INTEGRATIONS) if f.endswith(".py")
-)
+) + [os.path.join(PKG, f) for f in ("cli.py", "mcp_server.py", "claude_code.py")]
 
 
 def _direct_constructions(src: str) -> list[int]:
@@ -244,12 +248,55 @@ def _direct_constructions(src: str) -> list[int]:
 
 
 @pytest.mark.parametrize("path", SURFACE_FILES, ids=[os.path.basename(f) for f in SURFACE_FILES])
-def test_no_adapter_constructs_the_store_itself(path):
+def test_no_surface_constructs_the_store_itself(path):
     """The guard on the CLASS, not the twelve instances.
 
-    A tenth adapter — or a re-edit of one of the nine — that writes `Inspeximus(path=...)` inherits the
-    library default and silently reopens the wedge above. Use `_surface.open_store`.
+    A tenth adapter — or a re-edit of one of the nine, or the CLI, or the MCP server, or the editor hook —
+    that writes `Inspeximus(path=...)` inherits the library default and silently reopens the wedge above.
+    Use `_surface.open_store`. Each of those four surfaces once held its own copy of one of the two rules,
+    and no copy held both.
     """
     with open(path, encoding="utf-8") as fh:
         lines = _direct_constructions(fh.read())
     assert lines == [], f"{os.path.basename(path)} constructs Inspeximus directly at line(s) {lines}"
+
+
+def test_the_editor_hook_opens_through_the_surface(tmp_path, monkeypatch):
+    """The Claude Code hook writes more often than any other surface and had neither rule by reference.
+
+    It set `echo_guard = True` by hand (so INSPEXIMUS_ECHO_GUARD never reached it) and never looked for a
+    receipts sidecar, so a hook write against a receipted coding store left the record uncovered.
+    """
+    from inspeximus import claude_code
+
+    monkeypatch.delenv("INSPEXIMUS_ECHO_GUARD", raising=False)
+    monkeypatch.delenv("INSPEXIMUS_EMBED_URL", raising=False)   # lexical: no embedder call in a test
+    monkeypatch.delenv("INSPEXIMUS_EMBED_HOOKS", raising=False)
+    d = tmp_path / "proj"
+    d.mkdir()
+    assert claude_code._store(str(d)).echo_guard is True
+
+    coding = str(d / ".inspeximus" / "coding_memory.json")
+    seeded = Inspeximus(path=coding, receipts=True)
+    seeded.remember("the receipted history starts here")
+    seeded.flush()
+    st = claude_code._store(str(d))
+    assert st.receipts_enabled is True, "a hook write would have punched a hole in the evidence chain"
+
+    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "0")
+    assert claude_code._store(str(d)).echo_guard is False, "the shared posture must reach the hook too"
+
+
+def test_the_cli_opens_through_the_surface(tmp_path, monkeypatch):
+    """Same two rules, now held by reference rather than by a copy that only the CLI had."""
+    from inspeximus import cli
+
+    monkeypatch.delenv("INSPEXIMUS_ECHO_GUARD", raising=False)
+    monkeypatch.delenv("INSPEXIMUS_EMBED_URL", raising=False)
+    p = str(tmp_path / "m.json")
+    assert cli._store(p).echo_guard is True
+
+    seeded = Inspeximus(path=p, receipts=True)
+    seeded.remember("the receipted history starts here")
+    seeded.flush()
+    assert cli._store(p).receipts_enabled is True

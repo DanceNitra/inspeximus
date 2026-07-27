@@ -42,26 +42,26 @@ def _embedder():
 
 
 def _store(path, persist_vectors: bool = False, receipts: bool = False):
-    from inspeximus import Inspeximus
-    p = path or os.environ.get("INSPEXIMUS_PATH") or "inspeximus_memory.json"
-    # A store that ALREADY has a receipt chain keeps it. Without this, a plain `inspeximus remember` against a
-    # receipted store opened receipts OFF and the write silently did not extend the chain -- so the very next
-    # verify_writes() reported a record with no receipt, i.e. the CLI quietly punched a hole in the evidence
-    # it exists to produce. Detected from the sidecar rather than a flag, because the user who enabled
-    # receipts in Python should not have to re-declare them at every shell call.
-    if not receipts and os.path.exists(str(p) + ".receipts.json"):
-        receipts = True
+    # Opened through the SHARED SURFACE opener (inspeximus/_surface.py), which is where both of the rules
+    # this function used to own now live:
+    #   RECEIPTS: a store that ALREADY has a receipt chain keeps it. Without this, a plain
+    #   `inspeximus remember` against a receipted store opened receipts OFF and the write silently did not
+    #   extend the chain -- so the very next verify_writes() reported a record with no receipt, i.e. the CLI
+    #   quietly punched a hole in the evidence it exists to produce. Detected from the sidecar rather than a
+    #   flag, because the user who enabled receipts in Python should not have to re-declare them at every
+    #   shell call.
+    #   ECHO GUARD, matched to the MCP surface. The CLI and `inspeximus-mcp` are documented as sharing one
+    #   store, and they disagreed: the MCP turned the guard ON, the CLI left the library's legacy default
+    #   OFF. So one CLI write could resurrect a value the MCP had retired -- undoing the measured
+    #   0.00 -> 1.00 echo-resistance on the very store that advertises it. Same env var, one posture.
+    # Both rules were written HERE and copied nowhere, which is how nine adapters, the MCP server and the
+    # editor hook each ended up with a different one.
     # persist_vectors stays OFF by default (vectors are a re-derivable cache; writing them balloons the store
     # file on every command). `reembed` opts in — persisting is the entire point of that command.
     # receipts (OPT-IN): builds the tamper-evident write/erasure chain (persisted to <path>.receipts.json) that
     # `audit-build` exports; reload needs it on too, so audit-build/governance force it regardless of the flag.
-    st = Inspeximus(path=p, embed=_embedder(), persist_vectors=persist_vectors, receipts=receipts)
-    # ECHO GUARD, matched to the MCP surface. The CLI and `inspeximus-mcp` are documented as sharing one
-    # store, and they disagreed: the MCP turned the guard ON, the CLI left the library's legacy default OFF.
-    # So one CLI write could resurrect a value the MCP had retired -- undoing the measured 0.00 -> 1.00
-    # echo-resistance on the very store that advertises it. Same env var, same default, one posture.
-    st.echo_guard = os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
-    return st
+    from ._surface import open_store
+    return open_store(path, embed=_embedder(), persist_vectors=persist_vectors, receipts=receipts)
 
 
 def _out(obj, as_json):

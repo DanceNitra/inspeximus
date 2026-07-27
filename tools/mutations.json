@@ -628,5 +628,50 @@
     "tests": [
       "tests/test_surface_parity.py"
     ]
+  },
+  {
+    "name": "the editor hook goes back to constructing the store itself",
+    "file": "inspeximus/claude_code.py",
+    "old": "    return open_store(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
+    "new": "    return Inspeximus(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
+    "tests": [
+      "tests/test_surface_parity.py"
+    ]
+  },
+  {
+    "name": "the MCP server goes back to constructing the store itself",
+    "file": "inspeximus/mcp_server.py",
+    "old": "_MEM = open_store(_PATH, embed=_EMB_DOC",
+    "new": "_MEM = Inspeximus(_PATH, embed=_EMB_DOC",
+    "tests": [
+      "tests/test_surface_parity.py"
+    ]
+  },
+  {
+    "name": "MCP verify_audit_bundle drops store_items again (content never compared)",
+    "file": "inspeximus/mcp_server.py",
+    "old": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items)",
+    "new": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold)",
+    "tests": [
+      "tests/test_mcp_verification_gaps.py"
+    ]
+  },
+  {
+    "name": "MCP verify_audit_bundle downgrades a missing store_path instead of refusing",
+    "file": "inspeximus/mcp_server.py",
+    "old": "        if items is None:",
+    "new": "        if False:",
+    "tests": [
+      "tests/test_mcp_verification_gaps.py"
+    ]
+  },
+  {
+    "name": "MCP compliance_check drops prior_anchor again (not_append_only cannot fire)",
+    "file": "inspeximus/mcp_server.py",
+    "old": "               prior_anchor=prior_anchor)",
+    "new": "               prior_anchor=None)",
+    "tests": [
+      "tests/test_mcp_verification_gaps.py"
+    ]
   }
 ]

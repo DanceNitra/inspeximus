@@ -36,6 +36,7 @@ from pathlib import Path
 # died with "'mcp' is not a package". The module is also named mcp_server.py rather than mcp.py so
 # it cannot collide with the SDK even if something else puts this directory on the path.
 from inspeximus import Inspeximus  # noqa: E402
+from inspeximus._surface import open_store  # noqa: E402   one surface posture; see _surface.py
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -80,13 +81,18 @@ _PATH = os.environ.get("INSPEXIMUS_PATH", "inspeximus_memory.json")
 # sidecar file unexpectedly; set INSPEXIMUS_RECEIPTS=1 to enable it.
 _RECEIPTS = os.environ.get("INSPEXIMUS_RECEIPTS", "").strip().lower() in ("1", "true", "yes", "on")
 _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
-_MEM = Inspeximus(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS)
-# ECHO GUARD is ON by default on the MCP surface (a fresh product surface, not bound by the library's
-# byte-identical-legacy default): a keyed fact that is corrected and then RE-STATED (a benign restatement
-# or an attacker re-injecting the old value) otherwise resurrects the stale value. Measured on RAMR
-# (ramr_echo_resistance*): keyed supersession WITHOUT the guard = 0.00 echo-resistance; WITH it = 1.00,
-# and it beats a real add-based system (mem0 0.57) at the answer level. Set INSPEXIMUS_ECHO_GUARD=0 to disable.
-_MEM.echo_guard = os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
+# Opened through the SHARED SURFACE opener (inspeximus/_surface.py), which holds two rules this server used to
+# hold only half of:
+#   ECHO GUARD is ON by default on a surface (a fresh product surface, not bound by the library's
+#   byte-identical-legacy default): a keyed fact that is corrected and then RE-STATED (a benign restatement
+#   or an attacker re-injecting the old value) otherwise resurrects the stale value. Measured on RAMR
+#   (ramr_echo_resistance*): keyed supersession WITHOUT the guard = 0.00 echo-resistance; WITH it = 1.00,
+#   and it beats a real add-based system (mem0 0.57) at the answer level. INSPEXIMUS_ECHO_GUARD=0 disables it.
+#   RECEIPTS: a store that ALREADY has a .receipts.json sidecar keeps them on. This server read
+#   INSPEXIMUS_RECEIPTS alone, so an MCP write against a receipted store did not extend the chain and the
+#   next verify_writes() reported an uncovered record -- the CLI defect, one surface over. Enabling receipts
+#   on a store that has no sidecar is still opt-in, so nothing is created unasked.
+_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS)
 
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
 
@@ -601,13 +607,22 @@ def compliance_report(expected_pubkey: str = "") -> dict:
 
 
 @mcp.tool()
-def compliance_check(require_receipts: bool = True, max_pii_age_days: float | None = None) -> dict:
+def compliance_check(require_receipts: bool = True, max_pii_age_days: float | None = None,
+                     prior_anchor: dict | None = None) -> dict:
     """CI/CONTINUOUS compliance GATE (read-only, no LLM): assert the invariants a store claiming AI-Act
     record-keeping must hold and report any regression. Returns {ok, violations, checked} — violations include
     receipts_disabled (Art.12/19), integrity_failed (Art.12/15), pii_over_retention (GDPR 5(1)(e)). ok=False
-    means the memory posture regressed. Needs INSPEXIMUS_RECEIPTS=1 for the record-keeping checks."""
+    means the memory posture regressed. Needs INSPEXIMUS_RECEIPTS=1 for the record-keeping checks.
+
+    `prior_anchor` (an anchor() dict an auditor pinned earlier, out of band) adds the APPEND-ONLY check:
+    not_append_only (Art. 12/19) fires when today's history is not a consistent extension of it. This
+    surface used to drop the argument, so that violation could never fire here however the store was
+    rewritten — `checked` never listed append_only, but the CLI's own `--prior-anchor` did the check and
+    the tool docstring advertised the violation. The one operator-ADVERSARIAL check of the four is the
+    one an auditor is most likely to want."""
     from .compliance import compliance_check as _cc
-    return _cc(_MEM, require_receipts=require_receipts, max_pii_age_days=max_pii_age_days)
+    return _cc(_MEM, require_receipts=require_receipts, max_pii_age_days=max_pii_age_days,
+               prior_anchor=prior_anchor)
 
 
 @mcp.tool()
@@ -630,12 +645,32 @@ def audit_bundle(expected_pubkey: str = "") -> dict:
 
 
 @mcp.tool()
-def verify_audit_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1) -> dict:
+def verify_audit_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1,
+                        store_path: str = "") -> dict:
     """OFFLINE verification of an audit_bundle() — needs only the bundle (no store, no key). Re-walks both
     hash-chains from genesis, matches the tips/counts to the signed anchor, and (with `witnesses`) checks
-    external co-signatures. Returns {ok, checks, problems, summary}; any post-export tamper fails it."""
-    from .audit_bundle import verify_bundle
-    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold)
+    external co-signatures. Returns {ok, checks, problems, limits, summary}; any post-export tamper fails it.
+
+    CONTENT: the bundle carries hashes and never text, so a clean chain over SUBSTITUTED text verifies here
+    — exactly what an out-of-band edit plus a legitimate amendment produces. `store_path` (the store file
+    the bundle was taken from) re-derives each record's commitment against the earliest receipt covering
+    it, and `summary.content_checked` then says True. Without it the verdict still returns and `limits`
+    says in words that content was not examined.
+
+    This surface had no way to pass it: `limits` told the auditor to "pass store_items=", a parameter that
+    did not exist here, so over MCP the answer was always the content-blind one. A missing `store_path` is
+    REFUSED rather than silently downgraded — opening a store creates it, so a mistyped path would
+    otherwise hand back a clean verdict over an empty store the call had just made."""
+    from .audit_bundle import verify_bundle, load_store_items
+    items = None
+    if store_path:
+        items = load_store_items(store_path)
+        if items is None:
+            return {"ok": False, "checks": [], "problems": [f"store_path does not exist: {store_path} — "
+                                                            "refusing to verify content against a store this "
+                                                            "call would have had to create"],
+                    "limits": [], "summary": {"content_checked": False}}
+    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items)
 
 
 @mcp.tool()
