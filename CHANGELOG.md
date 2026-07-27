@@ -3,6 +3,42 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.83.0 - a deletion manifest could be repointed at a different data subject
+
+**SECURITY FIX (evidence integrity) and a BEHAVIOUR CHANGE.** `DeletionManifest.verify()` recomputed
+`complete` and `residual_targets` from the entries and walked the entry hash chain. It never read the
+HEADER — `subject`, `request_id`, `basis`, `authorized_by`, `targets` were bound to nothing:
+
+```python
+manifest["subject"]       = "Bob"
+manifest["authorized_by"] = "attacker@evil"
+manifest["request_id"]    = "DSAR-999"
+manifest["targets"]       = ["none"]
+verify(manifest)          # 1.82.0 -> (True, [])   1.83.0 -> (False, ['entry 0: broken chain link'])
+```
+
+This is the artifact whose entire job is to be evidence that a NAMED person's data was erased, under a
+NAMED authority, on a NAMED request. The entries were faithful; the sentence they were attached to was
+anyone's to write.
+
+The chain is now **seeded** with a hash of those five fields rather than given a separate signature, so a
+single edit to any of them breaks entry 0's `prev` link — a future verifier that only walks the chain
+cannot forget to check them.
+
+`verify()` gains `expected_pubkey=` (without it, each entry is checked against the key stored INSIDE it,
+so a rewriter signs with their own and passes) and `legacy_header=` for pre-1.83 manifests. A pre-1.83
+manifest is REFUSED by default: "predates the binding" and "was repointed at someone else" look identical
+from outside. The flag cannot launder a 1.83 manifest, whose chain is seeded rather than starting at
+genesis.
+
+The unpinned-signature warning and the legacy acceptance are **notes**, returned to the caller but not
+counted against `ok`. That distinction earned itself immediately: the first version appended the legacy
+note to `problems`, and since `ok` is `not problems` the escape hatch changed nothing at all — a flag that
+does not do what its name says. Failing on an unpinned signature would likewise have broken every signed
+manifest in existence, and a check that cries wolf gets switched off.
+
+Mutation-verified 43/43. 1207 tests pass.
+
 ## 1.82.0 - the value the store SERVES is now inside the commitment
 
 **BEHAVIOUR CHANGE (receipt format) and a security fix.** Write receipts committed to text+key, `mtype`

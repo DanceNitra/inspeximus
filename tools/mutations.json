@@ -340,5 +340,50 @@
     "tests": [
       "tests/test_value_is_committed.py"
     ]
+  },
+  {
+    "name": "the manifest header is unbound again",
+    "file": "inspeximus/deletion_manifest.py",
+    "old": "        prev = _header_hash(subject, request_id, basis, authorized_by, [t.name for t in self._targets])",
+    "new": "        prev = _GENESIS",
+    "tests": [
+      "tests/test_deletion_manifest_header.py"
+    ]
+  },
+  {
+    "name": "verify stops checking the header seed",
+    "file": "inspeximus/deletion_manifest.py",
+    "old": "        if first_prev == _GENESIS and first_prev != header:",
+    "new": "        if False:",
+    "tests": [
+      "tests/test_deletion_manifest_header.py"
+    ]
+  },
+  {
+    "name": "the legacy escape hatch stops opening",
+    "file": "inspeximus/deletion_manifest.py",
+    "old": "        return (len(problems) == 0, problems + notes)",
+    "new": "        return (len(problems + notes) == 0, problems + notes)",
+    "tests": [
+      "tests/test_deletion_manifest_header.py"
+    ]
+  },
+  {
+    "name": "a pinned key is ignored when verifying signatures",
+    "file": "inspeximus/deletion_manifest.py",
+    "old": "                if expected_pubkey is not None and e.get(\"pubkey\") != expected_pubkey:",
+    "new": "                if False:",
+    "tests": [
+      "tests/test_deletion_manifest_header.py"
+    ]
+  },
+  {
+    "name": "the header hash drops the subject",
+    "file": "inspeximus/deletion_manifest.py",
+    "old": "    return _sha256({\"subject\": subject, \"request_id\": request_id, \"basis\": basis,",
+    "new": "    return _sha256({\"subject\": None, \"request_id\": request_id, \"basis\": basis,",
+    "tests": [
+      "tests/test_deletion_manifest_header.py"
+    ]
   }
 ]

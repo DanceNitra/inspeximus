@@ -7476,10 +7476,15 @@
   "source": null,
   "mtype": "procedural",
   "last_access": 1785134665.9427805,
-  "status": "active",
+  "status": "superseded",
   "links": [],
-  "meta": {},
-  "key": "ui::theme"
+  "meta": {
+   "superseded_by_toggle": "597a4dbfa5",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "ui::theme",
+  "superseded_ts": 1785136303.9840088,
+  "invalidated_at": 1785136303.9840088
  },
  {
   "id": "e648933501",
@@ -7494,10 +7499,15 @@
   "source": null,
   "mtype": "episodic",
   "last_access": 1785134665.9488,
-  "status": "active",
+  "status": "superseded",
   "links": [],
-  "meta": {},
-  "key": "infra::region"
+  "meta": {
+   "superseded_by_toggle": "4c64733868",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "infra::region",
+  "superseded_ts": 1785136303.990447,
+  "invalidated_at": 1785136303.990447
  },
  {
   "id": "75501dad75",
@@ -7512,6 +7522,182 @@
   "source": null,
   "mtype": "episodic",
   "last_access": 1785134665.9553096,
+  "status": "superseded",
+  "links": [],
+  "meta": {
+   "superseded_by_toggle": "ff34e0416f",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "api::rate_limit",
+  "superseded_ts": 1785136303.9777563,
+  "invalidated_at": 1785136303.9777563
+ },
+ {
+  "id": "ff34e0416f",
+  "text": "The API rate limit is 1000 req/min",
+  "tags": [
+   "config"
+  ],
+  "value": 1.25,
+  "ts": 1785136303.9777563,
+  "iso": "2026-07-27T07:11:43Z",
+  "valid_from": 1785136303.9777563,
+  "source": null,
+  "mtype": "episodic",
+  "last_access": 1785136303.99596,
+  "status": "superseded",
+  "links": [],
+  "meta": {
+   "superseded_by_toggle": "45c7c0a738",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "api::rate_limit",
+  "_stale_derived": false,
+  "superseded_ts": 1785136303.996961,
+  "invalidated_at": 1785136303.996961
+ },
+ {
+  "id": "597a4dbfa5",
+  "text": "User prefers dark mode",
+  "tags": [
+   "prefs"
+  ],
+  "value": 1.0,
+  "ts": 1785136303.9840088,
+  "iso": "2026-07-27T07:11:43Z",
+  "valid_from": 1785136303.9840088,
+  "source": null,
+  "mtype": "procedural",
+  "last_access": 1785136303.9840088,
+  "status": "superseded",
+  "links": [],
+  "meta": {
+   "superseded_by_toggle": "c39095b2e8",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "ui::theme",
+  "superseded_ts": 1785136309.267768,
+  "invalidated_at": 1785136309.267768
+ },
+ {
+  "id": "4c64733868",
+  "text": "Deploy target is us-east-1",
+  "tags": [
+   "config"
+  ],
+  "value": 1.0,
+  "ts": 1785136303.990447,
+  "iso": "2026-07-27T07:11:43Z",
+  "valid_from": 1785136303.990447,
+  "source": null,
+  "mtype": "episodic",
+  "last_access": 1785136303.990447,
+  "status": "superseded",
+  "links": [],
+  "meta": {
+   "superseded_by_toggle": "b349bc85b7",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "infra::region",
+  "superseded_ts": 1785136309.2742774,
+  "invalidated_at": 1785136309.2727726
+ },
+ {
+  "id": "45c7c0a738",
+  "text": "The API rate limit is 5000 req/min",
+  "tags": [
+   "config"
+  ],
+  "value": 1.0,
+  "ts": 1785136303.996961,
+  "iso": "2026-07-27T07:11:43Z",
+  "valid_from": 1785136303.996961,
+  "source": null,
+  "mtype": "episodic",
+  "last_access": 1785136303.996961,
+  "status": "superseded",
+  "links": [],
+  "meta": {
+   "superseded_by_toggle": "f2ff91b060",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "api::rate_limit",
+  "superseded_ts": 1785136309.260753,
+  "invalidated_at": 1785136309.260753
+ },
+ {
+  "id": "f2ff91b060",
+  "text": "The API rate limit is 1000 req/min",
+  "tags": [
+   "config"
+  ],
+  "value": 1.25,
+  "ts": 1785136309.260753,
+  "iso": "2026-07-27T07:11:49Z",
+  "valid_from": 1785136309.260753,
+  "source": null,
+  "mtype": "episodic",
+  "last_access": 1785136309.2794347,
+  "status": "superseded",
+  "links": [],
+  "meta": {
+   "superseded_by_toggle": "b18bb4f5e4",
+   "superseded_by_policy": "keyed_lww"
+  },
+  "key": "api::rate_limit",
+  "_stale_derived": false,
+  "superseded_ts": 1785136309.2794347,
+  "invalidated_at": 1785136309.2794347
+ },
+ {
+  "id": "c39095b2e8",
+  "text": "User prefers dark mode",
+  "tags": [
+   "prefs"
+  ],
+  "value": 1.0,
+  "ts": 1785136309.267768,
+  "iso": "2026-07-27T07:11:49Z",
+  "valid_from": 1785136309.267768,
+  "source": null,
+  "mtype": "procedural",
+  "last_access": 1785136309.267768,
+  "status": "active",
+  "links": [],
+  "meta": {},
+  "key": "ui::theme"
+ },
+ {
+  "id": "b349bc85b7",
+  "text": "Deploy target is us-east-1",
+  "tags": [
+   "config"
+  ],
+  "value": 1.0,
+  "ts": 1785136309.2727726,
+  "iso": "2026-07-27T07:11:49Z",
+  "valid_from": 1785136309.2727726,
+  "source": null,
+  "mtype": "episodic",
+  "last_access": 1785136309.2727726,
+  "status": "active",
+  "links": [],
+  "meta": {},
+  "key": "infra::region"
+ },
+ {
+  "id": "b18bb4f5e4",
+  "text": "The API rate limit is 5000 req/min",
+  "tags": [
+   "config"
+  ],
+  "value": 1.0,
+  "ts": 1785136309.2794347,
+  "iso": "2026-07-27T07:11:49Z",
+  "valid_from": 1785136309.2794347,
+  "source": null,
+  "mtype": "episodic",
+  "last_access": 1785136309.2794347,
   "status": "active",
   "links": [],
   "meta": {},
