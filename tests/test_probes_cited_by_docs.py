@@ -165,14 +165,32 @@ def _stdlib_names():
         return names
     import sysconfig
 
+    import importlib.machinery
+
     names = set(sys.builtin_module_names)
-    stdlib = sysconfig.get_paths().get("stdlib")
-    if stdlib and os.path.isdir(stdlib):
-        for entry in os.listdir(stdlib):
-            if entry.endswith(".py"):
-                names.add(entry[:-3])
-            elif os.path.isdir(os.path.join(stdlib, entry)) and entry != "site-packages":
+    paths = sysconfig.get_paths()
+    roots = [paths.get("stdlib"), paths.get("platstdlib")]
+    # POSIX keeps C extensions in lib-dynload; Windows keeps them in a DLLs directory beside Lib.
+    # Missing the second is how `unicodedata` slipped through -- found by running this branch, not by
+    # reasoning about it.
+    roots += [os.path.join(r, "lib-dynload") for r in list(roots) if r]
+    roots += [os.path.join(os.path.dirname(r), "DLLs") for r in list(roots) if r]
+    # C extensions (unicodedata, _socket, ...) are .pyd/.so, not .py, and live in lib-dynload on POSIX.
+    # A scan for *.py alone missed `unicodedata` -- caught by exercising this branch directly rather than
+    # by shipping it and waiting for the 3.9 leg to complain again.
+    suffixes = [".py"] + list(importlib.machinery.EXTENSION_SUFFIXES)
+    for root in roots:
+        if not root or not os.path.isdir(root):
+            continue
+        for entry in os.listdir(root):
+            full = os.path.join(root, entry)
+            if os.path.isdir(full) and entry not in ("site-packages", "__pycache__", "lib-dynload"):
                 names.add(entry)
+                continue
+            for suf in suffixes:
+                if entry.endswith(suf):
+                    names.add(entry[:-len(suf)].split(".")[0])
+                    break
     return names
 
 
