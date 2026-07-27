@@ -3,6 +3,45 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.82.0 - the value the store SERVES is now inside the commitment
+
+**BEHAVIOUR CHANGE (receipt format) and a security fix.** Write receipts committed to text+key, `mtype`
+and the canonical sources. Never `object` — the field supersession, the echo guard, `revert()`,
+`check_conflict` and `_obj_sig` all treat as authoritative. It is the answer the store gives:
+
+```
+remember("retention policy is 90 days", key="policy::retention", object="90d")
+# edit rec["object"] to "30d" on disk, nothing else
+1.81.0:  verify_writes() -> True     audit-verify --store -> "content checked ... PASS"
+1.82.0:  verify_writes() -> False
+```
+
+Text and key were untouched, so every hash still matched. The receipts were faithful about everything
+except the answer.
+
+`value_sha256` is a NEW commit field rather than `object` folded into `immutable_sha256`: changing that
+hash would make every receipt ever written mismatch, so an upgrade would raise a tamper alarm on every
+honest store. Pre-1.82 receipts simply lack it and are checked on what they do carry — and they cannot be
+stripped of it, because the receipt hash covers the whole commit dict, so deleting a field breaks the
+chain link instead. `bind_content` compares it too, or the fix would have survived one call site over.
+
+**Records written before 1.82 are NAMED, not silently exempted.** Applying the new check only where the
+field happens to be present would make an unverifiable record read exactly like a verified one — the
+defect this whole audit kept finding. So `verify_writes()` reports them on the same terms as the pre-1.68
+case: fail closed, explain, offer `value_strict=False`. Only records that actually carry an `object` are
+flagged; a record with no value has nothing to protect.
+
+**New: `recommit(ids=[...])`.** The first version of that message told operators to "re-write the record",
+and checking it showed that does not work — `slash()` appends a receipt only for a GRADUATED memory, so an
+ordinary record had no upgrade path at all. Building the path beat rewording the limitation. Honest scope,
+in the docstring and in a test: it binds the record's state AS IT IS NOW and is not a validation of the
+past — which is why it takes explicit ids, is not part of any automatic upgrade, and is not exposed to
+agents over MCP. Unlike `value_strict=False`, which silences the report, it leaves the decision IN the
+chain as a new receipt with a timestamp. Tenant-scoped: it sweeps `_tenant_rows()`, so a tenant view can
+never re-commit another tenant's records — the isolation guard refused to let it exist unclassified.
+
+Mutation-verified 38/38. 1192 tests pass.
+
 ## 1.81.0 - uncounted is not unchecked
 
 **DATA LOSS FIX (AutoGen adapter) and two BEHAVIOUR CHANGES.** The same audit, the next three findings.

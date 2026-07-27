@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.81.0"
+__version__ = "1.82.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1354,6 +1354,22 @@ class Inspeximus:
                                                       "mtype": rec.get("mtype")})),
                 "immutable_sha256": _sha256_hex(_canon({"text": rec.get("text"), "key": rec.get("key")})),
                 "mtype": rec.get("mtype"),
+                # THE VALUE, since 1.82.0. `object` is what supersession, the echo guard, revert(),
+                # check_conflict and _obj_sig all treat as authoritative -- it is the thing the store
+                # SERVES -- and it was outside every commitment. Editing "90d" to "30d" on disk left
+                # verify_writes() answering True and `audit-verify --store` printing "content checked,
+                # PASS", because text and key were untouched and nothing hashed the value.
+                #
+                # A SEPARATE field, not `object` folded into immutable_sha256: changing that hash would
+                # make every receipt ever written mismatch, so an upgrade would raise a tamper alarm on
+                # every honest store. Old receipts simply lack this key and are checked on what they do
+                # commit to -- and they cannot be stripped of it, because the receipt hash covers the whole
+                # commit dict, so removing a field breaks the chain link instead.
+                #
+                # It binds for life like text+key: `object` is written once in remember() before the
+                # receipt is emitted, and no call site rewrites it afterwards (supersession moves `status`,
+                # revert() writes a new record).
+                "value_sha256": _sha256_hex(_canon({"object": rec.get("object")})),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
 
     def _emit_write_receipt(self, rec: dict, amends: tuple = ()) -> dict:
@@ -1412,7 +1428,7 @@ class Inspeximus:
         return r
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
-                      legacy_strict: bool = True) -> tuple[bool, list[str]]:
+                      legacy_strict: bool = True, value_strict: bool = True) -> tuple[bool, list[str]]:
         """Verify the write-receipt chain AND that each stored memory still matches its write receipt.
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
         Requires receipts to have been enabled at write time.
@@ -1493,8 +1509,13 @@ class Inspeximus:
                     forgiven = {f for x in self._receipts
                                 if x["memory_id"] == r["memory_id"] and x.get("seq", 0) > r.get("seq", 0)
                                 for f in (x.get("amends") or ())}
-                    bad = any(rc.get(k) != cc.get(k) for k in ("immutable_sha256", "mtype", "attrib_sha256")
-                              if k not in forgiven)
+                    # `k in rc` so a pre-1.82 receipt, which has no `value_sha256`, is checked on what it
+                    # does carry instead of failing on a field that did not exist when it was written. It
+                    # cannot be used to strip a field either: the receipt hash covers the whole commit, so
+                    # deleting one breaks the chain link.
+                    bad = any(rc.get(k) != cc.get(k)
+                              for k in ("immutable_sha256", "mtype", "value_sha256", "attrib_sha256")
+                              if k not in forgiven and k in rc)
                 elif legacy_strict:
                     # PRE-1.68 receipt, checked STRICTLY: text/key/mtype are one hash here, so the only
                     # way to bind the original content is to check EVERY receipt, not just the latest.
@@ -1559,7 +1580,72 @@ class Inspeximus:
                 f"A LEGITIMATE slash()/restore() under <=1.67 looks identical, so this may be benign: check "
                 f"the text against a copy you trust. Re-writing a record upgrades its receipt; pass "
                 f"legacy_strict=False to silence this once you have checked.")
+        # PRE-1.82 receipts do not commit `object` -- the value the store SERVES. Silently applying the new
+        # check only where it happens to be present would be this repository's most-repeated defect: a
+        # record that cannot be checked reported exactly like one that passed. So it is named, on the same
+        # terms as the pre-1.68 case above: fail closed, explain, and give the caller a way to accept it.
+        if value_strict:
+            latest: dict = {}
+            for r in self._receipts:
+                if r.get("seq", 0) >= latest.get(r["memory_id"], {}).get("seq", -1):
+                    latest[r["memory_id"]] = r
+            uncovered = sorted(
+                rec["id"] for rec in self.items
+                if rec.get("status") == "active" and rec.get("object") is not None
+                and "value_sha256" not in ((latest.get(rec["id"], {}).get("commit")) or {})
+                and rec["id"] in latest)
+            if uncovered:
+                problems.append(
+                    f"{len(uncovered)} record(s) carry PRE-1.82 receipts that do not commit `object`, the "
+                    f"VALUE this store serves and that supersession, the echo guard and revert() all key "
+                    f"on. Editing that value out of band is invisible to those receipts while text and key "
+                    f"still match, so they are not verified on the field that matters most. Check them "
+                    f"against a copy you trust, then call recommit(ids=[...]) to bind their CURRENT state "
+                    f"into the chain -- or pass value_strict=False to accept the gap without a record of "
+                    f"having done so. ({', '.join(uncovered[:5])}"
+                    + (f", +{len(uncovered) - 5} more" if len(uncovered) > 5 else "") + ")")
         return (len(problems) == 0, problems)
+
+    def recommit(self, ids=None) -> dict:
+        """Append a fresh write receipt for records whose receipts predate a commitment field.
+
+        Why this exists: 1.82.0 started committing `object`, the value the store SERVES. Records written
+        before it carry receipts that never hashed the value, so `verify_writes()` names them and cannot
+        check them. The message told operators to "re-write the record" -- and that turned out to be advice
+        that does not work: `slash()` appends a receipt only for a GRADUATED memory, so an ordinary record
+        had no path at all. Building the path beat rewording the limitation.
+
+        HONEST SCOPE, and it is the whole of it: this binds the record's state AS IT IS NOW. It is not a
+        validation of the past and cannot be -- if the value was already edited out of band, this commits
+        the edited one and the store will verify clean afterwards. That is why it is an explicit operator
+        action with named ids rather than something an upgrade does for you: run it only on records you
+        have checked against a copy you trust. Compared with `value_strict=False`, which silences the
+        report, this leaves the decision IN the chain: a new receipt, at a new sequence, with a timestamp.
+
+        Returns {recommitted, skipped}. Requires receipts enabled."""
+        if not self.receipts_enabled:
+            return {"recommitted": [], "skipped": [],
+                    "problems": ["write receipts are disabled, so there is no chain to append to"]}
+        wanted = set(ids) if ids is not None else None
+        done, skipped = [], []
+        # _tenant_rows(), not self.items: on a tenant view the latter is the SHARED store, so an unscoped
+        # sweep would re-commit another tenant's records. The isolation guard refused to let this method
+        # exist unclassified, which is exactly what that guard is for.
+        for rec in self._tenant_rows():
+            if rec.get("status") != "active":
+                continue
+            if wanted is not None and rec["id"] not in wanted:
+                continue
+            latest = max((r for r in self._receipts if r["memory_id"] == rec["id"]),
+                         key=lambda r: r.get("seq", 0), default=None)
+            if latest is not None and "value_sha256" in ((latest.get("commit")) or {}):
+                skipped.append(rec["id"])            # already covered; a no-op receipt is chain noise
+                continue
+            self._emit_write_receipt(rec)
+            done.append(rec["id"])
+        if done:
+            self._save(force=True)
+        return {"recommitted": done, "skipped": skipped, "problems": []}
 
     def verify_attribution(self) -> dict:
         """Tamper-evidence for the ATTRIBUTION FLOOR. k, the influence budget, the influence gate and slash are all
@@ -7070,6 +7156,7 @@ class _TenantView:
     def contradictions(self, *a, **k):  return Inspeximus.contradictions(self, *a, **k)
     def check_conflict(self, *a, **k):  return Inspeximus.check_conflict(self, *a, **k)
     def verify_claim(self, *a, **k):    return Inspeximus.verify_claim(self, *a, **k)
+    def recommit(self, *a, **k):        return Inspeximus.recommit(self, *a, **k)
     def selection_integrity(self, *a, **k): return Inspeximus.selection_integrity(self, *a, **k)
     def _cluster_active(self, *a, **k): return Inspeximus._cluster_active(self, *a, **k)
     def _supersede_by_key(self, *a, **k): return Inspeximus._supersede_by_key(self, *a, **k)

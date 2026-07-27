@@ -286,5 +286,59 @@
     "tests": [
       "tests/test_uncounted_is_not_unchecked.py"
     ]
+  },
+  {
+    "name": "the served value leaves the commitment again",
+    "file": "inspeximus/core.py",
+    "old": "                \"value_sha256\": _sha256_hex(_canon({\"object\": rec.get(\"object\")})),",
+    "new": "                \"value_sha256\": \"constant\",",
+    "tests": [
+      "tests/test_value_is_committed.py"
+    ]
+  },
+  {
+    "name": "verify_writes stops comparing the value",
+    "file": "inspeximus/core.py",
+    "old": "                              for k in (\"immutable_sha256\", \"mtype\", \"value_sha256\", \"attrib_sha256\")",
+    "new": "                              for k in (\"immutable_sha256\", \"mtype\", \"attrib_sha256\")",
+    "tests": [
+      "tests/test_value_is_committed.py"
+    ]
+  },
+  {
+    "name": "the audit bundle stops binding the value",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "        for field in (\"immutable_sha256\", \"content_sha256\", \"value_sha256\", \"attrib_sha256\"):",
+    "new": "        for field in (\"immutable_sha256\", \"content_sha256\", \"attrib_sha256\"):",
+    "tests": [
+      "tests/test_value_is_committed.py"
+    ]
+  },
+  {
+    "name": "legacy receipts are silently left uncovered",
+    "file": "inspeximus/core.py",
+    "old": "        if value_strict:",
+    "new": "        if False:",
+    "tests": [
+      "tests/test_value_is_committed.py"
+    ]
+  },
+  {
+    "name": "a pre-1.82 receipt raises a false alarm on honest data",
+    "file": "inspeximus/core.py",
+    "old": "                              if k not in forgiven and k in rc)",
+    "new": "                              if k not in forgiven)",
+    "tests": [
+      "tests/test_value_is_committed.py"
+    ]
+  },
+  {
+    "name": "recommit stops appending a receipt",
+    "file": "inspeximus/core.py",
+    "old": "            self._emit_write_receipt(rec)\n            done.append(rec[\"id\"])",
+    "new": "            done.append(rec[\"id\"])",
+    "tests": [
+      "tests/test_value_is_committed.py"
+    ]
   }
 ]
