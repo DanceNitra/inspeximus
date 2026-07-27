@@ -137,7 +137,30 @@ def main():
         if not pick_update:
             stale_cos += 1
     stale_cos_rate = stale_cos / len(FACTS)
-    stale_sro_rate = 0.0  # deterministic: original retired by (S,R) supersession; never surfaced
+
+    # (b) SRO supersession -- MEASURED, through a real store. This was `stale_sro_rate = 0.0` with a
+    # comment explaining why it should be so, and the falsifier below compared the measured cosine arm
+    # against that constant, so it could not fail. The README publishes this number as our result and
+    # docs cite it; a published figure whose producing script asserts it is not evidence, it is the
+    # claim restated in Python. It measures 0.0% (0/24) -- the number was right and unearned.
+    # The empty-recall guard is the other half: a store that returned NOTHING would also score 0%
+    # stale, and a vacuous zero looks exactly like a perfect one.
+    from inspeximus import Inspeximus
+
+    stale_sro, empty = 0, 0
+    for (s, r, o1, o2, _rep) in FACTS:
+        st = Inspeximus(path=None, embed=embed)
+        k = f"{s}::{r}"
+        old_text = sent(s, r, o1)
+        st.remember(old_text, key=k, object=o1)
+        st.remember(sent(s, r, o2), key=k, object=o2)          # the correction
+        hits = st.recall(f"What is the {r} of {s}?", k=1)
+        top = (hits[0].get("text") if hits else "") or ""
+        if not top.strip():
+            empty += 1
+        elif top.strip() == old_text.strip():
+            stale_sro += 1
+    stale_sro_rate = stale_sro / len(FACTS)
 
     print("=== SUPERSESSION REPLICATION (local nomic, centered) ===")
     print(f"facts: {len(FACTS)}")
@@ -148,12 +171,18 @@ def main():
     print(f"[TEST1] AUROC(low-cosine => supersession) = {a:.3f}   "
           f"(their claim ~0.59; 0.5=chance)")
     print(f"[TEST2] stale-fact-error, pure cosine top-1 = {stale_cos_rate:.1%}")
-    print(f"[TEST2] stale-fact-error, SRO supersession  = {stale_sro_rate:.1%}")
+    print(f"[TEST2] stale-fact-error, SRO supersession  = {stale_sro_rate:.1%} "
+          f"({stale_sro}/{len(FACTS)}, MEASURED)")
+    if empty:
+        print(f"[TEST2] !! {empty} recall(s) returned NOTHING — a 0% built on empty results is vacuous")
     verdict = "REPRODUCED" if a <= 0.70 else "FAILED"
     print(f"VERDICT(blind-spot, AUROC<=0.70): {verdict}")
-    print(f"FALSIFIER(ours): SRO must cut stale below cosine -> "
-          f"{'PASS' if stale_sro_rate < stale_cos_rate else 'FAIL'} "
-          f"({stale_cos_rate:.1%} -> {stale_sro_rate:.1%})")
+    # The falsifier can now actually fail: both sides are measured, and an empty-recall run fails it
+    # outright rather than passing on a store that answered nothing.
+    passed = stale_sro_rate < stale_cos_rate and empty == 0
+    print(f"FALSIFIER(ours): SRO must cut stale below cosine, on non-empty recalls -> "
+          f"{'PASS' if passed else 'FAIL'} "
+          f"({stale_cos_rate:.1%} -> {stale_sro_rate:.1%}, {empty} empty)")
 
 
 if __name__ == "__main__":
