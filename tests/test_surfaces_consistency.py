@@ -21,16 +21,31 @@ def _path():
 
 
 # ── one posture across the surfaces that share a store ──────────────────────────────────────────────
-def test_the_cli_and_the_mcp_server_agree_on_the_echo_guard():
+@pytest.mark.parametrize("env,expected", [(None, True), ("0", False), ("1", True)])
+def test_the_cli_and_the_mcp_server_agree_on_the_echo_guard(env, expected, monkeypatch):
     """They are documented as sharing one store and they disagreed: the MCP turned the guard ON, the CLI left
     the library's legacy default OFF. So one CLI write could resurrect a value the MCP had retired — undoing
-    the measured 0.00 -> 1.00 echo-resistance on the very store that advertises it."""
-    cli = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                            "inspeximus", "cli.py"), encoding="utf-8").read()
-    mcp = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                            "inspeximus", "mcp_server.py"), encoding="utf-8").read()
-    assert 'INSPEXIMUS_ECHO_GUARD' in cli and 'INSPEXIMUS_ECHO_GUARD' in mcp, \
-        "both product surfaces must read the same switch"
+    the measured 0.00 -> 1.00 echo-resistance on the very store that advertises it.
+
+    This asserted that the literal `INSPEXIMUS_ECHO_GUARD` appeared in both FILES — a spelling, not a
+    behaviour. When the switch moved into the shared opener (`inspeximus/_surface.py`, where the nine
+    adapters and the editor hook now read it too), the two surfaces agreed more completely than they ever
+    had and this test went red. It now reads the posture off the surfaces themselves, in both directions,
+    which is what "agree" was always supposed to mean.
+    """
+    import importlib
+    pytest.importorskip("mcp")
+    from inspeximus import cli
+
+    monkeypatch.setenv("INSPEXIMUS_PATH", _path())
+    if env is None:
+        monkeypatch.delenv("INSPEXIMUS_ECHO_GUARD", raising=False)
+    else:
+        monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", env)
+
+    mcp = importlib.reload(importlib.import_module("inspeximus.mcp_server"))
+    assert cli._store(None).echo_guard is expected
+    assert mcp._MEM.echo_guard is expected, "both product surfaces must read the same switch"
 
 
 def test_a_cli_write_does_not_resurrect_a_retired_value():
