@@ -385,5 +385,95 @@
     "tests": [
       "tests/test_deletion_manifest_header.py"
     ]
+  },
+  {
+    "name": "zero-deps goes back to reading only installed METADATA",
+    "file": "claims_audit.py",
+    "old": "        pyproject = root.parent / \"pyproject.toml\"",
+    "new": "        pyproject = root.parent / \"nope.toml\"",
+    "tests": [
+      "tests/test_audit_scripts_have_teeth.py"
+    ]
+  },
+  {
+    "name": "a skip stops counting against the gate",
+    "file": "claims_audit.py",
+    "old": "    return ok is None and not auditing_history",
+    "new": "    return False",
+    "tests": [
+      "tests/test_audit_scripts_have_teeth.py"
+    ]
+  },
+  {
+    "name": "the secret sweep can be empty again",
+    "file": "governance_audit.py",
+    "old": "    if not declared:",
+    "new": "    if False:",
+    "tests": [
+      "tests/test_audit_scripts_have_teeth.py"
+    ]
+  },
+  {
+    "name": "a declared secret need not appear in the scenario",
+    "file": "governance_audit.py",
+    "old": "    if absent:",
+    "new": "    if False:",
+    "tests": [
+      "tests/test_audit_scripts_have_teeth.py"
+    ]
+  },
+  {
+    "name": "the audit downloads a package that does not exist",
+    "file": "governance_audit.py",
+    "old": "                        f\"inspeximus=={a.version}\" if a.version else \"inspeximus\",",
+    "new": "                        f\"agora-inspeximus=={a.version}\" if a.version else \"agora-inspeximus\",",
+    "tests": [
+      "tests/test_audit_scripts_have_teeth.py"
+    ]
+  },
+  {
+    "name": "remember_decision commits the TOPIC as the value again",
+    "file": "inspeximus/core.py",
+    "old": "                             mtype=\"procedural\", key=key, object=(decision.strip() or None),",
+    "new": "                             mtype=\"procedural\", key=key, object=(topic.strip() if topic else None),",
+    "tests": [
+      "tests/test_remember_decision_supersedes.py"
+    ]
+  },
+  {
+    "name": "the seeded probe drops back to five seeds",
+    "file": "probes/identity_gate_supersession_probe.py",
+    "old": "SEEDS = 25",
+    "new": "SEEDS = 5",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "the probe stops printing n with the range",
+    "file": "probes/identity_gate_supersession_probe.py",
+    "old": "          f\"range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  \"",
+    "new": "          f\"range {min(ung):.3f}-{max(ung):.3f}  \"",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "the manipulation check stops noticing a count collapse",
+    "file": "tools/probe_gate.py",
+    "old": "        if len(before) != len(after):",
+    "new": "        if False:",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "the spread floor is removed",
+    "file": "tools/probe_gate.py",
+    "old": "        ok = len(vals) >= min_trials",
+    "new": "        ok = True",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
   }
 ]

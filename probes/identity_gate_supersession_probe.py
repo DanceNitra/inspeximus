@@ -42,7 +42,10 @@ def resolver_confidence(is_correct, rng):
 
 
 def run(policy, rng):
-    fd, p = tempfile.mkstemp(suffix=".json", prefix="idg_"); os.close(fd)
+    # mkstemp CREATES the file, empty, and an empty file is not valid JSON -- the store refuses to open it
+    # rather than silently overwriting what might be someone's data. So this probe crashed on line 1 and
+    # nothing noticed, because it is one of the 48 probes no doc cites and no test runs.
+    p = os.path.join(tempfile.mkdtemp(prefix="idg_"), "store.json")
     m = Inspeximus(path=p)
     m.fork_below = FORK_BELOW
     truth = {}                                               # entity -> the value it SHOULD hold
@@ -85,13 +88,21 @@ def run(policy, rng):
     return corrupt / E, n_candidates
 
 
+#: 25, not 5. Five seeds were labelled "a CI-ish spread", and a spread from five draws is run-to-run noise
+#: wearing a result's clothes: the mean settles quickly, the RANGE does not. On normal draws five trials
+#: capture 2.33 sigma of range on average and twenty-five capture 3.94 -- 69% wider -- while the mean's
+#: standard error only halves. Credit: jacksonxly, who pointed out that spread converges far more slowly
+#: than the mean, after we published an under-sampled one in a post about measurement discipline.
+SEEDS = 25
+
+
 def main():
     print(f"=== IDENTITY-GATE SUPERSESSION PROBE (inspeximus {__version__}, E={E}, rounds={ROUNDS}, "
           f"p_miss={P_MISS}, fork_below={FORK_BELOW}) ===")
     print("authoritative-ledger corruption rate = entities whose current value is WRONG (lower better)\n")
     ung, gat = [], []
     ncand = 0
-    for s in range(5):                                       # 5 seeds for a CI-ish spread
+    for s in range(SEEDS):
         rng = random.Random(SEED + s)
         u, _ = run("ungated", rng)
         rng = random.Random(SEED + s)
@@ -99,10 +110,16 @@ def main():
         ung.append(u); gat.append(g); ncand += nc
     import statistics
     mu_u, mu_g = statistics.mean(ung), statistics.mean(gat)
-    print(f"UNGATED (auto-commit, mem0/inspeximus-default): corruption {mu_u:.3f}  (per-seed {[round(x,3) for x in ung]})")
+    # n is printed WITH the range, always: "0.025-0.225 over 25 seeds" is a claim, "0.025-0.225" is not,
+    # and the next person to quote it cannot otherwise know whether it was sampled enough. At 5 seeds this
+    # same probe reported an ungated range of 0.100 where 25 show 0.200 -- the mean did not move.
+    print(f"UNGATED (auto-commit, mem0/inspeximus-default): corruption {mu_u:.3f}  "
+          f"range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  "
+          f"(per-seed {[round(x,3) for x in ung]})")
     print(f"GATED   (identity_confidence < {FORK_BELOW} -> candidate): corruption {mu_g:.3f}  "
+          f"range {min(gat):.3f}-{max(gat):.3f} over seeds={SEEDS}  "
           f"(per-seed {[round(x,3) for x in gat]})")
-    print(f"review-queue cost: {ncand/5:.0f} candidates/run forked for steward reconciliation")
+    print(f"review-queue cost: {ncand/SEEDS:.0f} candidates/run forked for steward reconciliation")
     print(f"\n=> the gate cuts confident-wrong authoritative writes {mu_u:.3f} -> {mu_g:.3f} "
           f"({(1-mu_g/mu_u)*100:.0f}% reduction) at the cost of a review queue.")
     print("Residual gated corruption = misresolutions that scored ABOVE the threshold (the gate is only as good "

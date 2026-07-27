@@ -25,6 +25,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import shutil
 import socket
 import subprocess
@@ -61,17 +62,40 @@ def _store(tmp_name, keyed=True):
 # Each returns (ok, evidence). Keep them independent: one store each, no shared state.
 
 def c_zero_deps():
-    """README: 'zero-dependency single file'."""
+    """README: 'zero-dependency single file'.
+
+    This read installed METADATA only. In a SOURCE checkout that glob matches nothing, so `requires` was
+    the empty list, the check reported "mandatory requirements=none" and passed -- and it would have gone
+    on passing if a hard dependency were added to pyproject tomorrow. It runs on every matrix leg and as
+    the pre-publish gate, and exactly one of those legs installs a wheel, so for the rest it was a check
+    that could not fail about the claim on the first line of the README.
+
+    Now: installed METADATA when there IS one, the DECLARED dependencies in pyproject.toml otherwise, and
+    a hard FAIL if neither can be read -- because "I found no dependencies" and "I could not look" produce
+    the same empty list."""
     inspeximus, _ = _load()
     root = pathlib.Path(inspeximus.__file__).resolve().parent
     meta = list(root.parent.glob("*.dist-info/METADATA"))
-    requires = []
+    requires, source = [], None
     if meta:
+        source = f"installed METADATA ({meta[0].parent.name})"
         for ln in meta[0].read_text(encoding="utf-8", errors="replace").splitlines():
             if ln.startswith("Requires-Dist:") and "extra ==" not in ln:
                 requires.append(ln.split(":", 1)[1].strip())
+    else:
+        pyproject = root.parent / "pyproject.toml"
+        if pyproject.exists():
+            source = "pyproject.toml [project] dependencies"
+            text = pyproject.read_text(encoding="utf-8", errors="replace")
+            block = re.search(r"^dependencies\s*=\s*\[(.*?)\]", text, re.M | re.S)
+            if block:
+                requires = [d.strip() for d in re.findall(r'"([^"]+)"', block.group(1))]
+        if source is None:
+            return False, ("neither an installed METADATA nor a pyproject.toml could be read, so the "
+                           "zero-dependency claim was not checked -- which is not the same as verified")
     core = root / "core.py"
-    return (not requires), f"mandatory requirements={requires or 'none'}; core file={core.stat().st_size//1024} KB"
+    return (not requires), (f"mandatory requirements={requires or 'none'} (read from {source}); "
+                            f"core file={core.stat().st_size//1024} KB")
 
 
 def c_no_llm_on_write():
@@ -200,14 +224,17 @@ def c_tenant_isolation():
         a = base.for_tenant("acme") if hasattr(base, "for_tenant") else None
         b = base.for_tenant("globex") if hasattr(base, "for_tenant") else None
         if a is None:
-            return None, "no for_tenant() on this build"
+            # A README-asserted capability that is ABSENT is a failed claim, not an inapplicable check.
+            # It reads as SKIP only when auditing a historical release that predates it -- main() decides
+            # that, because only main() knows which artifact is under audit.
+            return None, "MISSING: no for_tenant() on this build"
         a.remember("Acme's launch code is ALPHA.")
         b.remember("Globex's launch code is BETA.")
         leak = [h.get("text", "") for h in (b.recall("launch code", k=5, mode="lexical", reinforce=False) or [])
                 if "ALPHA" in h.get("text", "")]
         return not leak, f"globex recall saw acme rows: {leak or 'none'}"
     except Exception as e:
-        return None, f"{type(e).__name__}: {e}"
+        return False, f"raised {type(e).__name__}: {e}"
 
 
 def c_witness():
@@ -230,7 +257,7 @@ def c_pii_sweep():
         gone = not any("example.com" in r.get("text", "") for r in m.items)
         return (gone and before > len(m.items)), f"forget_pii()->{res}; email row gone={gone}"
     except Exception as e:
-        return None, f"{type(e).__name__}: {e}"
+        return False, f"raised {type(e).__name__}: {e}"
 
 
 def c_mcp_server_present():
@@ -266,6 +293,22 @@ NOT_TESTABLE_HERE = [
     "revert-to-predecessor is rare: mem0 and Graphiti expose none; Letta has an undocumented service-layer undo",
     "secure erasure at rest (needs an encrypted store + key destruction)",
 ]
+
+
+def counts_as_failure(ok, auditing_history: bool) -> bool:
+    """Does this outcome fail the gate?
+
+    Pulled out of main() so it can be tested at all: the rule that a SKIP counts against the exit code
+    lived inline, and a mutation removing it survived the suite because no check happens to return None
+    today. A guard nothing exercises is a guard that will be silently reverted.
+
+    False -> always a failure. None means "this build does not have it", which is a fact about the
+    ARTIFACT only when auditing a historical release; against the working tree or the latest wheel it
+    means a claim in our README has no implementation behind it.
+    """
+    if ok is False:
+        return True
+    return ok is None and not auditing_history
 
 
 def _run(idx):
@@ -321,12 +364,18 @@ def main():
         for idx, name, ok, ev, dt in ex.map(_run, range(len(CHECKS))):
             results[idx] = (name, ok, ev, dt)
 
+    # A SKIP counts as a FAILURE unless we are auditing a HISTORICAL release, which is the only case where
+    # "this build does not have it" is a fact about the artifact rather than about our claim. Until now a
+    # missing feature and a raised exception both produced [SKIP], "0 FAILED" and exit 0 -- so deleting a
+    # capability the README asserts would have kept the pre-publish gate green.
+    auditing_history = bool(a.version)
     npass = nfail = nskip = 0
     for name, ok, ev, dt in results:
-        tag = "PASS" if ok else ("SKIP" if ok is None else "FAIL")
+        counts = counts_as_failure(ok, auditing_history)
+        tag = "PASS" if ok is True else ("FAIL" if counts else "SKIP")
         npass += ok is True
-        nfail += ok is False
-        nskip += ok is None
+        nfail += counts
+        nskip += (ok is None) and not counts
         print(f"[{tag}] {name}")
         print(f"       {ev}")
 

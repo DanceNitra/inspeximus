@@ -3,6 +3,49 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.84.0 - remember_decision kept every decision on a topic active at once
+
+**BUG FIX in a flagship API, found by running the probes nothing cites.**
+
+`remember_decision`'s docstring promises the product's thesis applied to decisions: *"a NEW decision on the
+same topic RETIRES the old one ... recall always returns the CURRENT decision ... and
+`revert('decision::<topic>')` restores the prior one."* None of it happened.
+
+```python
+m.remember(key="decision::database", ...) x2        -> 1 active   (correct)
+m.remember_decision(topic="database", ...) x2       -> 2 active   (1.83.0)
+```
+
+One line: `object=(topic.strip() if topic else None)`. The topic is already the KEY. Passing it as the
+VALUE too made every decision on a topic look like a restatement of the same value, and keyed supersession
+is object-identity aware precisely so a paraphrase does not count as a correction — so the second decision
+was read as a reaffirm and retired nothing. `object` is now the decision. Supersession, history and
+`revert()` all behave as documented.
+
+It is exposed over MCP, so an agent asking "what did we decide about X" could be handed two contradictory
+current answers.
+
+**How it was found, which is the more useful part.** 48 of our 101 probes were cited by no doc and executed
+by no test. A sweep of all 48: 36 ran clean, 5 exceed the per-probe budget, 6 failed — and two of those six
+were failing on correct assertions about `remember_decision`. They were not stale probes; the product had
+regressed underneath them, and nothing was looking. `identity_gate_supersession_probe.py` had also rotted
+into a crash on its first line (`tempfile.mkstemp` creates the file empty, and the store correctly refuses
+to open what it cannot parse).
+
+The suite now runs **every** probe, cited or not. Exemptions are named, not silent: 5 that exceed the time
+budget, 3 that read `server/.env` from the private research repo, and the dataset-dependent ones. This adds
+~5.5 minutes to the suite; a probe that rots for months costs more.
+
+**Also: `tools/probe_gate.py`**, the pre-flight gate for any number we report, ported here from the research
+harness with two checks added after an outside review (jacksonxly): `manipulation()` is two-sided — what
+you meant to change changed AND nothing else did, cardinality included, because the patch that once
+"confirmed" a hypothesis had collapsed 400 records into 1 while landing exactly as written — and `spread()`
+refuses a range from fewer than 20 trials. Measured on our own probe: 5 seeds gave an ungated range of
+0.100 where 25 give 0.200, with the mean unmoved. The range only ever approaches the truth from below, so
+an under-sampled spread does not look noisy; it looks tight.
+
+Mutation-verified 53/53. 1283 tests pass.
+
 ## 1.83.0 - a deletion manifest could be repointed at a different data subject
 
 **SECURITY FIX (evidence integrity) and a BEHAVIOUR CHANGE.** `DeletionManifest.verify()` recomputed

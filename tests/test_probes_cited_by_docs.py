@@ -56,6 +56,22 @@ NOT_STANDALONE = {
     "echo_attack_probe_v2.py": "needs the MemBench knowledge_update fixture and a local embedder "
                                "(the 71 MB embedding cache is not redistributable); the policy numbers it "
                                "produced are re-measured standalone by echo_policy_panel.py",
+    # ── probes no doc cites. They are not evidence, but they ROT: identity_gate_supersession_probe.py had
+    # been crashing on its first line and nobody knew, and two others were failing on real assertions about
+    # remember_decision -- which turned out to be a genuine product defect, not a stale probe. Measured
+    # sweep of all 47: 36 ran clean, 0 missing modules, 5 too slow, 6 failing. These are those.
+    "conflict_depth_compounding.py": "exceeds the suite's per-probe budget (>75s)",
+    "generative_agents_agent_stress.py": "exceeds the suite's per-probe budget (>75s)",
+    "integrity_cost_axis.py": "exceeds the suite's per-probe budget (>75s)",
+    "memory_tipping_ews.py": "exceeds the suite's per-probe budget (>75s)",
+    "supersession_replication.py": "exceeds the suite's per-probe budget (>75s)",
+    # These three read server/.env -- a file in the PRIVATE research repo, holding model credentials. In
+    # this repository they can never run, and no install fixes that. Named as the cross-repo coupling it
+    # is rather than left to fail as if it were a bug.
+    "integrity_bench_echo.py": "reads server/.env from the private research repo (live model credentials)",
+    "integrity_bench_revert.py": "reads server/.env from the private research repo (live model credentials)",
+    "reversion_classifier_probe.py": "reads server/.env from the private research repo (live model creds)",
+    "echo_attack_probe.py": "needs the MemBench knowledge_update fixture and a local embedder",
 }
 
 
@@ -133,6 +149,10 @@ _STDLIB = set(getattr(sys, "stdlib_module_names", ())) or {
 
 KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
     "openai", "torch", "transformers", "sentence_transformers", "datasets", "tiktoken",
+    # Competitors' libraries. Our benchmark probes import them to measure AGAINST, so they are as
+    # third-party as anything here -- and mistaking one for an uncommitted module of ours would send
+    # somebody hunting for a file that was never meant to exist.
+    "mem0", "graphiti_core", "zep_python", "letta", "chromadb", "qdrant_client", "faiss",
     "requests", "httpx", "tqdm", "matplotlib", "seaborn", "sklearn", "scipy",
 }
 
@@ -174,9 +194,13 @@ def test_a_standalone_cited_probe_still_runs(probe):
 
 
 def test_no_stale_entries_in_the_exclusion_list():
-    """An exclusion for a probe nobody cites any more is dead weight that hides the next real one."""
-    stale = sorted(set(NOT_STANDALONE) - set(_cited()))
-    assert not stale, f"NOT_STANDALONE names probes the docs no longer cite: {stale}"
+    """An exclusion for a probe that no longer EXISTS is dead weight that hides the next real one.
+
+    This used to require every exclusion to be cited, which was right while the list only covered cited
+    probes. It now covers uncited ones too -- they rot just as quietly -- so the anti-staleness property
+    is existence on disk, not citation."""
+    gone = sorted(f for f in NOT_STANDALONE if not os.path.exists(os.path.join(PROBES, f)))
+    assert not gone, f"NOT_STANDALONE names probes that are not in the repository: {gone}"
 
 
 def test_no_citation_rests_on_a_module_we_never_committed():
@@ -250,3 +274,40 @@ def test_the_ownership_discriminator_does_not_depend_on_this_machine():
     assert "echo_attack_probe" not in KNOWN_THIRD_PARTY and \
            "agentpoison_multiretriever_check" not in KNOWN_THIRD_PARTY, \
         "the two modules this whole check exists for must never be declared third-party"
+
+# ── and the ones no doc cites: not evidence, but they still have to run ─────────────────────────────
+def _uncited():
+    """Every probe on disk that no doc points at. 48 of 101 when this was written, executed by nothing.
+
+    A probe nobody runs rots silently, and the rot is not always in the probe: two of these were failing
+    on correct assertions about `remember_decision`, which was leaving every decision on a topic ACTIVE
+    at once -- a defect in a flagship API, exposed over MCP, found only because nothing had run its probe.
+    """
+    cited = set(_cited())
+    return [f for f in sorted(os.listdir(PROBES))
+            if f.endswith(".py") and not f.startswith("_")
+            and f not in cited and f not in NOT_STANDALONE]
+
+
+def test_there_really_are_uncited_probes_to_sweep():
+    """If this list silently empties, the sweep below becomes a green result over nothing."""
+    assert len(_uncited()) >= 30, len(_uncited())
+
+
+@pytest.mark.parametrize("probe", _uncited())
+def test_an_uncited_probe_still_runs(probe):
+    """Same standard as the cited half, same skip rule: a declared optional dependency excuses the run,
+    anything else is a defect. An uncited probe that fails is either rot or -- as it turned out twice --
+    a live product bug wearing a rotten probe's clothes."""
+    r = subprocess.run([sys.executable, os.path.join("probes", probe)],
+                       cwd=ROOT, capture_output=True, text=True, timeout=180,
+                       env={**os.environ, "PYTHONIOENCODING": "utf-8",
+                            "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
+                            + os.environ.get("PYTHONPATH", "")})
+    missing = _missing_module(r.stderr) if r.returncode != 0 else None
+    if missing and missing in OPTIONAL_THIRD_PARTY:
+        pytest.skip(f"{probe} needs the optional third-party module {missing!r}")
+    assert r.returncode == 0, (
+        f"probes/{probe} exits {r.returncode}. Nothing cites it, so nothing was checking it -- add it to "
+        f"NOT_STANDALONE with the real reason, or fix what it found. "
+        f"stderr tail: {r.stderr[-1200:]}")

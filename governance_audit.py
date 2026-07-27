@@ -42,6 +42,7 @@ SCENARIOS = [
         "derived": "Summary: David Lam reviews MedVantage and prefers morning stand-ups.",
         "unrelated": ["My manager is Rachel Tseng.",
                       "The MedVantage deliverable is due quarterly."],
+        "secrets": ["David Lam", "555-0134"],
         "probe_queries": ["who reviews MedVantage", "david lam", "desk phone", "stand-ups"],
     },
     {
@@ -53,6 +54,7 @@ SCENARIOS = [
         "derived": "Summary: customer 4417 (Jana Kovacova) had an invoice complaint.",
         "unrelated": ["Invoice INV-9981 was issued in March.",
                       "Our support SLA is 24 hours."],
+        "secrets": ["Jana Kovacova", "jana.kovacova@example.com", "Hlavna 12"],
         "probe_queries": ["jana kovacova", "customer 4417", "hlavna 12", "who complained"],
     },
     {
@@ -64,6 +66,7 @@ SCENARIOS = [
         "derived": "Summary: the legacy API key sk-legacy-ZZZ9911 is used by billing.",
         "unrelated": ["The billing job runs at 02:00 UTC.",
                       "Rotation policy is 90 days for all credentials."],
+        "secrets": ["sk-legacy-ZZZ9911"],
         "probe_queries": ["api key", "sk-legacy", "billing job", "rotation"],
     },
 ]
@@ -79,14 +82,26 @@ def _load():
 
 
 def _secrets(sc):
-    """The literal strings that must not survive anywhere."""
-    out = []
-    for t in sc["owned"] + [sc["derived"]]:
-        for tok in ("sk-legacy-ZZZ9911", "555-0134", "jana.kovacova@example.com",
-                    "Hlavna 12", "David Lam", "Jana Kovacova"):
-            if tok.lower() in t.lower():
-                out.append(tok.lower())
-    return sorted(set(out))
+    """The literal strings that must not survive anywhere, DECLARED by the scenario.
+
+    This used to intersect the scenario text against a hard-coded six-token tuple. A scenario using any
+    other token -- a new one, or an old one after a rename -- produced the EMPTY list, and
+    `not any(s in blob for s in [])` is True, so the four erasure checks ("erased from records", "not
+    recallable", "no residue", "still erased after reload") all passed over nothing. Under GOV_FALSIFY=1,
+    with the secret still sitting in the store file, they reported clean.
+
+    Declaring them per scenario removes the coupling entirely, and the two assertions below make an empty
+    or wrong sweep a hard error instead of a green result."""
+    declared = [t for t in (sc.get("secrets") or []) if t]
+    if not declared:
+        raise AssertionError(f"{sc['name']}: scenario declares no `secrets`, so the erasure checks would "
+                             f"sweep for nothing and pass -- declare what must not survive")
+    corpus = " ".join(sc["owned"] + [sc["derived"]]).lower()
+    absent = [t for t in declared if t.lower() not in corpus]
+    if absent:
+        raise AssertionError(f"{sc['name']}: declared secret(s) {absent} do not appear in the scenario's "
+                             f"own text, so erasing them would prove nothing")
+    return sorted({t.lower() for t in declared})
 
 
 def state_hash(m):
@@ -207,7 +222,7 @@ def main():
         pkg, src, sha = pathlib.Path(__file__).resolve().parent, "working tree", "n/a"
     else:
         subprocess.run([sys.executable, "-m", "pip", "download",
-                        f"agora-inspeximus=={a.version}" if a.version else "agora-inspeximus",
+                        f"inspeximus=={a.version}" if a.version else "inspeximus",
                         "--no-deps", "-d", str(tmp)], capture_output=True, check=True)
         wheel = sorted(tmp.glob("*.whl"))[0]
         pkg = tmp / "pkg"

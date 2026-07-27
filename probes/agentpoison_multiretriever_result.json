@@ -1,0 +1,46 @@
+{
+ "corpus_size": 60,
+ "n_test_carriers": 16,
+ "n_benign_util": 16,
+ "retrievers": [
+  {
+   "retriever": "all-MiniLM-L6-v2",
+   "optimized_trigger": "salem flourished hughes libretto bourbon",
+   "opt_long_hijack_inspeximus": 1.0,
+   "random_long_hijack_mean": 0.688,
+   "random_long_hijack_max": 0.938,
+   "defense_hijack_off": 1.0,
+   "defense_hijack_on": 0.625,
+   "defense_utility_off": 1.0,
+   "defense_utility_on": 1.0,
+   "attack_reduction": 0.375,
+   "utility_change": 0.0
+  },
+  {
+   "retriever": "bge-small-en-v1.5",
+   "optimized_trigger": "filmmakers convicted castile posthumously nor",
+   "opt_long_hijack_inspeximus": 1.0,
+   "random_long_hijack_mean": 0.887,
+   "random_long_hijack_max": 1.0,
+   "defense_hijack_off": 0.938,
+   "defense_hijack_on": 0.938,
+   "defense_utility_off": 1.0,
+   "defense_utility_on": 1.0,
+   "attack_reduction": 0.0,
+   "utility_change": 0.0
+  },
+  {
+   "retriever": "contriever",
+   "optimized_trigger": "werner vain breuning hindus reassure",
+   "opt_long_hijack_inspeximus": 1.0,
+   "random_long_hijack_mean": 0.912,
+   "random_long_hijack_max": 1.0,
+   "defense_hijack_off": 1.0,
+   "defense_hijack_on": 1.0,
+   "defense_utility_off": 1.0,
+   "defense_utility_on": 1.0,
+   "attack_reduction": 0.0,
+   "utility_change": 0.0
+  }
+ ]
+}

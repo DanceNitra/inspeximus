@@ -1,10 +1,10 @@
 {
-  "inspeximus": "1.21.0",
+  "inspeximus": "1.83.0",
   "E": 40,
   "rounds": 6,
   "p_miss": 0.2,
   "fork_below": 0.7,
-  "ungated_corruption": 0.135,
-  "gated_corruption": 0.01,
-  "candidates_per_run": 65.0
+  "ungated_corruption": 0.131,
+  "gated_corruption": 0.015,
+  "candidates_per_run": 326.0
 }

@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.83.0"
+__version__ = "1.84.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2027,8 +2027,15 @@ class Inspeximus:
         if context:
             md["context"] = context.strip()
         key = ("decision::" + topic.strip()) if topic else None
+        # `object` is the DECISION, not the topic. The topic is already the KEY; passing it as the value
+        # too made every decision on a topic look like a restatement of the same value, so keyed
+        # supersession -- which is object-identity aware precisely so a paraphrase does not count as a
+        # correction -- treated the second decision as a reaffirm and retired nothing. Measured: two
+        # decisions on one topic left TWO active records, while plain remember(key=...) left one. Every
+        # sentence of the docstring above ("a NEW decision RETIRES the old one", "recall always returns
+        # the CURRENT decision", "revert restores the prior one") described behaviour that did not happen.
         return self.remember(text, tags=(list(tags) if tags else []) + ["decision"], value=value,
-                             mtype="procedural", key=key, object=(topic.strip() if topic else None),
+                             mtype="procedural", key=key, object=(decision.strip() or None),
                              meta=md, capability=capability)
 
     # The extraction contract for distill_and_remember (the OPTIONAL LLM capture half). A caller's distiller feeds

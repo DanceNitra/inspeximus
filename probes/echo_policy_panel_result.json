@@ -17,11 +17,9 @@
     },
     {
       "policy": "(default)",
-      "echo_blocked": 0.0,
+      "echo_blocked": 1.0,
       "reaffirm_honored": null
     }
   ],
-  "problems": [
-    "the DEFAULT policy blocks 0.00 of echoes; the docstring says safe is the default, so it must match safe's 1.00"
-  ]
+  "problems": []
 }
