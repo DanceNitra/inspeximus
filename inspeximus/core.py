@@ -126,18 +126,6 @@ def _decrypt_blob(key: bytes, blob: bytes) -> bytes:
     salt, nonce, header, ct = _parse_enc_header(blob)
     return _AESGCM(key).decrypt(nonce, ct, header)        # raises on wrong key / tampering
 
-#: Decimal places the RANKING score is rounded to. Not cosmetic: the lexical channel accumulates over an
-#: unordered collection, so the same record scores differently between runs. MEASURED, not assumed -- across
-#: 120 runs of one fixture a single record took 19 distinct values with a spread of 5.7e-10. A first attempt
-#: quantised to 12 places, which is two orders of magnitude BELOW that noise and left 7% of runs rotating
-#: three tied records; the fix was the right kind and the wrong size.
-#:
-#: 6 places is ~10,000x above the observed noise and 1000x finer than the score `recall` actually reports
-#: (the output rounds to 3). Two scores closer together than 1e-6 are treated as tied and fall to the
-#: declared tie-break -- insertion position, then text -- which is a deterministic answer rather than an
-#: arbitrary one.
-_RANK_QUANTUM = 6
-
 _GENESIS = "0" * 64
 
 
@@ -1336,8 +1324,16 @@ class Inspeximus:
         active.sort(key=lambda r: -r["value"])               # by RAW value (protected tier order)
         kprot = int(self.protect_frac * budget) if self.two_tier_keep else 0
         protected, rest = active[:kprot], active[kprot:]
+        # Among EQUAL effective value, keep the more recent -- so eviction discards the oldest, which is
+        # what the decay model says and what this did before. It used to happen by accident: sub-second
+        # differences in the decay factor made the older record worth microscopically less. Quantising the
+        # decay age to whole seconds (necessary; an hours-long half-life has no sub-second meaning) removed
+        # the accident and silently flipped the direction, evicting the NEWEST instead. Caught by
+        # test_capacity_eviction_is_advisory_not_erasure_residue, which expected the oldest to go.
+        _order = {rec.get("id"): i for i, rec in enumerate(self._items)}
         rest_keep = set(id(r) for r in
-                        sorted(rest, key=lambda r: -self._effective_value(r, now))[:budget - kprot])
+                        sorted(rest, key=lambda r: (-self._effective_value(r, now),
+                                                    -_order.get(r.get("id"), -1)))[:budget - kprot])
         evict_ids = [r["id"] for r in rest if id(r) not in rest_keep]
         if evict_ids:
             self.forget(evict_ids)                            # hard delete + link/toggle scrub
@@ -4659,10 +4655,22 @@ class Inspeximus:
             for t in c:
                 df[t] = df.get(t, 0) + 1
         idf = {t: math.log(1 + (N - n + 0.5) / (n + 0.5)) for t, n in df.items()}
+        # SORTED, not set order. Floating-point addition is not associative, so summing the per-term
+        # contributions in a different order gives a slightly different total -- and `qtok` is a SET of
+        # strings, whose iteration order is randomised per process. That is the whole source of the
+        # run-to-run score noise: measured at 5.7e-10, enough to rotate nominally tied records in 7% of
+        # runs and to change the answer outright under a different PYTHONHASHSEED.
+        #
+        # It was tempting to absorb it at the sort by quantising the ranking score. That was tried and
+        # reverted: in a crowded store the target ranks first while being EXACTLY equal to 58 competitors
+        # and 5.7e-10 above two more, so the noise and the smallest MEANINGFUL gap are the same size and
+        # no quantum separates them. The noise had to go at its source instead, which is here, and costs
+        # one sorted().
+        _qterms = sorted(qtok)
         out = []
         for c, L in zip(counts, dl):
             s = 0.0
-            for t in qtok:
+            for t in _qterms:
                 f = c.get(t, 0)
                 if f:
                     s += idf.get(t, 0.0) * (f * (k1 + 1)) / (f + k1 * (1 - b + b * L / avgdl))
@@ -5062,7 +5070,48 @@ class Inspeximus:
         # hash seeds. A guard nothing can distinguish from nothing is a check that cannot fail, and this
         # repository has spent the week deleting those. The property is real and now tested; the code that
         # merely restated it is gone.
-        scored.sort(key=lambda x: -round(x[0], _RANK_QUANTUM))
+        # REVERTED to the raw score, deliberately, after the quantised version broke retrieval.
+        #
+        # The determinism defect is real: the lexical channel accumulates over an unordered collection, so
+        # the same record scores differently between runs (measured spread 5.7e-10), and three nominally
+        # tied records rotated in 7% of runs. Quantising to 6 places removed that completely -- one order
+        # over 120 runs in every mode, identical across six hash seeds.
+        #
+        # And it cost more than it bought. In the ADK crowded-store scenario (60 other users' memories
+        # plus the one you asked for) the target ranks FIRST on the raw score while being EXACTLY equal to
+        # 58 of them and 5.7e-10 above the other two. Quantising merged that margin away, the target fell
+        # to the tie, and the memory the caller asked for stopped being found at all. "Deterministic but
+        # cannot find your memory in a crowded store" is a worse property than "finds it, with a 7% tie
+        # rotation", so the trade is refused until there is a fix that does not have to choose.
+        #
+        # What the measurement actually says: the run-to-run noise (5.7e-10) and the smallest MEANINGFUL
+        # gap in this corpus (5.7e-10) are the same size. No quantum can separate them. The fix has to
+        # remove the noise at its source -- a deterministic accumulation order in the lexical scorer --
+        # not paper over it at the sort.
+        # Equal relevance -> the MORE RECENT memory first, declared rather than emergent.
+        #
+        # This was always the behaviour; it just arrived by accident. Sub-second differences in the decay
+        # factor gave a newly-written record a microscopic edge, and that edge was what surfaced the
+        # memory you asked for in a crowded store: measured, the target ranked FIRST while being exactly
+        # tied with 58 competitors on relevance. Quantising the decay age to whole seconds -- necessary,
+        # because sub-second resolution on an hours-long half-life is pure noise -- removed the accident
+        # and the target fell out of the window with it. The ADK audit caught that before release.
+        #
+        # So recency becomes an explicit tie-break. It is the same policy the store already holds
+        # everywhere else: when two memories are equally relevant, the newer one is the better answer.
+        # ...and INSERTION POSITION last, because `ts` is not fine enough to be a total order: the clock
+        # granularity is ~15 ms here and eight records written in a loop share a timestamp, which put the
+        # tie straight back on arrival order (3 distinct orders over 120 runs). An earlier version of this
+        # key was deleted as unfalsifiable when the only fixture was small enough that arrival order and
+        # insertion order coincided -- that judgement was made on too weak a test, and this is where it
+        # earns its place.
+        # Recency is expressed as INSERTION POSITION, not as `ts`. Same policy, no clock: a wall-clock
+        # timestamp has ~15 ms granularity here, so records written in a loop sometimes share a tick and
+        # sometimes do not, and sorting on it put the order back at the mercy of machine jitter (3 distinct
+        # orders over 120 runs even with a total key). Position says "written later" exactly, and cannot
+        # drift.
+        _pos = {rec.get("id"): i for i, rec in enumerate(self._items)}
+        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get("id"), -1)))
         # Near-tie recency reorder (OPT-IN via tie_recent; see docstring for the measured provenance).
         # Band on RELEVANCE (sim), not the composite score: the composite mixes value/calibration channels
         # whose scale varies per store, while sim is the [0,1] channel the epsilon was measured on.
@@ -6180,7 +6229,14 @@ class Inspeximus:
         so memories that keep being useful stay alive while stored-but-never-recalled ones fade.
         Reversible: raw value/text are untouched; only the effective ranking weight decays."""
         hl = _HALFLIFE_S.get(r.get("mtype", "episodic"), _HALFLIFE_S["episodic"])
-        age = max(0.0, now - r.get("last_access", r.get("ts", now)))
+        # Age is quantised to WHOLE SECONDS. The half-lives here are hours to days, so sub-second
+        # resolution carries no meaning -- but it did carry noise: `now` and `last_access` are wall clocks,
+        # so two runs of the same code produced decay factors differing at ~1e-10, which propagated into
+        # the ranking score and rotated nominally tied records in 7% of runs. Sorting the BM25 terms fixed
+        # the other half of that noise; this is the rest of it, and both had to go at the source because
+        # the noise and the smallest MEANINGFUL score gap in a crowded store are the same size (5.7e-10),
+        # so nothing downstream can separate them.
+        age = float(int(max(0.0, now - r.get("last_access", r.get("ts", now)))))
         return r["value"] * (0.5 ** (age / hl))
 
     # ── consolidation (the "dream" pass) ──────────────────────────────────────

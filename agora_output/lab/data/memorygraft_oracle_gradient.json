@@ -14,27 +14,27 @@
     },
     {
       "c": 0.25,
-      "origin": 0.0,
-      "corrob_k2": 0.0,
-      "outcome_reval": 0.0
+      "origin": 0.917,
+      "corrob_k2": 0.431,
+      "outcome_reval": 0.222
     },
     {
       "c": 0.5,
-      "origin": 0.0,
-      "corrob_k2": 0.0,
-      "outcome_reval": 0.0
+      "origin": 1.0,
+      "corrob_k2": 0.833,
+      "outcome_reval": 0.208
     },
     {
       "c": 0.75,
-      "origin": 0.0,
-      "corrob_k2": 0.0,
-      "outcome_reval": 0.0
+      "origin": 1.0,
+      "corrob_k2": 1.0,
+      "outcome_reval": 0.222
     },
     {
       "c": 1.0,
-      "origin": 0.0,
-      "corrob_k2": 0.0,
-      "outcome_reval": 0.0
+      "origin": 1.0,
+      "corrob_k2": 1.0,
+      "outcome_reval": 0.222
     }
   ]
 }

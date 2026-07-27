@@ -495,19 +495,28 @@
     ]
   },
   {
-    "name": "the ranking quantum drops below the measured noise",
+    "name": "the recency tie-break is removed (crowded-store target is lost)",
     "file": "inspeximus/core.py",
-    "old": "_RANK_QUANTUM = 6",
-    "new": "_RANK_QUANTUM = 12",
+    "old": "        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get(\"id\"), -1)))",
+    "new": "        scored.sort(key=lambda x: -x[0])",
     "tests": [
       "tests/test_recall_is_deterministic.py"
     ]
   },
   {
-    "name": "ranking goes back to the raw score",
+    "name": "BM25 sums its terms in set order again (float noise returns)",
     "file": "inspeximus/core.py",
-    "old": "        scored.sort(key=lambda x: -round(x[0], _RANK_QUANTUM))",
-    "new": "        scored.sort(key=lambda x: -x[0])",
+    "old": "        _qterms = sorted(qtok)",
+    "new": "        _qterms = list(qtok)",
+    "tests": [
+      "tests/test_recall_is_deterministic.py"
+    ]
+  },
+  {
+    "name": "decay age goes back to sub-second resolution",
+    "file": "inspeximus/core.py",
+    "old": "        age = float(int(max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))))",
+    "new": "        age = max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))",
     "tests": [
       "tests/test_recall_is_deterministic.py"
     ]

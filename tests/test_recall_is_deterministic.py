@@ -31,7 +31,6 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from inspeximus import Inspeximus  # noqa: E402
-from inspeximus.core import _RANK_QUANTUM  # noqa: E402
 
 TEXTS = ["the capital of France is Paris", "photosynthesis converts light to chemical energy",
          "Paris hosted the 2024 Olympics", "the mitochondria is the powerhouse of the cell",
@@ -97,12 +96,68 @@ def test_the_order_is_the_same_under_a_different_hash_seed():
     assert len(seen) == 1, f"PYTHONHASHSEED changes the answer: {len(seen)} distinct orders"
 
 
-def test_the_quantum_is_above_the_measured_noise_and_below_what_we_report():
-    """Both bounds matter. Too fine and it absorbs nothing -- 12 places left 7% of runs rotating. Too
-    coarse and genuinely different scores get merged into the tie-break."""
-    assert _RANK_QUANTUM <= 9, "the quantum must stay far finer than any reported score"
-    assert 10 ** -_RANK_QUANTUM > 5.7e-10 * 100, (
-        "the quantum must sit well above the measured 5.7e-10 run-to-run spread")
+def test_bm25_sums_its_terms_in_a_fixed_order():
+    """The first source, tested at the mechanism. `qtok` is a SET, and float addition is not associative,
+    so summing the per-term contributions in set-iteration order gave a different total per process.
+
+    Asserted on `_bm25_scores` directly rather than through `recall`, because recall rounds the score to
+    three places on the way out -- a test reading THAT cannot see 1e-10 of noise, which is exactly why an
+    earlier version of this file let the mutation survive."""
+    # ACROSS PROCESSES. Within one interpreter a set built the same way iterates the same way every time,
+    # so a 50-iteration in-process loop could not see this at all -- it ran green while the mutation that
+    # restores set order survived. Hash randomisation is per PROCESS, so the test has to be too.
+    # MANY terms, and records that match most of them. With eight short tokens CPython gives the same set
+    # order under every seed and each record sums only two or three addends, so the test ran green while
+    # the mutation restoring set order survived -- a fixture too small to express the bug. At 45 tokens
+    # the iteration order differs under all five seeds and each score is a sum of ~40 addends, where
+    # float addition is order-sensitive.
+    code = "\n".join([
+        "import sys; sys.path.insert(0, %r)" % ROOT,
+        "from inspeximus import Inspeximus",
+        "m = Inspeximus(path=None)",
+        "for i in range(12):",
+        "    body = ' '.join('term%d' % ((i * 7 + j) % 45) for j in range(40))",
+        "    m.remember('record %d ' % i + body, key='k%d' % i)",
+        "q = {'term%d' % i for i in range(45)}",
+        "print(';'.join(repr(x) for x in m._bm25_scores(q, list(m._items))))",
+    ])
+    seen = set()
+    for seed in ("0", "1", "2", "3", "4"):
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=300,
+                           env={**os.environ, "PYTHONHASHSEED": seed, "PYTHONIOENCODING": "utf-8"})
+        assert r.returncode == 0, r.stderr[-600:]
+        seen.add(r.stdout.strip())
+    assert len(seen) == 1, (
+        f"BM25 produced {len(seen)} distinct score vectors across hash seeds -- the term summation order "
+        f"is not fixed")
+
+
+def test_the_decay_factor_ignores_sub_second_time():
+    """The second source. Half-lives here are hours to days, so sub-second resolution carries no meaning
+    -- but it carried noise: `now` and `last_access` are wall clocks, so two runs produced decay factors
+    differing at ~1e-10, which propagated into the score."""
+    m = _fresh()
+    rec = m._items[0]
+    base = rec.get("last_access") or rec.get("ts")
+    vals = {m._effective_value(rec, base + frac) for frac in (0.0, 0.017, 0.4, 0.83, 0.999)}
+    assert len(vals) == 1, f"the decay factor moves within one second: {sorted(vals)}"
+
+    # ...and still decays across real time, or the fix would have removed the feature.
+    assert m._effective_value(rec, base + 86400.0) < m._effective_value(rec, base)
+
+
+def test_the_score_reported_is_stable_too():
+    """The score itself must be bit-identical between runs. Quantising the RANKING score was tried first
+    and reverted: in a crowded store the target ranks first while being exactly tied with 58 competitors
+    and 5.7e-10 above two more, so the noise and the smallest meaningful gap were the same size and no
+    quantum could separate them. Both sources were removed instead -- sorted BM25 terms, and a decay age
+    quantised to whole seconds (an hours-long half-life has no sub-second meaning)."""
+    scores = collections.defaultdict(set)
+    for _ in range(40):
+        for h in _fresh().recall(QUERY, k=5):
+            scores[h["text"]].add(h["score"])
+    varying = {t: sorted(v) for t, v in scores.items() if len(v) > 1}
+    assert not varying, f"the score still moves between runs: {varying}"
 
 
 def test_distinct_scores_are_still_ranked_by_score_not_by_the_tie_break():
@@ -122,7 +177,7 @@ def test_distinct_scores_are_still_ranked_by_score_not_by_the_tie_break():
     # enough to be returned: 1.6930 vs 0.8470.
 
 
-def test_tied_records_come_back_in_INSERTION_order_not_merely_a_stable_one():
+def test_tied_records_come_back_NEWEST_first():
     """Quantising the score alone already makes the answer repeatable, so a mutation that removes the
     tie-break survived every test above -- it had no teeth, only luck. Stability is not the property we
     want: arrival order is set-iteration order over random id strings, and "it happens not to move today"
@@ -137,7 +192,10 @@ def test_tied_records_come_back_in_INSERTION_order_not_merely_a_stable_one():
 
     assert len({h["score"] for h in hits}) == 1, f"fixture must tie: {[h['score'] for h in hits]}"
     order = [h["text"] for h in hits]
-    assert order == [f"alpha bravo charlie item {i}" for i in range(8)], order
+    # Newest first: the policy the store already holds everywhere else -- when two memories are equally
+    # relevant, the newer one is the better answer. It used to arrive by accident, through sub-second
+    # differences in the decay factor, and that accident was what surfaced the target in a crowded store.
+    assert order == [f"alpha bravo charlie item {i}" for i in range(7, -1, -1)], order
 
 
 def test_the_declared_tie_order_survives_a_different_hash_seed():
@@ -147,7 +205,7 @@ def test_the_declared_tie_order_survives_a_different_hash_seed():
             "m = Inspeximus(path=None)\n"
             "[m.remember('alpha bravo charlie item %%d' %% i, key='t%%d' %% i) for i in range(8)]\n"
             "print('|'.join(h['text'] for h in m.recall('alpha bravo charlie', k=8)))\n" % ROOT)
-    want = "|".join(f"alpha bravo charlie item {i}" for i in range(8))
+    want = "|".join(f"alpha bravo charlie item {i}" for i in range(7, -1, -1))
     for seed in ("0", "1", "2", "3"):
         r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=300,
                            env={**os.environ, "PYTHONHASHSEED": seed, "PYTHONIOENCODING": "utf-8"})

@@ -3,48 +3,47 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## 1.85.0 - recall was not deterministic, on a library whose stated property is determinism
+## 1.85.0 - recall is deterministic, and two policies that were running on luck are now declared
 
-**BEHAVIOUR CHANGE (ranking) and the closing of the defect 1.84.0 opened.**
+**BEHAVIOUR CHANGE.** Two identical stores, one query, and 7% of the time a different answer. That is now
+zero, and the noise was removed at its source rather than absorbed downstream.
 
-Two identical stores, one query, and 7% of the time a different answer. `scored.sort(key=lambda x: -x[0])`
-ranked on the raw score, and the lexical channel accumulates over an unordered collection — so the same
-record scores differently between runs. Measured at full precision over 120 runs of one fixture:
+**Two sources, both measured.**
 
-```
-record                          distinct scores   spread
-the capital of France is Paris        19          5.7e-10
-Paris hosted the 2024 Olympics        13          2.9e-10
-France borders Spain and Germany       8          1.9e-10
-```
+`_bm25_scores` iterated `qtok`, a SET, when summing per-term contributions. Float addition is not
+associative and set iteration order is randomised per process, so the same record scored differently
+between runs. Sorted now.
 
-Three records nominally tied at 0.564 therefore rotated. Over 200 runs: **186 / 7 / 7** — one majority
-order and two rotations. A caller taking the top-1 of a tie got a different answer 7% of the time, and
-`PYTHONHASHSEED` changed it outright.
+`_effective_value` computed the decay age from wall clocks at full precision, while the half-lives it
+feeds are hours to days — so sub-second resolution carried no meaning and plenty of noise. The age is
+quantised to whole seconds.
 
-The score is now quantised to `_RANK_QUANTUM` (6) places for RANKING only: ~10,000× above the measured
-noise and 1000× finer than the score `recall` reports, which rounds to 3. After: **one order over 120 runs
-in every mode** (auto, lexical, semantic, hybrid), identical across six hash seeds.
+Measured across 120 runs of one fixture: **the score spread is 0.000e+00** on every record (it was
+5.7e-10, with 19 distinct values for a single record). One top-k order per mode over 120 runs, identical
+across six `PYTHONHASHSEED` values.
 
-Found by `recall_reinforce_flag_probe.py` — one of the 48 probes that, until 1.84.0, no doc cited and no
-test ran. It had been failing 4 of 20 runs.
+**Two policies were running on that noise, and both are now explicit.**
 
-**Three wrong turns, kept in the comments because each was plausible and each was measured wrong:**
-- `(ts, id)` as a tie-break made it WORSE (4/20 from 16/20) — same-tick writes share `ts`, so the tie fell
-  through to a per-store random `id`.
-- keying the position lookup on object identity did nothing at all: `items` hands out copies, so the
-  lookup always missed. It measured 18/20 and read as progress.
-- quantising to 12 places was the right kind of fix two orders of magnitude below the noise it had to
-  absorb.
+- *Recall*: among equally relevant memories the newer one now comes first. It always did — through
+  microscopically less decay on the newer record — and that accident was what surfaced the memory you
+  asked for in a crowded store. Removing the noise removed the accident; the ADK crowded-store audit
+  caught it before release, on the attempt that quantised the ranking score instead of fixing the source.
+- *Capacity eviction*: among equally valuable memories the older one is discarded. Same accident, and
+  quantising the decay silently **flipped** it to evicting the newest.
 
-**And one piece of the fix was deleted rather than shipped.** An explicit (position, text) tie-break went
-in first; no mutation could tell it apart from its absence, because candidates already arrive in store
-order and Python's sort is stable. Eight-way ties came back in insertion order without it, on four hash
-seeds. A guard nothing can distinguish from nothing is a check that cannot fail — so the code went and the
-property it restated is now asserted in `tests/test_recall_is_deterministic.py` instead.
+An earlier attempt quantised the RANKING score. It was reverted: in a crowded store the target ranks first
+while being exactly tied with 58 competitors and 5.7e-10 above two more, so the noise and the smallest
+meaningful gap were the same size and no quantum could separate them.
 
-11 tests, including one that runs in separate processes under four `PYTHONHASHSEED` values: a
-single-process test could not have seen this defect at all. Mutation-verified. 1300 tests pass.
+Found by `recall_reinforce_flag_probe.py`, one of the 48 probes that no doc cited and no test ran until
+1.84.0. It had been failing 4 of 20 runs.
+
+13 tests. Two of them had to be rebuilt before they could fail at all: the BM25 test ran in ONE process
+(where a set iterates identically every time) with eight short tokens (two or three addends per score), so
+it was green while the mutation restoring set order survived. It now runs in five processes under
+different hash seeds, with 45 tokens and ~40 addends. The score test read `recall`'s output, which rounds
+to three places and cannot see 1e-10; it tests the mechanism directly instead. Mutation-verified 3/3.
+1302 tests pass.
 
 ## 1.84.0 - remember_decision kept every decision on a topic active at once
 
