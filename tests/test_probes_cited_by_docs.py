@@ -147,13 +147,36 @@ OPTIONAL_THIRD_PARTY = _optional_third_party()
 #: Environment-independent on 3.10+; the CI matrix still runs 3.9, where the attribute does not exist, so
 #: the fallback lists what these probes actually import. Deliberately not `__import__`: that answers "is it
 #: installed HERE", which is the question that produced the false failure.
-_STDLIB = set(getattr(sys, "stdlib_module_names", ())) or {
-    "json", "os", "sys", "re", "time", "math", "random", "hashlib", "itertools", "collections",
-    "subprocess", "argparse", "typing", "pathlib", "statistics", "copy", "functools", "tempfile",
-    "urllib", "datetime", "csv", "sqlite3", "string", "textwrap", "warnings", "dataclasses", "glob",
-    "io", "pickle", "shutil", "uuid", "threading", "traceback", "importlib", "inspect", "platform",
-    "gzip", "base64", "binascii", "heapq", "bisect", "unicodedata", "contextlib", "operator", "struct",
-}
+def _stdlib_names():
+    """The standard library, DERIVED, never hand-listed.
+
+    3.10+ has `sys.stdlib_module_names`. Below it the first version of this carried a literal set of "what
+    these probes actually import" -- and the 3.9 leg failed within the hour on `asyncio` and `concurrent`,
+    reported as modules of OURS that were never committed. A hand-maintained list of the standard library
+    is wrong the moment somebody imports a different part of it, and it fails in the direction that accuses
+    the repository of a defect it does not have.
+
+    So: read the interpreter's own stdlib directory. That is a property of the interpreter, not of this
+    machine -- unlike `__import__`, which answers "is it INSTALLED here" and is what put a false failure in
+    CI twice already.
+    """
+    names = set(getattr(sys, "stdlib_module_names", ()))
+    if names:
+        return names
+    import sysconfig
+
+    names = set(sys.builtin_module_names)
+    stdlib = sysconfig.get_paths().get("stdlib")
+    if stdlib and os.path.isdir(stdlib):
+        for entry in os.listdir(stdlib):
+            if entry.endswith(".py"):
+                names.add(entry[:-3])
+            elif os.path.isdir(os.path.join(stdlib, entry)) and entry != "site-packages":
+                names.add(entry)
+    return names
+
+
+_STDLIB = _stdlib_names()
 
 KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
     "openai", "torch", "transformers", "sentence_transformers", "datasets", "tiktoken",
@@ -319,3 +342,27 @@ def test_an_uncited_probe_still_runs(probe):
         f"probes/{probe} exits {r.returncode}. Nothing cites it, so nothing was checking it -- add it to "
         f"NOT_STANDALONE with the real reason, or fix what it found. "
         f"stderr tail: {r.stderr[-1200:]}")
+
+
+def test_the_stdlib_fallback_used_on_39_is_itself_correct():
+    """This box has `sys.stdlib_module_names`, so the <3.10 branch never runs here — and that is exactly
+    how the hand-written list shipped with `asyncio` and `concurrent` missing and failed only on the 3.9
+    matrix leg, accusing the repository of modules it had never committed.
+
+    So the fallback is exercised directly, with the attribute hidden."""
+    import sys as _sys
+
+    real = getattr(_sys, "stdlib_module_names", None)
+    try:
+        if real is not None:
+            del _sys.stdlib_module_names
+        derived = _stdlib_names()
+    finally:
+        if real is not None:
+            _sys.stdlib_module_names = real
+
+    assert len(derived) > 100, len(derived)
+    for name in ("asyncio", "concurrent", "json", "os", "re", "sqlite3", "unicodedata", "collections"):
+        assert name in derived, f"{name} is standard library and the fallback missed it"
+    for name in ("mem0", "torch", "echo_attack_probe", "agentpoison_multiretriever_check"):
+        assert name not in derived, f"{name} is not standard library and the fallback claimed it was"
