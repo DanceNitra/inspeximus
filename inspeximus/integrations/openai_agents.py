@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from .governance import ComplianceMixin
+from .._surface import open_store          # one surface posture; see _surface.py
 
 
 _OPEN_STORES: "weakref.WeakValueDictionary[str, Any]" = weakref.WeakValueDictionary()
@@ -56,7 +57,6 @@ def _store_for_path(path):
     Weak-valued, so the handle is released when the last session on it goes away."""
     if path is None:                                    # an in-memory store is private by construction
         from inspeximus import Inspeximus
-        from .._surface import open_store
         return open_store(None, resolve=False)
     from inspeximus import Inspeximus
     k = str(Path(os.path.expanduser(os.fspath(path))).resolve())

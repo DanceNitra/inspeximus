@@ -29,6 +29,7 @@ from typing import Any, Dict, List, Optional
 
 
 from .governance import ComplianceMixin
+from .._surface import open_store          # one surface posture; see _surface.py
 
 
 class InspeximusStorage(ComplianceMixin):
@@ -47,7 +48,6 @@ class InspeximusStorage(ComplianceMixin):
                  embed=None, extractor=None, tag: str = "crewai", receipts: bool = False):
         if store is None:
             from inspeximus import Inspeximus
-            from .._surface import open_store
             store = open_store(path, embed=embed, receipts=receipts, resolve=False)
         self.store = store
         self._tag = tag

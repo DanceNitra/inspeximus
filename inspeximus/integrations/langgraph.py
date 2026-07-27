@@ -32,6 +32,7 @@ from langgraph.store.base import (
     BaseStore, Item, SearchItem, GetOp, PutOp, SearchOp, ListNamespacesOp,
 )
 from langgraph.checkpoint.base import BaseCheckpointSaver, CheckpointTuple
+from .._surface import open_store          # one surface posture; see _surface.py
 
 _b = lambda x: base64.b64encode(x).decode()      # bytes -> ascii for JSON meta
 _ub = lambda s: base64.b64decode(s.encode())     # back to bytes
@@ -68,7 +69,6 @@ class InspeximusStore(BaseStore, ComplianceMixin):
         """
         if store is None:
             from inspeximus import Inspeximus
-            from .._surface import open_store
             store = open_store(path, receipts=receipts, resolve=False)
         self.store = store
         self.prune_empty_namespaces = prune_empty_namespaces

@@ -31,6 +31,7 @@ except ImportError as e:
                       'pip install "inspeximus[llamaindex]"') from e
 
 from .governance import ComplianceMixin
+from .._surface import open_store          # one surface posture; see _surface.py
 
 
 class InspeximusMemoryBlock(BaseMemoryBlock[str], ComplianceMixin):
@@ -52,7 +53,6 @@ class InspeximusMemoryBlock(BaseMemoryBlock[str], ComplianceMixin):
         super().__init__(**kwargs)                      # only pydantic fields (name/description/priority/k)
         if store is None:
             from inspeximus import Inspeximus
-            from .._surface import open_store
             store = open_store(path, resolve=False)
         self._store = store
         # The subject these messages are attributable to, so forget_subject() can erase them.

@@ -33,6 +33,7 @@ from haystack.document_stores.types import DuplicatePolicy
 from haystack.utils.filters import document_matches_filter
 
 from .governance import ComplianceMixin
+from .._surface import open_store          # one surface posture; see _surface.py
 
 
 class InspeximusDocumentStore(ComplianceMixin):
@@ -44,7 +45,6 @@ class InspeximusDocumentStore(ComplianceMixin):
     def __init__(self, path: str | None = None, store: Any = None):
         if store is None:
             from inspeximus import Inspeximus
-            from .._surface import open_store
             store = open_store(path, resolve=False)
         self.store = store
         self.path = path

@@ -25,9 +25,9 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage, message_to_dict, messages_from_dict
 
 from inspeximus import Inspeximus
-from .._surface import open_store
 
 from .governance import ComplianceMixin
+from .._surface import open_store          # one surface posture; see _surface.py
 
 
 class InspeximusRetriever(BaseRetriever, ComplianceMixin):

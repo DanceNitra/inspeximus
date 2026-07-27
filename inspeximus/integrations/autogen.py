@@ -25,6 +25,7 @@ from __future__ import annotations
 from typing import Any
 
 from .governance import ComplianceMixin
+from .._surface import open_store          # one surface posture; see _surface.py
 
 
 class InspeximusMemory(ComplianceMixin):
@@ -37,7 +38,6 @@ class InspeximusMemory(ComplianceMixin):
                  extractor=None):
         if store is None:
             from inspeximus import Inspeximus
-            from .._surface import open_store
             store = open_store(path, resolve=False)
         self.store = store
         self.k = int(k)

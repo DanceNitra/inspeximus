@@ -16,13 +16,13 @@ stays zero-dependency.
 """
 from __future__ import annotations
 from typing import Any
+from .._surface import open_store          # one surface posture; see _surface.py
 
 
 def inspeximus_toolset(store: Any = None, path: str | None = None, k: int = 5, extractor=None):
     """Build a Pydantic AI FunctionToolset of memory tools bound to a inspeximus store."""
     if store is None:
         from inspeximus import Inspeximus
-        from .._surface import open_store
         store = open_store(path, resolve=False)
     if extractor is not None:
         store.extractor = extractor
