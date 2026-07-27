@@ -68,7 +68,8 @@ class InspeximusStore(BaseStore, ComplianceMixin):
         """
         if store is None:
             from inspeximus import Inspeximus
-            store = Inspeximus(path=path, receipts=receipts)
+            from .._surface import open_store
+            store = open_store(path, receipts=receipts, resolve=False)
         self.store = store
         self.prune_empty_namespaces = prune_empty_namespaces
 
@@ -214,7 +215,7 @@ class InspeximusSaver(BaseCheckpointSaver):
         super().__init__(serde=serde)
         if store is None:
             from inspeximus import Inspeximus
-            store = Inspeximus(path=path)
+            store = open_store(path, resolve=False)
         self.store = store
 
     @staticmethod

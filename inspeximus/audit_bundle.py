@@ -25,6 +25,7 @@ check co-signatures) -- the append-only guarantee comes from that external witne
 """
 from __future__ import annotations
 import json
+import os
 from .core import Inspeximus, _sha256_hex, _canon, _GENESIS, __version__
 
 BUNDLE_KIND = "inspeximus.audit_bundle/1"
@@ -362,6 +363,21 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     }
 
 
+def load_store_items(path):
+    """The store dump for `--store`, or None if the path is not there.
+
+    ONE implementation, called from both entry points. Opening a store CREATES it, so a mistyped path
+    would hand the auditor a clean verdict over an empty store they had just made -- the erasure-
+    certificate defect of 1.70.0, in a third place. The guard was written for `inspeximus audit-verify`
+    in 1.79.0 and did not reach `python -m inspeximus.audit_bundle verify`, which is the invocation that
+    release's own CHANGELOG prints. A fix that lands at one call site while the class lives one file over
+    is the shape this repository meets most often; the answer is not to add the check twice.
+    """
+    if not os.path.exists(path):
+        return None
+    return list(Inspeximus(path=path, receipts=True).items)
+
+
 def _cli(argv=None):
     import argparse, os
     ap = argparse.ArgumentParser(prog="inspeximus.audit_bundle",
@@ -399,7 +415,11 @@ def _cli(argv=None):
     wl = [w.strip() for w in a.witnesses.split(",")] if a.witnesses else None
     items = None
     if a.store:
-        items = list(Inspeximus(path=a.store, receipts=True).items)
+        items = load_store_items(a.store)
+        if items is None:
+            print(f"  FAIL --store {a.store} does not exist; refusing to create a store while verifying, "
+                  f"because an empty one verifies clean")
+            return 1
     res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)
     for c in res["checks"]:
         print(f"  OK   {c}")

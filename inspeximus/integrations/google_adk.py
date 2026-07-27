@@ -48,7 +48,8 @@ class InspeximusMemoryService(BaseMemoryService, ComplianceMixin):
     def __init__(self, path: str | None = None, store: Any = None, k: int = 10, extractor=None):
         if store is None:
             from inspeximus import Inspeximus
-            store = Inspeximus(path=path)
+            from .._surface import open_store
+            store = open_store(path, resolve=False)
         self.store = store
         self.k = int(k)
         # OPT-IN extractor (text -> (key, object)): auto-keys ingested event text so search_memory returns

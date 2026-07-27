@@ -56,12 +56,13 @@ def _store_for_path(path):
     Weak-valued, so the handle is released when the last session on it goes away."""
     if path is None:                                    # an in-memory store is private by construction
         from inspeximus import Inspeximus
-        return Inspeximus(path=None)
+        from .._surface import open_store
+        return open_store(None, resolve=False)
     from inspeximus import Inspeximus
     k = str(Path(os.path.expanduser(os.fspath(path))).resolve())
     st = _OPEN_STORES.get(k)
     if st is None:
-        st = Inspeximus(path=path)
+        st = open_store(path, resolve=False)
         _OPEN_STORES[k] = st
     return st
 

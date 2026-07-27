@@ -261,11 +261,12 @@ def main(argv=None):
             # Opening a store CREATES it when the path does not exist, and an auditor who mistyped would
             # then be handed a clean verdict over the empty store they had just made -- the same shape as
             # the erasure certificate that reported valid while its absence proof pointed at a typo.
-            if not os.path.exists(a.store):
+            from inspeximus.audit_bundle import load_store_items
+            items = load_store_items(a.store)     # ONE implementation; see its docstring
+            if items is None:
                 print(f"  FAIL --store {a.store} does not exist; refusing to create a store while "
                       f"verifying, because an empty one verifies clean")
                 return 1
-            items = list(_store(a.store, receipts=True).items)
         res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)
         if a.json:
             _out(res, True)

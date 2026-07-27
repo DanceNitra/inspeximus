@@ -81,12 +81,12 @@
     ]
   },
   {
-    "name": "a mistyped store path is created instead of refused",
-    "file": "inspeximus/cli.py",
-    "old": "            if not os.path.exists(a.store):",
-    "new": "            if False:",
+    "name": "a mistyped store path is created instead of refused (shared guard)",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "    if not os.path.exists(path):\n        return None",
+    "new": "    if False:\n        return None",
     "tests": [
-      "tests/test_verify_bundle_content_scope.py"
+      "tests/test_docs_examples_are_runnable.py"
     ]
   },
   {
@@ -555,6 +555,33 @@
     "new": "        if False:\n            continue",
     "tests": [
       "tests/test_mutation_check_harness.py"
+    ]
+  },
+  {
+    "name": "the shared store guard stops refusing a missing path",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "    if not os.path.exists(path):\n        return None",
+    "new": "    if False:\n        return None",
+    "tests": [
+      "tests/test_docs_examples_are_runnable.py"
+    ]
+  },
+  {
+    "name": "audit_bundle's CLI ignores the guard's refusal",
+    "file": "inspeximus/audit_bundle.py",
+    "old": "        if items is None:",
+    "new": "        if False:",
+    "tests": [
+      "tests/test_docs_examples_are_runnable.py"
+    ]
+  },
+  {
+    "name": "the README claims a single unbacked number again",
+    "file": "README.md",
+    "old": "**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The exceptions are",
+    "new": "**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The one exception is",
+    "tests": [
+      "tests/test_docs_examples_are_runnable.py"
     ]
   }
 ]

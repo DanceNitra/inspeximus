@@ -25,6 +25,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage, message_to_dict, messages_from_dict
 
 from inspeximus import Inspeximus
+from .._surface import open_store
 
 from .governance import ComplianceMixin
 
@@ -42,7 +43,7 @@ class InspeximusRetriever(BaseRetriever, ComplianceMixin):
 
     def __init__(self, path: str | None = None, store: Any = None, k: int = 5,
                  embed=None, extractor=None, **kwargs: Any):
-        super().__init__(k=k, store=store if store is not None else Inspeximus(path=path, embed=embed), **kwargs)
+        super().__init__(k=k, store=store if store is not None else open_store(path, embed=embed, resolve=False), **kwargs)
         if extractor is not None:
             self.store.extractor = extractor
 
@@ -68,7 +69,7 @@ class InspeximusChatMessageHistory(BaseChatMessageHistory, ComplianceMixin):
 
     def __init__(self, session_id: str, path: str | None = None, store: Any = None, embed=None):
         self.session_id = session_id
-        self.store = store if store is not None else Inspeximus(path=path, embed=embed)
+        self.store = store if store is not None else open_store(path, embed=embed, resolve=False)
         self._tag = f"lc-chat:{session_id}"
 
     @property

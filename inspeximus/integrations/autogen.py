@@ -37,7 +37,8 @@ class InspeximusMemory(ComplianceMixin):
                  extractor=None):
         if store is None:
             from inspeximus import Inspeximus
-            store = Inspeximus(path=path)
+            from .._surface import open_store
+            store = open_store(path, resolve=False)
         self.store = store
         self.k = int(k)
         self._source = source   # optional canonical source tag (enables forget_subject on this memory's writes)

@@ -231,7 +231,7 @@ store nor the receipt key**:
 inspeximus --receipts remember "retention policy is 90 days" --key policy::retention --object 90d
 inspeximus audit-build --out bundle.json        # operator exports (content-free: hashes + surrogate ids, no text)
 inspeximus audit-verify bundle.json             # auditor runs this — offline, exit 0 = PASS, 1 = FAIL
-inspeximus audit-verify bundle.json --store m.json   # ...and bind it to the CONTENT served today
+inspeximus audit-verify bundle.json --store inspeximus_memory.json   # ...and bind it to the CONTENT served today
 ```
 
 `audit-verify` re-walks the entire write **and** erasure history from genesis, confirms every hash and
@@ -319,9 +319,15 @@ across harnesses — mem0 reports 66.9% and Zep 71.2% under their own judges —
 would need running them through this harness, which we haven't done. What we publish is our own reproducible
 number.)*
 
-**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The one exception is
-flagged in place above, rather than left for you to discover. (This line used to say *every* number, without
-exception — an audit found the exception, so the line changed rather than the standard.)
+**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The exceptions are
+flagged in place, rather than left for you to discover: the MemOps key-derivation figures and the LoCoMo
+recall_any@1 below both come from work that lives outside this repository.
+
+*(This line has now been corrected twice. It first said* every *number, without exception; an audit found
+one, and the line was narrowed to "one exception". A second audit — 2026-07-27 — searched `probes/`,
+`tests/` and `tools/` for each number in this file and found **three** with no producing script, not one.
+The standard did not change either time; the sentence did. If you find a fourth, that is a defect in this
+paragraph, not a footnote.)*
 
 ## Quickstart (2 minutes)
 
@@ -351,7 +357,7 @@ superseded fact back to your chain). `pip install "inspeximus[langchain]"`.
 **Honest scope of `regex_extractor` (measured 2026-07-20, corrected from an earlier overclaim).** It keys
 clean declarative statements — "My ZIP code is 94107", "Alice's email is …", "The API rate limit is 500 rps".
 It does **not** reliably key natural conversational prose: measured on an external dialogue corpus (the
-MemOps dataset, arXiv 2607.12893) it derived a key for 5.2% of sentences (1,037 of 19,851 across six transcripts), and — the part that matters —
+MemOps dataset, arXiv 2607.12893) it derived a key for 5.2% of sentences (1,037 of 19,851 across six transcripts — *no probe in this repository produces these two figures; they come from the MemOps harness, which lives outside it*), and — the part that matters —
 it does not hold a *stable* key across a real correction chain, because "my official title … **was** Junior
 Data Analyst" and "**so my current title is** Data Analyst" yield different keys that never meet. On raw
 chat transcripts, supersession therefore mostly does not fire and inspeximus behaves as a verbatim store.
@@ -511,7 +517,8 @@ its memory is value-ranked and append-only, not a recency buffer. If `INSPEXIMUS
 `nomic` (nomic-embed-text is asymmetric — see its model card; like E5's `passage:`/`query:`), inspeximus auto-applies its
 required task prefixes — `search_document: ` for stored text, `search_query: ` for the query (opt out with
 `INSPEXIMUS_NOMIC_PREFIX=0`). Omitting them was simply using the model wrong; with prefixes on, our own
-reinforcement-controlled re-measure lands recall_any@1 at 0.397 on one LoCoMo config (n=1536, deterministic
+reinforcement-controlled re-measure lands recall_any@1 at 0.397 (*not reproducible from this repository: the
+LoCoMo probes need a dataset we cannot redistribute*) on one LoCoMo config (n=1536, deterministic
 retrieval-recall — an upper bound, not end-to-end QA; a self-comparison, not a cross-system claim; the earlier
 0.19→0.29 delta was contaminated by a since-fixed recall-reinforcement confound — see the 1.15.0 CHANGELOG correction). In the library, pass a separate `Inspeximus(embed=…, embed_query=…)` for any
 asymmetric embedder. If you use `persist_vectors=True`, also pass `Inspeximus(embed_id="…")` (a recipe fingerprint): when

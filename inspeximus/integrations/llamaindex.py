@@ -52,7 +52,8 @@ class InspeximusMemoryBlock(BaseMemoryBlock[str], ComplianceMixin):
         super().__init__(**kwargs)                      # only pydantic fields (name/description/priority/k)
         if store is None:
             from inspeximus import Inspeximus
-            store = Inspeximus(path=path)
+            from .._surface import open_store
+            store = open_store(path, resolve=False)
         self._store = store
         # The subject these messages are attributable to, so forget_subject() can erase them.
         # Pass a per-user or per-session value; the default groups every message under one id.

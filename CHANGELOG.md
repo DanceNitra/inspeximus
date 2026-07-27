@@ -269,7 +269,7 @@ inspeximus.audit_bundle verify bundle.json
 #        substituted text verifies here. Pass store_items= (or call bind_content) to close it.
 #   VERDICT: PASS  (2 writes, 0 erasures, content NOT checked)
 
-inspeximus.audit_bundle verify bundle.json --store m.json
+inspeximus.audit_bundle verify bundle.json --store inspeximus_memory.json
 #   FAIL 1 record(s) no longer match the commitment their FIRST receipt made: 966d756909 (immutable_sha256)
 #   VERDICT: FAIL  (2 writes, 0 erasures, content checked)     # exit 1, so it gates CI
 ```

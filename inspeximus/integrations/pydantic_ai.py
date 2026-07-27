@@ -22,7 +22,8 @@ def inspeximus_toolset(store: Any = None, path: str | None = None, k: int = 5, e
     """Build a Pydantic AI FunctionToolset of memory tools bound to a inspeximus store."""
     if store is None:
         from inspeximus import Inspeximus
-        store = Inspeximus(path=path)
+        from .._surface import open_store
+        store = open_store(path, resolve=False)
     if extractor is not None:
         store.extractor = extractor
 
