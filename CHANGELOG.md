@@ -31,9 +31,15 @@ uncovered records. Honest scope: the audit claimed such a store passed with no v
 did **not** reproduce — it was already failing via `integrity_failed`. The coverage check really was blind
 to its own subject; it was not the last line of defence.
 
-Also fixed: `tools/skip_census.py` counted a `pytest.importorskip` inside a helper function as a
-module-level guard, because a `def` is a top-level node whose source text includes its body. It
-over-counted a new test file by 9 — caught by the census's own pin, firing about the instrument.
+Also fixed, **and this corrects a number reported yesterday**: `tools/skip_census.py` counted a
+`pytest.importorskip` inside a helper function as a module-level guard, because a `def` is a top-level node
+whose source text includes its body. Caught by the census's own pin firing about the instrument.
+
+The consequence is that yesterday's figure was inflated. **The base CI job hides 102 tests across 11
+modules, not 155 across 16**, and there is no per-interpreter difference — `test_install.py` guards
+`tomllib` inside a single test, so it skips one test on 3.9 and always collected. The split pin that chased
+that phantom difference is gone. The GAP is real and unchanged: the base job runs ~1001 tests where the
+integrations job runs 1144.
 
 Mutation-verified 32/32. 1179 tests pass.
 

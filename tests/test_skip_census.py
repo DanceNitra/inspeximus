@@ -6,6 +6,10 @@ CI base image 155 test functions in 16 modules had never executed -- while the j
 "993 passed, 43 skipped" and read as healthy. Nobody chose that exclusion; it was the default, and the
 default was invisible, which is the same defect shape as a check that cannot fail.
 
+The count was first reported as 155 across 16 modules. That was wrong -- the census over-counted any file
+whose HELPER mentioned importorskip -- and the honest figure is 102 across 11. The gap itself is real and
+unchanged: the base job runs ~1001 tests where the integrations job runs 1144.
+
 Two things now hold it open: a CI job that installs the optional dependencies so those tests actually run,
 and this file, which PINS how much may hide. Growth is allowed only by editing the number here, in a diff
 someone reads.
@@ -20,12 +24,17 @@ import skip_census  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#: Measured 2026-07-26 against a simulated CI base image (pytest + cryptography only).
-#: It is INTERPRETER-DEPENDENT, and pinning one number for the whole matrix failed on 3.9 within minutes:
-#: `tomllib` entered the standard library in 3.11, so on 3.9 `test_install.py` (13 tests) is hidden too.
-#: That is a real, explainable stdlib fact rather than a silent exclusion, so the pin follows it instead of
-#: being raised to the maximum -- a pin set to the worst leg stops constraining the others.
-MAX_HIDDEN_IN_BASE_ENV = 160 if sys.version_info >= (3, 11) else 175
+#: Measured 2026-07-27 against a simulated CI base image (pytest + cryptography only): 102 test functions
+#: across 11 modules, the same on every matrix leg.
+#:
+#: CORRECTION. This first read 155, and 175 on 3.9, and BOTH were inflated by a bug in the census itself:
+#: it read the source text of each top-level node, and a `def` is a top-level node whose text includes its
+#: body -- so any file with a `pytest.importorskip` inside a helper was counted as entirely invisible.
+#: `test_install.py` was the interpreter-dependent case, and its `tomllib` guard is inside a single test
+#: function, so it skips ONE test on 3.9 and always collected. There is no per-version difference, and the
+#: split pin that chased one is gone. The gap it measures is real -- the base job runs ~1001 tests and the
+#: integrations job 1144 -- only the per-module attribution was wrong.
+MAX_HIDDEN_IN_BASE_ENV = 110
 
 
 def _base_env_census():
@@ -55,15 +64,13 @@ def test_the_amount_hidden_from_the_base_job_is_pinned():
         + ", ".join(f"{r['module']}({r['tests']})" for r in c["hidden_modules"]))
 
 
-def test_the_three_nine_leg_hides_exactly_one_more_module_and_we_know_which():
-    """The matrix legs must differ for a REASON we can name. If 3.9 ever starts hiding something else, the
-    difference stops being explainable and this fails rather than being absorbed by a bigger pin."""
-    c = _base_env_census()
-    hidden = {r["module"] for r in c["hidden_modules"]}
-    if sys.version_info >= (3, 11):
-        assert "test_install.py" not in hidden, "tomllib is stdlib here; nothing should hide it"
-    else:
-        assert "test_install.py" in hidden, "on 3.9 tomllib is absent, so this module cannot collect"
+def test_every_matrix_leg_hides_the_same_thing():
+    """The legs must not differ, and if they ever do the reason has to be nameable rather than absorbed by
+    a bigger pin. An earlier version of this test asserted a difference that did not exist: the census's
+    own over-counting invented one, and the pin was split per interpreter to accommodate it."""
+    hidden = {r["module"] for r in _base_env_census()["hidden_modules"]}
+    assert "test_install.py" not in hidden,         "its tomllib guard is inside a single test, so it skips one test and the module still collects"
+    assert "test_examples_run.py" not in hidden, "same shape: the guard is inside one test"
 
 
 def test_the_census_is_not_measuring_nothing():

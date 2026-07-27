@@ -23,11 +23,11 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ -q
 
-  # 240 tests across 21 modules sit behind module-level import guards. In the base job a 29-test module
-  # collects as ONE skip line, so the suite reported "993 passed, 43 skipped" while the local run collected
-  # 1137 -- roughly a hundred tests that had never run in CI at all, and nothing said so. Excluding them
-  # was never a decision anyone made; it was the default. This job installs the optional dependencies so
-  # they actually run.
+  # 102 tests across 11 modules sit behind MODULE-LEVEL import guards, so in the base job a 15-test module
+  # collects as ONE skip line. The suite reported "993 passed, 43 skipped" and read as healthy while the
+  # local run collected 1137. Excluding them was never a decision anyone made; it was the default, and the
+  # default was invisible. This job installs the optional dependencies so they actually run: 1144 pass here.
+  # (The count was first reported as 155/16 -- tools/skip_census.py was over-counting; see its tests.)
   integrations:
     runs-on: ubuntu-latest
     steps:
