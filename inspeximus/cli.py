@@ -372,6 +372,18 @@ def main(argv=None):
     elif a.cmd == "revert":
         res = m.revert(a.key)
         m._save(force=True)
+        # A REFUSED revert used to print "reverted region: now -> {'ok': False, ...}" and exit 0, so
+        # `inspeximus revert region && echo rolled-back` printed rolled-back after nothing had rolled back.
+        # Every other refusal path in this CLI exits 1 or 2; this one is the operation we put on the front
+        # page, and no test invoked it. --json exited 0 as well, so a script parsing the payload had to
+        # know to look past the exit code.
+        if not res.get("ok"):
+            reason = res.get("reason") or "refused"
+            if a.json:
+                _out(res, True)
+            else:
+                print(f"revert refused for {a.key}: {reason}", file=sys.stderr)
+            return 1
         _out(res, a.json) or print(f"reverted {a.key}: now -> {res.get('restored') or res.get('active') or res}")
 
     elif a.cmd == "forget-subject":

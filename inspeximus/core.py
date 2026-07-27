@@ -45,6 +45,7 @@ import json
 import sys
 import math
 import os
+import random as _random
 import re
 import time
 import uuid
@@ -6355,7 +6356,12 @@ class Inspeximus:
         linked = sum(1 for r in act if r.get("links"))
         decayed = sum(1 for r in act if self._effective_value(r, now) < 0.1 * float(r.get("value", 1.0) or 1.0))
         redundant = 0
-        sample = act if len(act) <= 400 else act[:400]
+        # A RANDOM sample, seeded, not the first 400. `act[:400]` is the OLDEST 400 in insertion order and
+        # duplication accumulates in the tail, so the same 1000-record store reported redundant_frac 1.0,
+        # 0.245 or 0.99 depending only on the order the records went in -- spread 0.755, true value 0.600.
+        # Seeded, because a number offered as evidence that a store did NOT accumulate copies of a fact
+        # must not move between runs. Same cost as the slice; order-dependence drops to 0.008.
+        sample = act if len(act) <= 400 else _random.Random(0).sample(act, 400)
         for r in sample:
             other = [h for h in self.recall(r["text"], k=2) if h["id"] != r["id"]]
             if other:

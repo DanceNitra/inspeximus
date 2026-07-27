@@ -29,6 +29,7 @@ import argparse
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -59,10 +60,26 @@ def _dirty_tracked() -> set:
     return {ln[3:].strip().strip('"') for ln in r.stdout.splitlines() if ln.strip()}
 
 
+#: Only these may be restored. A probe writes its result file; nothing else about a run is expected to
+#: touch the working tree.
+_ARTIFACT = re.compile(r"^probes/[\w.-]+_result\.json$")
+
+
 def _restore(paths) -> list:
-    """Undo tracked files THIS run dirtied. Never touches anything that was already modified."""
+    """Undo the RESULT ARTIFACTS this run dirtied -- and nothing else.
+
+    The first version restored every tracked file that became dirty during the run. That is wrong in a way
+    that cost real work: a developer editing source WHILE the gate runs in the background looks identical
+    to collateral, and `git checkout --` silently threw the edit away. It happened here, to a one-line fix
+    in core.py, and the only reason it was caught was a measurement that stopped making sense.
+
+    A tool whose job is to leave the repository as it found it must not be able to delete what it did not
+    write. Restricted to probe result files, which is the only collateral a mutation run actually produces.
+    """
     restored = []
     for path in sorted(paths):
+        if not _ARTIFACT.match(path.replace("\\", "/")):
+            continue
         r = subprocess.run(["git", "checkout", "--", path], cwd=ROOT, capture_output=True, text=True)
         if r.returncode == 0:
             restored.append(path)

@@ -870,12 +870,27 @@ because agents reuse a small vocabulary. Against a random same-store window the 
 most of a raw score is vocabulary rather than lineage. Null-adjusted, the firing rate is **~22%** and stable
 across thresholds 0.10–0.50.
 
-**MEASURED AND WITHDRAWN (1.50.0).** Against constructed ground truth
-(`probes/infer_lineage_precision.py`) this does not work. On a topically diverse store with same-topic
-negatives: **precision 0.06-0.23**, recall 0.03-0.22 — at its best setting it stamps 43 wrong parents for
-every 13 right ones. On a homogeneous store: recall **~0**, blind by construction, because the derived write
-overlaps the whole store exactly as much as it overlaps its parent (0.943 vs 0.943, lift **+0.000**) and the
-null adjustment removes the signal with the noise. So the ~22% firing rate above is not 22% of true
-derivations. Default stays `0.0` = OFF; the code is kept as a substrate, the claim is not. It over-taints deliberately: a false parent is visible in `provenance()`, a
+**MEASURED AND WITHDRAWN (1.50.0; numbers corrected 2026-07-27).** Against constructed ground truth
+(`probes/infer_lineage_precision.py`) this does not work — and the way it fails is not the way this
+paragraph used to describe. Re-run against the probe as it stands, at its best threshold (0.05), with
+same-domain negatives written immediately after the same recall:
+
+| parent wording retained in the derivative | TP | FP | precision | recall |
+|---|---|---|---|---|
+| 90% | 8 | **0** | 1.000 | 0.133 |
+| 70% | 5 | **0** | 1.000 | 0.083 |
+| 50% | 1 | **0** | 1.000 | 0.017 |
+| 30% | 0 | 0 | — | 0.000 |
+
+It stamps **no wrong parents at all**; it simply almost never finds the right one, and stops finding
+anything once the derivative stops quoting its parent. Recall falls from 0.133 to 0.000 across a 90%→30%
+drop in retained wording, and above threshold 0.05 it fires on nothing.
+
+This paragraph previously read "precision 0.06-0.23 … 43 wrong parents for every 13 right ones", which is
+the OPPOSITE failure mode and appears nowhere in the probe's output; it was corrected when an audit
+compared the published number against the artifact it cites. The withdrawal stands either way — a signal
+that only fires on near-verbatim reuse is not lineage — but for the recall reason, not the precision one.
+
+So the ~22% firing rate above is not 22% of true derivations. Default stays `0.0` = OFF; the code is kept as a substrate, the claim is not. It over-taints deliberately: a false parent is visible in `provenance()`, a
 missing one is silent. Default `0.0` = OFF (byte-identical legacy), and an explicit `derived_from` always
 wins. Receipt: `tests/test_infer_lineage.py` (8/8).

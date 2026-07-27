@@ -72,6 +72,11 @@ NOT_STANDALONE = {
     "integrity_bench_revert.py": "reads server/.env from the private research repo (live model credentials)",
     "reversion_classifier_probe.py": "reads server/.env from the private research repo (live model creds)",
     "echo_attack_probe.py": "needs the MemBench knowledge_update fixture and a local embedder",
+    # Cited by the CHANGELOG as the receipt for retrieval-recall@25 = 0.783/0.648 and never committed --
+    # found the moment CHANGELOG.md entered this file's scope. It (and its sibling locomo_qa.py) are in the
+    # repository now; what remains is the dataset, which we cannot redistribute.
+    "retrieval_recall_locomo.py": "needs agora_output/lab/data/locomo10.json (LoCoMo, not redistributable)",
+    "locomo_qa.py": "needs the LoCoMo dataset; also the shared loader retrieval_recall_locomo.py imports",
     # It refuses with an explicit message rather than a ModuleNotFoundError, so the skip above cannot see
     # it -- and it downloads three dense retrievers, which is more than a pip install anyway.
     "agentpoison_multiretriever_check.py": "needs torch + transformers AND downloads three dense retrievers",
@@ -80,7 +85,11 @@ NOT_STANDALONE = {
 
 def _cited():
     """Every probe filename the docs or README point at."""
-    files = ["README.md"]
+    # CHANGELOG.md is IN SCOPE. It was not, and it was never declared out of scope either -- so probes
+    # cited only there were checked by nothing, and two of them do not exist in the repository at all.
+    # It is also the file a user reads before upgrading, which makes a broken "run this" there worse than
+    # one in the docs, not better.
+    files = ["README.md", "CHANGELOG.md"]
     docs = os.path.join(ROOT, "docs")
     if os.path.isdir(docs):
         files += [os.path.join("docs", f) for f in sorted(os.listdir(docs)) if f.endswith(".md")]
@@ -338,9 +347,15 @@ def _uncited():
             and f not in cited and f not in NOT_STANDALONE]
 
 
-def test_there_really_are_uncited_probes_to_sweep():
-    """If this list silently empties, the sweep below becomes a green result over nothing."""
-    assert len(_uncited()) >= 30, len(_uncited())
+def test_every_probe_on_disk_is_covered_somehow():
+    """The property that actually matters, and it cannot silently empty: every file under probes/ is
+    either CITED (and run, or exempt with a reason), SWEPT as an uncited probe, or declared a shared
+    MODULE. A count threshold could not express this -- bringing CHANGELOG.md into scope moved 18 probes
+    from "uncited" to "cited" in one commit and tripped a floor of 30 that was measuring the wrong thing."""
+    on_disk = {f for f in os.listdir(PROBES) if f.endswith(".py") and not f.startswith("_")}
+    covered = set(_cited()) | set(_uncited()) | set(NOT_STANDALONE)
+    assert not (on_disk - covered), f"probes covered by nothing: {sorted(on_disk - covered)}"
+    assert len(_uncited()) + len(_cited()) >= 60, "the sweep must not collapse to a handful"
 
 
 @pytest.mark.parametrize("probe", _uncited())

@@ -479,8 +479,8 @@
   {
     "name": "the harness stops restoring what it dirtied",
     "file": "tools/mutation_check.py",
-    "old": "    collateral = _dirty_tracked() - dirty_before",
-    "new": "    collateral = set()",
+    "old": "        if not _ARTIFACT.match(path.replace(\"\\\\\", \"/\")):",
+    "new": "        if False:",
     "tests": [
       "tests/test_mutation_check_harness.py"
     ]
@@ -519,6 +519,42 @@
     "new": "        age = max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))",
     "tests": [
       "tests/test_recall_is_deterministic.py"
+    ]
+  },
+  {
+    "name": "a refused revert exits 0 again",
+    "file": "inspeximus/cli.py",
+    "old": "        if not res.get(\"ok\"):\n            reason = res.get(\"reason\") or \"refused\"",
+    "new": "        if False:\n            reason = res.get(\"reason\") or \"refused\"",
+    "tests": [
+      "tests/test_cli_exit_codes.py"
+    ]
+  },
+  {
+    "name": "memory_report samples the oldest 400 again",
+    "file": "inspeximus/core.py",
+    "old": "        sample = act if len(act) <= 400 else _random.Random(0).sample(act, 400)",
+    "new": "        sample = act if len(act) <= 400 else act[:400]",
+    "tests": [
+      "tests/test_memory_report_sampling.py"
+    ]
+  },
+  {
+    "name": "the sample stops being seeded (evidence moves between runs)",
+    "file": "inspeximus/core.py",
+    "old": "else _random.Random(0).sample(act, 400)",
+    "new": "else _random.sample(act, 400)",
+    "tests": [
+      "tests/test_memory_report_sampling.py"
+    ]
+  },
+  {
+    "name": "the harness restores source files again (eats concurrent work)",
+    "file": "tools/mutation_check.py",
+    "old": "        if not _ARTIFACT.match(path.replace(\"\\\\\", \"/\")):\n            continue",
+    "new": "        if False:\n            continue",
+    "tests": [
+      "tests/test_mutation_check_harness.py"
     ]
   }
 ]

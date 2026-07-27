@@ -136,3 +136,34 @@ def test_the_receipt_still_holds_the_number_we_publish():
         rows = {r["policy"]: r for r in json.load(fh)["rows"]}
     assert rows["safe"]["echo_blocked"] == 1.0 and rows["safe"]["reaffirm_honored"] == 0.0, rows["safe"]
     assert rows["trusting"]["echo_blocked"] == 0.0 and rows["trusting"]["reaffirm_honored"] == 1.0
+
+
+def test_restore_touches_only_probe_result_artifacts():
+    """It ate a real one-line fix to core.py.
+
+    The harness restores tracked files that became dirty during a run, so a probe's result artifact cannot
+    survive as a falsified receipt. But an edit made by a HUMAN while the gate runs in the background is
+    dirty during the run too, and `git checkout --` cannot tell the difference. It silently discarded work,
+    and the only reason it was noticed was a measurement afterwards that stopped making sense.
+
+    Asserted on `_restore` DIRECTLY. Two earlier versions of this test were worse than useless: the first
+    dirtied the file BEFORE calling run(), which puts it in `dirty_before` where it is safe even from the
+    unfixed code; the second edited it from a thread mid-run, which made the outcome depend on whether the
+    run happened to outlast a sleep. A property this important does not get a racy test."""
+    victims = ["inspeximus/core.py", "tests/test_x.py", "README.md",
+               "probes/echo_policy_panel_result.json", "probes/agentpoison_influence_gate_result.json"]
+    restored = mutation_check._restore(victims)
+
+    assert set(restored) == {"probes/echo_policy_panel_result.json",
+                             "probes/agentpoison_influence_gate_result.json"}, restored
+    for src in ("inspeximus/core.py", "tests/test_x.py", "README.md"):
+        assert src not in restored, f"the harness would revert {src}, which it did not write"
+
+
+def test_the_artifact_pattern_does_not_match_source_that_merely_lives_in_probes():
+    """`probes/locomo_qa.py` is a committed module, not a receipt. The rule is the FILENAME shape, not the
+    directory."""
+    assert mutation_check._ARTIFACT.match("probes/echo_policy_panel_result.json")
+    for other in ("probes/locomo_qa.py", "probes/echo_policy_panel.py", "inspeximus/core.py",
+                  "probes/result.json", "memory.json"):
+        assert not mutation_check._ARTIFACT.match(other), other

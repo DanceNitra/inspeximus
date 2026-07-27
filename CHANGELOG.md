@@ -1617,7 +1617,7 @@ Framework's Tainting Checker and Semgrep taint-mode propagators already express.
 ## 1.51.0 - the store declares lineage where it owns the write, and revert stops hiding from erasure
 
 Third attempt at the same problem, and the first that is exact. Declared lineage measured **0.00%** across a
-real 27,290-record deployment (1.49.0); inferring it from content was withdrawn at **precision 0.06-0.23**
+real 27,290-record deployment (1.49.0); inferring it from content was withdrawn at **precision 0.06-0.23** **[CORRECTED 2026-07-27: the probe prints precision 1.000 with ZERO false parents and recall 0.133→0.000; the failure is recall, not precision. See docs/API.md.]**
 (1.50.0). This does neither: at a write site *inside the library*, the store already knows the parent, so it
 states it.
 
@@ -1659,7 +1659,7 @@ Measured properly (`probes/infer_lineage_precision.py`, constructed corpora wher
 
 | regime | result |
 |---|---|
-| topically **diverse** store, same-topic negatives | **precision 0.06-0.23**, recall 0.03-0.22 — at its best setting it stamps **43 wrong parents for every 13 right ones** |
+| topically **diverse** store, same-topic negatives | **precision 0.06-0.23**, recall 0.03-0.22 — at its best setting it stamps **43 wrong parents for every 13 right ones** *(CORRECTED 2026-07-27: the cited probe prints precision **1.000**, **zero** false parents, recall 0.133→0.000. The withdrawal stands; the reason was recall, not precision.)* |
 | topically **homogeneous** store | recall **~0**, blind BY CONSTRUCTION: the derived write overlaps the whole store exactly as much as it overlaps its parent (0.943 vs 0.943, lift **+0.000**), so the null adjustment removes the entire signal along with the noise |
 
 It fails in both directions. The ~22% seen on the real corpus is therefore not 22% of true derivations — on
@@ -2676,7 +2676,10 @@ results are supersession-filtered — a corrected fact is never retrieved back i
 **Tuned recall recipe + a measured LOCOMO number.** `inspeximus/examples/recall_recipe_locomo.py` shows the built-in
 levers (an embedder → lexical+semantic hybrid RRF; a soft speaker/entity prefilter via `recall(prefer=...)`) that
 put inspeximus in the top tier on retrieval. Measured on the full LOCOMO benchmark (n=1536), LLM-free and reproducible:
-retrieval-recall@25 = 0.783 (any evidence turn) / 0.648 (all). Run `inspeximus/probes/retrieval_recall_locomo.py`.
+retrieval-recall@25 = 0.783 (any evidence turn) / 0.648 (all). Run `probes/retrieval_recall_locomo.py`.
+*(CORRECTED 2026-07-27: that path was `inspeximus/probes/...` and the file was not in the repository at all
+— cited as a receipt for two years and committed only after CHANGELOG.md was brought into the probe-citation
+guard. "Reproducible" holds only if you have the LoCoMo dataset, which we cannot redistribute.)*
 
 ## 1.10.0
 
