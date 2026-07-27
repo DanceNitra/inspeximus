@@ -17,3 +17,9 @@ secrets.json
 credentials.json
 service-account*.json
 _*.log
+
+# Demo residue. examples/01_basics.py persists to a RELATIVE path, and the suite used to run the examples
+# with cwd=<repo>, so every run appended to this file -- 85 runs of the same demo, 340 records, 337 of them
+# superseded, COMMITTED. A fresh clone running our flagship "a correction stays corrected" example printed
+# a wall of duplicates before reaching the one active line. The file is generated; it does not belong here.
+memory.json

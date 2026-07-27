@@ -52,10 +52,35 @@ def _killers(stdout: str) -> list[str]:
     return sorted(set(out))
 
 
+def _dirty_tracked() -> set:
+    """Tracked files git currently reports as modified."""
+    r = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
+                       cwd=ROOT, capture_output=True, text=True)
+    return {ln[3:].strip().strip('"') for ln in r.stdout.splitlines() if ln.strip()}
+
+
+def _restore(paths) -> list:
+    """Undo tracked files THIS run dirtied. Never touches anything that was already modified."""
+    restored = []
+    for path in sorted(paths):
+        r = subprocess.run(["git", "checkout", "--", path], cwd=ROOT, capture_output=True, text=True)
+        if r.returncode == 0:
+            restored.append(path)
+    return restored
+
+
 def run(mutations: list[dict], verbose: bool = True) -> int:
     env = {**os.environ, "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", ""),
            "PYTHONIOENCODING": "utf-8"}
     survived, skipped = [], []
+    # A mutant does not only change code -- the tests it runs execute PROBES, and probes write their
+    # result files, which are TRACKED. Restoring only the mutated source left
+    # `probes/echo_policy_panel_result.json` holding the mutant's output: safe = 0.00 echo-blocked /
+    # 1.00 reaffirm-honored, the exact inverse of the number the shipped docstring publishes, plus three
+    # "problems" declaring our own claim wrong. Sitting in the working tree, tracked, one `git add -A`
+    # from being published as a receipt. Recording what was ALREADY dirty means a developer's own
+    # in-progress edits are never reverted by this.
+    dirty_before = _dirty_tracked()
 
     for mut in mutations:
         name, rel, old, new = mut["name"], mut["file"], mut["old"], mut["new"]
@@ -94,6 +119,12 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             survived.append(name)
             if verbose:
                 print(f"  {name[:58]:58s} -> SURVIVES <<< NO TEETH")
+
+    collateral = _dirty_tracked() - dirty_before
+    if collateral:
+        restored = _restore(collateral)
+        if verbose and restored:
+            print(f"  restored {len(restored)} tracked file(s) the run dirtied: {', '.join(restored)}")
 
     if verbose:
         total = len(mutations)

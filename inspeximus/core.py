@@ -5013,7 +5013,24 @@ class Inspeximus:
                         nb = 1.0
             score = sim * (1.0 + math.log1p(max(0.0, evalue))) * prov * cal * pref * nb
             scored.append((score, sim, r))
-        scored.sort(key=lambda x: -x[0])
+        # DETERMINISTIC tie-break. Sorting on the score alone left ties to Python's stable sort, which
+        # preserves whatever order the candidates arrived in -- and candidates are gathered through sets of
+        # record-id STRINGS, whose iteration order depends on per-process hash randomisation. Two identical
+        # stores answering the same query therefore returned different top-k ORDER between processes:
+        # measured, three records tied at score 0.564 and swapped places in 4 of 20 runs, and under
+        # PYTHONHASHSEED=0 vs 1 the order differs outright. For a library whose stated property is
+        # determinism, and for any consumer that takes the top-1 of a tie, that is a wrong answer rather
+        # than a cosmetic one. `ts` then `id` is stable across processes and meaningful: older first.
+        # The tie-break is INSERTION POSITION, resolved against the store's own list. First attempt used
+        # (ts, id) and made it worse -- records written in the same clock tick share `ts`, so the tie fell
+        # through to `id`, which is random per instance: 4/20 runs agreed instead of 16/20. Position is the
+        # only key here that is both stable across processes and meaningful (older first).
+        # Keyed on the record ID, not on object identity: `items` hands out copies, so `id(obj)` never
+        # matched and the tie-break silently did nothing (18/20 instead of 20/20, which looked like an
+        # improvement rather than a lookup that always missed). Building a dict for LOOKUP is fine -- it
+        # was ITERATING a set of random id strings that made the order vary in the first place.
+        _pos = {rec.get("id"): i for i, rec in enumerate(self._items)}
+        scored.sort(key=lambda x: (-x[0], _pos.get(x[2].get("id"), 1 << 30)))
         # Near-tie recency reorder (OPT-IN via tie_recent; see docstring for the measured provenance).
         # Band on RELEVANCE (sim), not the composite score: the composite mixes value/calibration channels
         # whose scale varies per store, while sim is the [0,1] channel the epsilon was measured on.

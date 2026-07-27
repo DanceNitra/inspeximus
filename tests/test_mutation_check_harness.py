@@ -99,3 +99,40 @@ def test_the_cli_refuses_an_empty_spec():
                        cwd=ROOT, capture_output=True, text=True,
                        env={**os.environ, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode != 0, "a run over zero mutations must not exit green"
+
+
+def test_a_mutation_run_leaves_no_tracked_file_dirty():
+    """A mutant does not only change code: the tests it runs execute PROBES, and probes write result
+    files that are TRACKED. Restoring only the mutated source left
+    `probes/echo_policy_panel_result.json` holding the MUTANT's output — safe = 0.00 echo-blocked /
+    1.00 reaffirm-honored, the exact inverse of the number our shipped docstring publishes, plus three
+    "problems" declaring our own claim wrong. Sitting in the working tree, tracked, one `git add -A` from
+    being published as a receipt. It nearly was.
+
+    Asserted directly rather than through a side effect: the property is "the run leaves the repository as
+    it found it"."""
+    import subprocess
+
+    def dirty():
+        return subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
+                              cwd=ROOT, capture_output=True, text=True).stdout
+
+    before = dirty()
+    mutation_check.run([{
+        "name": "flip the echo guard (its probe writes a tracked receipt)",
+        "file": "probes/echo_policy_panel.py",
+        "old": "m.echo_guard = True", "new": "m.echo_guard = False",
+        "tests": ["tests/test_echo_policy_panel.py"],
+    }], verbose=False)
+    assert dirty() == before, "the mutation run left tracked files modified"
+
+
+def test_the_receipt_still_holds_the_number_we_publish():
+    """The concrete artifact, checked by value. If a mutation run ever leaves this inverted again, this
+    fails rather than waiting for someone to notice a published receipt disagreeing with the product."""
+    import json
+
+    with open(os.path.join(ROOT, "probes", "echo_policy_panel_result.json"), encoding="utf-8") as fh:
+        rows = {r["policy"]: r for r in json.load(fh)["rows"]}
+    assert rows["safe"]["echo_blocked"] == 1.0 and rows["safe"]["reaffirm_honored"] == 0.0, rows["safe"]
+    assert rows["trusting"]["echo_blocked"] == 0.0 and rows["trusting"]["reaffirm_honored"] == 1.0
