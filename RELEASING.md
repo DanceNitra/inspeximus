@@ -73,10 +73,23 @@ without having to split the release.
 
 ```bash
 python -m pytest -q                       # green first, always
-# bump: inspeximus/core.py __version__, pyproject.toml, README.md footer
+# bump BY HAND, the two that are the source of truth:
+#   inspeximus/core.py __version__, pyproject.toml     (they must agree; a test asserts it)
+# then PIN the rest -- do not hand-edit them:
+python packages/_pin_server_json.py       # server.json, .claude-plugin/{plugin,marketplace}.json
+# README.md footer (v X.Y.Z) is still manual
 # CHANGELOG.md: newest entry on top; lead with who should upgrade and why
+python tools/mutation_check.py tools/mutations.json    # must exit 0: 0 survived AND 0 skipped
 git commit && git tag vX.Y.Z && git push origin main && git push origin vX.Y.Z
 ```
+
+**This checklist said "core.py, pyproject.toml, README.md footer" and 1.86.0 shipped with CI red.**
+There are FIVE version fields across four files, not three, and `tests` asserts every one of them
+against `pyproject.toml`. The pinner exists precisely so nobody has to remember them — it was in the
+release workflow but nowhere in the human procedure, so the manifests were stale in the commit the
+tests ran on. (`release` does not depend on `tests`, so the package published anyway: the wheel was
+correct, the registry manifests advertised 1.85.0.) A step that only a human remembers is a step that
+gets skipped; that is what the pinner is for, and it now appears where the human is looking.
 
 Then **verify from PyPI, not from the repo** — install the published wheel in a clean venv and exercise
 the fix. The repo passing proves the repo passes.

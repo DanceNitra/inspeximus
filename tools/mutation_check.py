@@ -167,11 +167,22 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             if verbose:
                 print(f"  {name[:58]:58s} -> SURVIVES <<< NO TEETH")
 
-    for _p in _restore(_dirty_tracked() - dirty_before):      # anything a skip path left behind
+    left = _dirty_tracked() - dirty_before
+    for _p in _restore(left):                                 # anything a skip path left behind
         restored_all.add(_p)
     if verbose and restored_all:
         print(f"  restored {len(restored_all)} tracked file(s) the run dirtied: "
               f"{', '.join(sorted(restored_all))}")
+    # NAME WHAT WE REFUSED TO RESTORE. The allowlist is deliberately narrow -- this tool must never be
+    # able to delete work it did not write -- but silence about the remainder is how a mutant reached a
+    # committed file today: a test ran the release pinner against the REAL repo, a mutant made that
+    # pinner write a wrong field, and `.claude-plugin/marketplace.json` was left corrupted with nothing
+    # in the output to say so. Restoring it automatically would be the worse bug; saying nothing was
+    # the one we had. The test was fixed to run against a copy; this makes the next one visible.
+    unrestored = sorted(p for p in left if p not in restored_all)
+    if unrestored:
+        print(f"  !! {len(unrestored)} tracked file(s) were dirtied by this run and are OUTSIDE the "
+              f"restore allowlist -- check them by hand: {', '.join(unrestored)}")
 
     if verbose:
         total = len(mutations)

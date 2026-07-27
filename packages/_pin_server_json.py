@@ -28,15 +28,49 @@ def version_from_pyproject() -> str:
     return m.group(1)
 
 
+def _write(path: pathlib.Path, data) -> None:
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
 def main(argv: list[str]) -> int:
+    """Pin every manifest that carries the PACKAGE version.
+
+    The docstring above has claimed since 1.78.0 that the two Claude Code manifests are pinned here
+    too. They were not -- this function only ever touched `server.json`, and the guard test was
+    satisfied by the claim rather than the behaviour: it greps this file for the strings
+    "plugin.json" and "marketplace.json", which the docstring supplies. So the pinner said it covered
+    them, the test agreed, and 1.86.0 shipped with both still reading 1.85.0. Asserting a spelling
+    instead of an outcome is how a guard passes over the thing it guards.
+
+    `marketplace.json` carries TWO different versions: a top-level one that is the marketplace
+    SCHEMA's own version (1.0.0) and one per plugin entry. Only the per-plugin entries are the
+    package; rewriting the schema version would corrupt the manifest to fix a lie about it.
+    """
     version = argv[1] if len(argv) > 1 and argv[1] else version_from_pyproject()
+
     p = ROOT / "server.json"
     d = json.loads(p.read_text(encoding="utf-8"))
     d["version"] = version
     for pkg in d.get("packages", []):
         pkg["version"] = version
-    p.write_text(json.dumps(d, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _write(p, d)
     print(f"server.json pinned to {version}")
+
+    p = ROOT / ".claude-plugin" / "plugin.json"
+    if p.exists():
+        d = json.loads(p.read_text(encoding="utf-8"))
+        d["version"] = version
+        _write(p, d)
+        print(f"plugin.json pinned to {version}")
+
+    p = ROOT / ".claude-plugin" / "marketplace.json"
+    if p.exists():
+        d = json.loads(p.read_text(encoding="utf-8"))
+        for entry in d.get("plugins", []):        # NOT d["version"] -- that is the schema's own
+            entry["version"] = version
+        _write(p, d)
+        print(f"marketplace.json pinned to {version} ({len(d.get('plugins', []))} plugin entries)")
+
     return 0
 
 

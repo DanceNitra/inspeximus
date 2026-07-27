@@ -675,6 +675,24 @@
     ]
   },
   {
+    "name": "the release pinner goes back to leaving the plugin manifests behind",
+    "file": "packages/_pin_server_json.py",
+    "old": "    p = ROOT / \".claude-plugin\" / \"plugin.json\"\n    if p.exists():",
+    "new": "    p = ROOT / \".claude-plugin\" / \"plugin.json\"\n    if False:",
+    "tests": [
+      "tests/test_manifest_versions.py"
+    ]
+  },
+  {
+    "name": "the pinner overwrites the marketplace SCHEMA version with the package version",
+    "file": "packages/_pin_server_json.py",
+    "old": "        for entry in d.get(\"plugins\", []):        # NOT d[\"version\"] -- that is the schema's own",
+    "new": "        d[\"version\"] = version\n        for entry in d.get(\"plugins\", []):",
+    "tests": [
+      "tests/test_manifest_versions.py"
+    ]
+  },
+  {
     "name": "a mutant's falsified receipt is left in the tree for the rest of the run",
     "file": "tools/mutation_check.py",
     "old": "            for _p in _restore(_dirty_tracked() - dirty_before):\n                restored_all.add(_p)",
