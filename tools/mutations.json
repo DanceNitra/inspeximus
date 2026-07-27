@@ -583,5 +583,50 @@
     "tests": [
       "tests/test_docs_examples_are_runnable.py"
     ]
+  },
+  {
+    "name": "the surface opener stops setting the echo-guard posture (the wedge returns)",
+    "file": "inspeximus/_surface.py",
+    "old": "    store.echo_guard = echo_guard_default()",
+    "new": "    store.echo_guard = False",
+    "tests": [
+      "tests/test_surface_parity.py"
+    ]
+  },
+  {
+    "name": "the surface default flips to OFF unless asked",
+    "file": "inspeximus/_surface.py",
+    "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
+    "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"0\") != \"0\"",
+    "tests": [
+      "tests/test_surface_parity.py"
+    ]
+  },
+  {
+    "name": "the surface stops keeping an existing receipt chain (a hole in the evidence)",
+    "file": "inspeximus/_surface.py",
+    "old": "    if not receipts and p and os.path.exists(str(p) + \".receipts.json\"):\n        receipts = True",
+    "new": "    if False:\n        receipts = True",
+    "tests": [
+      "tests/test_surface_parity.py"
+    ]
+  },
+  {
+    "name": "the surface resolves a path an adapter meant to keep in memory",
+    "file": "inspeximus/_surface.py",
+    "old": "    p = resolve_path(path) if resolve else path",
+    "new": "    p = resolve_path(path)",
+    "tests": [
+      "tests/test_surface_parity.py"
+    ]
+  },
+  {
+    "name": "an adapter goes back to constructing the store itself",
+    "file": "inspeximus/integrations/langchain.py",
+    "old": "        self.store = store if store is not None else open_store(path, embed=embed, resolve=False)",
+    "new": "        self.store = store if store is not None else Inspeximus(path=path, embed=embed)",
+    "tests": [
+      "tests/test_surface_parity.py"
+    ]
   }
 ]
