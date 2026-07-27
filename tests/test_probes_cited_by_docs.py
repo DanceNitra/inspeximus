@@ -72,6 +72,9 @@ NOT_STANDALONE = {
     "integrity_bench_revert.py": "reads server/.env from the private research repo (live model credentials)",
     "reversion_classifier_probe.py": "reads server/.env from the private research repo (live model creds)",
     "echo_attack_probe.py": "needs the MemBench knowledge_update fixture and a local embedder",
+    # It refuses with an explicit message rather than a ModuleNotFoundError, so the skip above cannot see
+    # it -- and it downloads three dense retrievers, which is more than a pip install anyway.
+    "agentpoison_multiretriever_check.py": "needs torch + transformers AND downloads three dense retrievers",
 }
 
 
@@ -123,6 +126,11 @@ def _optional_third_party():
     # distribution name -> import name, where they differ
     names |= {"langchain_core", "llama_index", "autogen_core", "autogen_agentchat",
               "google", "agents", "pydantic_ai", "crewai", "pydantic", "mcp", "langgraph"}
+    # torch/transformers ARE installable and DO make these probes runnable, so a missing one is a
+    # precondition, not a defect. They were left out at first on the reasoning that applied to `openai` --
+    # where no install helps, because it also needs a live endpoint -- and that reasoning does not
+    # transfer. CI caught it: three probes that run on this box (torch is installed) failed there.
+    names |= {"torch", "transformers"}
     return names
 
 
