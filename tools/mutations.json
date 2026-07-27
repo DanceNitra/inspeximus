@@ -250,5 +250,41 @@
     "tests": [
       "tests/test_verify_bundle_content_scope.py"
     ]
+  },
+  {
+    "name": "unreceipted records go uncounted again",
+    "file": "inspeximus/core.py",
+    "old": "            if cur.get(\"status\") == \"active\" and mid not in committed:\n                uncommitted.append(mid)",
+    "new": "            if False:\n                uncommitted.append(mid)",
+    "tests": [
+      "tests/test_uncounted_is_not_unchecked.py"
+    ]
+  },
+  {
+    "name": "verify_attribution stops failing closed on disabled receipts",
+    "file": "inspeximus/core.py",
+    "old": "        if not self.receipts_enabled and self.items:\n            # The sibling one call site over",
+    "new": "        if False:\n            # The sibling one call site over",
+    "tests": [
+      "tests/test_uncounted_is_not_unchecked.py"
+    ]
+  },
+  {
+    "name": "coverage goes back to comparing two integers",
+    "file": "inspeximus/compliance.py",
+    "old": "    if require_receipts and n_receipts and uncovered:",
+    "new": "    if False:",
+    "tests": [
+      "tests/test_uncounted_is_not_unchecked.py"
+    ]
+  },
+  {
+    "name": "autogen clear() unscopes again (erases the whole store)",
+    "file": "inspeximus/integrations/autogen.py",
+    "old": "               if r.get(\"status\") == \"active\" and (\n                   self._tag in (r.get(\"tags\") or [])\n                   or (self._source and (r.get(\"source\") or {}).get(\"doc\") == self._source))]",
+    "new": "               if r.get(\"status\") == \"active\"]",
+    "tests": [
+      "tests/test_uncounted_is_not_unchecked.py"
+    ]
   }
 ]

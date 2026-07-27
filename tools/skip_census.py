@@ -40,6 +40,13 @@ def _module_level_guards(src: str, tree) -> list[str]:
     `importorskip` inside a function skips one test, which is visible and fine."""
     deps: list[str] = []
     for node in tree.body:
+        # A def/class is a top-level NODE, and its source segment includes its whole body -- so a
+        # `pytest.importorskip` inside a helper function was read as a module-level guard and the file was
+        # counted as entirely invisible. That over-counts by design: a guard inside a function skips ONE
+        # test, visibly, which is the correct and unremarkable pattern. Caught by this tool's own pin
+        # firing on a file that was never hidden at all.
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
         seg = ast.get_source_segment(src, node) or ""
         if "importorskip" in seg:
             deps += re.findall(r"importorskip\(\s*[\"']([\w.]+)", seg)

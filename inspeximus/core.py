@@ -520,7 +520,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.80.0"
+__version__ = "1.81.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1617,8 +1617,31 @@ class Inspeximus:
                 uncommitted.append(mid)
             elif _sha256_hex(_canon(sorted(Inspeximus._rec_sources(cur)))) != a:
                 relabeled.append(mid)
-        return {"ok": chain_ok and not relabeled, "chain_ok": chain_ok,
-                "relabeled": relabeled, "uncommitted": uncommitted, "missing": missing}
+        # Records with NO receipt at all never entered `committed`, so they could not land in `relabeled`
+        # OR in `uncommitted` -- they were not unchecked, they were UNCOUNTED. On a store written with
+        # receipts off (the default) this returned {'ok': True, 'uncommitted': []} while every `source`
+        # label had been rewritten on disk. The docstring already promised these appear in `uncommitted`.
+        for mid, cur in by_id.items():
+            if cur.get("status") == "active" and mid not in committed:
+                uncommitted.append(mid)
+
+        problems: list[str] = []
+        if not self.receipts_enabled and self.items:
+            # The sibling one call site over, `verify_writes`, has said exactly this since 1.62.0. Silence
+            # here is how the same store answered False there and True here in the same breath.
+            problems.append(f"write receipts are DISABLED: {len(self.items)} record(s) exist with no "
+                            f"attribution commitment, so there is nothing to verify -- which is not the "
+                            f"same as verified")
+        elif self.receipts_enabled and not self._receipts and self.items:
+            problems.append(f"receipts are enabled but the chain is EMPTY while the store holds "
+                            f"{len(self.items)} record(s) -- no attribution here is committed")
+        elif uncommitted:
+            problems.append(f"{len(uncommitted)} active record(s) carry no committed attribution and "
+                            f"cannot be checked; an unverifiable label is not a verified one")
+        # `ok` now requires that everything was CHECKABLE, not merely that nothing checked came back bad.
+        return {"ok": chain_ok and not relabeled and not uncommitted and not problems,
+                "chain_ok": chain_ok, "relabeled": relabeled, "uncommitted": sorted(set(uncommitted)),
+                "missing": missing, "problems": problems}
 
     @staticmethod
     def _obj_sig(r: dict) -> str:

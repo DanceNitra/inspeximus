@@ -141,7 +141,20 @@ def compliance_check(store, require_receipts: bool = True, max_pii_age_days: flo
 
     checked.append("receipts_coverage")
     n_records = len(getattr(store, "items", []) or [])
-    if require_receipts and n_receipts and n_records > n_receipts:
+    # COVERAGE IS PER RECORD, NOT A COUNT. `n_records > n_receipts` compares two integers, so a store whose
+    # receipted rows were erased (our own Art.17 path appends tombstones and leaves the write chain) can hold
+    # MORE receipts than records while none of the survivors is covered by any of them. Matching ids says
+    # which records are actually protected -- and names them, which a count never could.
+    covered_ids = {rc.get("memory_id") for rc in getattr(store, "_receipts", [])}
+    active_ids = [r.get("id") for r in (getattr(store, "items", []) or [])
+                  if r.get("status") == "active"]
+    uncovered = [i for i in active_ids if i not in covered_ids]
+    if require_receipts and n_receipts and uncovered:
+        violations.append({"code": "receipts_partial", "article": "Art. 12/19",
+                           "detail": f"{len(uncovered)} of {len(active_ids)} active record(s) are covered by "
+                                     f"no write receipt in this chain: {', '.join(uncovered[:5])}"
+                                     + (f" (+{len(uncovered) - 5} more)" if len(uncovered) > 5 else "")})
+    elif require_receipts and n_receipts and n_records > n_receipts:
         # PARTIAL coverage passed this gate until 1.57.0: the check only fired when the chain was entirely
         # empty, so a store written with receipts off and later reopened with them on (5 unreceipted + 1
         # receipted) reported ok=True with no violations. verify_bundle got this check in 1.54.0; its sibling

@@ -3,6 +3,40 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.81.0 - uncounted is not unchecked
+
+**DATA LOSS FIX (AutoGen adapter) and two BEHAVIOUR CHANGES.** The same audit, the next three findings.
+The common error is not a wrong comparison: it is a set that the thing being looked for cannot enter.
+
+**`InspeximusMemory.clear()` erased the whole store, not this memory.** It selected every record with
+`status == "active"` and called `forget()` — the one irreversible operation — so a store shared with any
+other agent, adapter or the application itself lost all of it on a call whose contract is "clear MY
+memory". Measured: 3 active records in, 0 out, 2 of them written by someone else. The LangChain, CrewAI
+and OpenAI-Agents adapters all scope theirs; this one held a `source` tag for exactly this purpose and
+never used it. Writes now carry an owned tag and `clear()` erases only those (the `source` doc is accepted
+too, so records written by an earlier version are still reachable). **If you share a store across
+components, upgrade before calling `clear()`.**
+
+**`verify_attribution` returned `ok=True` on a store whose every source label had been rewritten.** It
+built its committed set from the receipt chain, so a record with NO receipt could not land in `relabeled`
+or in `uncommitted` — it was not unchecked, it was uncounted. Receipts default OFF, so this was the
+ordinary case. In the same breath, on the same store, `verify_writes()` answered `False` with exactly the
+right words. Unreceipted active records now appear in `uncommitted` (which the docstring already promised),
+`ok` requires everything to have been CHECKABLE, and a `problems` list carries the reason.
+
+**`compliance_check` measured receipt coverage as `n_records > n_receipts` — two integers.** A store whose
+receipted rows were erased through our own Art.17 path can hold more receipts than records while none of
+the survivors is covered by any of them. Coverage is now matched per record id and the violation NAMES the
+uncovered records. Honest scope: the audit claimed such a store passed with no violations at all, and that
+did **not** reproduce — it was already failing via `integrity_failed`. The coverage check really was blind
+to its own subject; it was not the last line of defence.
+
+Also fixed: `tools/skip_census.py` counted a `pytest.importorskip` inside a helper function as a
+module-level guard, because a `def` is a top-level node whose source text includes its body. It
+over-counted a new test file by 9 — caught by the census's own pin, firing about the instrument.
+
+Mutation-verified 32/32. 1179 tests pass.
+
 ## 1.80.0 - three verifiers that answered "yes" about input they never looked at
 
 **BEHAVIOUR CHANGE, and a safety fix.** An adversarial audit of our own verifiers found one shape

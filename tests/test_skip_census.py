@@ -108,3 +108,24 @@ def test_the_census_tool_runs_and_exits_clean():
     assert r.returncode == 0, r.stderr[-800:]
     import json
     assert json.loads(r.stdout)["total_tests"] > 500
+
+
+def test_a_guard_inside_a_function_is_not_a_module_level_guard():
+    """The census read the SOURCE TEXT of each top-level node, and a `def` is a top-level node whose text
+    includes its body -- so a helper containing `pytest.importorskip` made the whole file count as hidden.
+    It over-counted by 9 the first time a new test file used that ordinary pattern, and the pin above is
+    what caught it: an instrument crying wolf about itself.
+
+    A guard inside a function skips ONE test and shows up as one skip line. That is visible, which is the
+    entire distinction this tool exists to draw."""
+    import ast
+
+    src = ('import pytest\n'
+           'def helper():\n'
+           '    pytest.importorskip("mcp")\n'
+           'def test_x():\n'
+           '    helper()\n')
+    assert skip_census._module_level_guards(src, ast.parse(src)) == []
+
+    module_level = 'import pytest\npytest.importorskip("mcp")\ndef test_x():\n    pass\n'
+    assert skip_census._module_level_guards(module_level, ast.parse(module_level)) == ["mcp"]

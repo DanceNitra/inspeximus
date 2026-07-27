@@ -41,6 +41,11 @@ class InspeximusMemory(ComplianceMixin):
         self.store = store
         self.k = int(k)
         self._source = source   # optional canonical source tag (enables forget_subject on this memory's writes)
+        # Every write this adapter makes carries an owned tag, so clear() can erase THIS memory's records
+        # and nothing else. Without it clear() selected `status == "active"` across the whole store and
+        # called forget() -- the one irreversible operation -- on records written by other components
+        # sharing the same store. The LangChain, CrewAI and OpenAI-Agents adapters already scope theirs.
+        self._tag = f"autogen:{source}" if source else "autogen"
         # OPT-IN: plug a text -> (key, object) extractor so free-text messages auto-key and the current-truth
         # (supersession-filtered) recall fires without the caller keying each add(). See Inspeximus.extractor.
         if extractor is not None:
@@ -53,7 +58,7 @@ class InspeximusMemory(ComplianceMixin):
         text = text if isinstance(text, str) else str(text)
         src = md.get("source") or self._source
         self.store.remember(text, key=md.get("key"), object=md.get("object"),
-                            source=({"doc": src} if src else None),
+                            source=({"doc": src} if src else None), tags=[self._tag],
                             meta={"mime_type": str(getattr(content, "mime_type", "text/plain"))})
 
     async def query(self, query: Any, cancellation_token: Any = None, **kwargs) -> Any:
@@ -83,7 +88,19 @@ class InspeximusMemory(ComplianceMixin):
         return UpdateContextResult(memories=qr)
 
     async def clear(self) -> None:
-        ids = [r["id"] for r in self.store.items if r.get("status") == "active"]
+        """Erase THIS memory's records — not the whole store.
+
+        This used to select every `status == "active"` record and call `forget()`, which is irreversible.
+        A store shared with any other component — another agent, another adapter, the application itself —
+        lost all of it, silently, on a call whose contract is "clear my memory". Measured before the fix:
+        3 active records in, 0 out, of which 2 belonged to someone else.
+
+        Scoped by the tag this adapter stamps on its own writes, with the `source` doc accepted as well so
+        records written by an earlier version (which carried a source but no tag) are still reachable."""
+        ids = [r["id"] for r in self.store.items
+               if r.get("status") == "active" and (
+                   self._tag in (r.get("tags") or [])
+                   or (self._source and (r.get("source") or {}).get("doc") == self._source))]
         if ids:
             self.store.forget(ids=ids)
 
