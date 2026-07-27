@@ -3,6 +3,49 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.85.0 - recall was not deterministic, on a library whose stated property is determinism
+
+**BEHAVIOUR CHANGE (ranking) and the closing of the defect 1.84.0 opened.**
+
+Two identical stores, one query, and 7% of the time a different answer. `scored.sort(key=lambda x: -x[0])`
+ranked on the raw score, and the lexical channel accumulates over an unordered collection — so the same
+record scores differently between runs. Measured at full precision over 120 runs of one fixture:
+
+```
+record                          distinct scores   spread
+the capital of France is Paris        19          5.7e-10
+Paris hosted the 2024 Olympics        13          2.9e-10
+France borders Spain and Germany       8          1.9e-10
+```
+
+Three records nominally tied at 0.564 therefore rotated. Over 200 runs: **186 / 7 / 7** — one majority
+order and two rotations. A caller taking the top-1 of a tie got a different answer 7% of the time, and
+`PYTHONHASHSEED` changed it outright.
+
+The score is now quantised to `_RANK_QUANTUM` (6) places for RANKING only: ~10,000× above the measured
+noise and 1000× finer than the score `recall` reports, which rounds to 3. After: **one order over 120 runs
+in every mode** (auto, lexical, semantic, hybrid), identical across six hash seeds.
+
+Found by `recall_reinforce_flag_probe.py` — one of the 48 probes that, until 1.84.0, no doc cited and no
+test ran. It had been failing 4 of 20 runs.
+
+**Three wrong turns, kept in the comments because each was plausible and each was measured wrong:**
+- `(ts, id)` as a tie-break made it WORSE (4/20 from 16/20) — same-tick writes share `ts`, so the tie fell
+  through to a per-store random `id`.
+- keying the position lookup on object identity did nothing at all: `items` hands out copies, so the
+  lookup always missed. It measured 18/20 and read as progress.
+- quantising to 12 places was the right kind of fix two orders of magnitude below the noise it had to
+  absorb.
+
+**And one piece of the fix was deleted rather than shipped.** An explicit (position, text) tie-break went
+in first; no mutation could tell it apart from its absence, because candidates already arrive in store
+order and Python's sort is stable. Eight-way ties came back in insertion order without it, on four hash
+seeds. A guard nothing can distinguish from nothing is a check that cannot fail — so the code went and the
+property it restated is now asserted in `tests/test_recall_is_deterministic.py` instead.
+
+11 tests, including one that runs in separate processes under four `PYTHONHASHSEED` values: a
+single-process test could not have seen this defect at all. Mutation-verified. 1300 tests pass.
+
 ## 1.84.0 - remember_decision kept every decision on a topic active at once
 
 **BUG FIX in a flagship API, found by running the probes nothing cites.**

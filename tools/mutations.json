@@ -493,5 +493,23 @@
     "tests": [
       "tests/test_examples_run.py"
     ]
+  },
+  {
+    "name": "the ranking quantum drops below the measured noise",
+    "file": "inspeximus/core.py",
+    "old": "_RANK_QUANTUM = 6",
+    "new": "_RANK_QUANTUM = 12",
+    "tests": [
+      "tests/test_recall_is_deterministic.py"
+    ]
+  },
+  {
+    "name": "ranking goes back to the raw score",
+    "file": "inspeximus/core.py",
+    "old": "        scored.sort(key=lambda x: -round(x[0], _RANK_QUANTUM))",
+    "new": "        scored.sort(key=lambda x: -x[0])",
+    "tests": [
+      "tests/test_recall_is_deterministic.py"
+    ]
   }
 ]

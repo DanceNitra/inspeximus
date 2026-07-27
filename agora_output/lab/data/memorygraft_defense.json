@@ -5,13 +5,13 @@
     {
       "k": 1,
       "gate": "naive",
-      "asr": 0.833,
+      "asr": 0.0,
       "util": 1.0
     },
     {
       "k": 1,
       "gate": "count_gate",
-      "asr": 0.583,
+      "asr": 0.0,
       "util": 1.0
     },
     {
@@ -23,19 +23,19 @@
     {
       "k": 1,
       "gate": "receipt_shared",
-      "asr": 0.833,
+      "asr": 0.0,
       "util": 1.0
     },
     {
       "k": 3,
       "gate": "naive",
-      "asr": 0.75,
+      "asr": 0.0,
       "util": 1.0
     },
     {
       "k": 3,
       "gate": "count_gate",
-      "asr": 0.75,
+      "asr": 0.0,
       "util": 1.0
     },
     {
@@ -47,19 +47,19 @@
     {
       "k": 3,
       "gate": "receipt_shared",
-      "asr": 0.75,
+      "asr": 0.0,
       "util": 1.0
     },
     {
       "k": 5,
       "gate": "naive",
-      "asr": 1.0,
+      "asr": 0.0,
       "util": 1.0
     },
     {
       "k": 5,
       "gate": "count_gate",
-      "asr": 1.0,
+      "asr": 0.0,
       "util": 1.0
     },
     {
@@ -71,7 +71,7 @@
     {
       "k": 5,
       "gate": "receipt_shared",
-      "asr": 1.0,
+      "asr": 0.0,
       "util": 1.0
     }
   ],

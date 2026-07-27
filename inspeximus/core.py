@@ -126,6 +126,18 @@ def _decrypt_blob(key: bytes, blob: bytes) -> bytes:
     salt, nonce, header, ct = _parse_enc_header(blob)
     return _AESGCM(key).decrypt(nonce, ct, header)        # raises on wrong key / tampering
 
+#: Decimal places the RANKING score is rounded to. Not cosmetic: the lexical channel accumulates over an
+#: unordered collection, so the same record scores differently between runs. MEASURED, not assumed -- across
+#: 120 runs of one fixture a single record took 19 distinct values with a spread of 5.7e-10. A first attempt
+#: quantised to 12 places, which is two orders of magnitude BELOW that noise and left 7% of runs rotating
+#: three tied records; the fix was the right kind and the wrong size.
+#:
+#: 6 places is ~10,000x above the observed noise and 1000x finer than the score `recall` actually reports
+#: (the output rounds to 3). Two scores closer together than 1e-6 are treated as tied and fall to the
+#: declared tie-break -- insertion position, then text -- which is a deterministic answer rather than an
+#: arbitrary one.
+_RANK_QUANTUM = 6
+
 _GENESIS = "0" * 64
 
 
@@ -520,7 +532,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
 
 
-__version__ = "1.84.0"
+__version__ = "1.85.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5037,15 +5049,20 @@ class Inspeximus:
         # Position first, because older-first is the meaningful order. `text` last so the key stays total
         # even when the position lookup misses -- a tie-break that silently degrades to arrival order is
         # how this survived a position-based fix that measured 18/20 and looked like progress.
-        _pos = {rec.get("id"): i for i, rec in enumerate(self._items)}
-        # The score is QUANTISED for ranking. The lexical channel accumulates over an unordered collection,
-        # so two records that are equal in every way that matters can differ in the last bits of a float --
-        # and a raw comparison then treats 1e-16 of summation noise as a real difference. Measured on a
+        # The score is QUANTISED for ranking (see _RANK_QUANTUM). The lexical channel accumulates over an
+        # unordered collection, so two records equal in every way that matters differ in the last bits of
+        # a float, and a raw comparison treats that summation noise as a real difference. Measured on a
         # store where three records score 0.564: mode="lexical" reordered on 40 of 40 runs, "semantic" 2,
-        # "hybrid" 4, and "auto" inherits whichever it routes to. Rounding to 12 places is far below any
-        # difference the scoring model can mean and far above the noise it cannot.
-        scored.sort(key=lambda x: (-round(x[0], 12),
-                                   _pos.get(x[2].get("id"), 1 << 30), x[2].get("text") or ""))
+        # "hybrid" 4, and "auto" inherits whichever it routes to.
+        #
+        # Ties then keep INSERTION order, because Python's sort is stable and candidates are gathered in
+        # store order. That is asserted in tests/test_recall_is_deterministic.py rather than re-imposed
+        # here: an explicit (position, text) tie-break was written first and NO mutation could tell it
+        # apart from its absence -- eight-way ties came back in insertion order with it removed, on four
+        # hash seeds. A guard nothing can distinguish from nothing is a check that cannot fail, and this
+        # repository has spent the week deleting those. The property is real and now tested; the code that
+        # merely restated it is gone.
+        scored.sort(key=lambda x: -round(x[0], _RANK_QUANTUM))
         # Near-tie recency reorder (OPT-IN via tie_recent; see docstring for the measured provenance).
         # Band on RELEVANCE (sim), not the composite score: the composite mixes value/calibration channels
         # whose scale varies per store, while sim is the [0,1] channel the epsilon was measured on.
