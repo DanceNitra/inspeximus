@@ -5029,8 +5029,23 @@ class Inspeximus:
         # matched and the tie-break silently did nothing (18/20 instead of 20/20, which looked like an
         # improvement rather than a lookup that always missed). Building a dict for LOOKUP is fine -- it
         # was ITERATING a set of random id strings that made the order vary in the first place.
+        # The sort key must be TOTAL, or ties fall back to arrival order -- and candidates arrive through
+        # sets of record-id strings, whose iteration depends on per-process hash randomisation and on ids
+        # that are random per store. Measured before this: two identical stores, identical scores,
+        # different top-k order in 6 of 60 runs, on BOTH the default and the reinforce=False path (it was
+        # never about reinforcement; an earlier reading of one sample said it was, and was wrong).
+        # Position first, because older-first is the meaningful order. `text` last so the key stays total
+        # even when the position lookup misses -- a tie-break that silently degrades to arrival order is
+        # how this survived a position-based fix that measured 18/20 and looked like progress.
         _pos = {rec.get("id"): i for i, rec in enumerate(self._items)}
-        scored.sort(key=lambda x: (-x[0], _pos.get(x[2].get("id"), 1 << 30)))
+        # The score is QUANTISED for ranking. The lexical channel accumulates over an unordered collection,
+        # so two records that are equal in every way that matters can differ in the last bits of a float --
+        # and a raw comparison then treats 1e-16 of summation noise as a real difference. Measured on a
+        # store where three records score 0.564: mode="lexical" reordered on 40 of 40 runs, "semantic" 2,
+        # "hybrid" 4, and "auto" inherits whichever it routes to. Rounding to 12 places is far below any
+        # difference the scoring model can mean and far above the noise it cannot.
+        scored.sort(key=lambda x: (-round(x[0], 12),
+                                   _pos.get(x[2].get("id"), 1 << 30), x[2].get("text") or ""))
         # Near-tie recency reorder (OPT-IN via tie_recent; see docstring for the measured provenance).
         # Band on RELEVANCE (sim), not the composite score: the composite mixes value/calibration channels
         # whose scale varies per store, while sim is the [0,1] channel the epsilon was measured on.
