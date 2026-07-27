@@ -60,9 +60,22 @@ def _dirty_tracked() -> set:
     return {ln[3:].strip().strip('"') for ln in r.stdout.splitlines() if ln.strip()}
 
 
-#: Only these may be restored. A probe writes its result file; nothing else about a run is expected to
-#: touch the working tree.
-_ARTIFACT = re.compile(r"^probes/[\w.-]+_result\.json$")
+#: Only these may be restored. A probe writes its receipt; nothing else about a run is expected to touch
+#: the working tree.
+#:
+#: The rule used to be the FILENAME shape -- `<something>_result.json` -- and that convention is not one
+#: every probe follows. `probes/governance_sufficiency_bytes.json` is written by
+#: `governance_sufficiency_probe.py`, did not match, and was therefore left dirty by every run; 45 lines of
+#: it (random record ids) were committed as churn in ebabfa8. Worse, dirt that survives a run is dirt the
+#: NEXT run records in `dirty_before` and so protects forever, and a receipt a mutant wrote then reads as
+#: a developer's own edit. That is how a mutation came to be SKIPPED: `test_the_receipt_still_holds_the
+#: _number_we_publish` read an inverted echo_policy receipt, the pre-flight was red, and the run reported
+#: 74/75 with the 75th never evaluated.
+#:
+#: So the rule is now: a `.json` under `probes/` IS a receipt (checked -- all 19 committed ones are written
+#: by a probe in that directory), and everything else, including the probe SOURCE that lives beside it, is
+#: not. A convention that a fifth of the receipts do not follow is not a rule, it is a coin flip.
+_ARTIFACT = re.compile(r"^probes/[\w.-]+\.json$")
 
 
 def _restore(paths) -> list:
@@ -98,6 +111,13 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
     # from being published as a receipt. Recording what was ALREADY dirty means a developer's own
     # in-progress edits are never reverted by this.
     dirty_before = _dirty_tracked()
+    # Say what we INHERITED. A receipt left dirty by an earlier run is protected by `dirty_before` (it
+    # looks exactly like a developer's edit), so it is read by every test in this run and never restored.
+    # It cannot be reverted safely from here -- but it must not be silent.
+    inherited = sorted(p for p in dirty_before if _ARTIFACT.match(p.replace("\\", "/")))
+    if inherited and verbose:
+        print(f"  NOTE: {len(inherited)} probe receipt(s) were ALREADY modified before this run and will "
+              f"be read as-is: {', '.join(inherited)}\n")
 
     for mut in mutations:
         name, rel, old, new = mut["name"], mut["file"], mut["old"], mut["new"]
@@ -151,7 +171,13 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             print(f"  skipped: {s}")
         for s in survived:
             print(f"  SURVIVED: {s}")
-    return 1 if survived else 0
+    # A SKIP IS NOT A PASS. This returned 0 whenever nothing survived, so a mutation whose target had
+    # drifted, or whose tests were already red, was reported on one line and then counted as if it had been
+    # evaluated -- and the process exit code, which is what CI reads, said everything was fine. Measured
+    # today: `74/75 killed, 0 survived, 1 skipped` exited 0, and the 75th mutation was never run. That is
+    # the shape this repository keeps finding -- a check that cannot report the thing it looks for is
+    # indistinguishable from a clean result -- sitting in the tool whose whole job is to catch it.
+    return 1 if (survived or skipped) else 0
 
 
 def main() -> int:

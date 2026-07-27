@@ -666,6 +666,24 @@
     ]
   },
   {
+    "name": "a skipped mutation counts as a pass again (unevaluated reads as clean)",
+    "file": "tools/mutation_check.py",
+    "old": "    return 1 if (survived or skipped) else 0",
+    "new": "    return 1 if survived else 0",
+    "tests": [
+      "tests/test_mutation_check_harness.py"
+    ]
+  },
+  {
+    "name": "the receipt allowlist goes back to a suffix a fifth of the probes ignore",
+    "file": "tools/mutation_check.py",
+    "old": "_ARTIFACT = re.compile(r\"^probes/[\\w.-]+\\.json$\")",
+    "new": "_ARTIFACT = re.compile(r\"^probes/[\\w.-]+_result\\.json$\")",
+    "tests": [
+      "tests/test_mutation_check_harness.py"
+    ]
+  },
+  {
     "name": "MCP compliance_check drops prior_anchor again (not_append_only cannot fire)",
     "file": "inspeximus/mcp_server.py",
     "old": "               prior_anchor=prior_anchor)",

@@ -70,11 +70,51 @@ def test_the_harness_restores_the_file_it_mutated():
 
 
 def test_an_ambiguous_or_absent_target_is_skipped_not_scored():
-    """Mutating the wrong one of five matches would score a verdict about code nobody meant to test."""
-    assert mutation_check.run([{"name": "absent", "file": "inspeximus/core.py",
-                                "old": "this string is not in the file", "new": "x",
-                                "tests": ["tests/test_mutation_check_harness.py::test_a_failure_counts_as_a_kill"]}],
-                              verbose=False) == 0
+    """Mutating the wrong one of five matches would score a verdict about code nobody meant to test —
+    and a target that is absent must not be counted as evaluated either. See the next test for the
+    exit code, which is the half of this that was wrong."""
+    rc = mutation_check.run([{"name": "absent", "file": "inspeximus/core.py",
+                              "old": "this string is not in the file", "new": "x",
+                              "tests": ["tests/test_mutation_check_harness.py::test_a_failure_counts_as_a_kill"]}],
+                            verbose=False)
+    assert rc != 0, "a mutation that was never applied must not be reported as a clean run"
+
+
+def test_a_skip_is_not_a_pass():
+    """This returned 0 for a run in which a mutation was never evaluated.
+
+    Measured today on the committed spec: `74/75 killed, 0 survived, 1 skipped`, exit code 0. CI reads the
+    exit code, so a mutation whose target had drifted — or whose tests were already red, which is exactly
+    what happened — was announced on one line and then counted as though it had been checked. The tool
+    whose entire purpose is to catch "a check that cannot report what it looks for reads like a clean
+    result" was doing it.
+    """
+    absent = {"name": "absent", "file": "inspeximus/core.py",
+              "old": "this string is not in the file", "new": "x",
+              "tests": ["tests/test_mutation_check_harness.py::test_a_failure_counts_as_a_kill"]}
+    killed = {"name": "default policy drifts", "file": "inspeximus/core.py",
+              "old": 'policy: str = "safe"', "new": 'policy: str = "trusting"',
+              "tests": ["tests/test_echo_policy_panel.py::test_the_default_policy_is_the_safe_one"]}
+
+    assert mutation_check.run([killed], verbose=False) == 0, "a killed mutant is still a pass"
+    assert mutation_check.run([killed, absent], verbose=False) != 0, \
+        "one unevaluated mutation among killed ones must still fail the gate"
+
+
+def test_the_cli_exits_non_zero_when_a_mutation_was_skipped():
+    """Through the process boundary, because the exit code is the only thing CI reads."""
+    import json as _json
+    import tempfile
+    p = os.path.join(tempfile.mkdtemp(), "spec.json")
+    with open(p, "w", encoding="utf-8") as fh:
+        _json.dump([{"name": "absent", "file": "inspeximus/core.py",
+                     "old": "this string is not in the file", "new": "x",
+                     "tests": ["tests/test_mutation_check_harness.py::test_a_failure_counts_as_a_kill"]}], fh)
+    r = subprocess.run([sys.executable, os.path.join("tools", "mutation_check.py"), p],
+                       cwd=ROOT, capture_output=True, text=True,
+                       env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    assert r.returncode != 0, r.stdout + r.stderr
+    assert "skipped" in r.stdout, r.stdout
 
 
 def test_the_committed_spec_is_not_empty_and_names_real_targets():
@@ -160,10 +200,23 @@ def test_restore_touches_only_probe_result_artifacts():
         assert src not in restored, f"the harness would revert {src}, which it did not write"
 
 
-def test_the_artifact_pattern_does_not_match_source_that_merely_lives_in_probes():
-    """`probes/locomo_qa.py` is a committed module, not a receipt. The rule is the FILENAME shape, not the
-    directory."""
-    assert mutation_check._ARTIFACT.match("probes/echo_policy_panel_result.json")
+def test_the_artifact_pattern_covers_every_receipt_and_no_source():
+    """It used to require the `_result.json` suffix — a convention a fifth of the receipts do not follow.
+
+    `probes/governance_sufficiency_bytes.json` is written by `governance_sufficiency_probe.py` and did not
+    match, so every run left it dirty and 45 lines of it were committed as churn. Dirt that survives a run
+    is worse than untidy: the next run records it in `dirty_before`, protects it as if a human had written
+    it, and then reads a mutant's receipt as fact — which is how a mutation ended up SKIPPED.
+
+    So the rule is the DIRECTORY plus the extension, and it is asserted against the tree rather than a
+    remembered list: every committed `probes/*.json` must be restorable, and no probe SOURCE may be.
+    """
+    import glob
+    receipts = [os.path.basename(p) for p in glob.glob(os.path.join(ROOT, "probes", "*.json"))]
+    assert receipts, "no probe receipts found — this test would pass over nothing"
+    for name in receipts:
+        assert mutation_check._ARTIFACT.match(f"probes/{name}"), f"receipt not restorable: {name}"
+
     for other in ("probes/locomo_qa.py", "probes/echo_policy_panel.py", "inspeximus/core.py",
-                  "probes/result.json", "memory.json"):
+                  "tools/mutations.json", "memory.json", "probes/sub/dir/x.json"):
         assert not mutation_check._ARTIFACT.match(other), other
