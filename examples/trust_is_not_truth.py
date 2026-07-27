@@ -1,6 +1,6 @@
 """Source trust is an authorization control, not a correctness one — run it and see.
 
-    pip install agora-inspeximus
+    pip install inspeximus
     python trust_is_not_truth.py
 
 Standalone on purpose: no repo checkout, no path juggling, one dependency that installs from PyPI.

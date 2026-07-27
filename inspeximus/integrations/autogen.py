@@ -13,7 +13,7 @@ correction already retired.
     agent = AssistantAgent("assistant", model_client=..., memory=[mem])
 
 Zero-dependency core: `import inspeximus` never imports AutoGen. The AutoGen types are imported LAZILY inside the
-methods, so `pip install agora-inspeximus` alone is enough — you only need AutoGen installed to actually USE the
+methods, so `pip install inspeximus` alone is enough — you only need AutoGen installed to actually USE the
 adapter (which you already have, since you're wiring it into an AutoGen agent).
 
 KEYED SUPERSESSION (the differentiator): pass a stable `key` in a memory's metadata to make later writes for

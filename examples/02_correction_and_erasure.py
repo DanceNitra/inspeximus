@@ -1,7 +1,7 @@
 """
 inspeximus example 02 — correction & erasure as first-class channels.
 
-    pip install agora-inspeximus
+    pip install inspeximus
     python 02_correction_and_erasure.py
 
 This is what inspeximus is built for: a corrected fact stays corrected, a restated stale value does not resurrect

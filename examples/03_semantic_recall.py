@@ -1,7 +1,7 @@
 """
 inspeximus example 03 — semantic recall by bringing your own embedder.
 
-    pip install agora-inspeximus
+    pip install inspeximus
     python 03_semantic_recall.py
 
 inspeximus has no required dependencies, so it ships no embedder. Pass ANY text->vector function as `embed=` and

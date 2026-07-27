@@ -1,7 +1,7 @@
 """
 inspeximus example 04 — encryption-at-rest + crypto-shredding.
 
-    pip install "agora-inspeximus" cryptography
+    pip install "inspeximus" cryptography
     python 04_encryption.py
 
 Opt-in AES-256-GCM at rest (standard crypto, not home-rolled). inspeximus never stores your key. Destroying the key

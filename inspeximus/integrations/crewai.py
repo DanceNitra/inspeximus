@@ -19,7 +19,7 @@ never returned back into the crew's context. For that to bite, writes must carry
 in the metadata (`storage.save(value, {"key": "user::tz"})`) or set an OPT-IN `extractor` (text -> (key, obj))
 so plain `save()` calls are auto-keyed. Without a key, values are stored append-only like any RAG store.
 
-Duck-typed: this module does NOT import CrewAI, so `pip install agora-inspeximus` alone is enough to use it against
+Duck-typed: this module does NOT import CrewAI, so `pip install inspeximus` alone is enough to use it against
 an installed CrewAI. `InspeximusStorage` matches the `Storage` protocol structurally; `import inspeximus` stays
 zero-dependency. For semantic recall pass an embedder to the store: `InspeximusStorage(embed=my_embed_fn)`; without
 one, recall is lexical (zero-dependency fallback).

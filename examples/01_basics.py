@@ -1,7 +1,7 @@
 """
 inspeximus example 01 — the basics: remember, recall, correct, audit.
 
-    pip install agora-inspeximus
+    pip install inspeximus
     python 01_basics.py
 
 The whole loop most agents need, in one zero-dependency file. No embedder required — recall falls back to a

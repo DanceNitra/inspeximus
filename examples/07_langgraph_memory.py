@@ -17,7 +17,7 @@ Swap ONE line in an existing LangGraph app:
     + from inspeximus.integrations.langgraph import InspeximusStore
     + store = InspeximusStore(path="agent_memory.json")        # persists across restarts, too
 
-Run:  pip install "agora-inspeximus" langgraph  &&  python examples/07_langgraph_memory.py
+Run:  pip install "inspeximus" langgraph  &&  python examples/07_langgraph_memory.py
 """
 from inspeximus.integrations.langgraph import InspeximusStore
 
