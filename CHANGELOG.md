@@ -3,6 +3,41 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## Unreleased - erasure left the subject's CURRENT value behind
+
+Same class as the 1.87.0 fix below, pointing the other way. 1.86.0 erased a stranger's records
+(over-erasure); this is under-erasure, and what survives is the live data rather than the stale copy.
+
+```
+remember("alice home address is 5 Elm St", key="alice::addr", source={"doc": "hr/alice"})
+route("actually alice moved to 9 Oak Ave", key="alice::addr", object="9 Oak Ave")
+
+forget_subject('hr/alice')  ->  erased = 1, reported as success
+  survived:  [active] 'actually alice moved to 9 Oak Ave'
+  residue of the CURRENT value:  True
+  residue of the OLD value:      False
+```
+
+A correction written through `route()` carried no source and no lineage, so nothing connected it to the
+person it was about. The erasure removed the stale address and kept the live one. The identical correction
+through `remember(source=...)` erased both.
+
+**The fix is not a parameter.** `route()` knows which record it is correcting, so it declares that edge
+itself — joining `rederive`/`revert`/`submit_revert` in the category where the store asserts provenance
+about its own work. `forget_subject` cascades along `derived_from`, so this closes with **no change
+required of the caller**, which is the point: the callers who hit it are the ones who never passed
+provenance. `route(source=...)` exists as well, for the case lineage cannot reach — a `route()` asserting
+on a new key has no parent.
+
+Also: **`inspeximus decision` (CLI) gained `--source` / `--derived-from`**, the last surface that could not
+attribute a decision to the person it is about; and the skip census stopped **reading a guard out of
+prose** (it text-searched top-level nodes, and a module docstring is one, so a file whose comment merely
+mentioned `importorskip` was counted as entirely hidden).
+
+`observe` remains without provenance, and the reason is now measured rather than assumed: it writes no
+record at all — it accrues evidence and can reopen a settled value — so a `source` on it would have
+nothing to attach to.
+
 ## 1.87.0 - UPGRADE IF YOU RELY ON ERASURE: 1.86.0 deletes the wrong person's records
 
 **Who should upgrade: everyone using `forget_subject`, immediately.** Verified against the wheel
