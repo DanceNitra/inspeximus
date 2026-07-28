@@ -5548,7 +5548,12 @@ class Inspeximus:
         s = re.sub(r"^www\.", "", s)
         s = s.split("?")[0].rstrip("/")
         s = re.sub(r"\.(org|com|net|io|gov|edu|co|ai|dev|info|news)(?=/|$)", "", s)
-        return re.sub(r"[^a-z0-9]+", "", s)
+        # COLLAPSE punctuation to a separator, do not DELETE it. Deleting it made 'crm/alice-1' and
+        # 'crm/alice1' one identity, so a DSAR naming an identifier absent from the store erased a real
+        # one -- measured, and the collision guard cannot fire because it needs an exact raw match that
+        # does not exist. Collapsing keeps the tolerance the guard is for ('User_42' and 'user-42' both
+        # become 'user-42') while keeping a digit that follows a separator distinct from one that does not.
+        return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
 
     def _narrow_to_subject(self, subject: str, ids: list) -> list:
         """Keep only the records whose own source really is this subject, path and all.
@@ -5562,13 +5567,28 @@ class Inspeximus:
         if not want or str(subject).startswith("id:"):
             return ids
         by_id = {r["id"]: r for r in self.items}
-        coarse = {subject, Inspeximus._canon_source(subject)}
-        # Records attributed by INHERITED taint keep the coarse match. Taint is how provenance rides
-        # through summarisation, it is written coarse by construction, and narrowing it dropped a
-        # summary built from the subject's data -- an INCOMPLETE erasure, which is the worse failure.
-        # It is read from `taint` specifically, never from a record's own source, so the ghost subject
-        # this narrowing exists to stop cannot sneak back in through it.
-        inherited = {rid for rid in ids if coarse & set(by_id.get(rid, {}).get("taint") or [])}
+        # TAINT CANNOT SELECT FOR DELETION. It stores already-CANONICAL source keys, so once provenance
+        # is inherited, two subjects sharing a coarse bucket are indistinguishable in it -- a limit that
+        # was known and written down, and that the first version of this narrowing then used as a
+        # selector anyway. Measured, that turned the stated limit into two data-loss paths:
+        #   forget_subject("crm/nobody-here") erased a summary derived from crm/alice -- the ghost
+        #     returning through the very branch this docstring claimed it could not use;
+        #   forget_subject("crm/alice") erased a summary derived from crm/BOB, with no refusal, because
+        #     the summary's raw source is the writer service and the collision guard never sees it.
+        # Inheritance now travels ONLY along declared derived_from edges from a finely-matched root,
+        # which is provenance the store actually recorded rather than a bucket it can no longer resolve.
+        # ...with ONE exception, and it is decided by whether canonicalisation loses anything about THIS
+        # subject. `taint` holds `_canon_source` keys, so it can attribute precisely only when the coarse
+        # key still spells the whole subject: 'user-42' survives canonicalisation intact, 'crm/alice' does
+        # not -- it becomes 'crm', which is also 'crm/bob' and 'crm/nobody-here'. Removing the taint path
+        # outright fixed the two data-loss cases and broke a real one: erase the parent by id first and the
+        # derived records are reachable ONLY by taint, so a later forget_subject left dangling lineage and
+        # the audit rightly reported residue. Allowing it only for path-free subjects keeps that cleanup
+        # working while a subject whose identity lives in the discarded path can never reach a stranger.
+        coarse = Inspeximus._canon_source(subject)
+        taint_is_sound = want.replace("-", "") == coarse
+        inherited = ({rid for rid in ids if coarse in set(by_id.get(rid, {}).get("taint") or [])}
+                     if taint_is_sound else set())
         roots = {rid for rid in ids
                  if Inspeximus._canon_subject(self._raw_source(by_id.get(rid, {}))) == want}
         if not roots and inherited:
