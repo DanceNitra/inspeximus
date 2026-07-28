@@ -107,6 +107,10 @@ def main(argv=None):
     r.add_argument("--tags", help="comma-separated tags")
     r.add_argument("--source", help="the origin id this fact is attributable to — REQUIRED for the record "
                                     "to be erasable by subject later (see forget-subject)")
+    r.add_argument("--derived-from", dest="derived_from", action="append", default=[],
+                   help="an id this memory was BUILT FROM (repeatable). Erasing the source then erases "
+                        "what was derived from it, and erasure-audit walks these edges — with none "
+                        "declared it reports 'unaudited', never a pass")
     r.add_argument("--type", dest="mtype", choices=["episodic", "semantic", "procedural"], help="memory type")
 
     q = sub.add_parser("recall", help="retrieve current-truth memories (superseded values hidden)")
@@ -355,7 +359,8 @@ def main(argv=None):
     if a.cmd == "remember":
         tags = [t.strip() for t in a.tags.split(",")] if a.tags else None
         mid = m.remember(a.text, key=a.key, object=a.object, tags=tags, mtype=a.mtype,
-                         source={"doc": a.source} if a.source else None)
+                         source={"doc": a.source} if a.source else None,
+                         derived_from=a.derived_from or None)
         m._save(force=True)
         _out({"id": mid, "key": a.key}, a.json) or print(f"remembered {mid}" + (f" [key={a.key}]" if a.key else ""))
         return _flush_or_fail(m)

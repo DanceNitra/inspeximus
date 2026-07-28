@@ -154,6 +154,7 @@ def _compact(rec: dict, snippet_chars: int) -> dict:
 def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
              mtype: str | None = None, key: str | None = None,
              object: str | None = None, reaffirm: bool = False,
+             source: str = "", derived_from: list[str] | None = None,
              user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> dict:
     """Store a memory (append-only; raw text is never edited afterward). `tags` group memories into
     cohorts; `value` (>=1) is its importance — higher-value memories outrank merely-similar ones at
@@ -169,13 +170,35 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
     stays corrected even if the old value is said again). Without `object` the guard still catches a verbatim
     restatement (text hash), but a *reworded* one needs the value in `object` to be caught. Set `reaffirm=True`
     to intentionally revert to a previously-retired value (an explicit change-of-mind, not an echo).
+
+    `source` — WHO OR WHAT this came from ("crm/alice", "user-42", "docs.example.com/pricing"). Pass it
+    whenever the memory is about, or came from, an identifiable person or system. It is what makes the
+    memory reachable later by SUBJECT rather than only by id: `forget_subject("crm/alice")` erases a
+    person's data and everything derived from it, `erasure_audit` can then say whether anything survived,
+    and `slash` can forfeit a source's standing after a bad outcome. Without it a record is attributable
+    to nothing, and none of those can reach it -- measured: a store written through this server answered
+    `would_erase=0` to every right-to-erasure request, while the same write with a source answered 1.
+
+    `derived_from` — the ids this memory was BUILT FROM (a summary, a merge, a conclusion drawn from
+    earlier notes). Provenance rides along the edge: erasing the source erases what was derived from it,
+    so a summary of a person's file goes when their file goes. `erasure_audit` walks these edges and
+    reports `unaudited` -- never a pass -- when nothing declares them, because a store with no edges to
+    walk has not been checked, it has been left uninspected.
+
     Returns the new id."""
     mid = _MEM.remember(text, tags=tags or [], value=value, mtype=mtype, key=key,
                         object=object, reaffirm=reaffirm,
+                        source={"doc": source} if source else None,
+                        derived_from=derived_from or None,
                         user_id=user_id, agent_id=agent_id, session_id=session_id)
     rec = next((r for r in _MEM.items if r["id"] == mid), {})
     return {"id": mid, "stored": text[:120], "tags": tags or [], "value": value,
-            "mtype": rec.get("mtype")}
+            "mtype": rec.get("mtype"), "source": source or None,
+            "derived_from": list(derived_from or []),
+            # Say it in the RESULT, not only in the docs. A record with no source cannot be reached by
+            # forget_subject/erasure_audit/slash, and the caller is the only one who can still fix that
+            # -- at the moment of the write, while they still know where the text came from.
+            "attributable": bool(source) or bool(derived_from)}
 
 
 @mcp.tool()

@@ -1008,5 +1008,59 @@
     "tests": [
       "tests/test_mutation_restore_is_byte_exact.py"
     ]
+  },
+  {
+    "name": "the MCP server drops the source it was given",
+    "file": "inspeximus/mcp_server.py",
+    "old": "                        source={\"doc\": source} if source else None,",
+    "new": "                        source=None,",
+    "tests": [
+      "tests/test_mcp_provenance_reach.py"
+    ]
+  },
+  {
+    "name": "the MCP server passes the source in a shape the resolver cannot read",
+    "file": "inspeximus/mcp_server.py",
+    "old": "                        source={\"doc\": source} if source else None,",
+    "new": "                        source={\"name\": source} if source else None,",
+    "tests": [
+      "tests/test_mcp_provenance_reach.py"
+    ]
+  },
+  {
+    "name": "the MCP server invents a subject the caller never supplied",
+    "file": "inspeximus/mcp_server.py",
+    "old": "                        source={\"doc\": source} if source else None,",
+    "new": "                        source={\"doc\": source or \"hr/bob\"},",
+    "tests": [
+      "tests/test_mcp_provenance_reach.py"
+    ]
+  },
+  {
+    "name": "the MCP server drops the declared lineage",
+    "file": "inspeximus/mcp_server.py",
+    "old": "                        derived_from=derived_from or None,",
+    "new": "                        derived_from=None,",
+    "tests": [
+      "tests/test_mcp_provenance_reach.py"
+    ]
+  },
+  {
+    "name": "the write result always claims the record is attributable",
+    "file": "inspeximus/mcp_server.py",
+    "old": "            \"attributable\": bool(source) or bool(derived_from)}",
+    "new": "            \"attributable\": True}",
+    "tests": [
+      "tests/test_mcp_provenance_reach.py"
+    ]
+  },
+  {
+    "name": "the CLI drops the declared lineage",
+    "file": "inspeximus/cli.py",
+    "old": "                         derived_from=a.derived_from or None)",
+    "new": "                         derived_from=None)",
+    "tests": [
+      "tests/test_mcp_provenance_reach.py"
+    ]
   }
 ]
