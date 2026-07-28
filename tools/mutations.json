@@ -675,6 +675,24 @@
     ]
   },
   {
+    "name": "an unsigned certificate claims its signatures are valid again",
+    "file": "inspeximus/core.py",
+    "old": "    signed = [t for t in toms if t.get(\"sig\")]",
+    "new": "    signed = list(toms)",
+    "tests": [
+      "tests/test_certificate_scope_and_signing.py"
+    ]
+  },
+  {
+    "name": "the certificate's scope statement goes back to being unchecked free text",
+    "file": "inspeximus/core.py",
+    "old": "    if _scope_txt is not None and _scope_txt != _CERT_SCOPE:",
+    "new": "    if False:",
+    "tests": [
+      "tests/test_certificate_scope_and_signing.py"
+    ]
+  },
+  {
     "name": "publishing stops depending on the test suite (a red suite reaches PyPI again)",
     "file": ".github/workflows/release.yml",
     "old": "    needs: [audit, tests]",

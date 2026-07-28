@@ -386,6 +386,18 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
     return sk.sign(erasure_challenge(subject, request_id).encode()).hex()
 
 
+#: The certificate's own statement of what it does NOT certify. It is a CONSTANT, and the verifier
+#: compares against it, because the field was free text that nothing checked: rewriting it to
+#: "Full GDPR compliance certification, all systems." left the certificate verifying `valid: true`.
+#: The one sentence a regulator most needs — "NOT a compliance certification" — was the easiest thing
+#: in the document to delete. Producer and verifier now read the same string.
+_CERT_SCOPE = ("Erasure is within THIS inspeximus store only (not the app's vector store, prompt logs, or "
+               "backups); covers the subject PLUS its derived_from lineage. Tamper-evident integrity "
+               "primitive, NOT a compliance certification. The tombstone proves the ACT of deletion, "
+               "never the content; its signature is load-bearing only against a non-holder of "
+               "receipt_key — witness the anchor externally (see verify_consistency).")
+
+
 def verify_erasure_certificate(cert: dict, store_path: str | None = None,
                                store_items: list | None = None,
                                expected_pubkey: str | None = None) -> dict:
@@ -438,7 +450,25 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             sigs_ok = False
         tprev = t.get("hash")
     checks["chain_intact"] = chain_ok
-    checks["signatures_valid"] = sigs_ok
+    # A CHECK THAT DID NOT RUN IS NOT A CHECK THAT PASSED. `sigs_ok` starts True and is only ever set
+    # False by a failing signature — so a certificate whose tombstones carry NO `sig` at all reported
+    # `signatures_valid: true`, and swapping `pubkey` for zeros changed nothing, because there was
+    # nothing to verify against it. A DPA reading that field learns "the signatures are valid" about a
+    # document that has none. `store_absent` two checks below already models this correctly: None when
+    # the proof was not performed, and `valid` refuses to count it as passed.
+    signed = [t for t in toms if t.get("sig")]
+    limits: list = []
+    if toms and not signed:
+        checks["signatures_valid"] = None
+        checks["signed"] = False
+        limits.append("UNSIGNED: no tombstone carries a signature, so nothing was verified against "
+                      "`pubkey` — the chain proves integrity, not authorship. Set receipt_key to sign.")
+    else:
+        checks["signatures_valid"] = sigs_ok
+        checks["signed"] = bool(signed)
+        if signed and len(signed) != len(toms):
+            limits.append(f"PARTIALLY SIGNED: {len(toms) - len(signed)} of {len(toms)} tombstones carry "
+                          f"no signature; the authorship evidence covers only part of the chain")
 
     anc = cert.get("anchor") or {}
     tip = toms[-1]["hash"] if toms else _GENESIS
@@ -515,10 +545,28 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     if store_requested and checks["store_absent"] is None:
         problems.append("the absence proof was REQUESTED but could not run (store unreadable or "
                         "encrypted) — this certificate is NOT verified against a store")
+
+    # THE SCOPE STATEMENT IS PART OF THE DOCUMENT. It was free text nobody compared, so the sentence a
+    # regulator most needs — "NOT a compliance certification" — could be replaced with
+    # "Full GDPR compliance certification, all systems." and the certificate still returned valid:true.
+    # Nothing else in the artefact changes, which is precisely why it verified: every other field still
+    # derived from the chain. A document whose limitations can be edited away is not a limited document.
+    _scope_txt = cert.get("scope")
+    if _scope_txt is not None and _scope_txt != _CERT_SCOPE:
+        checks["scope_intact"] = False
+        problems.append("the `scope` statement does not match the one this library issues — the "
+                        "certificate's own declaration of what it does NOT certify has been altered")
+    else:
+        checks["scope_intact"] = _scope_txt is not None or None
+
     valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"]
-             and checks["summary_derivable"]
+             and checks["summary_derivable"] and checks["scope_intact"] is not False
              and (checks["store_absent"] is True or not store_requested))
-    return {"valid": valid, "checks": checks, "problems": problems, "count": len(erased)}
+    # `limits` is separate from `problems` on purpose, the way verify_bundle already does it: a thing
+    # that was NOT CHECKED is not a thing that FAILED, and collapsing the two either invalidates honest
+    # unsigned certificates or hides that nothing was verified against `pubkey`.
+    return {"valid": valid, "checks": checks, "problems": problems, "limits": limits,
+            "count": len(erased)}
 
 
 __version__ = "1.86.0"
@@ -3300,11 +3348,7 @@ class Inspeximus:
             "pubkey": self.receipt_pubkey,
             "anchor": self.anchor(),
             "self_check": {"verified": ok, "problems": problems},
-            "scope": ("Erasure is within THIS inspeximus store only (not the app's vector store, prompt logs, or "
-                      "backups); covers the subject PLUS its derived_from lineage. Tamper-evident integrity "
-                      "primitive, NOT a compliance certification. The tombstone proves the ACT of deletion, "
-                      "never the content; its signature is load-bearing only against a non-holder of "
-                      "receipt_key — witness the anchor externally (see verify_consistency)."),
+            "scope": _CERT_SCOPE,
             "verify_with": "inspeximus.verify_erasure_certificate(cert, store_path=<file>)  # or store_items=<list>",
         }
 
