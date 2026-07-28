@@ -446,7 +446,9 @@ def credit(ids: list[str], outcome: str, weight: float = 1.0) -> dict:
 
 
 @mcp.tool()
-def forget(ids: list[str] | None = None, where_contains: str | None = None, dry_run: bool = False) -> dict:
+def forget(ids: list[str] | None = None, where_contains: str | None = None, dry_run: bool = False,
+           basis: str = "", request_id: str = "", authorized_by: str = "",
+           authorization: str = "") -> dict:
     """TRULY DELETE memories — the one op that removes content (everything else is append-only: supersession
     only demotes). Use for an erasure / right-to-be-forgotten request, a poisoned or false memory, or a hard
     correction. Pass `ids` (memory ids to drop) and/or `where_contains` (delete every memory whose text
@@ -454,18 +456,26 @@ def forget(ids: list[str] | None = None, where_contains: str | None = None, dry_
     scrubbed from every survivor's links + supersession pointers + the caches, so a forgotten memory cannot
     resurface via recall or a later consolidation pass. `dry_run=True` PREVIEWS the match (returns
     {would_forget, ids, sample, dry_run:True} with a few matched texts) and deletes NOTHING — always dry-run a
-    bulk `where_contains` first. Returns {forgotten, ids, scrubbed_links}."""
+    bulk `where_contains` first. Returns {forgotten, ids, scrubbed_links}.
+
+    `basis` (the decision reason), `request_id` (the DSAR/ticket this belongs to), `authorized_by` (the
+    authorising principal's public key) and `authorization` (their signature) are recorded with the erasure
+    as the Art.30 account of WHY and on WHOSE authority. None of them was on this surface, so an erasure
+    performed over MCP left a record that it happened and nothing about who ordered it."""
     where = None
     if where_contains:
         needle = where_contains.lower()
         where = lambda r: needle in (r.get("text") or "").lower()
-    return _MEM.forget(ids=ids, where=where, dry_run=dry_run)
+    return _MEM.forget(ids=ids, where=where, dry_run=dry_run, basis=basis or None,
+                       request_id=request_id or None, authorized_by=authorized_by or None,
+                       authorization=authorization or None)
 
 
 # ── GOVERNANCE / INTEGRITY tools (the surface a serious buyer checks — previously absent from the MCP) ──────
 @mcp.tool()
 def forget_subject(subject: str, basis: str = "", dry_run: bool = False,
-                   allow_ambiguous: bool = False, request_id: str = "") -> dict:
+                   allow_ambiguous: bool = False, request_id: str = "", exact: bool = False,
+                   authorized_by: str = "", authorization: str = "") -> dict:
     """Right-to-erasure by SUBJECT (GDPR Art.17 / DSR): delete every memory about `subject` AND scrub its id from
     survivors' links/supersession pointers, so it can't resurface via recall or consolidation. `basis` records the
     legal/operational reason. Returns a receipt (forgotten count, ids, scrubbed_links) you can keep as evidence.
@@ -477,11 +487,23 @@ def forget_subject(subject: str, basis: str = "", dry_run: bool = False,
 
     If the call raises AmbiguousSubject, the subject you passed canonicalizes to the same key as a DIFFERENT
     source in the store (e.g. two people under one host: crm.example.com/alice and crm.example.com/bob), so
-    erasing would delete a third party's records. Read the message, confirm which subject is meant, and pass
-    allow_ambiguous=True only if you really intend to erase all of them.
+    erasing would delete a third party's records. Read the message, confirm which subject is meant, and then
+    choose: `exact=True` erases only the records whose RAW source string is this subject (plus their lineage)
+    and LEAVES the colliding subject alone — prefer it, it completes the DSAR without touching anyone else.
+    `allow_ambiguous=True` erases every colliding subject together, so pass it only if you really mean that.
+    This surface used to offer allow_ambiguous alone and this text named it as THE answer, which pointed the
+    caller at the over-deleting half of the choice; measured, that erased a third party's record where
+    exact=True kept it. Collisions are not rare: canonicalisation is host/collection level, so
+    'employee/1001' and 'employee/1002' share a canonical form.
+
+    `authorized_by` (the authorising principal's public key) and `authorization` (their signature over
+    erasure_challenge(subject, request_id)) are recorded in the tombstone's `auth` field — the Art.30 record
+    of WHO authorised the deletion. Neither was on this surface, so every MCP erasure was unattributed.
     """
     return _MEM.forget_subject(subject, basis=basis or None, dry_run=dry_run,
-                               allow_ambiguous=allow_ambiguous, request_id=request_id or None)
+                               allow_ambiguous=allow_ambiguous, request_id=request_id or None,
+                               exact=exact, authorized_by=authorized_by or None,
+                               authorization=authorization or None)
 
 
 def _pin(expected_pubkey: str = "") -> str | None:
@@ -621,10 +643,14 @@ def pii_report() -> dict:
 
 @mcp.tool()
 def forget_pii(types: list[str] | None = None, subject: str = "",
-               allow_ambiguous: bool = False, request_id: str = "") -> dict:
+               allow_ambiguous: bool = False, request_id: str = "", basis: str = "") -> dict:
     """Erase detected PII — of the given `types` (default all), optionally scoped to a `subject`. Deletes the
-    offending content deterministically (not an LLM guess). Returns what was erased."""
-    return _MEM.forget_pii(types=types, subject=subject or None, allow_ambiguous=allow_ambiguous, request_id=request_id or None)
+    offending content deterministically (not an LLM guess). Returns what was erased.
+
+    `basis` records the legal/operational reason with the erasure (Art.30). It was not on this surface, so
+    PII erasures performed over MCP carried no stated ground."""
+    return _MEM.forget_pii(types=types, subject=subject or None, allow_ambiguous=allow_ambiguous,
+                          request_id=request_id or None, basis=basis or None)
 
 
 @mcp.tool()
@@ -679,13 +705,18 @@ def compliance_check(require_receipts: bool = True, max_pii_age_days: float | No
 
 
 @mcp.tool()
-def retention(max_age_days: float, pii_only: bool = True, apply: bool = False) -> dict:
+def retention(max_age_days: float, pii_only: bool = True, apply: bool = False,
+              basis: str = "", request_id: str = "") -> dict:
     """STORAGE-LIMITATION enforcement (GDPR Art. 5(1)(e); read-only unless apply=True): find ACTIVE records
     older than `max_age_days` and, with apply=True, hard-delete them — each erasure leaving a signed tombstone,
     so the enforcement is itself auditable. DRY-RUN by default: returns {eligible, ids, applied, erased} so you
-    review before enforcing. `pii_only` (default True) restricts to PII-tagged records."""
+    review before enforcing. `pii_only` (default True) restricts to PII-tagged records.
+
+    `basis` and `request_id` are recorded with each erasure (Art.30). Neither was on this surface, so a
+    retention sweep run over MCP produced tombstones with no stated ground and no ticket to trace them to."""
     from .compliance import retention_sweep
-    return retention_sweep(_MEM, max_age_days, pii_only=pii_only, apply=apply)
+    return retention_sweep(_MEM, max_age_days, pii_only=pii_only, apply=apply,
+                           basis=basis or None, request_id=request_id or None)
 
 
 @mcp.tool()

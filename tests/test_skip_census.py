@@ -40,11 +40,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #:     test_mcp_verification_gaps.py (7)        needs mcp   -- verify_audit_bundle / compliance_check
 #:     test_release_cannot_publish_untested.py (5) needs mcp
 #:     test_mcp_key_binding.py (8)              needs mcp + cryptography -- the signing-key pin
-#: 102 measured + 12 + 8 = 122. The pin now sits EXACTLY on the measured number rather than carrying 8 of
+#: RAISED 122 -> 130 on 2026-07-28: test_mcp_erasure_attribution.py (8), needs mcp -- the erasure surface
+#: could not reach exact=True or attribute a tombstone. Same job runs it.
+#:
+#: 102 measured + 12 + 8 + 8 = 130. The pin now sits EXACTLY on the measured number rather than carrying 8 of
 #: headroom, because the headroom is what let the first 12 land unnoticed: CI went red at bf4f8a5 and two
 #: further commits were pushed on top of it before a full-suite run caught up. A pin with slack absorbs
 #: exactly the growth it exists to make someone read.
-MAX_HIDDEN_IN_BASE_ENV = 122
+MAX_HIDDEN_IN_BASE_ENV = 130
 
 
 def _base_env_census():
