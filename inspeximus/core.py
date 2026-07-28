@@ -591,7 +591,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "1.86.0"
+__version__ = "1.87.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -868,7 +868,20 @@ class Inspeximus:
         # echo that OBSCURES the value (coreferent "her old hobby") is NOT caught. A genuine reversal back to
         # a superseded value needs remember(..., reaffirm=True) to bypass the guard (the guard cannot
         # un-supersede on its own). Reversible: echo_guard=False = legacy keyed supersession.
-        self.echo_guard = False
+        #
+        # DEFAULT ON since 1.87.0 — a BEHAVIOUR CHANGE, and the reason the old default is gone.
+        # It was OFF so a direct API user "got exactly what they constructed", byte-identical to legacy.
+        # In practice that meant the mechanism this library is FOR was off unless you knew to ask: every
+        # product surface (MCP server, CLI, editor hook, the nine framework adapters) had to re-enable it
+        # through _surface.open_store, and the adapters missed it for ten releases -- a correction made
+        # through the CLI was undone by a restatement through an adapter, and then the honest re-correction
+        # was refused as an echo, so the store could not be put right through the surface that broke it.
+        # Measured on the live cross-system harness: with the guard off a paraphrased restatement of a
+        # retired value brings it back 1.00 of the time; through the product surface, ~0.15.
+        # "Correct a fact once and it stays corrected" is the first line of the README. A default that
+        # contradicts it protects byte-compatibility at the cost of the promise. Set echo_guard=False
+        # explicitly for the legacy behaviour.
+        self.echo_guard = True
         # STRICT corroboration (OPT-IN, default OFF -> identical legacy behavior). The corroboration bar
         # (episodic->semantic graduation AND the recall influence gate) counts ">=2 distinct sources". By
         # default a "source" is a canonical STRING (entity-resolved), which collapses honest sybil variants

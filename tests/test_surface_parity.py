@@ -64,19 +64,47 @@ def _three_steps(path, open_adapter):
 
 # ── the defect itself ────────────────────────────────────────────────────────────────────────────────
 
-def test_the_wedge_reproduces_when_the_adapter_inherits_the_library_default(tmp_path):
-    """The control. Without the shared opener the correction is undone AND the store wedges.
+def _legacy(path):
+    """A store in the pre-1.87.0 posture: echo guard OFF, which used to be the library default."""
+    m = Inspeximus(path=path)
+    m.echo_guard = False
+    return m
 
-    This is here so the two tests below cannot pass for a trivial reason: it demonstrates that the
-    scenario is capable of failing, and that the echo guard is what decides the outcome.
+
+def test_the_wedge_reproduces_with_the_guard_off(tmp_path):
+    """The control. With the guard off the correction is undone AND the store wedges.
+
+    This is here so the tests below cannot pass for a trivial reason: it demonstrates the scenario is
+    capable of failing, and that the echo guard is what decides the outcome.
+
+    It used to construct a plain `Inspeximus(path=...)` -- because that WAS this posture: the library
+    default shipped echo_guard=False for byte-identical legacy behaviour, and all nine adapters inherited
+    it. Since 1.87.0 the default is ON, so the legacy posture has to be asked for explicitly. The wedge
+    is unchanged and still reachable, which is the point: anyone who sets echo_guard=False for
+    compatibility is choosing this behaviour, and now they are choosing it rather than receiving it.
     """
     p = str(tmp_path / "m.json")
-    after_correction, after_restatement, after_recorrection = _three_steps(
-        p, lambda path: Inspeximus(path=path))               # what all nine adapters used to do
+    after_correction, after_restatement, after_recorrection = _three_steps(p, _legacy)
 
     assert after_correction == ["0xBBB"]
     assert after_restatement == ["0xAAA"], "the restatement should undo the correction here"
     assert after_recorrection == ["0xAAA"], "and the honest re-correction should be refused as an echo"
+
+
+def test_the_library_default_now_holds_the_correction(tmp_path):
+    """The default a direct API user gets, which is what changed in 1.87.0.
+
+    Measured on the live cross-system harness: with the guard off a paraphrased restatement of a retired
+    value brings it back 1.000 of the time (n=8); through the product surface, 0.000. The old default
+    protected byte-compatibility at the cost of the README's first line.
+    """
+    p = str(tmp_path / "m.json")
+    after_correction, after_restatement, after_recorrection = _three_steps(
+        p, lambda path: Inspeximus(path=path))
+
+    assert after_correction == ["0xBBB"]
+    assert after_restatement == ["0xBBB"], "a plain library store must not let a restatement undo it"
+    assert after_recorrection == ["0xBBB"], "and it must not wedge"
 
 
 def test_a_surface_opened_adapter_holds_the_correction(tmp_path):
@@ -98,9 +126,17 @@ def test_a_real_langchain_adapter_holds_the_correction(tmp_path):
     assert list(steps) == [["0xBBB"]] * 3
 
 
-def test_the_library_default_is_untouched():
-    """A direct API caller still gets exactly what they construct — the guard OFF."""
-    assert Inspeximus(path=None).echo_guard is False
+def test_the_library_default_is_the_guard_ON():
+    """CHANGED IN 1.87.0. This asserted the guard was OFF for a direct API caller.
+
+    That default existed so a direct caller "got exactly what they constructed", byte-identical to legacy.
+    What it meant in practice is that the mechanism this library exists for was off unless you knew to ask
+    — and the nine framework adapters did not know, for ten releases, which is why _surface.py had to be
+    written. Measured live: guard off, a paraphrased restatement of a retired value brings it back 1.000
+    of the time (n=8); with it on, 0.000. `echo_guard = False` after construction restores the old
+    behaviour for anyone who depends on it.
+    """
+    assert Inspeximus(path=None).echo_guard is True
 
 
 # ── every construction site goes through the opener ───────────────────────────────────────────────────

@@ -3,6 +3,45 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.87.0 - the echo guard is ON by default in the library, and a DSAR for a stranger no longer deletes you
+
+**BEHAVIOUR CHANGE 1: `echo_guard` now defaults to ON.** It shipped OFF so a direct API caller got exactly
+what they constructed, byte-identical to legacy. What that meant in practice is that the mechanism this
+library exists for was off unless you knew to ask — every product surface had to re-enable it, and the
+nine framework adapters missed it for ten releases (that is what 1.86.0 was about). Measured live against
+the real products, same procedure and same rank-1 reading for each, n=8:
+
+```
+correct a fact, then restate the RETIRED value in different words; what does rank 1 serve?
+  inspeximus, product surface / new default   0.000 stale
+  inspeximus, echo_guard = False (old default) 1.000 stale
+  mem0 2.0.14 (live)                           1.000 stale   -- it keeps the superseded memory AND ranks
+                                                                 it above its own correction (0.872 / 0.828)
+  Graphiti                                     not run — needs a graph database
+```
+
+"Correct a fact once and it stays corrected" is the first line of the README; a default that contradicts it
+was protecting byte-compatibility at the cost of the promise. **To restore the old behaviour:** set
+`store.echo_guard = False` after construction. Nothing else changed; the wedge test that used to rely on
+the old default now asks for it explicitly and still reproduces.
+
+**BEHAVIOUR CHANGE 2 (data loss, fixed): a right-to-erasure request naming a subject that was never in the
+store hard-deleted a DIFFERENT subject's records and reported success.** `forget_subject("crm/nobody-here")`
+returned `erased=2` and took both of `crm/alice`'s records with it. Subject matching ran on the canonical
+source form, which keeps only the host, so `crm/alice`, `crm/bob` and `crm/nobody-here` were one key — and
+the ambiguity guard cannot fire when only one real source is in the bucket, because there is nothing to
+collide with. Erasure now matches on a path-preserving form, applied at `_resolve_subject` so all five
+subject-scoped destructive paths get it, and the derived-lineage cascade is preserved. `crm.example.com/alice`
+and `.../bob` no longer raise `AmbiguousSubject` — they are simply different subjects now, so the request
+completes and the other person is untouched. Genuine ambiguity (`User_42` vs `user-42`) still refuses.
+
+**NEW: `forget_subject()` returns `coverage`.** It used to return `{"erased": N, ...}` and say nothing about
+the world outside this store, while a store-native delete leaves the application's own vector index fully
+populated (8/8 residue; wired to a registered target, 0/8). `coverage.complete` is true only when at least
+one external target was registered AND every one verified the data absent; with none registered it says so
+and names the remedy. A broken integration still leaks, but it can no longer produce a clean receipt while
+leaking.
+
 ## 1.86.0 - a correction could be undone through any adapter, and the store then refused to be put right
 
 **BEHAVIOUR CHANGE, and the reason to upgrade: through any of the nine framework adapters, one restatement
