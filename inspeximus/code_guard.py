@@ -24,10 +24,44 @@ from __future__ import annotations
 import re
 
 _PREFIX = "code::symbol::"                      # keyspace for symbol deprecations
+#: registered in core._GUARD_KEYSPACES so housekeeping cannot evict these records; asserted in tests
 
 
 def _key(name: str) -> str:
     return _PREFIX + str(name).strip()
+
+
+def _ident(sym: str) -> str:
+    """Whole-identifier pattern: `foo` matches `foo(` and `x.foo`, never `foobar` or `foo_bar`."""
+    return r"(?<![A-Za-z0-9_])" + re.escape(sym) + r"(?![A-Za-z0-9_])"
+
+
+def _pattern_for(sym: str, code: str) -> str:
+    """The pattern to hunt `sym` with in THIS snippet -- qualified symbols need a subject check.
+
+    A refactor is naturally recorded in qualified form (`Session.close_all`, `mod.old_fn`), and then the
+    literal string never appears in the code that resurrects it: the method is called on an instance
+    (`s.close_all()`) and the function is imported and called bare (`from mod import old_fn; old_fn(1)`).
+    MEASURED (research/probes/audit_code_guard_recall.py): both returned [] -- the guard reported clean on a
+    real resurrection, which is strictly worse than the string/comment over-flagging it documents, because
+    over-flagging is visible and this is not.
+
+    Matching the tail unconditionally would be the wrong fix -- `Session.close_all` would then flag every
+    `.close_all()` on any object anywhere. So the tail is hunted only when the QUALIFIER is itself present
+    in the snippet as a whole identifier: `s.close_all()` is flagged in code that mentions `Session`, and
+    ignored in code that does not. Keyword match plus a subject check, not keyword match alone.
+
+    This can over-flag (a snippet that mentions `Session` and calls an unrelated `close_all`), which is the
+    posture this guard already takes deliberately: it flags mentions in strings and comments too. Loud and
+    documented beats silent.
+    """
+    if "." not in sym:
+        return _ident(sym)
+    qualifier, tail = sym.rsplit(".", 1)
+    subject = qualifier.rsplit(".", 1)[-1]          # the class/module actually referenced
+    if tail and subject and re.search(_ident(subject), code):
+        return _ident(tail)
+    return _ident(sym)
 
 
 def _reason_from(rec: dict) -> str:
@@ -82,8 +116,9 @@ def scan_lines(store, code: str) -> list:
     deps = _deprecations(store)
     if not deps:
         return []
-    compiled = {sym: re.compile(r"(?<![A-Za-z0-9_])" + re.escape(sym) + r"(?![A-Za-z0-9_])")
-                for sym in deps if sym}
+    # The subject check reads the WHOLE snippet, not the line: `Session` is imported or constructed at the
+    # top and `s.close_all()` appears far below, so a per-line decision would never see the qualifier.
+    compiled = {sym: re.compile(_pattern_for(sym, code or "")) for sym in deps if sym}
     out = []
     for i, ln in enumerate((code or "").splitlines(), 1):
         for sym, rx in compiled.items():
@@ -105,8 +140,7 @@ def check_code(store, code: str) -> list:
     for sym, rec in _deprecations(store).items():
         if not sym:
             continue
-        pat = r"(?<![A-Za-z0-9_])" + re.escape(sym) + r"(?![A-Za-z0-9_])"
-        n = len(re.findall(pat, code))
+        n = len(re.findall(_pattern_for(sym, code), code))
         if n:
             hits.append({"symbol": sym, "replacement": rec.get("object"),
                          "reason": _reason_from(rec), "occurrences": n})
