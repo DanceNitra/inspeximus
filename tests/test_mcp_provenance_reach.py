@@ -40,6 +40,11 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# The MCP SDK is an optional extra. Without this guard the whole file ERRORS at setup on a base
+# install -- which is exactly how this landed CI red: `mcp_server` raises ImportError by design, and a
+# fixture that cannot build is a failure, not a skip.
+pytest.importorskip("mcp")
+
 from inspeximus import Inspeximus  # noqa: E402
 
 

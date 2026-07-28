@@ -3,7 +3,46 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased - auditing 1.87.0 on its own day
+## 1.87.0 - UPGRADE IF YOU RELY ON ERASURE: 1.86.0 deletes the wrong person's records
+
+**Who should upgrade: everyone using `forget_subject`, immediately.** Verified against the wheel
+downloaded from PyPI, not against this repo:
+
+```
+inspeximus 1.86.0, store holding only hr/alice
+  forget_subject('hr/nobody-here')  ->  erased = 1      <- a subject NEVER written to the store
+inspeximus 1.87.0, same store
+  forget_subject('hr/nobody-here')  ->  erased = 0
+```
+
+Subject matching ran on the canonical source form, which keeps only the host, so `hr/alice`, `hr/bob` and
+`hr/nobody-here` were one key. The ambiguity guard cannot fire when only ONE real source sits in the
+bucket, because there is nothing for it to collide with — so a right-to-erasure request naming a subject
+that is not in your store hard-deletes a different subject's records and reports success. With siblings
+present the guard does refuse (measured on the same wheel), which is why this went unseen: the dangerous
+case is the quiet one.
+
+Erasure now matches on a path-preserving form applied at `_resolve_subject`, so all five subject-scoped
+destructive paths get it, and the derived-lineage cascade is preserved.
+
+### Also in this release
+
+- **The compliance moat was unreachable from the MCP server and half-unreachable from the CLI.** The write
+  tools took no `source` or `derived_from`, so a store written through the product surface answered
+  `would_erase = 0` to every phrasing of an erasure request while the same write through the library
+  answered 1. `remember` and `remember_decision` now take both (CLI: `--derived-from`), and the write
+  result carries `attributable` — the caller is the only one who can fix an unattributable write, and only
+  while they still know where the text came from. `route`, `observe` and `resolve_reopened` still cannot;
+  a census test names them so the list cannot rot into a lie.
+- **A retired write was reported to the caller as one that landed** — see below.
+- **`INSPEXIMUS_ECHO_GUARD=0` did nothing in the library** — see below.
+- **A dissenting erasure target was displayed as a confirmation.** `coverage.confirmed` counted the store's
+  own self-attestation, so one external target that answered "still recoverable" read as `1 of 1
+  confirmed`. It now counts external targets only; the store's answer is reported as `store_self_check`.
+- **`erasure_audit(subject)` matched on the coarse key**, so a correctly completed DSAR reported residue
+  and a subject never written was told a stranger's record was attributable to it.
+
+## Audit notes from the day 1.87.0 was assembled
 
 1.87.0 shipped two changes big enough to be worth attacking immediately: a default flipped ON for everyone,
 and a rewrite of how a destructive path resolves a subject. Both were audited the same afternoon, both had
@@ -39,7 +78,7 @@ not. `_surface.open_store` had already fixed them earlier the same day (1.86.0);
 `slash`/`spend_irreversible` already refuse an ambiguous subject by default with a named collision and an
 explicit `allow_ambiguous=True` escape.
 
-## 1.87.0 - the echo guard is ON by default in the library, and a DSAR for a stranger no longer deletes you
+### 1.87.0 in detail — the echo guard is ON by default, and a DSAR for a stranger no longer deletes you
 
 **BEHAVIOUR CHANGE 1: `echo_guard` now defaults to ON.** It shipped OFF so a direct API caller got exactly
 what they constructed, byte-identical to legacy. What that meant in practice is that the mechanism this

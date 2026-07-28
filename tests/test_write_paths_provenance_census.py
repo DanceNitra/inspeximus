@@ -33,6 +33,10 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Optional extra; see the note in test_mcp_provenance_reach.py. Both files shipped without this and
+# turned CI red on the base install.
+pytest.importorskip("mcp")
+
 from inspeximus import Inspeximus  # noqa: E402
 
 CLOSED = ("remember", "remember_decision")

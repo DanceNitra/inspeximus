@@ -47,7 +47,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: headroom, because the headroom is what let the first 12 land unnoticed: CI went red at bf4f8a5 and two
 #: further commits were pushed on top of it before a full-suite run caught up. A pin with slack absorbs
 #: exactly the growth it exists to make someone read.
-MAX_HIDDEN_IN_BASE_ENV = 130
+#: RAISED 130 -> 146 on 2026-07-28, for the two provenance files that closed the erasure-reachability gap:
+#:     test_mcp_provenance_reach.py (10)          needs mcp
+#:     test_write_paths_provenance_census.py (6)  needs mcp
+#: Both shipped WITHOUT the importorskip guard and turned CI red: `mcp_server` raises ImportError by
+#: design, so on a base install the modules ERROR at setup rather than skipping, and an erroring fixture
+#: is a failure. The guard is the fix; this pin is the consequence, and it stays on the measured number.
+MAX_HIDDEN_IN_BASE_ENV = 146
 
 
 def _base_env_census():
