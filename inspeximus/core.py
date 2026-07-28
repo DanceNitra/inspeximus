@@ -648,6 +648,19 @@ class StoreChangedOnDisk(RuntimeError):
     path. inspeximus is a SINGLE-WRITER store; this makes that assumption enforced rather than assumed."""
 
 
+def _resolve_echo_guard(explicit: bool | None = None) -> bool:
+    """The ONE place the echo-guard posture is decided: explicit argument > env var > ON.
+
+    It lives at module level rather than in `__init__` so `_surface.echo_guard_default()` can delegate to
+    it instead of re-implementing it. A default that has to be re-declared at each entry point is a default
+    that will be missed at one of them -- that is exactly how the nine adapters ran unguarded for ten
+    releases, and how `INSPEXIMUS_ECHO_GUARD=0` came to work on the surfaces but not in the library.
+    """
+    if explicit is not None:
+        return bool(explicit)
+    return os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
+
+
 class Inspeximus:
     def __init__(self, path: str | None = None, embed=None, receipts: bool = False,
                  receipt_key: str | None = None, receipt_pubkey: str | None = None,
@@ -658,7 +671,7 @@ class Inspeximus:
                  encrypt_key: bytes | None = None, encrypt_passphrase: str | None = None,
                  support_authorities: list | None = None, persist_vectors: bool = False,
                  embed_query=None, embed_id: str | None = None,
-                 infer_lineage: float = 0.0):
+                 infer_lineage: float = 0.0, echo_guard: bool | None = None):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -851,7 +864,7 @@ class Inspeximus:
         # quickest-change-detection tradeoff; lab f490d8).
         # Reversible: 0 or 1 -> legacy fast supersession.
         self.supersede_persistence = 0
-        # ECHO GUARD (OPT-IN, default OFF -> byte-identical legacy). Closes the ECHO ATTACK on keyed
+        # ECHO GUARD (DEFAULT ON since 1.87.0). Closes the ECHO ATTACK on keyed
         # supersession: after a fact is corrected (old value -> superseded), a later RE-STATEMENT of the
         # OLD value (a benign restatement or an attacker re-injection) carries a newer valid_from and would
         # otherwise retire the FRESH value and resurrect the stale one. With this ON, an incoming keyed write
@@ -881,7 +894,15 @@ class Inspeximus:
         # "Correct a fact once and it stays corrected" is the first line of the README. A default that
         # contradicts it protects byte-compatibility at the cost of the promise. Set echo_guard=False
         # explicitly for the legacy behaviour.
-        self.echo_guard = True
+        #
+        # ONE RESOLUTION RULE, here, for the library AND every surface. The flip left the documented
+        # off-switch dead in the library: `_surface.open_store` read INSPEXIMUS_ECHO_GUARD, the constructor
+        # hardcoded True and took no kwarg at all, so `INSPEXIMUS_ECHO_GUARD=0` was silently ignored by a
+        # direct API user -- measured, all three of =0, =1 and unset produced an identical guarded store.
+        # A switch that reports nothing when it fails to take effect is worse than no switch. Precedence:
+        # an EXPLICIT argument always wins (a caller who names a posture gets it, env or no env), else the
+        # env var, else ON.
+        self.echo_guard = _resolve_echo_guard(echo_guard)
         # STRICT corroboration (OPT-IN, default OFF -> identical legacy behavior). The corroboration bar
         # (episodic->semantic graduation AND the recall influence gate) counts ">=2 distinct sources". By
         # default a "source" is a canonical STRING (entity-resolved), which collapses honest sybil variants
@@ -1892,7 +1913,7 @@ class Inspeximus:
         correction wins the bi-temporal comparison permanently, and only finiteness is checked. Bound it
         yourself if callers are untrusted.
 
-        ECHO GUARD (self.echo_guard, default OFF): before the normal path, if the incoming rec asserts an
+        ECHO GUARD (self.echo_guard, default ON since 1.87.0): before the normal path, if the incoming rec asserts an
         OBJECT that has ALREADY been superseded for this key AND differs from the current active value, it
         is a restatement-of-superseded (an echo) — retire the incoming rec stale-on-arrival and keep the
         current value, so a later re-mention of the old value cannot resurrect it. reaffirm=True bypasses
@@ -6642,9 +6663,18 @@ class Inspeximus:
                 s = self._similarity(r["text"], other[0], self._qvec(r["text"]) if self.embed else None)
                 if s >= dup_threshold and not _value_clash(r["text"], other[0]["text"]):
                     redundant += 1
+        # A write RETIRED ON ARRIVAL is a different event from one a later assertion replaced, and this
+        # report was blind to the difference: a store that dropped six writes by policy and one that
+        # accepted six corrections returned byte-identical summaries (measured, 165 chars both). Since
+        # 1.87.0 the guard is ON by default, so the retirements happen without anyone opting in, and the
+        # inspector overview is where an operator would first notice writes going missing. The per-policy
+        # detail is in supersession_report(); this is the pointer that tells them to go and read it.
+        by_policy = self.supersession_report().get("by_policy") or {}
+        retired = {p: n for p, n in by_policy.items() if p in ("echo_guard", "objectless_guard")}
         return {"total": len(self._tenant_rows()), "active": len(act), "superseded": len(sup), "by_type": by_type,
                 "consolidated": linked, "decayed": decayed, "redundant_estimate": redundant,
-                "redundant_frac": round(redundant / max(1, len(sample)), 3), "sampled": len(sample)}
+                "redundant_frac": round(redundant / max(1, len(sample)), 3), "sampled": len(sample),
+                "retired_on_arrival": sum(retired.values()), "retired_by_policy": retired}
 
     def consolidate(self, keep: int | None = None, dup_threshold: float = 0.82,
                     hub_coverage: float = 0.12, link_duplicates: bool = True) -> dict:

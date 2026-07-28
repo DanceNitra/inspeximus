@@ -563,7 +563,12 @@ different-value correction (≈ 0.84) — they overlap (~42% false-block at 0.9)
 based, never similarity based. An echo that **obscures** the value (coreferent "her old hobby") is not
 caught, and without `object` the guard falls back to normalized text (verbatim-only, MemStrata-equivalent).
 A genuine reversal back to a superseded value needs `remember(..., reaffirm=True)` (the guard can't
-un-supersede on its own). Opt-in; `echo_guard=False` (default) = byte-identical legacy keyed supersession.
+un-supersede on its own), and the call reports what happened: `store.last_write["blocked"]` is `True` with
+a `note` naming that remedy, so a retired write is never mistaken for one that landed.
+
+**Default ON since 1.87.0.** `Inspeximus(echo_guard=False)` — or `INSPEXIMUS_ECHO_GUARD=0` in the
+environment, which the constructor now honours as well as the surfaces do — restores byte-identical legacy
+keyed supersession. An explicit argument always wins over the env var.
 
 ### Close the retrieval loop: `propagate_outcome()` (0.6.10)
 The un-self-gradable earned-outcome signal (`credit()`) is what the influence gate and `echo_guard` ride on

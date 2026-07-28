@@ -1,12 +1,11 @@
 """One way to open a store from a SURFACE — the CLI, the MCP server, the editor hook, the adapters.
 
-The library's own default for `echo_guard` is OFF, and that is deliberate: a direct API user gets exactly
-what they construct. A SURFACE is different. The CLI and `inspeximus-mcp` are documented as sharing one
-store, so they both turn the guard on from `INSPEXIMUS_ECHO_GUARD`, and cli._store carries a comment
-explaining why they had to agree.
+HISTORY, kept because it is the argument for why this module exists. `echo_guard` used to default to OFF
+in the library and ON at each surface: a direct API user "got exactly what they constructed", while the
+CLI and `inspeximus-mcp` — documented as sharing one store — both turned it on from `INSPEXIMUS_ECHO_GUARD`.
 
-The nine framework adapters never got that memo. Each builds `Inspeximus(path=...)` directly, inheriting
-the library default, and the consequence is not cosmetic — measured on one store file:
+The nine framework adapters never got that memo. Each built `Inspeximus(path=...)` directly, inheriting
+the library default, and the consequence was not cosmetic — measured on one store file:
 
     1. CLI corrects the payout wallet 0xAAA -> 0xBBB      store serves 0xBBB
     2. an adapter restates the OLD value                  store serves 0xAAA   <- the correction is undone
@@ -23,6 +22,12 @@ alone, while `mcp_server` read the env var only and `claude_code` passed nothing
 
 Both rules live here now, and every surface calls this. A default that has to be re-declared at each entry
 point is a default that will be missed at one of them; it already was, at ten.
+
+SINCE 1.87.0 the guard defaults to ON in the library too, so the split this module was built to paper over
+is gone at its source. The lesson outlived it: keeping the two in agreement by CONVENTION lasted exactly
+as long as nobody added a tenth entry point. `echo_guard_default()` now delegates to the library's own
+resolver rather than re-deriving it, and this module's remaining job is the receipts rule and the path
+rule — the same class of default, still declared once.
 """
 from __future__ import annotations
 
@@ -30,8 +35,12 @@ import os
 
 
 def echo_guard_default() -> bool:
-    """Surfaces turn the echo guard ON unless `INSPEXIMUS_ECHO_GUARD=0`."""
-    return os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
+    """ON unless `INSPEXIMUS_ECHO_GUARD=0`. Delegates: since 1.87.0 the LIBRARY resolves the posture the
+    same way, so there is one rule rather than two that can drift apart -- and they had: this function
+    honoured the env var while `Inspeximus()` hardcoded True and took no argument, so the documented
+    off-switch worked through a surface and was silently ignored by a direct API caller."""
+    from .core import _resolve_echo_guard
+    return _resolve_echo_guard()
 
 
 def resolve_path(path=None) -> str:
