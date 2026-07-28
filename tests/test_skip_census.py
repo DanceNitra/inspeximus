@@ -34,7 +34,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: function, so it skips ONE test on 3.9 and always collected. There is no per-version difference, and the
 #: split pin that chased one is gone. The gap it measures is real -- the base job runs ~1001 tests and the
 #: integrations job 1144 -- only the per-module attribution was wrong.
-MAX_HIDDEN_IN_BASE_ENV = 110
+#: RAISED 110 -> 122 on 2026-07-28, and the slack removed. Three audit files added this cycle need an
+#: optional dependency and are therefore invisible to the base job, though the `tests` CI job (full extras)
+#: does run them and now gates publish:
+#:     test_mcp_verification_gaps.py (7)        needs mcp   -- verify_audit_bundle / compliance_check
+#:     test_release_cannot_publish_untested.py (5) needs mcp
+#:     test_mcp_key_binding.py (8)              needs mcp + cryptography -- the signing-key pin
+#: 102 measured + 12 + 8 = 122. The pin now sits EXACTLY on the measured number rather than carrying 8 of
+#: headroom, because the headroom is what let the first 12 land unnoticed: CI went red at bf4f8a5 and two
+#: further commits were pushed on top of it before a full-suite run caught up. A pin with slack absorbs
+#: exactly the growth it exists to make someone read.
+MAX_HIDDEN_IN_BASE_ENV = 122
 
 
 def _base_env_census():
