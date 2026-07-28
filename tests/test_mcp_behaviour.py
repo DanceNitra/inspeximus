@@ -104,8 +104,10 @@ def test_forget_actually_removes_the_record(mod):
 
 
 def test_erasure_certificate_covers_the_erasure_that_happened(mod):
-    """The MCP `remember` takes no `source`, so a subject-based DSAR cannot be set up through this surface
-    at all -- worth knowing, and the reason this uses id-based erasure instead."""
+    """Id-based erasure, which is the narrower of the two paths and the one this test is about. (The
+    docstring here used to add "the MCP `remember` takes no `source`, so a subject-based DSAR cannot be
+    set up through this surface at all" -- no longer true: `source` and `derived_from` are on the tool,
+    and the subject path is covered in test_mcp_provenance_reach.py.)"""
     rid = mod.remember("bob lives at 9 Elm St")["id"]
     before = set(mod.erasure_certificate().get("erased_memory_ids") or [])
     mod.forget(ids=[rid])
@@ -118,14 +120,24 @@ def test_erasure_certificate_covers_the_erasure_that_happened(mod):
     assert cert.get("self_check", {}).get("verified") is True, cert
 
 
-def test_the_mcp_remember_cannot_attach_a_source():
-    """Characterisation, not a wish: `forget_subject` resolves a DSAR by canonical SOURCE, and the MCP
-    write tool exposes no way to set one -- so every record written through MCP is attributable only to
-    its own id. If a `source` parameter is ever added, this fails and should be rewritten."""
-    import inspect
+def test_the_mcp_remember_can_now_attach_a_source():
+    """Rewritten, exactly as the characterisation it replaces asked to be.
+
+    That test read: "`forget_subject` resolves a DSAR by canonical SOURCE, and the MCP write tool exposes
+    no way to set one -- so every record written through MCP is attributable only to its own id. If a
+    `source` parameter is ever added, this fails and should be rewritten."
+
+    So the gap was not undiscovered; it was recorded here, with instructions. What was missing was the
+    fix and the price tag: measured, a store written purely through this surface answered `would_erase=0`
+    to a right-to-erasure request under every phrasing of the subject, while the identical write through
+    the library answered 1. A characterisation test states what IS; it does not decide that what is
+    should stay. The behaviour is covered in test_mcp_provenance_reach.py -- this one guards the
+    signature so the parameters cannot quietly disappear again."""
     import importlib
+    import inspect
     m = importlib.import_module("inspeximus.mcp_server")
-    assert "source" not in inspect.signature(m.remember).parameters
+    params = inspect.signature(m.remember).parameters
+    assert "source" in params and "derived_from" in params
 
 
 # ── integrity: the numbers an auditor reads ─────────────────────────────────────────────────────────
