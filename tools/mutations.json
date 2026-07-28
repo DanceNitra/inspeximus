@@ -1046,10 +1046,10 @@
     ]
   },
   {
-    "name": "the write result always claims the record is attributable",
+    "name": "the write result drops the declared lineage it reports back",
     "file": "inspeximus/mcp_server.py",
-    "old": "            \"attributable\": bool(source) or bool(derived_from)}",
-    "new": "            \"attributable\": True}",
+    "old": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": list(derived_from or []),",
+    "new": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": [],",
     "tests": [
       "tests/test_mcp_provenance_reach.py"
     ]

@@ -126,7 +126,13 @@ def test_the_committed_spec_is_not_empty_and_names_real_targets():
         assert set(mut) >= {"name", "file", "old", "new", "tests"}, mut
         path = os.path.join(ROOT, mut["file"])
         assert os.path.exists(path), f"{mut['name']} targets a file that is gone: {mut['file']}"
-        assert open(path, encoding="utf-8").read().count(mut["old"]) == 1, \
+        # Resolve the target THE WAY THE GATE DOES, or this check answers a different question than the
+        # tool it guards. The gate reads byte-exactly and re-renders the spec fragment into the file's own
+        # line endings (`_match_endings`); this test read in text mode, which silently normalises, so on a
+        # CRLF checkout a multi-line target could pass here and be SKIPPED by the real run -- a guard
+        # against silent skips, itself blind to the commonest cause of one.
+        src = mutation_check._read_exact(path)
+        assert src.count(mutation_check._match_endings(mut["old"], src)) == 1, \
             f"{mut['name']}: target is absent or ambiguous, so it would be silently skipped"
 
 

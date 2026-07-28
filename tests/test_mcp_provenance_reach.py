@@ -141,6 +141,25 @@ def test_the_cli_without_a_parent_reaches_only_the_direct_record(tmp_path):
     assert "would erase 1 record(s)" in out
 
 
+def test_the_result_reports_back_the_provenance_it_recorded(mcp):
+    """A surviving mutation found this gap: the result carried `source` and `derived_from` and nothing
+    asserted either matched what was passed, so the fields could have been emptied silently.
+
+    They are not decoration. An agent that writes a summary and reads `derived_from` back is confirming
+    the lineage edge exists -- the edge the whole erasure cascade travels. A result that reports `[]`
+    while the record holds a parent tells the caller the cascade will not reach it when it will, and the
+    reverse is worse."""
+    parent = mcp.remember("alice file", source="hr/alice")
+    child = mcp.remember("summary", source="summary-svc", derived_from=[parent["id"]])
+    assert child["derived_from"] == [parent["id"]]
+    assert child["source"] == "summary-svc"
+    rec = next(r for r in _store().items if r["id"] == child["id"])
+    assert rec["derived_from"] == [parent["id"]], "the result must match what was actually stored"
+    # CONTROL: absent provenance must report as absent, not as an empty-but-present claim.
+    plain = mcp.remember("no provenance")
+    assert plain["derived_from"] == [] and plain["source"] is None
+
+
 def test_the_source_is_stored_in_the_shape_the_erasure_paths_read(mcp):
     """A string passed through unchanged would be stored as a bare source, not {'doc': ...}, and the
     subject resolver reads the doc field -- so this is the join that makes the rest work."""

@@ -180,12 +180,22 @@ def test_history_pointers_are_KEPT_so_the_audit_can_still_see_the_hole():
 
 
 def test_the_owned_sites_are_declared_and_the_rest_are_not():
-    """Pins the audit: of the library's own write sites, exactly the derivation ones declare a parent."""
+    """Pins the audit: of the library's own write sites, exactly the derivation ones declare a parent.
+
+    TWO CATEGORIES, kept apart on purpose. A site where the STORE owns the derivation passes a parent it
+    computed (`derived_from=[rid]`); a site that FORWARDS the caller's argument passes the parameter
+    (`derived_from=derived_from`). Only the first is the library asserting provenance about its own work,
+    which is what this pin is for.
+
+    `remember_decision` gained a pass-through when decisions became erasable by subject, and the pin
+    fired -- correctly, since the regex cannot see the difference. Widening the owned set to admit it
+    would have destroyed the distinction the test exists to hold, so the two are separated instead: a pin
+    that absorbs the thing it was written to surface has stopped being a pin."""
     import re
     src = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                             "inspeximus", "core.py"), encoding="utf-8").read()
     lines = src.split("\n")
-    declaring = set()
+    owned, passthrough = set(), set()
     for i, l in enumerate(lines, 1):
         if re.search(r"self\.remember\(", l):
             fn = "?"
@@ -194,9 +204,13 @@ def test_the_owned_sites_are_declared_and_the_rest_are_not():
                 if mm:
                     fn = mm.group(1)
                     break
-            if re.search(r"derived_from\s*=|derived\s*=\s*True", " ".join(lines[i - 1:i + 4])):
-                declaring.add(fn)
-    assert declaring == {"rederive", "revert", "submit_revert", "resolve_reopened"}, declaring
+            window = " ".join(lines[i - 1:i + 4])
+            if re.search(r"derived_from\s*=\s*derived_from\b", window):
+                passthrough.add(fn)
+            elif re.search(r"derived_from\s*=|derived\s*=\s*True", window):
+                owned.add(fn)
+    assert owned == {"rederive", "revert", "submit_revert", "resolve_reopened"}, owned
+    assert passthrough == {"remember_decision"}, passthrough
 
 
 def _copying_write_sites(pkg_dir):
