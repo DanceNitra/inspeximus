@@ -19,6 +19,11 @@ Config (environment):
     INSPEXIMUS_EMBED_URL   optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall
     INSPEXIMUS_EMBED_MODEL embedding model id (default: text-embedding-3-small)
     INSPEXIMUS_EMBED_KEY   bearer key for that endpoint
+    INSPEXIMUS_RECEIPT_PUBKEY  hex Ed25519 PUBLIC key the write receipts are expected to be signed by.
+                           Set it whenever the store is signed: without it the tamper-evidence tools
+                           verify that receipts are signed by SOMEBODY, which a party who rewrites the
+                           store and re-signs it with a key of their own satisfies. Public half only —
+                           it is a verification pin, not a signing key, and is safe in a config file.
   With no embedder configured, inspeximus uses its lexical-overlap fallback — it runs anywhere, today.
 """
 from __future__ import annotations
@@ -80,6 +85,14 @@ _PATH = os.environ.get("INSPEXIMUS_PATH", "inspeximus_memory.json")
 # / audit_bundle MCP tools evidence (EU AI Act Art. 12/19). Off by default so an existing MCP store gains no
 # sidecar file unexpectedly; set INSPEXIMUS_RECEIPTS=1 to enable it.
 _RECEIPTS = os.environ.get("INSPEXIMUS_RECEIPTS", "").strip().lower() in ("1", "true", "yes", "on")
+# The PUBLIC key the receipts are expected to carry. verify_writes(expected_pubkey=...) is the check that a
+# receipt was signed by the key you expect rather than by A key; the MCP tools took no arguments at all, so
+# every MCP caller got the unpinned verdict. MEASURED (probes/audit_mcp_verify_writes_key.py): a store whose
+# content was rewritten and whose whole receipt chain was re-signed under a foreign key returned ok=True with
+# zero problems, while serving a wire-transfer limit inflated 100x; pinned, the same store reports "signed by
+# an unexpected key" on every receipt. This is the same defect already fixed one surface over in
+# verify_erasure_certificate (see core.py: swapping `pubkey` for zeros used to change nothing).
+_RECEIPT_PUBKEY = os.environ.get("INSPEXIMUS_RECEIPT_PUBKEY", "").strip() or None
 _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
 # Opened through the SHARED SURFACE opener (inspeximus/_surface.py), which holds two rules this server used to
 # hold only half of:
@@ -471,19 +484,59 @@ def forget_subject(subject: str, basis: str = "", dry_run: bool = False,
                                allow_ambiguous=allow_ambiguous, request_id=request_id or None)
 
 
+def _pin(expected_pubkey: str = "") -> str | None:
+    """The public key a tamper-evidence verdict is bound to: the caller's, else INSPEXIMUS_RECEIPT_PUBKEY."""
+    return (expected_pubkey or "").strip() or _RECEIPT_PUBKEY
+
+
+def _key_binding_limits(pin: str | None) -> list[str]:
+    """What an unpinned verdict does NOT cover, stated in-band rather than left for the reader to infer.
+
+    A signed chain verified without a pinned key proves only that each receipt is signed CONSISTENTLY with
+    the key it carries — which a party who rewrote the store and re-signed it under their own key satisfies
+    exactly. Saying so is the difference between `ok: true` and a claim of authenticity nobody checked.
+    Silent when the store is unsigned: there the absence of signatures is already reported by core.
+    """
+    if pin or not any(r.get("sig") for r in _MEM._receipts):
+        return []
+    return ["UNPINNED: these receipts are SIGNED, but no expected public key was given, so this verdict "
+            "covers chain integrity only -- not WHOSE key signed it. A party who can write the store file "
+            "can rewrite its contents and re-sign the entire history under a key of their own and still "
+            "verify here. Set INSPEXIMUS_RECEIPT_PUBKEY (public half; safe in config) or pass "
+            "expected_pubkey to bind the verdict to the key you expect."]
+
+
 @mcp.tool()
-def governance_report() -> dict:
+def governance_report(expected_pubkey: str = "") -> dict:
     """One-call GOVERNANCE snapshot: erasure/retention posture, tamper-evidence status of the write chain, and
-    integrity counters — the summary a DPO/CISO or auditor asks for. Deterministic, no LLM."""
-    return _MEM.governance_report()
+    integrity counters — the summary a DPO/CISO or auditor asks for. Deterministic, no LLM.
+
+    `expected_pubkey` (hex, optional) pins the tamper-evidence half to the key the receipts should carry;
+    defaults to INSPEXIMUS_RECEIPT_PUBKEY. Without either, `proof.expected_pubkey` is null and `limits` says
+    what the verdict does not cover — this report used to be unable to pin at all."""
+    pin = _pin(expected_pubkey)
+    out = _MEM.governance_report(pin)
+    limits = _key_binding_limits(pin)
+    if limits:
+        out["limits"] = limits
+    return out
 
 
 @mcp.tool()
-def verify_writes() -> dict:
+def verify_writes(expected_pubkey: str = "") -> dict:
     """TAMPER-EVIDENCE check: verify the hash-chained write ledger is intact (no silent edits/insertions/reordering).
-    Returns {ok, problems} — ok=false with the offending ids if the chain doesn't verify."""
-    ok, problems = _MEM.verify_writes()
-    return {"ok": bool(ok), "problems": problems}
+    Returns {ok, problems, expected_pubkey} — ok=false with the offending ids if the chain doesn't verify.
+
+    `expected_pubkey` (hex, optional) binds the verdict to the key the receipts should be signed by; defaults
+    to INSPEXIMUS_RECEIPT_PUBKEY. Set one for any signed store: unpinned, a rewritten-and-re-signed store
+    verifies clean, and `limits` in the result says so."""
+    pin = _pin(expected_pubkey)
+    ok, problems = _MEM.verify_writes(expected_pubkey=pin)
+    out = {"ok": bool(ok), "problems": problems, "expected_pubkey": pin}
+    limits = _key_binding_limits(pin)
+    if limits:
+        out["limits"] = limits
+    return out
 
 
 @mcp.tool()
