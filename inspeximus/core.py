@@ -1366,6 +1366,10 @@ class Inspeximus:
             except Exception:
                 rec["vec"] = None
         self._items.append(rec)
+        # Cleared BEFORE the supersession pass, which is the only thing that can set it. A verdict left
+        # over from an earlier call would be read as this call's, and a stale signal is worse than none --
+        # the caller would test a field that answers about a different write.
+        self.last_write = {"id": mid, "key": key, "status": "active", "blocked": False, "policy": None}
         if key is not None and not _is_candidate:
             self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
             #                                                  a candidate (low identity_confidence) never supersedes
@@ -1927,6 +1931,22 @@ class Inspeximus:
                 m["echo_blocked"] = True
                 m["superseded_by_toggle"] = active[0]["id"]
                 m["superseded_by_policy"] = "echo_guard"
+                # TELL THE CALLER. remember() returns an id whether the write landed or was retired here,
+                # so a legitimate reversal (A -> B -> A, third write true) silently left the store on B
+                # while the call looked like a success. Measured: a KV round-trip through the LangGraph
+                # adapter returns the previous value, an oscillating status flag ends inverted, and after
+                # revert() the reverted-away value can never be written again -- one defect reached through
+                # seven doors, all of them "a demoted write reported as a landed one".
+                # route(), the other write path, already returns {"intent": "echo", "action": "blocked"}.
+                # The signal existed; it just was not on the primary path. Now it is, without changing
+                # remember()'s return type: `store.last_write` carries the verdict for the call just made.
+                self.last_write = {
+                    "id": rec["id"], "key": rec.get("key"), "status": "superseded",
+                    "blocked": True, "policy": "echo_guard", "current_id": active[0]["id"],
+                    "note": ("this asserted a value that was already superseded for this key, so it was "
+                             "retired on arrival and the current value is unchanged. If the value has "
+                             "genuinely returned, write it with reaffirm=True."),
+                }
                 return                                 # current value preserved; skip normal supersession
         # A record that does not ASSERT A CHANGE never retires anything. It is the store's only way to
         # tell "your address remains 742 Birchwood Lane, Unit 4A" (agreement, possibly at a different

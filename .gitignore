@@ -23,3 +23,8 @@ _*.log
 # superseded, COMMITTED. A fresh clone running our flagship "a correction stays corrected" example printed
 # a wall of duplicates before reaching the one active line. The file is generated; it does not belong here.
 memory.json
+# Same class, the DEFAULT path rather than the demo's: a bare `Inspeximus()` in any probe or doctest
+# persists to ./inspeximus_memory.json (+ its tombstone sidecar) in whatever cwd it ran from. Two empty
+# ones were sitting untracked in the root when 1.87.0 was cut. Generated state must not be committable.
+inspeximus_memory.json
+inspeximus_memory.json.tombstones.json
