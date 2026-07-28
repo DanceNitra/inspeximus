@@ -152,6 +152,13 @@ def main(argv=None):
     dc.add_argument("decision")
     dc.add_argument("--because", help="rationale")
     dc.add_argument("--topic", help="topic slug -> a new decision on it supersedes the old")
+    dc.add_argument("--source", help="who or what this decision is ABOUT or came from ('crm/alice') — "
+                                     "without it the decision is attributable to nothing but its own id, "
+                                     "so forget-subject cannot reach it and it survives a DSAR that "
+                                     "erased everything else about that person")
+    dc.add_argument("--derived-from", dest="derived_from", action="append", default=[],
+                    help="an id this decision was built from (repeatable); erasing the source then "
+                         "erases the decision drawn from it")
 
     sub.add_parser("contradictions", help="list mutually-incompatible memories (flagged, not auto-resolved)")
     sub.add_parser("governance", help="governance/erasure/tamper-evidence snapshot")
@@ -485,7 +492,8 @@ def main(argv=None):
         _out({"written": path}, a.json) or print(f"wrote memory browser -> {path}" + ("  (opened)" if a.open else ""))
 
     elif a.cmd == "decision":
-        mid = m.remember_decision(a.decision, because=a.because, topic=a.topic)
+        mid = m.remember_decision(a.decision, because=a.because, topic=a.topic,
+                                  source=a.source or None, derived_from=a.derived_from or None)
         m._save(force=True)
         _out({"id": mid, "topic": a.topic}, a.json) or print(f"decision stored {mid}" + (f" [topic={a.topic}]" if a.topic else ""))
 

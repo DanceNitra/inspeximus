@@ -137,8 +137,8 @@
   {
     "name": "the census stops seeing module-level guards",
     "file": "tools/skip_census.py",
-    "old": "        if \"importorskip\" in seg:",
-    "new": "        if False:",
+    "old": "        for c in (n for n in ast.walk(node) if isinstance(n, ast.Call)):",
+    "new": "        for c in ():",
     "tests": [
       "tests/test_skip_census.py"
     ]
@@ -1088,6 +1088,42 @@
     "new": "            \"attributable\": True}\n\n\n@mcp.tool()\ndef revert",
     "tests": [
       "tests/test_write_paths_provenance_census.py"
+    ]
+  },
+  {
+    "name": "the CLI decision path drops the source it was given",
+    "file": "inspeximus/cli.py",
+    "old": "                                  source=a.source or None, derived_from=a.derived_from or None)",
+    "new": "                                  source=None, derived_from=None)",
+    "tests": [
+      "tests/test_cli_provenance.py"
+    ]
+  },
+  {
+    "name": "the CLI decision path invents a subject the caller never supplied",
+    "file": "inspeximus/cli.py",
+    "old": "                                  source=a.source or None, derived_from=a.derived_from or None)",
+    "new": "                                  source=a.source or \"hr/bob\", derived_from=a.derived_from or None)",
+    "tests": [
+      "tests/test_cli_provenance.py"
+    ]
+  },
+  {
+    "name": "the census reads a guard out of prose again",
+    "file": "tools/skip_census.py",
+    "old": "            if name != \"importorskip\" or not c.args:",
+    "new": "            if False:",
+    "tests": [
+      "tests/test_skip_census.py"
+    ]
+  },
+  {
+    "name": "the census stops detecting real guards",
+    "file": "tools/skip_census.py",
+    "old": "                deps.append(arg.value)\n                found_guard = True",
+    "new": "                found_guard = True",
+    "tests": [
+      "tests/test_skip_census.py"
     ]
   }
 ]

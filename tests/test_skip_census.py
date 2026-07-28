@@ -14,6 +14,7 @@ Two things now hold it open: a CI job that installs the optional dependencies so
 and this file, which PINS how much may hide. Growth is allowed only by editing the number here, in a diff
 someone reads.
 """
+import ast
 import importlib.util
 import os
 import subprocess
@@ -53,7 +54,15 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: Both shipped WITHOUT the importorskip guard and turned CI red: `mcp_server` raises ImportError by
 #: design, so on a base install the modules ERROR at setup rather than skipping, and an erroring fixture
 #: is a failure. The guard is the fix; this pin is the consequence, and it stays on the measured number.
-MAX_HIDDEN_IN_BASE_ENV = 146
+#: LOWERED 146 -> 144 on 2026-07-29. Two CLI arms moved out of the mcp-guarded file into
+#: test_cli_provenance.py, which needs nothing optional -- the guard added to fix CI had been skipping
+#: them too, narrowing coverage of one thing as a side effect of fixing another.
+#: The move also exposed a defect in the DETECTOR: it text-searched each top-level node for
+#: "importorskip", and a module DOCSTRING is a top-level node, so a file whose prose merely MENTIONED
+#: `pytest.importorskip("mcp")` was counted as entirely hidden -- inflating this pin by 6 with tests that
+#: were never hidden. That is worse than under-counting: a pin raised to cover phantoms then absorbs the
+#: real growth it exists to surface. It now matches a CALL, not the word.
+MAX_HIDDEN_IN_BASE_ENV = 144
 
 
 def _base_env_census():
@@ -155,3 +164,35 @@ def test_a_guard_inside_a_function_is_not_a_module_level_guard():
 
     module_level = 'import pytest\npytest.importorskip("mcp")\ndef test_x():\n    pass\n'
     assert skip_census._module_level_guards(module_level, ast.parse(module_level)) == ["mcp"]
+
+
+def test_a_guard_is_a_call_not_the_word():
+    """The detector text-searched each top-level node, and a module DOCSTRING is a top-level node -- so a
+    file whose prose merely MENTIONED `pytest.importorskip("mcp")` was read as entirely hidden. It
+    inflated the pin by 6 with tests that were never hidden, which is worse than under-counting: a pin
+    raised to cover phantoms absorbs the real growth it exists to make someone read."""
+    doc = '"""No guard here. We deliberately removed pytest.importorskip(\'mcp\')."""\nimport os\n'
+    assert skip_census._module_level_guards(doc, ast.parse(doc)) == []
+    comment = '# pytest.importorskip("mcp") was removed on purpose\nimport os\n'
+    assert skip_census._module_level_guards(comment, ast.parse(comment)) == []
+
+
+def test_every_real_guard_shape_is_still_detected():
+    """CONTROL. A detector that stopped matching would make every guarded file look visible, which is the
+    same error pointing the other way and would drive the pin to zero."""
+    for src, want in (
+        ('import pytest\npytest.importorskip("mcp")\n', ["mcp"]),
+        ('import pytest\nm = pytest.importorskip("yaml")\n', ["yaml"]),          # assigned
+        ('from pytest import importorskip\nimportorskip("crewai")\n', ["crewai"]),  # bare name
+        ('import pytest\npytest.importorskip("mcp")\npytest.importorskip("cryptography")\n',
+         ["cryptography", "mcp"]),
+    ):
+        assert skip_census._module_level_guards(src, ast.parse(src)) == want, src
+
+
+def test_the_try_except_form_still_counts():
+    """It gates on this node not BEING an importorskip, not on it containing no calls -- conditioning on
+    'no calls' killed this branch outright, because such a block ends in `pytest.skip(...)`, a call."""
+    src = ('try:\n    import haystack\nexcept ImportError:\n'
+           '    import pytest; pytest.skip("no haystack", allow_module_level=True)\n')
+    assert "haystack" in skip_census._module_level_guards(src, ast.parse(src))

@@ -112,38 +112,10 @@ def test_the_write_result_says_whether_the_record_is_attributable(mcp):
     assert mcp.remember("no provenance at all")["attributable"] is False
 
 
-def _cli(store_path, *args):
-    import subprocess
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    env = {**os.environ, "PYTHONPATH": root + os.pathsep + os.environ.get("PYTHONPATH", ""),
-           "PYTHONIOENCODING": "utf-8"}
-    r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", str(store_path), *args],
-                       cwd=root, capture_output=True, text=True, env=env, timeout=300)
-    assert r.returncode == 0, r.stderr[-500:]
-    return r.stdout
-
-
-def test_the_cli_could_name_a_source_but_never_a_parent(tmp_path):
-    """The CLI half of the same gap. It had `--source`, so subject erasure worked, but no way to declare
-    LINEAGE -- so `erasure_audit` returned `unaudited` for any CLI-written store, and a summary built
-    from a person's file survived the erasure of that file."""
-    import json
-    s = tmp_path / "s.json"
-    parent = json.loads(_cli(s, "--json", "remember", "alice file", "--source", "hr/alice"))["id"]
-    _cli(s, "--json", "remember", "summary of alice", "--source", "summary-svc",
-         "--derived-from", parent)
-    out = _cli(s, "forget-subject", "hr/alice", "--dry-run")
-    assert "would erase 2 record(s)" in out
-    assert "1 reached through lineage" in out
-
-
-def test_the_cli_without_a_parent_reaches_only_the_direct_record(tmp_path):
-    """CONTROL. If the cascade fired without a declared edge it would be erasing on a guess."""
-    s = tmp_path / "s.json"
-    _cli(s, "--json", "remember", "alice file", "--source", "hr/alice")
-    _cli(s, "--json", "remember", "summary of alice", "--source", "summary-svc")
-    out = _cli(s, "forget-subject", "hr/alice", "--dry-run")
-    assert "would erase 1 record(s)" in out
+# The CLI arms that used to live here have moved to tests/test_cli_provenance.py. They need nothing
+# optional, and the `importorskip("mcp")` added at the top of this file to stop the base CI job erroring
+# was silently skipping them too -- a fix for one thing narrowing coverage of another. A guard belongs to
+# the dependency it guards.
 
 
 def test_the_result_reports_back_the_provenance_it_recorded(mcp):

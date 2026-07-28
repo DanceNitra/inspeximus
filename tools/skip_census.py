@@ -48,9 +48,27 @@ def _module_level_guards(src: str, tree) -> list[str]:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             continue
         seg = ast.get_source_segment(src, node) or ""
-        if "importorskip" in seg:
-            deps += re.findall(r"importorskip\(\s*[\"']([\w.]+)", seg)
-        elif isinstance(node, ast.Try) and ("skip" in seg or "SkipTest" in seg):
+        # A CALL, not the word. The text search read a module DOCSTRING that merely mentioned
+        # `pytest.importorskip("mcp")` in prose as a real guard, and reported a file with no guard at all
+        # as entirely hidden -- inflating the pin by 6 with phantom tests, which is worse than
+        # under-counting: a pin raised to cover tests that were never hidden then absorbs the real growth
+        # it exists to make someone read. Same defect class as the rest of this audit: a verdict about
+        # text that was never examined as code.
+        found_guard = False
+        for c in (n for n in ast.walk(node) if isinstance(n, ast.Call)):
+            fn = c.func
+            name = fn.attr if isinstance(fn, ast.Attribute) else getattr(fn, "id", None)
+            if name != "importorskip" or not c.args:
+                continue
+            arg = c.args[0]
+            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                deps.append(arg.value)
+                found_guard = True
+        # The try/except form gates on THIS node not being an importorskip -- not on it containing no
+        # calls at all. Conditioning on "no calls" silently killed this branch, because the body of such
+        # a try block ends in `pytest.skip(...)`, which is a call. Caught by the arm that exists to
+        # check it; a fix narrower than the thing it replaced is still a regression.
+        if not found_guard and isinstance(node, ast.Try) and ("skip" in seg or "SkipTest" in seg):
             deps += re.findall(r"^\s*(?:import|from)\s+([\w.]+)", seg, re.M)
     return sorted({d.split(".")[0] for d in deps})
 
