@@ -677,10 +677,55 @@
   {
     "name": "the keep-budget goes back to slicing a population an earlier pass already retired",
     "file": "inspeximus/core.py",
-    "old": "        active = [r for r in active if r.get(\"status\") == \"active\"]\n        if keep is not None and len(active) > keep:",
+    "old": "        active = [r for r in active if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if keep is not None and len(active) > keep:",
     "new": "        if keep is not None and len(active) > keep:",
     "tests": [
       "tests/test_consolidate_keep_budget.py"
+    ]
+  },
+  {
+    "name": "the keep-budget demotes guard bookkeeping again, silencing check_code",
+    "file": "inspeximus/core.py",
+    "old": "        active = [r for r in active if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if keep is not None and len(active) > keep:",
+    "new": "        active = [r for r in active if r.get(\"status\") == \"active\"]\n        if keep is not None and len(active) > keep:",
+    "tests": [
+      "tests/test_guard_keyspace_survives_housekeeping.py"
+    ]
+  },
+  {
+    "name": "capacity eviction hard-deletes deprecation records again",
+    "file": "inspeximus/core.py",
+    "old": "        active = [r for r in self.items if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if len(active) <= self.capacity:",
+    "new": "        active = [r for r in self.items if r.get(\"status\") == \"active\"]\n        if len(active) <= self.capacity:",
+    "tests": [
+      "tests/test_guard_keyspace_survives_housekeeping.py"
+    ]
+  },
+  {
+    "name": "the guard keyspace registry goes empty, so nothing is carved out",
+    "file": "inspeximus/core.py",
+    "old": "_GUARD_KEYSPACES = (\"code::symbol::\",)",
+    "new": "_GUARD_KEYSPACES = ()",
+    "tests": [
+      "tests/test_guard_keyspace_survives_housekeeping.py"
+    ]
+  },
+  {
+    "name": "check_code stops matching the tail, missing qualified refactor records again",
+    "file": "inspeximus/code_guard.py",
+    "old": "    if tail and subject and re.search(_ident(subject), code):\n        return _ident(tail)",
+    "new": "    if False:\n        return _ident(tail)",
+    "tests": [
+      "tests/test_code_guard_qualified_symbols.py"
+    ]
+  },
+  {
+    "name": "check_code matches the tail WITHOUT the subject check, flagging every unrelated object",
+    "file": "inspeximus/code_guard.py",
+    "old": "    if tail and subject and re.search(_ident(subject), code):\n        return _ident(tail)",
+    "new": "    if tail:\n        return _ident(tail)",
+    "tests": [
+      "tests/test_code_guard_qualified_symbols.py"
     ]
   },
   {
