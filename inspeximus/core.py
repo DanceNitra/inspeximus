@@ -2770,7 +2770,23 @@ class Inspeximus:
         # raised AttributeError on the first real call. Guessing a structure instead of reading it is the
         # habit this audit exists to break.
         entries = manifest.get("entries") or []
-        cov["confirmed"] = sum(1 for e in entries if e.get("verified_absent") is True)
+        # `confirmed` counts EXTERNAL targets only, so it stays comparable to `external_targets` beside
+        # which it is printed. It used to include the manifest's `_SelfTarget` -- this store attesting
+        # about itself -- and the two numbers then said things they did not mean (measured):
+        #     1 external target, data absent    external_targets=1 confirmed=2   more confirmations than
+        #                                                                        targets: unreadable
+        #     1 external target, DISSENTING     external_targets=1 confirmed=1   reads as "the external
+        #                                                                        target confirmed"; it did
+        #                                                                        the opposite
+        # The second is the one that matters: a dissent displayed as 1-of-1. The store's own answer is
+        # still reported, under its own name, because dropping it would hide that the self-check ran.
+        # `complete` is unchanged and still includes the self target -- an erasure is not complete if the
+        # data survives HERE, and that half was measured correct on every arm.
+        ext = [e for e in entries if e.get("target") != "inspeximus-store"]
+        cov["confirmed"] = sum(1 for e in ext if e.get("verified_absent") is True)
+        cov["store_self_check"] = next(
+            (bool(e.get("verified_absent")) for e in entries if e.get("target") == "inspeximus-store"),
+            None)
         cov["complete"] = bool(manifest.get("complete"))
         # WHO checked. `verified_absent` is the TARGET's own answer to still_recoverable(), so `complete`
         # means "every registered target said the data is gone", not "we confirmed it is gone". Measured:

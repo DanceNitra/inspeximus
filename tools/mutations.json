@@ -936,5 +936,41 @@
     "tests": [
       "tests/test_erasure_audit_subject.py"
     ]
+  },
+  {
+    "name": "confirmed counts the store's own attestation again",
+    "file": "inspeximus/core.py",
+    "old": "        ext = [e for e in entries if e.get(\"target\") != \"inspeximus-store\"]",
+    "new": "        ext = list(entries)",
+    "tests": [
+      "tests/test_coverage_confirmed_counts_externals.py"
+    ]
+  },
+  {
+    "name": "confirmed can never be non-zero, so the field is not a measurement",
+    "file": "inspeximus/core.py",
+    "old": "        cov[\"confirmed\"] = sum(1 for e in ext if e.get(\"verified_absent\") is True)",
+    "new": "        cov[\"confirmed\"] = 0",
+    "tests": [
+      "tests/test_coverage_confirmed_counts_externals.py"
+    ]
+  },
+  {
+    "name": "a dissenting target is counted as a confirmation",
+    "file": "inspeximus/core.py",
+    "old": "        cov[\"confirmed\"] = sum(1 for e in ext if e.get(\"verified_absent\") is True)",
+    "new": "        cov[\"confirmed\"] = len(ext)",
+    "tests": [
+      "tests/test_coverage_confirmed_counts_externals.py"
+    ]
+  },
+  {
+    "name": "the store's own self-check is dropped from the report",
+    "file": "inspeximus/core.py",
+    "old": "        cov[\"store_self_check\"] = next(\n            (bool(e.get(\"verified_absent\")) for e in entries if e.get(\"target\") == \"inspeximus-store\"),\n            None)",
+    "new": "        cov[\"store_self_check\"] = None",
+    "tests": [
+      "tests/test_coverage_confirmed_counts_externals.py"
+    ]
   }
 ]
