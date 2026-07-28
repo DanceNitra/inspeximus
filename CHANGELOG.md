@@ -3,6 +3,42 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## Unreleased - auditing 1.87.0 on its own day
+
+1.87.0 shipped two changes big enough to be worth attacking immediately: a default flipped ON for everyone,
+and a rewrite of how a destructive path resolves a subject. Both were audited the same afternoon, both had
+defects, and all of them were the same shape the whole month has been producing — **a surface returning a
+clean verdict about input it never examined.**
+
+- **A write the guard RETIRED was reported to the caller as one that LANDED.** `remember()` returns an id
+  either way, so a legitimate A→B→A reversal read as a success and left the store on B (measured, with an
+  `echo_guard=False` control: a LangGraph `put({'theme':'dark'})`/`get()` round-trip returned
+  `{'theme':'light'}`; an oscillating flag dropped 2 of 6 writes and inverted its final value). Seven audit
+  findings, one defect, reached through seven doors — and the signal already existed on `route()`, just not
+  on the path everyone uses. **`store.last_write`** now carries it: `{id, key, status, blocked, policy,
+  current_id, note}`, where the note names `reaffirm=True` as the remedy. It is reset at the START of every
+  write, because a verdict left over from an earlier call would be read as this call's.
+- **`INSPEXIMUS_ECHO_GUARD=0` did nothing in the library.** The surfaces honoured it; the constructor
+  hardcoded `True` and took no argument at all. Measured in three subprocesses, `=0`, `=1` and unset were
+  identical. **`Inspeximus(echo_guard=...)`** now exists, and one resolver decides for the library and the
+  surfaces both — explicit argument > env var > ON.
+- **`memory_report()` could not see a refusal.** A store that retired a write on arrival and one that took
+  an ordinary correction returned byte-identical summaries and the same `superseded` count. It now carries
+  `retired_on_arrival` + `retired_by_policy`, read from `supersession_report()` rather than recounted.
+- **`erasure_audit(subject)` still matched on the coarse key** — the morning's own fix, one lever over, on
+  the surface an operator reads to decide whether a DSAR is discharged. On a two-person store all three of
+  `hr/carol` (correctly erased), `hr/dave` and `hr/nobody-here` (never written) returned the SAME record,
+  with the requested subject interpolated into the detail string. It now reuses `_narrow_to_subject`.
+- **`dry_run` gained `coverage`.** The real run got it earlier the same day; the preview — the one surface
+  built for deciding *whether* to erase — did not say what the erasure covers.
+
+**Correction to the 1.87.0 note below:** it credits the default flip with fixing the nine adapters. It did
+not. `_surface.open_store` had already fixed them earlier the same day (1.86.0); the flip removed the
+*reason* the split existed. Two audit findings that made the same release notes were also checked and are
+**not real**: the erased value does not survive in `object`/`key`/`meta` (measured, no residue), and
+`slash`/`spend_irreversible` already refuse an ambiguous subject by default with a named collision and an
+explicit `allow_ambiguous=True` escape.
+
 ## 1.87.0 - the echo guard is ON by default in the library, and a DSAR for a stranger no longer deletes you
 
 **BEHAVIOUR CHANGE 1: `echo_guard` now defaults to ON.** It shipped OFF so a direct API caller got exactly
