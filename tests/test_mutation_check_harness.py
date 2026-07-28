@@ -134,6 +134,17 @@ def test_the_committed_spec_is_not_empty_and_names_real_targets():
         src = mutation_check._read_exact(path)
         assert src.count(mutation_check._match_endings(mut["old"], src)) == 1, \
             f"{mut['name']}: target is absent or ambiguous, so it would be silently skipped"
+        # The TEST pointer has to resolve too. A mutation aimed at a test file that was renamed or
+        # deleted still runs -- pytest reports nothing, and it reads as a SURVIVOR rather than as an
+        # error. That is a two-hour gate run to learn a filename changed.
+        #
+        # HONEST SCOPE: this catches a pointer at a file that is GONE. It cannot catch a pointer at a
+        # file that still exists but no longer covers the mutation, which is what actually happened --
+        # the CLI arms were moved into tests/test_cli_provenance.py and their mutation kept naming the
+        # file they left. Only the full gate can see that; this removes the cheaper half of the class.
+        for t in (mut["tests"] if isinstance(mut["tests"], list) else [mut["tests"]]):
+            assert os.path.exists(os.path.join(ROOT, t)), \
+                f"{mut['name']}: names a test file that does not exist ({t})"
 
 
 def test_the_cli_refuses_an_empty_spec():

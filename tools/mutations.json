@@ -1060,7 +1060,7 @@
     "old": "                         derived_from=a.derived_from or None)",
     "new": "                         derived_from=None)",
     "tests": [
-      "tests/test_mcp_provenance_reach.py"
+      "tests/test_cli_provenance.py"
     ]
   },
   {
