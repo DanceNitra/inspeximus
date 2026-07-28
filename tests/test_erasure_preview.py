@@ -81,10 +81,18 @@ def test_it_names_the_other_subjects_that_go_down_with_the_request():
 
 
 def test_a_subject_with_no_records_previews_as_zero_rather_than_erroring():
+    """Exact equality on purpose: this is the tripwire that makes any new field in the preview a
+    deliberate decision. It fired when `coverage` was added, which is the behaviour wanted -- a preview
+    silently growing a key an operator then reads as a guarantee is how the coarse-key defects spread."""
     m = _cascade_store()
     p = m.forget_subject("nobody-by-that-name", dry_run=True)
+    cov = p.pop("coverage")
     assert p == {"would_erase": 0, "ids": [], "direct": 0, "inherited": 0, "sample": [],
                  "also_carrying": {}, "targets": [], "dry_run": True}
+    # A zero-record preview must NOT read as a discharged obligation: nothing registered, nothing
+    # contacted, nothing complete.
+    assert cov["preview"] is True and cov["complete"] is False
+    assert cov["external_targets"] == 0 and cov["confirmed"] == 0 and cov["unregistered"] is True
 
 
 def test_the_preview_respects_tenant_isolation():
