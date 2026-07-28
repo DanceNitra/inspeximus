@@ -223,6 +223,12 @@ def retention_sweep(store, max_age_days: float, now_ts: float | None = None, pii
         out["applied"] = True
         out["erased"] = res.get("forgotten", len(ids))
         out["request_id"] = rid
+        # carry the coverage statement out with the result. A retention sweep hard-deletes, so the same
+        # question applies to it as to any other erasure -- did this reach the stores we do not own? --
+        # and forget() now answers it. Dropping the field here would leave the caller of the compliance
+        # surface with less information than the caller of the primitive underneath it.
+        if "coverage" in res:
+            out["coverage"] = res["coverage"]
     return out
 
 

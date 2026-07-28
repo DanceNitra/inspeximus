@@ -2509,6 +2509,12 @@ class Inspeximus:
         self._save(force=True)                               # a deletion is real content change — persist now
         out = {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
                "tombstones": len(target)}
+        # coverage on EVERY erasure path, not just forget_subject. It shipped on that one alone earlier
+        # today, which is the same mistake `_resolve_subject`'s docstring records 1.53.0 making: a fix at
+        # one caller while the siblings keep the gap. A field the caller relies on is worse than useless
+        # when it is sometimes absent -- its absence reads as "nothing to report" rather than "nobody
+        # looked". forget() is the base every other path funnels through, so it belongs here.
+        out["coverage"] = self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))
         if verify_residue_in:
             # Prove the bytes went, not just the rows. The report carries fingerprints, never the values.
             from .erasure_residue import scan_residue
@@ -2725,6 +2731,16 @@ class Inspeximus:
         entries = manifest.get("entries") or []
         cov["confirmed"] = sum(1 for e in entries if e.get("verified_absent") is True)
         cov["complete"] = bool(manifest.get("complete"))
+        # WHO checked. `verified_absent` is the TARGET's own answer to still_recoverable(), so `complete`
+        # means "every registered target said the data is gone", not "we confirmed it is gone". Measured:
+        # a target that erases nothing but reports success AND returns still_recoverable=False gets a
+        # clean verdict while the data sits there. That is the trust boundary, not a bug -- the library
+        # cannot see inside a store it was handed an interface to -- but a receipt that says "verified"
+        # when it means "attested" is the same overclaim as the erasure certificate reporting valid
+        # signatures over an unsigned chain, which was fixed this morning. So the word goes in the field.
+        cov["attested_by_targets"] = True
+        cov["verification"] = ("each target's own still_recoverable() report; this store cannot "
+                               "independently inspect a target it does not own")
         leaks = list(manifest.get("residual_targets") or [])
         if leaks:
             cov["unconfirmed"] = leaks
@@ -3148,13 +3164,16 @@ class Inspeximus:
             if cand is not None and not (cand & Inspeximus._rec_sources(r)):
                 continue
             target.append(r["id"])
+        cov = self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))
         if not target:
-            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0}
+            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
+                    "coverage": cov}
         # same as forget_subject: forget() emits the receipts, so pass the reason through it rather
         # than writing a second tombstone per record on top of the one it already wrote
         res = self.forget(ids=target, request_id=request_id, basis=basis or "pii_minimization")
         return {"erased": res["forgotten"], "ids": res["ids"],
-                "request_id": request_id, "tombstones": len(res["ids"])}
+                "request_id": request_id, "tombstones": len(res["ids"]),
+                "coverage": res.get("coverage", cov)}
 
     def for_tenant(self, tenant: str):
         """Return a TENANT VIEW over THIS store (one physical store, many logically-isolated tenants). The view
