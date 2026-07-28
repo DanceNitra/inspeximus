@@ -129,6 +129,28 @@ def _decrypt_blob(key: bytes, blob: bytes) -> bytes:
 
 _GENESIS = "0" * 64
 
+#: Keyspaces whose records a GUARD reads to decide whether to refuse. Housekeeping -- capacity eviction and
+#: the consolidate() keep-budget -- must neither count nor remove them: they are bookkeeping the guard's
+#: correctness rests on, not part of the recall working set those policies exist to bound. The same carve-out
+#: the eviction docstring already makes for superseded history.
+#:
+#: MEASURED before this existed (research/probes/audit_code_guard_disarm.py): with 30 recorded deprecations,
+#: `capacity=8` plus ten ORDINARY writes left 2, and check_code() then returned [] -- "clean" -- for a snippet
+#: resurrecting a deleted symbol. No maintenance call was involved, and `capacity=N` is what docs/API.md
+#: recommends under "Run bounded in production", so the guard disarmed itself exactly as a store filled up.
+#: consolidate(keep=5) did the same. A guard that fails OPEN under the documented production config is the
+#: defect class this codebase keeps finding: a clean verdict about input it structurally stopped examining.
+#:
+#: A new guard registers its prefix HERE. code_guard._PREFIX must appear in this tuple; the agreement is
+#: asserted in tests rather than imported, so the two modules stay decoupled and cannot drift silently.
+_GUARD_KEYSPACES = ("code::symbol::",)
+
+
+def _is_guard_record(rec) -> bool:
+    """True for bookkeeping a guard reads; see _GUARD_KEYSPACES."""
+    k = rec.get("key") or ""
+    return any(k.startswith(p) for p in _GUARD_KEYSPACES)
+
 
 def _canon(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
@@ -1358,7 +1380,10 @@ class Inspeximus:
         distill_and_remember() reported `captured: 3` with two records saved. A write that is silently undone
         by itself is never what the caller asked for; admit-then-evict-others is what a bounded cache does.
         The new record can still be evicted by a LATER write — it just cannot lose to its own."""
-        active = [r for r in self.items if r.get("status") == "active"]
+        # Guard bookkeeping is neither counted nor evictable -- see _GUARD_KEYSPACES. Excluded from the
+        # population BEFORE the capacity comparison, so a store full of deprecations does not evict real
+        # memories to make room for them either.
+        active = [r for r in self.items if r.get("status") == "active" and not _is_guard_record(r)]
         if len(active) <= self.capacity:
             return
         keep_new = None
@@ -6533,7 +6558,10 @@ class Inspeximus:
         # store came back with ZERO active records while the report still said `kept: 10`. recall()
         # returned nothing. With genuinely distinct texts the same call behaves correctly (30 -> 10),
         # which is why this survived: the bug only shows when an earlier pass has already fired.
-        active = [r for r in active if r.get("status") == "active"]
+        # ...and guard bookkeeping is out of the budget entirely (_GUARD_KEYSPACES): measured, keep=5 over 30
+        # recorded deprecations demoted 25 of them and check_code() went quiet about symbols a refactor had
+        # really deleted. The keep-budget bounds the recall working set, which this is not part of.
+        active = [r for r in active if r.get("status") == "active" and not _is_guard_record(r)]
         if keep is not None and len(active) > keep:
             # active is sorted by -raw value (above). Legacy = keep the top-`keep` by raw value. Two-tier =
             # protect the top kprot by raw value (recency-immune), then fill the remaining budget from the
