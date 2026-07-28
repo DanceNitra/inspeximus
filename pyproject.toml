@@ -14,9 +14,17 @@ authors = [{ name = "Rastislav Drahoš (Agora)" }]
 classifiers = ["Programming Language :: Python :: 3", "Intended Audience :: Science/Research", "Topic :: Scientific/Engineering :: Artificial Intelligence"]
 
 [project.urls]
+# PyPI renders each of these as a link in the project sidebar. Until now they pointed only back at this
+# package, so the research the design rules actually come from -- the replication ledger, the benchmark,
+# the measured receipts -- was unreachable from the one high-authority page most people land on first.
 Homepage = "https://dancenitra.github.io/inspeximus/"
 Source = "https://github.com/DanceNitra/inspeximus"
 Repository = "https://github.com/DanceNitra/inspeximus"
+Changelog = "https://github.com/DanceNitra/inspeximus/blob/main/CHANGELOG.md"
+Issues = "https://github.com/DanceNitra/inspeximus/issues"
+"Replication ledger" = "https://dancenitra.github.io/agora/public/crucible/"
+"Benchmark (RAMR)" = "https://github.com/DanceNitra/ramr"
+Research = "https://dancenitra.github.io/agora/"
 
 [project.optional-dependencies]
 mcp = ["mcp[cli]>=1.0"]
