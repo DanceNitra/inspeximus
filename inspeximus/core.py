@@ -2935,6 +2935,14 @@ class Inspeximus:
                "also_carrying": dict(sorted(others.items(), key=lambda kv: -kv[1])),
                "targets": [getattr(t, "name", type(t).__name__)
                            for t in getattr(self, "_erasure_targets", [])],
+               # The preview carries `coverage` too. The real run gained it earlier today; the preview did
+               # not, so the surface built for deciding WHETHER to erase was the one surface that did not
+               # state what the erasure would and would not cover. `targets: []` looks like "no external
+               # copies", which is the opposite of what it means -- none REGISTERED, so any copy the app
+               # embedded elsewhere is untouched AND unaccounted for. `confirmed` is 0 by construction
+               # here: a rehearsal contacts nobody, so nothing can have attested.
+               "coverage": dict(Inspeximus._erasure_coverage(
+                   None, len(getattr(self, "_erasure_targets", []))), preview=True),
                "dry_run": True}
         if collisions:
             out["ambiguous_with"] = collisions["sources"]
@@ -3314,11 +3322,26 @@ class Inspeximus:
                 own_sources.add(Inspeximus._canon_source(doc))
 
         if subject is not None:
+            # The coarse candidate set FIRST, then the same narrowing the erasure paths use. Matching on
+            # `_canon_source` alone is the lossy-key-as-selector defect one lever over: 'hr/carol',
+            # 'hr/dave' and 'hr/nobody-here' all collapse to 'hr', so on a two-person store this reported
+            # (measured, all three arms identical) that a subject NEVER WRITTEN was still attributable to
+            # a real record -- and, worse in the other direction, that a correctly completed DSAR for
+            # carol had left residue, because dave's record shared the host. A compliance surface telling
+            # an operator their erasure failed when it succeeded is not a lesser error than the reverse.
+            #
+            # `_narrow_to_subject` is reused rather than reimplemented: it travels declared derived_from
+            # edges from a root whose RAW source matches, and admits inherited taint only when
+            # canonicalisation loses nothing about the subject. Two copies of that rule would drift, which
+            # is how this surface came to disagree with forget_subject() in the first place.
             cand = {subject, Inspeximus._canon_source(subject)}
-            for r in self._tenant_rows():
-                if cand & Inspeximus._rec_sources(r):
-                    _add(True, "subject_still_attributable", r["id"],
-                         f"still attributable to {subject!r} (status={r.get('status')})")
+            coarse = [r["id"] for r in self._tenant_rows() if cand & Inspeximus._rec_sources(r)]
+            for rid in self._narrow_to_subject(subject, coarse):
+                r = by_id.get(rid)
+                if r is None:
+                    continue
+                _add(True, "subject_still_attributable", rid,
+                     f"still attributable to {subject!r} (status={r.get('status')})")
 
         for r in self.items:
             # a declared parent that is gone: erased (residue) or evicted/consolidated away (advisory)?

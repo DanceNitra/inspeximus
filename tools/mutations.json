@@ -595,11 +595,12 @@
   },
   {
     "name": "the surface default flips to OFF unless asked",
-    "file": "inspeximus/_surface.py",
+    "file": "inspeximus/core.py",
     "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
     "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"0\") != \"0\"",
     "tests": [
-      "tests/test_surface_parity.py"
+      "tests/test_surface_parity.py",
+      "tests/test_echo_guard_posture.py"
     ]
   },
   {
@@ -898,6 +899,42 @@
     "new": "        retired = {}",
     "tests": [
       "tests/test_report_shows_retired_writes.py"
+    ]
+  },
+  {
+    "name": "the erasure audit selects by the coarse key again",
+    "file": "inspeximus/core.py",
+    "old": "            for rid in self._narrow_to_subject(subject, coarse):",
+    "new": "            for rid in coarse:",
+    "tests": [
+      "tests/test_erasure_audit_subject.py"
+    ]
+  },
+  {
+    "name": "the erasure audit narrows to nothing, so it can never report residue",
+    "file": "inspeximus/core.py",
+    "old": "            for rid in self._narrow_to_subject(subject, coarse):",
+    "new": "            for rid in []:",
+    "tests": [
+      "tests/test_erasure_audit_subject.py"
+    ]
+  },
+  {
+    "name": "the erasure preview claims completeness with nothing contacted",
+    "file": "inspeximus/core.py",
+    "old": "               \"coverage\": dict(Inspeximus._erasure_coverage(\n                   None, len(getattr(self, \"_erasure_targets\", []))), preview=True),",
+    "new": "               \"coverage\": {\"complete\": True, \"preview\": True, \"unregistered\": False, \"external_targets\": 0, \"note\": \"\"},",
+    "tests": [
+      "tests/test_erasure_audit_subject.py"
+    ]
+  },
+  {
+    "name": "the erasure preview is not labelled as a rehearsal",
+    "file": "inspeximus/core.py",
+    "old": "                   None, len(getattr(self, \"_erasure_targets\", []))), preview=True),",
+    "new": "                   None, len(getattr(self, \"_erasure_targets\", []))), preview=False),",
+    "tests": [
+      "tests/test_erasure_audit_subject.py"
     ]
   }
 ]
