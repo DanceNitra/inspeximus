@@ -140,13 +140,45 @@ def _colliding_store():
     lambda m: m.retract_lineage(ALICE),
     lambda m: m.rederive(ALICE),
 ])
-def test_every_subject_scoped_destructive_path_refuses_a_collision(call):
+def test_every_subject_scoped_destructive_path_spares_the_other_subject(call):
     """1.53.0 guarded forget_subject only. Its four siblings kept the defect: forget_pii hard-deleted Bob,
-    retract_lineage demoted him, and rederive REWROTE his text and re-emitted it."""
+    retract_lineage demoted him, and rederive REWROTE his text and re-emitted it.
+
+    ASSERTS THE OUTCOME, NOT THE MECHANISM. This required AmbiguousSubject, because ALICE and BOB were one
+    canonical key and refusing was the only way to keep Bob's record intact. Subject matching is now
+    path-preserving, so they are separate keys and each call operates on exactly its own subject -- Alice's
+    request completes AND Bob is untouched, instead of Alice's request being refused. Bob surviving is what
+    these four paths owe us; the exception was one way of paying it, and the weaker one, since it also made
+    Alice's legal request unperformable.
+    """
     m = _colliding_store()
-    with pytest.raises(AmbiguousSubject):
-        call(m)
-    assert len(m.items) == 2, "a refused call must not have changed anything"
+    call(m)
+    bob = [r for r in m.items if "bob" in (r.get("text") or "").lower()]
+    assert len(bob) == 1, "the other subject's record was deleted by a request naming Alice"
+    assert bob[0].get("status") == "active", f"the other subject's record was demoted: {bob[0].get('status')}"
+    assert "b@corp.com" in bob[0]["text"], "the other subject's text was rewritten by another's request"
+
+
+@pytest.mark.parametrize("call", [
+    lambda m: m.forget_subject("crm.example.com/ghost", request_id="r", basis="b"),
+    lambda m: m.forget_pii(subject="crm.example.com/ghost", request_id="r"),
+    lambda m: m.retract_lineage("crm.example.com/ghost"),
+    lambda m: m.rederive("crm.example.com/ghost"),
+])
+def test_a_subject_that_is_not_in_the_store_touches_nobody(call):
+    """The ghost case, on all four paths.
+
+    MEASURED before the fix: forget_subject('crm/nobody-here') -- a right-to-erasure request naming a
+    person who was never written to this store -- hard-deleted BOTH of crm/alice's records and returned
+    erased=2. The coarse canonical form keeps only the host, so every subject under it was one key and the
+    ambiguity guard could not fire, because with a single real source in the bucket there is no collision
+    to detect. Not a clean verdict about unexamined input: a DELETION on unexamined identity.
+    """
+    m = _colliding_store()
+    before = [(r["id"], r.get("status"), r.get("text")) for r in m.items]
+    call(m)
+    after = [(r["id"], r.get("status"), r.get("text")) for r in m.items]
+    assert after == before, "a request for a subject that is not in this store changed somebody else's data"
 
 
 @pytest.mark.parametrize("call", [

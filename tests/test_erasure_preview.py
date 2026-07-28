@@ -112,16 +112,27 @@ def test_a_dsar_for_one_person_does_not_hard_delete_another():
 
     p = m.forget_subject("crm.example.com/alice", dry_run=True)
     assert p["would_erase"] == 1, "the preview must not offer to delete the other subject"
-    assert p["ambiguous_with"] == ["crm.example.com/bob"]
-    assert p["excluded_by_ambiguity"] == 1
 
-    with pytest.raises(AmbiguousSubject):
-        m.forget_subject("crm.example.com/alice", request_id="DSAR-1", basis="gdpr-art17")
-    assert len(m.items) == 3, "a refused erasure must not have deleted anything"
+    # ASSERTS THE OUTCOME, NOT THE MECHANISM. This used to require AmbiguousSubject, because the two
+    # people were indistinguishable to the selector and refusing was the only way to protect Bob. Since
+    # subject matching became path-preserving (_canon_subject), 'crm.example.com/alice' and
+    # '.../bob' are different keys, so the DSAR now COMPLETES and Bob is untouched -- strictly better
+    # than refusing, which left Alice's legal request unperformable. What must hold is unchanged and is
+    # checked harder here than the raise ever checked it: exactly Alice goes, and nobody else moves.
+    res = m.forget_subject("crm.example.com/alice", request_id="DSAR-1", basis="gdpr-art17")
+    assert res["erased"] == 1, res
+    left = sorted((r.get("text") or "")[:12] for r in m.items if r.get("status") == "active")
+    assert any("Bob" in t for t in left), f"the third party was deleted by another person's DSAR: {left}"
+    assert any("Carol" in t for t in left), f"an unrelated subject was deleted: {left}"
+    assert not any("Alice" in t for t in left), f"the DSAR did not complete: {left}"
 
-    forced = m.forget_subject("crm.example.com/alice", request_id="DSAR-1", basis="gdpr-art17",
-                              allow_ambiguous=True)
-    assert forced["erased"] == 2, "the caller can still do it deliberately"
+    # The old tail asserted that allow_ambiguous=True then erased BOTH people "deliberately". That
+    # escape only ever existed because the two were indistinguishable; with them separable there is no
+    # bucket to force, and re-running it here erases 0 simply because Alice is already gone. The escape
+    # itself is still exercised where a genuine collision remains -- see the User_42/user-42 fixture.
+    again = m.forget_subject("crm.example.com/alice", request_id="DSAR-2", allow_ambiguous=True)
+    assert again["erased"] == 0, "nothing is left of this subject to erase twice"
+    assert any("Bob" in (r.get("text") or "") for r in m.items), "forcing must still spare the other person"
 
 
 def test_the_intended_canonical_resolution_still_works():

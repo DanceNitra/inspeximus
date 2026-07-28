@@ -2609,6 +2609,7 @@ class Inspeximus:
         cand = {subject, Inspeximus._canon_source(subject)}
         subj_ids = [r["id"] for r in self.items if cand & Inspeximus._rec_sources(r)
                     and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant isolation on erasure
+        subj_ids = self._narrow_to_subject(subject, subj_ids)
         collisions = self._erasure_collisions(subject, cand, subj_ids)
         if collisions and not allow_ambiguous:
             subj_ids = [rid for rid in subj_ids if rid not in collisions["ids"]]
@@ -2646,7 +2647,10 @@ class Inspeximus:
                 f"{len(collisions['ids'])} record(s) belonging to a different subject. Pass the exact source "
                 f"string, or allow_ambiguous=True to erase all of them deliberately.")
         if not subj_ids:
-            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0}
+            # coverage belongs here too: "nothing matched" is itself an answer a DSAR reply is built on,
+            # and a field the caller can only rely on when it is ALWAYS present.
+            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
+                    "coverage": self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))}
         # capture the sensitive values BEFORE deletion so the cross-store residue check has something to
         # verify against (caller-supplied `values` win; else the erased records' own text/object strings).
         targets = list(getattr(self, "_erasure_targets", []))
@@ -2669,7 +2673,54 @@ class Inspeximus:
         if targets:
             out["manifest"] = self._erasure_manifest(subject, values or [], targets, request_id,
                                                      basis, authorized_by, already_erased=res["forgotten"])
+        out["coverage"] = self._erasure_coverage(out.get("manifest"), len(targets))
         return out
+
+    @staticmethod
+    def _erasure_coverage(manifest: dict | None, n_targets: int) -> dict:
+        """WHAT THIS ERASURE ACTUALLY COVERED — measured, not a disclaimer.
+
+        The result used to read `{"erased": 2, "request_id": ..., "tombstones": 2}` and say nothing at all
+        about the world outside this store. Measured: a store-native delete leaves the application's own
+        vector index fully populated (8/8 residue); wired to a registered target it is 0/8. So the default
+        caller -- who has registered nothing -- was handed a confident number about a surface this library
+        never looked at, which is the defect class this codebase keeps finding, here on the surface that
+        answers "did we erase this person".
+
+        The certificate and governance report did carry a scope SENTENCE, but the same sentence appears
+        whether you wired every store or none: a constant is not a coverage report. This returns the state.
+
+        `complete` is true only when at least one external target was registered AND every one of them
+        confirmed erasure. With none registered it is False and `unregistered` says so -- not because the
+        store failed, but because nobody asked it about anything else, and that is exactly the fact a DSAR
+        answer must not omit.
+        """
+        cov = {"store": True, "external_targets": n_targets, "confirmed": 0,
+               "complete": False, "unregistered": n_targets == 0}
+        if not manifest:
+            cov["note"] = ("no external erasure target is registered, so this covers THIS store only -- "
+                           "any copy the application embedded elsewhere (vector index, prompt logs, "
+                           "backups) is untouched and unaccounted for. Register targets with "
+                           "register_erasure_target() to erase across them and get a verifiable receipt.")
+            return cov
+        # READ the manifest's own verdict, do not recompute it. DeletionManifest.execute already sets
+        # `complete` (every entry verified_absent) and `residual_targets` (the ones that did not), and a
+        # second implementation here would be a second thing to drift. The first version of this function
+        # guessed the field names, iterated `targets` -- which is a list of NAMES, not records -- and
+        # raised AttributeError on the first real call. Guessing a structure instead of reading it is the
+        # habit this audit exists to break.
+        entries = manifest.get("entries") or []
+        cov["confirmed"] = sum(1 for e in entries if e.get("verified_absent") is True)
+        cov["complete"] = bool(manifest.get("complete"))
+        leaks = list(manifest.get("residual_targets") or [])
+        if leaks:
+            cov["unconfirmed"] = leaks
+            cov["note"] = (f"{len(leaks)} registered target(s) did not verify the data absent: "
+                           f"{', '.join(str(m) for m in leaks[:5])}. This erasure is NOT complete across "
+                           f"stores and must not be reported as such.")
+        elif not cov["complete"]:
+            cov["note"] = "the manifest reports no verified targets; treat this erasure as store-only."
+        return cov
 
     @staticmethod
     def _check_source(source):
@@ -2724,6 +2775,13 @@ class Inspeximus:
         resolution step, not at one caller, or "fixed" means fixed in one of five places."""
         cand = {subject, Inspeximus._canon_source(subject)}
         ids = [r["id"] for r in self._tenant_rows() if cand & Inspeximus._rec_sources(r)]
+        # ...and narrowed to the records that really are this subject, path and all. The coarse canonical
+        # form keeps only the host, so 'crm/alice', 'crm/bob' and 'crm/nobody-here' were one key: measured,
+        # a request naming a subject that was NEVER in the store hard-deleted another person's records and
+        # reported success. forget_subject was fixed first and that repeated this function's own history --
+        # its docstring records that 1.53.0 guarded one caller while four siblings kept the defect. It
+        # belongs here, where every subject-scoped path resolves.
+        ids = self._narrow_to_subject(subject, ids)
         collisions = self._erasure_collisions(subject, cand, ids) if destructive else {}
         if collisions and not allow_ambiguous:
             ids = [rid for rid in ids if rid not in collisions["ids"]]
@@ -3055,16 +3113,24 @@ class Inspeximus:
         Returns {erased, ids, request_id, tombstones}."""
         want = set(types) if types is not None else None
         cand = None
+        sel_ids = None
         if subject is not None:
             cand, _sel, _coll = self._resolve_subject(subject, allow_ambiguous)
             if _coll and not allow_ambiguous:
                 raise Inspeximus._ambiguous_error(subject, _coll, "forget_pii")
+            # Select by the RESOLVED ids, not by the coarse candidate set. Re-matching on `cand` below
+            # threw away the resolver's narrowing, so this path still deleted every record sharing a host
+            # with the subject -- including for a subject that was never in the store. The resolver is
+            # "THE one place a subject becomes a set of records" only if its callers use the set.
+            sel_ids = set(_sel)
         target = []
         for r in self._tenant_rows():
             tags = r.get("pii")
             if not tags:
                 continue
             if want is not None and not (want & set(tags)):
+                continue
+            if sel_ids is not None and r["id"] not in sel_ids:
                 continue
             if cand is not None and not (cand & Inspeximus._rec_sources(r)):
                 continue
@@ -5425,6 +5491,73 @@ class Inspeximus:
         if out:
             self._dirty = True   # mark for the next throttled/forced save; do NOT serialize on the read path
         return out
+
+    @staticmethod
+    def _canon_subject(doc) -> str:
+        """Identity-preserving normalisation of a SUBJECT, for erasure. Keeps the path.
+
+        `_canon_source` exists for entity resolution -- collapsing sybil variants of one ORIGIN
+        ('Wikipedia', 'wikipedia.org', 'https://www.wikipedia.org/wiki/X') to a single trust key -- and to
+        do that it keeps only the host: `s.split("/")[0]`. That is right for attribution and WRONG for
+        identity, because in the convention this library's own docstrings use, the path IS the person.
+
+        MEASURED, which is how this was found: 'crm/alice', 'crm/nobody-here' and 'crm/bob' all canonicalise
+        to 'crm'. With one real source in that bucket no collision fires, so forget_subject('crm/nobody-here')
+        -- a right-to-erasure request naming somebody who was never in the store -- hard-deleted BOTH of
+        crm/alice's records and returned erased=2. Not a clean verdict about unexamined input this time: a
+        DELETION on unexamined identity.
+
+        Same normalisation, path retained. 'User_42' and 'user-42' still resolve alike, so the tolerance the
+        ambiguity guard exists for is unchanged; 'crm/alice' and 'crm/bob' no longer do, which is correct --
+        they are two people.
+        """
+        s = str(doc or "").strip().lower()
+        s = re.sub(r"^[a-z]+://", "", s)
+        s = re.sub(r"^www\.", "", s)
+        s = s.split("?")[0].rstrip("/")
+        s = re.sub(r"\.(org|com|net|io|gov|edu|co|ai|dev|info|news)(?=/|$)", "", s)
+        return re.sub(r"[^a-z0-9]+", "", s)
+
+    def _narrow_to_subject(self, subject: str, ids: list) -> list:
+        """Keep only the records whose own source really is this subject, path and all.
+
+        The broad canonical match above is what finds candidates; this is what stops it deleting a
+        different person who merely shares a host. Applied only when at least one candidate matches at the
+        fine level -- a subject given as 'id:<record id>', or any convention where the coarse match is the
+        only one available, keeps working untouched rather than silently erasing nothing.
+        """
+        want = Inspeximus._canon_subject(subject)
+        if not want or str(subject).startswith("id:"):
+            return ids
+        by_id = {r["id"]: r for r in self.items}
+        coarse = {subject, Inspeximus._canon_source(subject)}
+        # Records attributed by INHERITED taint keep the coarse match. Taint is how provenance rides
+        # through summarisation, it is written coarse by construction, and narrowing it dropped a
+        # summary built from the subject's data -- an INCOMPLETE erasure, which is the worse failure.
+        # It is read from `taint` specifically, never from a record's own source, so the ghost subject
+        # this narrowing exists to stop cannot sneak back in through it.
+        inherited = {rid for rid in ids if coarse & set(by_id.get(rid, {}).get("taint") or [])}
+        roots = {rid for rid in ids
+                 if Inspeximus._canon_subject(self._raw_source(by_id.get(rid, {}))) == want}
+        if not roots and inherited:
+            return [rid for rid in ids if rid in inherited]
+        if not roots:
+            # nothing in the store really is this subject -- only records that share a coarse bucket with
+            # it. That is the ghost case: erase nothing rather than somebody else's data.
+            return []
+        # ...and everything downstream of those roots. The first version of this narrowing kept ONLY the
+        # roots and dropped the derived-lineage cascade, which is the whole point of forget_subject: a
+        # summary built from the subject's data must go too. Thirteen tests caught it, and an incomplete
+        # erasure would have been a worse defect than the over-broad one being fixed. Same forward closure
+        # the exact=True path already uses.
+        keep, frontier = set(roots), set(roots)
+        while frontier:
+            nxt = {r["id"] for r in self.items
+                   if r["id"] not in keep and (set(r.get("derived_from") or []) & frontier)}
+            keep |= nxt
+            frontier = nxt
+        keep |= inherited
+        return [rid for rid in ids if rid in keep]
 
     @staticmethod
     def _canon_source(doc) -> str:
