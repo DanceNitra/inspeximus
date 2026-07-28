@@ -675,6 +675,24 @@
     ]
   },
   {
+    "name": "the keep-budget goes back to slicing a population an earlier pass already retired",
+    "file": "inspeximus/core.py",
+    "old": "        active = [r for r in active if r.get(\"status\") == \"active\"]\n        if keep is not None and len(active) > keep:",
+    "new": "        if keep is not None and len(active) > keep:",
+    "tests": [
+      "tests/test_consolidate_keep_budget.py"
+    ]
+  },
+  {
+    "name": "consolidate reports the keep REQUEST as if it were the survivors again",
+    "file": "inspeximus/core.py",
+    "old": "\"staled\": staled, \"kept\": _live, \"keep_requested\": keep,",
+    "new": "\"staled\": staled, \"kept\": keep, \"keep_requested\": keep,",
+    "tests": [
+      "tests/test_consolidate_keep_budget.py"
+    ]
+  },
+  {
     "name": "an unsigned certificate claims its signatures are valid again",
     "file": "inspeximus/core.py",
     "old": "    signed = [t for t in toms if t.get(\"sig\")]",

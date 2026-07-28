@@ -6526,6 +6526,14 @@ class Inspeximus:
                         else:
                             a["links"].append(b["id"]); linked += 1
         staled = 0
+        # RE-DERIVE THE POPULATION. `active` was captured before the hub and toggle passes, both of
+        # which RETIRE records — so the keep-budget below was slicing a list that no longer described
+        # the store. Measured on 30 records with 30 distinct keys whose texts were near-identical: the
+        # toggle pass retired 29, the budget then dropped `keep`-onwards from the STALE list, and the
+        # store came back with ZERO active records while the report still said `kept: 10`. recall()
+        # returned nothing. With genuinely distinct texts the same call behaves correctly (30 -> 10),
+        # which is why this survived: the bug only shows when an earlier pass has already fired.
+        active = [r for r in active if r.get("status") == "active"]
         if keep is not None and len(active) > keep:
             # active is sorted by -raw value (above). Legacy = keep the top-`keep` by raw value. Two-tier =
             # protect the top kprot by raw value (recency-immune), then fill the remaining budget from the
@@ -6544,9 +6552,13 @@ class Inspeximus:
                 r["status"] = "superseded"; r["superseded_ts"] = time.time(); staled += 1
                 r.setdefault("meta", {})["superseded_by_policy"] = "keep_budget"
         self._save()
-        return {"active": len([r for r in self.items if r["status"] == "active"]),
-                "hubs_flagged": hubs, "linked_pairs": linked, "toggled": toggled,
-                "staled": staled, "kept": keep, "total": len(self.items)}
+        # `kept` used to be `keep` — the REQUEST echoed back, never measured. It sat in the same dict as
+        # `active`, so a run that left 0 active still reported `kept: 10` and the two contradicted each
+        # other in one line. It is the surviving population now, and the request is reported separately
+        # so a caller can still see what was asked for.
+        _live = len([r for r in self.items if r["status"] == "active"])
+        return {"active": _live, "hubs_flagged": hubs, "linked_pairs": linked, "toggled": toggled,
+                "staled": staled, "kept": _live, "keep_requested": keep, "total": len(self.items)}
 
     # ── cluster-triggered consolidation ───────────────────────────────────────
     def _cluster_active(self, sim_threshold: float = 0.5) -> list[list[dict]]:
