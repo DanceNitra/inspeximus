@@ -1,0 +1,143 @@
+"""A correction written through `route()` must go when the thing it corrects goes.
+
+THE DEFECT, measured before the fix. Alice's address is written with `source={'doc': 'hr/alice'}` and then
+corrected through `route()`. Her right-to-erasure request:
+
+    forget_subject('hr/alice')  ->  erased = 1, reported as success
+
+    what survived:  [active] 'actually alice moved to 9 Oak Ave'
+    residue of the CURRENT value '9 Oak Ave':  True
+    residue of the OLD value '5 Elm St':       False
+
+The erasure removed the stale address and kept the live one. That is not a partial erasure, it is the
+inverse of erasure: the record that survives is the person's current data, and the caller was told the
+request succeeded. The same correction written through `remember(source=...)` erased both.
+
+THE FIX IS NOT A PARAMETER. `route()` knows exactly which record it is correcting, so it declares the
+edge itself -- the same category as `revert`/`submit_revert`, where the STORE owns the derivation rather
+than forwarding a caller's argument. `forget_subject` cascades along `derived_from`, so the correction
+becomes reachable with no change required of the caller. A `source=` parameter exists as well, but the
+lineage edge alone is what closes the hole, and that matters: the callers who hit this are the ones who
+never passed provenance in the first place.
+"""
+from __future__ import annotations
+
+import os
+import sys
+import tempfile
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from inspeximus import Inspeximus  # noqa: E402
+
+
+def _store():
+    return Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), receipts=True)
+
+
+def _blob(m):
+    return " ".join((r.get("text") or "") + str(r.get("object") or "") for r in m.items)
+
+
+def test_a_routed_correction_goes_with_the_subject_it_corrects():
+    """THE defect, and note that NO source is passed to route -- the lineage edge alone must do it."""
+    m = _store()
+    m.remember("alice home address is 5 Elm St", key="alice::addr", object="5 Elm St",
+               source={"doc": "hr/alice"})
+    m.route("actually alice moved to 9 Oak Ave", key="alice::addr", object="9 Oak Ave")
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["erased"] == 2
+    assert "9 Oak" not in _blob(m), "the CURRENT value survived the erasure of the subject"
+
+
+def test_it_also_works_when_the_caller_does_name_a_source():
+    m = _store()
+    m.remember("alice home address is 5 Elm St", key="alice::addr", object="5 Elm St",
+               source={"doc": "hr/alice"})
+    m.route("actually alice moved to 9 Oak Ave", key="alice::addr", object="9 Oak Ave",
+            source="hr/alice")
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["erased"] == 2
+    assert "9 Oak" not in _blob(m)
+
+
+def test_the_source_parameter_reaches_a_record_lineage_cannot():
+    """Isolates `source`. Every other test here has a lineage edge doing the work, so dropping the
+    source parameter changed nothing and a mutation that removed it SURVIVED. A route() that asserts a
+    value on a NEW key has no parent to derive from -- only the caller's source can make it reachable."""
+    m = _store()
+    out = m.route("alice's emergency contact is bob", key="alice::contact", object="bob",
+                  source="hr/alice")
+    assert out["intent"] == "assert"
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert not rec.get("derived_from"), "this arm is only meaningful with no lineage edge present"
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["erased"] == 1
+
+
+def test_without_a_source_a_first_assertion_stays_unreachable():
+    """CONTROL for the arm above: the caller supplies the subject, route never invents one."""
+    m = _store()
+    m.route("alice's emergency contact is bob", key="alice::contact", object="bob")
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["erased"] == 0
+
+
+def test_the_correction_declares_the_record_it_corrects():
+    m = _store()
+    first = m.remember("region is frankfurt", key="cfg::r", object="frankfurt")
+    out = m.route("actually the region is ohio", key="cfg::r", object="ohio")
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert rec["derived_from"] == [first]
+
+
+def test_the_parent_is_the_corrected_record_not_merely_some_record():
+    """A mutation that took `self.items[0]` instead of the key's current record SURVIVED, because in
+    every other fixture here the corrected record happens to BE items[0]. The fixture could not express
+    the difference, which is a weakness in the test and not in the code. So: an unrelated record goes in
+    first, and the parent must still be alice's."""
+    m = _store()
+    unrelated = m.remember("weather is fine", key="misc::w", object="fine")
+    target = m.remember("alice home address is 5 Elm St", key="alice::addr", object="5 Elm St",
+                        source={"doc": "hr/alice"})
+    out = m.route("actually alice moved to 9 Oak Ave", key="alice::addr", object="9 Oak Ave")
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert rec["derived_from"] == [target]
+    assert unrelated not in (rec.get("derived_from") or [])
+    # and the consequence: erasing an unrelated subject must not drag the correction along
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["erased"] == 2
+    assert "weather is fine" in _blob(m), "an unrelated record was pulled into the erasure"
+
+
+def test_a_first_assertion_has_nothing_to_derive_from():
+    """CONTROL. Declaring a parent that does not exist would be inventing provenance."""
+    m = _store()
+    out = m.route("the region is frankfurt", key="cfg::r", object="frankfurt")
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert out["intent"] == "assert"
+    assert not rec.get("derived_from")
+
+
+def test_routing_still_routes():
+    """CONTROL. The point of route() is that the correction becomes current. A change that made every
+    correction erasable while breaking supersession would pass every test above."""
+    m = _store()
+    m.remember("region is frankfurt", key="cfg::r", object="frankfurt")
+    out = m.route("actually the region is ohio", key="cfg::r", object="ohio")
+    assert out["intent"] == "correct" and out["event"] == "UPDATE"
+    active = [r.get("object") for r in m.items
+              if r.get("key") == "cfg::r" and r.get("status") == "active"]
+    assert active == ["ohio"]
+
+
+def test_a_ghost_subject_still_reaches_nothing():
+    """CONTROL. Making corrections reachable must not make them reachable by the wrong subject."""
+    m = _store()
+    m.remember("alice addr", key="a", object="x", source={"doc": "hr/alice"})
+    m.route("actually y", key="a", object="y")
+    assert m.forget_subject("hr/nobody-here", request_id="G", basis="art17")["erased"] == 0
+
+
+def test_a_correction_on_a_subjectless_key_erases_nothing_by_subject():
+    """CONTROL. Config has no data subject; a DSAR must not start sweeping up unrelated records just
+    because they now carry a lineage edge."""
+    m = _store()
+    m.remember("region is frankfurt", key="cfg::r", object="frankfurt")
+    m.route("actually the region is ohio", key="cfg::r", object="ohio")
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["erased"] == 0

@@ -249,7 +249,8 @@ def revert(key: str, capability: str = "") -> dict:
 
 
 @mcp.tool()
-def route(text: str, key: str = "", object: str = "", context: str = "", policy: str = "safe", capability: str = "") -> dict:
+def route(text: str, key: str = "", object: str = "", context: str = "", policy: str = "safe",
+          capability: str = "", source: str = "") -> dict:
     """ONE-CALL WRITE ROUTER: hand it any utterance and it decides the right ledger operation — a new
     fact is remembered, a marked correction supersedes, and a revert instruction ("go back to what we
     had", "restore the original") is resolved against the key's version timeline and executed through
@@ -263,7 +264,8 @@ def route(text: str, key: str = "", object: str = "", context: str = "", policy:
     (pass it as `context`) shows change-awareness — forgeable, use only if that channel is trusted;
     "trusting" always restores. Returns {intent, action, key, ...} describing what was done."""
     return _MEM.route(text, key=key or None, object=object or None,
-                      context=context or None, policy=policy, capability=capability or None)
+                      context=context or None, policy=policy, capability=capability or None,
+                      source=source or None)
 
 
 @mcp.tool()

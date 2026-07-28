@@ -209,7 +209,11 @@ def test_the_owned_sites_are_declared_and_the_rest_are_not():
                 passthrough.add(fn)
             elif re.search(r"derived_from\s*=|derived\s*=\s*True", window):
                 owned.add(fn)
-    assert owned == {"rederive", "revert", "submit_revert", "resolve_reopened"}, owned
+    # `route` joined the OWNED set on 2026-07-29: a correction is derived from the record it corrects,
+    # and route knows which record that is, so it passes a computed parent rather than a caller's
+    # argument. It was not bookkeeping -- a correction with no parent survived the subject's erasure
+    # while holding their CURRENT value. See tests/test_route_correction_lineage.py.
+    assert owned == {"rederive", "revert", "submit_revert", "resolve_reopened", "route"}, owned
     assert passthrough == {"remember_decision"}, passthrough
 
 

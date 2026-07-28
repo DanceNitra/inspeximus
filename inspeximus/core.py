@@ -4336,7 +4336,8 @@ class Inspeximus:
         return max(hits, key=len) if hits else None
 
     def route(self, text: str, key: str | None = None, object: str | None = None,
-              context: str | None = None, policy: str = "safe", capability: str | None = None) -> dict:
+              context: str | None = None, policy: str = "safe", capability: str | None = None,
+              source=None) -> dict:
         """WRITE-PATH INTENT ROUTER: tag an utterance (assert / correct / revert / echo), resolve a fuzzy
         version reference against the key's timeline, and execute the right ledger operation — so a
         value-obscuring revert ("go back to what we had") works without the caller naming a value, and a
@@ -4453,7 +4454,20 @@ class Inspeximus:
             return {"intent": "assert", "action": "noop", "event": "NOOP", "key": key, "id": None,
                     "note": "value already current; duplicate write skipped (dedup)"}
         if object not in chain:
-            rid = self.remember(text, key=key, object=object)
+            # A CORRECTION IS DERIVED FROM WHAT IT CORRECTS, and the store knows which record that is --
+            # so it declares the edge itself, exactly as revert/submit_revert already do. This is not
+            # bookkeeping. Measured before: alice's address is written with source hr/alice, corrected
+            # through route(), and her right-to-erasure request then erased the OLD address and LEFT THE
+            # NEW ONE, reporting success -- the correction carried no source and no lineage, so nothing
+            # connected it to her. Erasure that deletes the stale value and keeps the current one is the
+            # exact inverse of erasure. The same correction through remember(source=...) erased both.
+            #
+            # The caller can still name a source; when they do not, the lineage edge alone is enough for
+            # forget_subject to reach the correction, because it cascades along derived_from.
+            prev = self._current_active(key) if cur is not None else None
+            rid = self.remember(text, key=key, object=object,
+                                source={"doc": source} if isinstance(source, str) and source else source,
+                                derived_from=([prev["id"]] if prev else None))
             intent = "correct" if (cur is not None and self._ROUTE_CORRECT.search(low)) else "assert"
             event = "UPDATE" if cur is not None else "ADD"   # supersedes a prior value vs first value for the key
             return {"intent": intent, "action": "remembered", "event": event, "key": key, "id": rid}

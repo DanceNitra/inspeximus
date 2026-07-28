@@ -39,10 +39,23 @@ pytest.importorskip("mcp")
 
 from inspeximus import Inspeximus  # noqa: E402
 
-CLOSED = ("remember", "remember_decision")
+#: A closed path can attribute what it writes. HOW it does so differs, and the difference is load-bearing:
+#:   "caller"  -- the caller names a source and may declare parents (`source` + `derived_from`)
+#:   "owned"   -- the STORE declares the lineage itself because it knows the parent. `route` takes a
+#:                `source` too, but deliberately NOT a `derived_from`: a correction's parent is the record
+#:                being corrected, and a caller-supplied parent would compete with the edge route computes.
+CLOSED = {"remember": "caller", "remember_decision": "caller", "route": "owned"}
 #: Characterisation, not a wish. These reach the store and cannot attribute what they write.
 #: WHEN ONE IS CLOSED, MOVE IT TO `CLOSED` AND ADD A REACHABILITY TEST BELOW -- do not delete the entry.
-STILL_OPEN = ("route", "observe", "resolve_reopened")
+#:
+#: `route` moved on 2026-07-29, and the mechanism is worth stating: it is closed by a LINEAGE EDGE the
+#: store declares itself, not by the `source` parameter it also gained. A correction knows what it
+#: corrects. Reachability lives in tests/test_route_correction_lineage.py.
+#:
+#: `observe` is listed here but is a DIFFERENT SHAPE, measured: it writes no record at all -- it accrues
+#: evidence and can reopen a settled value -- so a `source` on it would have nothing to attach to. Left in
+#: the list so the claim stays visible, not because a parameter is the fix.
+STILL_OPEN = ("observe", "resolve_reopened")
 
 
 @pytest.fixture()
@@ -57,9 +70,15 @@ def _params(fn):
 
 
 def test_the_closed_write_paths_accept_provenance(mcp):
-    for name in CLOSED:
+    for name, how in CLOSED.items():
         ps = _params(getattr(mcp, name))
-        assert "source" in ps and "derived_from" in ps, f"{name} lost its provenance parameters"
+        assert "source" in ps, f"{name} lost its `source` parameter"
+        if how == "caller":
+            assert "derived_from" in ps, f"{name} lost its `derived_from` parameter"
+        else:
+            assert "derived_from" not in ps, (
+                f"{name} is closed by a store-OWNED lineage edge; a caller-supplied `derived_from` would "
+                "compete with the parent it computes, so gaining one is a decision to make deliberately")
 
 
 def test_the_open_write_paths_are_named_rather_than_forgotten(mcp):
