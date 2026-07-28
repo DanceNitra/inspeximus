@@ -972,5 +972,41 @@
     "tests": [
       "tests/test_coverage_confirmed_counts_externals.py"
     ]
+  },
+  {
+    "name": "the gate restores through a newline-translating writer",
+    "file": "tools/mutation_check.py",
+    "old": "    with io.open(path, \"w\", encoding=\"utf-8\", newline=\"\") as fh:\n        fh.write(text)",
+    "new": "    with io.open(path, \"w\", encoding=\"utf-8\") as fh:\n        fh.write(text)",
+    "tests": [
+      "tests/test_mutation_restore_is_byte_exact.py"
+    ]
+  },
+  {
+    "name": "the gate reads through a newline-translating reader",
+    "file": "tools/mutation_check.py",
+    "old": "    return io.open(path, encoding=\"utf-8\", newline=\"\").read()",
+    "new": "    return io.open(path, encoding=\"utf-8\").read()",
+    "tests": [
+      "tests/test_mutation_restore_is_byte_exact.py"
+    ]
+  },
+  {
+    "name": "the gate stops matching spec endings to the file",
+    "file": "tools/mutation_check.py",
+    "old": "    if \"\\r\\n\" in src and \"\\r\\n\" not in fragment:\n        return fragment.replace(\"\\n\", \"\\r\\n\")\n    return fragment",
+    "new": "    return fragment",
+    "tests": [
+      "tests/test_mutation_restore_is_byte_exact.py"
+    ]
+  },
+  {
+    "name": "the gate converts endings unconditionally, breaking LF files",
+    "file": "tools/mutation_check.py",
+    "old": "    if \"\\r\\n\" in src and \"\\r\\n\" not in fragment:\n        return fragment.replace(\"\\n\", \"\\r\\n\")\n    return fragment",
+    "new": "    return fragment.replace(\"\\n\", \"\\r\\n\")",
+    "tests": [
+      "tests/test_mutation_restore_is_byte_exact.py"
+    ]
   }
 ]

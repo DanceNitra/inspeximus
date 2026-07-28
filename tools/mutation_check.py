@@ -78,6 +78,37 @@ def _dirty_tracked() -> set:
 _ARTIFACT = re.compile(r"^probes/[\w.-]+\.json$")
 
 
+def _read_exact(path: str) -> str:
+    """Read WITHOUT newline translation, so what comes back can be written back byte-for-byte."""
+    return io.open(path, encoding="utf-8", newline="").read()
+
+
+def _write_exact(path: str, text: str) -> None:
+    """Write WITHOUT newline translation.
+
+    In text mode Windows turns every "\\n" into "\\r\\n", so restoring an LF file rewrote it as CRLF --
+    content identical, bytes different, file left permanently dirty and reported as unrestorable
+    collateral. It hid for a long time because most sources here are CRLF on checkout, which makes the
+    round trip an accidental identity; README.md is LF, so it was the one that surfaced. A tool whose job
+    is to leave the repository as it found it must put back the bytes it took, not an equivalent
+    rendering of them.
+    """
+    with io.open(path, "w", encoding="utf-8", newline="") as fh:
+        fh.write(text)
+
+
+def _match_endings(fragment: str, src: str) -> str:
+    """Re-render a spec fragment in the line endings the FILE actually uses.
+
+    Specs are authored with "\\n" so one mutations.json serves both a CRLF Windows checkout and an LF
+    Linux CI. Only converts when the file is CRLF and the fragment is not already, so a mixed-ending
+    file is left alone rather than half-rewritten.
+    """
+    if "\r\n" in src and "\r\n" not in fragment:
+        return fragment.replace("\n", "\r\n")
+    return fragment
+
+
 def _restore(paths) -> list:
     """Undo the RESULT ARTIFACTS this run dirtied -- and nothing else.
 
@@ -123,7 +154,13 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
         name, rel, old, new = mut["name"], mut["file"], mut["old"], mut["new"]
         tests = mut["tests"] if isinstance(mut["tests"], list) else [mut["tests"]]
         path = os.path.join(ROOT, rel)
-        src = io.open(path, encoding="utf-8").read()
+        src = _read_exact(path)
+        # The spec is written with "\n" and stays that way, so one mutations.json works on a Windows
+        # checkout (CRLF) and on Linux CI (LF). Reading byte-exactly is what makes this necessary: a
+        # multi-line target written with "\n" cannot match a CRLF file, and it does not fail quietly --
+        # it becomes a SKIP, and a skip fails this gate. Found immediately, by the first multi-line
+        # mutation added after the read was made exact.
+        old, new = _match_endings(old, src), _match_endings(new, src)
 
         # A target that is absent, or present more than once, would mutate nothing or the wrong thing --
         # and either way would report a false verdict rather than an error.
@@ -143,10 +180,10 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             continue
 
         try:
-            io.open(path, "w", encoding="utf-8").write(src.replace(old, new, 1))
+            io.open(path, "w", encoding="utf-8", newline="").write(src.replace(old, new, 1))
             killers = _killers(_pytest(tests, env).stdout)
         finally:
-            io.open(path, "w", encoding="utf-8").write(src)
+            io.open(path, "w", encoding="utf-8", newline="").write(src)
             # RESTORE THE MUTANT'S ARTIFACTS NOW, NOT AT THE END OF THE RUN. The source was always put
             # back per mutation; its RECEIPTS were not -- collateral was collected once, after the whole
             # loop. So a mutant that flips the echo guard writes an INVERTED
