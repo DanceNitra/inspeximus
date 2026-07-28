@@ -675,6 +675,15 @@
     ]
   },
   {
+    "name": "publishing stops depending on the test suite (a red suite reaches PyPI again)",
+    "file": ".github/workflows/release.yml",
+    "old": "    needs: [audit, tests]",
+    "new": "    needs: audit",
+    "tests": [
+      "tests/test_release_cannot_publish_untested.py"
+    ]
+  },
+  {
     "name": "the release pinner goes back to leaving the plugin manifests behind",
     "file": "packages/_pin_server_json.py",
     "old": "    p = ROOT / \".claude-plugin\" / \"plugin.json\"\n    if p.exists():",

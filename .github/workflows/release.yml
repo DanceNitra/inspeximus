@@ -55,12 +55,39 @@ jobs:
             echo "::error::falsification control passed — the audit proves nothing"; exit 1
           fi
 
+  tests:
+    # THE SUITE, on the commit being published. `audit` above says "never publish something the audits
+    # have not just passed" and meant it -- but it runs claims_audit and governance_audit, not pytest.
+    # The suite lives in ci.yml, which release.yml did not depend on, so the two ran side by side and
+    # neither waited: 1.86.0 published to PyPI while `tests` was RED on the same commit. The wheel was
+    # fine that time -- the failure was stale version strings in two registry manifests -- but that was
+    # luck, not a guarantee, and RELEASING.md forbids retagging a published version to make CI green,
+    # so this cannot be repaired after the fact. It has to be a dependency.
+    #
+    # The integrations leg specifically: the base environment skips ~100 tests behind import guards, and
+    # the manifest-version assertions that caught 1.86.0 run in BOTH legs. Mirrors ci.yml's install.
+    name: the test suite must pass first
+    if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install with every optional dependency
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest cryptography numpy pyyaml
+          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]"
+          pip install haystack-ai
+      - run: python -m pytest tests/ -q
+
   build:
     name: build sdist + wheel
     # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
     # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
     if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
-    needs: audit
+    needs: [audit, tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

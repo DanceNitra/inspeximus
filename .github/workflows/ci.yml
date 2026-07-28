@@ -17,7 +17,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install pytest cryptography
+          pip install pytest cryptography pyyaml
       # The BASE environment on purpose: the core is zero-dependency and this leg proves it stays that way.
       # It is not the whole suite -- see the `integrations` job.
       - name: Run tests
@@ -38,7 +38,7 @@ jobs:
       - name: Install with every optional dependency
         run: |
           python -m pip install --upgrade pip
-          pip install pytest cryptography numpy
+          pip install pytest cryptography numpy pyyaml
           pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]"
           pip install haystack-ai
       - name: Run tests
