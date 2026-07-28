@@ -1062,5 +1062,32 @@
     "tests": [
       "tests/test_mcp_provenance_reach.py"
     ]
+  },
+  {
+    "name": "the decision path drops the source it was given",
+    "file": "inspeximus/core.py",
+    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,",
+    "new": "                             source=None,",
+    "tests": [
+      "tests/test_write_paths_provenance_census.py"
+    ]
+  },
+  {
+    "name": "the decision path invents a subject the caller never supplied",
+    "file": "inspeximus/core.py",
+    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,",
+    "new": "                             source={\"doc\": source or \"hr/bob\"},",
+    "tests": [
+      "tests/test_write_paths_provenance_census.py"
+    ]
+  },
+  {
+    "name": "the decision result always claims the record is attributable",
+    "file": "inspeximus/mcp_server.py",
+    "old": "            \"attributable\": bool(source) or bool(derived_from)}\n\n\n@mcp.tool()\ndef revert",
+    "new": "            \"attributable\": True}\n\n\n@mcp.tool()\ndef revert",
+    "tests": [
+      "tests/test_write_paths_provenance_census.py"
+    ]
   }
 ]

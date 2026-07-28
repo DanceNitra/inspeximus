@@ -2137,7 +2137,7 @@ class Inspeximus:
 
     def remember_decision(self, decision: str, because: str | None = None, context: str | None = None,
                           topic: str | None = None, tags=None, value: float = 2.0,
-                          capability: str | None = None) -> str:
+                          capability: str | None = None, source=None, derived_from=None) -> str:
         """Capture a DECISION — the memory that actually matters and that a raw event-log misses. A coding/agent
         session logging only commands + file-states records the MECHANICS but not the CONCLUSIONS ("we decided X
         because Y"), so recall can't answer "what did we decide / send / choose". This stores the decision as a
@@ -2172,7 +2172,9 @@ class Inspeximus:
         # the CURRENT decision", "revert restores the prior one") described behaviour that did not happen.
         return self.remember(text, tags=(list(tags) if tags else []) + ["decision"], value=value,
                              mtype="procedural", key=key, object=(decision.strip() or None),
-                             meta=md, capability=capability)
+                             meta=md, capability=capability,
+                             source={"doc": source} if isinstance(source, str) and source else source,
+                             derived_from=derived_from or None)
 
     # The extraction contract for distill_and_remember (the OPTIONAL LLM capture half). A caller's distiller feeds
     # this prompt + the raw text to any LLM and returns the parsed JSON list. inspeximus owns the STRUCTURE (extract ->

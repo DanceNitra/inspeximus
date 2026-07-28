@@ -202,7 +202,8 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
 
 
 @mcp.tool()
-def remember_decision(decision: str, because: str = "", context: str = "", topic: str = "") -> dict:
+def remember_decision(decision: str, because: str = "", context: str = "", topic: str = "",
+                      source: str = "", derived_from: list[str] | None = None) -> dict:
     """Store a DECISION — the thing that actually matters and that a raw event/command log misses. Use this
     whenever you (or the user) CONCLUDE or CHOOSE something: "we decided X", "we're going with Y", "dropped Z",
     "the plan is W". Pass `because` (the rationale) and `context` (the situation) — they're kept for retrieval so a
@@ -212,10 +213,21 @@ def remember_decision(decision: str, because: str = "", context: str = "", topic
     on the same topic RETIRES the old one, recall returns the CURRENT decision, and `revert('decision::<topic>')`
     restores the prior one — decisions stay current, correctable, revertible, and auditable, with NO LLM and no
     similarity guesswork (inspeximus's integrity moat applied to decisions; an LLM-extracted fact store can't do this).
+
+    `source` / `derived_from` — same meaning as on `remember`, and they matter MORE here, not less. A
+    decision is usually ABOUT someone ("we're billing Alice monthly"), which makes it exactly the kind of
+    record a right-to-erasure request has to reach. Without a source it is attributable to nothing but its
+    own id: `forget_subject` cannot find it, and it survives a DSAR that erased everything else about that
+    person. Measured: a decision written with no source answered would_erase=0 to every phrasing of the
+    subject.
+
     Returns the new memory id."""
     mid = _MEM.remember_decision(decision, because=because or None, context=context or None,
-                                 topic=topic or None)
-    return {"id": mid, "decision": decision[:120], "topic": topic or None, "supersedes_by_key": bool(topic)}
+                                 topic=topic or None, source=source or None,
+                                 derived_from=derived_from or None)
+    return {"id": mid, "decision": decision[:120], "topic": topic or None,
+            "supersedes_by_key": bool(topic),
+            "attributable": bool(source) or bool(derived_from)}
 
 
 @mcp.tool()
