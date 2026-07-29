@@ -42,9 +42,18 @@ def cli(store, *args, expect_ok=True):
 
 @pytest.fixture()
 def mcp(monkeypatch, tmp_path):
-    """A fresh MCP server bound to a throwaway store."""
+    """A fresh MCP server bound to a throwaway store, in a KNOWN posture.
+
+    The env is cleared, not inherited. A conformance test that asserts what a user gets BY DEFAULT cannot
+    read a default another test left lying in `os.environ` -- and one did: `test_mcp_surface.py` sets
+    `INSPEXIMUS_RECEIPTS=1` directly rather than through monkeypatch, so it leaks for the rest of the
+    process. The receipts test passed alone and failed in the full suite, which is the worst shape a gate
+    can have: green when you run it, red when it matters, and the difference invisible.
+    """
     pytest.importorskip("mcp")
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "mcp.json"))
+    monkeypatch.delenv("INSPEXIMUS_RECEIPTS", raising=False)
+    monkeypatch.delenv("INSPEXIMUS_ECHO_GUARD", raising=False)
     import inspeximus.mcp_server as m
     return importlib.reload(m)
 
