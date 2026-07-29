@@ -921,6 +921,45 @@ class Inspeximus:
         # influence set. MEASURED (inspeximus/probes/minja_influence_gate.py): self-graded MINJA ASR 80% -> 0%
         # with this on, legit utility preserved when the app passes a real warrant. Reversible: False = legacy.
         self.credit_requires_warrant = False
+        # CREDIT BURST COLLAPSE (OPT-IN, default None -> OFF -> identical legacy behavior). Corroborating
+        # LINKS already get this treatment: `temporal_gate` collapses co-arriving witnesses to one anchor,
+        # because genuinely independent evidence spreads out in time while a burst is one coordinated act.
+        # Credit never got the same rule, and that asymmetry is exploitable in BOTH directions.
+        #   SUPPRESSION (the direction that has no defense here): the influence gate is
+        #   `good_earned > 0 and good >= bad`, so a correct memory with G earned goods leaves the gate after
+        #   G+1 failing episodes. An adversary who writes NOTHING, injects no content and forges no
+        #   provenance -- controlling only the text of queries it may legitimately ask -- shapes queries so
+        #   a true safety memory is co-recalled on episodes that genuinely fail. Every write-time defense in
+        #   this library authenticates a WRITER; a credit edge has no author (the retrieval loop mints it
+        #   from an outcome that really happened), so content scanning, signed receipts and source-diversity
+        #   are all structurally blind to it. credit_requires_warrant does not help: a warrant attests the
+        #   OUTCOME, never the ATTRIBUTION.
+        #   ACCUMULATION (the mirror, already published): a non-causal memory riding along on successes.
+        # PRIOR ART -- we claim only the TRANSFER, not a new attack class: bad-mouthing (Hoffman, Zage &
+        # Nita-Rotaru, ACM Comput. Surv. 42(1), 2009) and RepTrap (Yang, Feng, Sun & Dai, SecureComm 2008)
+        # WITHOUT ratings; in every prior formulation the attacker SUPPLIES the negative evidence, here it
+        # supplies none. Simsek (arXiv:2604.12007) calls the same counter "associational, not causal" and
+        # states no threat model.
+        # Set to a number of SECONDS: same-polarity credit for one record inside that window counts ONCE,
+        # so cost scales with DISTINCT OCCASIONS rather than raw volume.
+        # MEASURED HERE (tests/test_credit_burst_window.py), memory with 5 earned goods:
+        #   OFF            -> evicted from the gate in 6 attack episodes (~1 ms of wall clock)
+        #   window = 0.05s -> 2,000 attack episodes over 117 ms bought only 3 bads; never evicted, and the
+        #                     5 legitimate goods still landed in full because honest use was SPREAD OUT
+        # So the property is not a speed multiplier, it is a change of CURRENCY: the adversary needs
+        # good+1 WINDOWS OF ELAPSED TIME instead of good+1 requests, and request volume cannot buy time.
+        # Pick the window from how far apart honest successes actually arrive in your app: anything shorter
+        # than that spacing leaves legitimate learning intact while collapsing a burst.
+        # A BURST OF HONEST CREDIT COLLAPSES TOO — this is polarity-symmetric and not attacker-specific. A
+        # store that credits 5 successes inside one window records ONE good, so a window longer than your
+        # real success spacing will under-count legitimate standing. That is the tuning cost, stated plainly.
+        # HONEST RESIDUAL, and the reason T4 exists in that test file: this raises COST, it does not
+        # prevent. An adversary with unlimited independent occasions and real failures is indistinguishable
+        # from genuine evidence that the memory is wrong. Rejected alternatives: hysteresis on the gate
+        # bought only 1.5x; requiring a warrant on `bad` looked perfect but its result was an artifact of
+        # assuming warrants unforgeable (they are not, see credit_requires_warrant) and it trades
+        # suppression-resistance for never demoting a wrong memory at all.
+        self.credit_burst_window = None
         # SEED-ANCHORED FLOW TRUST (OPT-IN, default empty set -> OFF -> zero behavior change). The one axis
         # strict_corroboration does NOT close: distinct Ed25519 keys prove DISTINCTNESS, not COST -- a Sybil
         # mints N keypairs for free, so ">=2 distinct verified keys" is still forgeable by a determined
@@ -6109,17 +6148,26 @@ class Inspeximus:
         good = Inspeximus._outcome_good(outcome)
         by_id = {x["id"]: x for x in self._tenant_rows()}
         key, updated = ("good" if good else "bad"), []
+        win, now, collapsed = self.credit_burst_window, time.time(), []
         for i in (ids or []):
             rec = by_id.get(i)
             if rec is None:
                 continue
+            if win:
+                # Same-polarity credit for this record inside the window is ONE occasion, not many.
+                last = (rec.get("credit_seen") or {}).get(key)
+                if last is not None and (now - float(last)) < float(win):
+                    collapsed.append(i)
+                    continue
+                rec.setdefault("credit_seen", {})[key] = now
             rec[key] = float(rec.get(key, 0) or 0) + float(weight)
             if good and self._warrant_is_exogenous(rec, warrant):
                 rec["good_warranted"] = float(rec.get("good_warranted", 0) or 0) + float(weight)
             updated.append(i)
         if updated:
             self._save()
-        return {"updated": updated, "outcome": key, "weight": weight}
+        return {"updated": updated, "outcome": key, "weight": weight,
+                **({"collapsed": collapsed} if collapsed else {})}
 
     def _warrant_is_exogenous(self, rec: dict, warrant) -> bool:
         """A warrant vouches for an outcome the record did NOT author itself. Exogenous = a non-empty token
