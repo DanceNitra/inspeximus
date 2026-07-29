@@ -70,14 +70,38 @@ jobs:
           pip install -e ".[mcp]"
       - name: README + docs/AI_ACT.md guarantees, exercised through MCP and the CLI
         run: python -m pytest tests/test_surface_conformance.py -q -rs
-      # NO FALSIFICATION CONTROL YET, and that is stated rather than faked. Every other job in this file
-      # carries one, because a check never shown to fail proves nothing. Two attempts to build one here
-      # both FAILED TO FAIL: severing `_narrow_to_subject` in erasure_audit, and severing the declared
-      # derived_from closure, each left all 13 tests green -- so in this fixture the derived record is
-      # reached by a third path neither edit touched. Shipping a control that passes vacuously would be
-      # the exact defect this whole suite exists to catch, so the gap is recorded instead of decorated.
-      # Until it exists, this job proves the guarantees hold TODAY and proves nothing about the suite's
-      # teeth. Tracked as the next piece of work.
+      # A conformance suite that cannot fail proves nothing. Sever the derived-lineage cascade -- the
+      # Art.17 guarantee docs/AI_ACT.md advertises -- and require the suite to notice through BOTH
+      # surfaces.
+      #
+      # It took three attempts to aim this, and the first two are why the control exists. Severing
+      # `_narrow_to_subject`'s call in erasure_audit left all 13 green; so did severing the forward
+      # closure at the top of forget_subject, which turns out to be the DRY-RUN preview's copy. The erase
+      # path runs through the resolver's own closure, and only cutting that one moves anything. A control
+      # aimed at the wrong line reports a suite with teeth when the suite has none -- which is exactly the
+      # class of defect this job is here to catch, committed against the job itself.
+      - name: the suite must fail when a guarantee is broken
+        run: |
+          python - <<'PY'
+          import pathlib
+          p = pathlib.Path("inspeximus/core.py")
+          s = p.read_text(encoding="utf-8")
+          old = '''        keep, frontier = set(roots), set(roots)
+          while frontier:
+              nxt = {r["id"] for r in self.items
+                     if r["id"] not in keep and (set(r.get("derived_from") or []) & frontier)}
+              keep |= nxt
+              frontier = nxt
+          keep |= inherited'''.replace("\n          ", "\n        ")
+          assert s.count(old) == 1, f"falsification target appears {s.count(old)}x -- the control is aimed at nothing"
+          p.write_text(s.replace(old, "        keep = set(roots) | inherited", 1), encoding="utf-8")
+          PY
+          if python -m pytest tests/test_surface_conformance.py -q; then
+            echo "::error::falsification control PASSED — the conformance suite cannot fail, so it proves nothing"
+            exit 1
+          else
+            echo "falsification control correctly reported the broken guarantee"
+          fi
 
   basestore-parity:
     name: InspeximusStore vs LangGraph's own store
