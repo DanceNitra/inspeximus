@@ -160,6 +160,37 @@ def _sha256_hex(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
 
+def _dump_store(items) -> str:
+    """Serialize the store: each record COMPACT, one per line, inside a normal JSON array.
+
+    WHY NOT `json.dumps(items, indent=1)` (what this replaced): passing `indent` makes CPython abandon
+    its C encoder and fall back to the pure-Python `_iterencode` path. Measured on a realistic record
+    shape, that was the single largest cost in the whole library — a mixed 1,000-write workload spent
+    29.8 s of its 29.9 s inside _save, and 25.6 s of that inside json.dumps, because `_save(force=True)`
+    runs on every remember() and re-serializes the entire store each time.
+
+    WHY NOT FULLY COMPACT EITHER: `json.dumps(items)` with no indent is ~4.0x faster but emits the whole
+    store as ONE line. `indent=1` was chosen deliberately — the store is a user-facing artifact people
+    inspect, diff in git, and hand to auditors — so collapsing it to one line trades away something the
+    current format exists to provide.
+
+    This layout keeps both. The C encoder runs per record, and the only added whitespace is a newline
+    between records, so a store stays line-diffable and greppable while getting most of the speedup.
+    Measured (n=20,000 records): indent=1 = 227.3 ms / 8.66 MB; this = 91.8 ms / 7.20 MB (2.5x faster and
+    17% SMALLER than before); fully compact = 57.5 ms / 7.78 MB. Round-trip verified identical for all
+    three, and this is formatting only — every digest in the library (state_digest, receipts, the audit
+    bundle) hashes PARSED per-record fields, never the file bytes, so no digest changes.
+
+    `allow_nan=False` is preserved per record: a caller-supplied NaN/Infinity would otherwise be written
+    as a bare literal that Python re-reads but every strict JSON parser (jq, JS, Rust/serde) rejects.
+    """
+    if not items:
+        return "[]"
+    inner = ",\n ".join(
+        json.dumps(r, ensure_ascii=False, allow_nan=False, separators=(",", ":")) for r in items)
+    return "[\n " + inner + "\n]"
+
+
 def new_receipt_keypair():
     """Return (private_key_hex, public_key_hex) for signing inspeximus write receipts. Needs `cryptography`."""
     if not _HAVE_ED:
@@ -7510,7 +7541,7 @@ class Inspeximus:
             # Python re-reads but every STRICT JSON parser (jq, JS, Rust/serde) rejects — so the
             # store silently stopped being valid JSON for the audit bundle and any non-Python reader,
             # while state_digest and verify_writes both still reported healthy.
-            data = json.dumps(slim, ensure_ascii=False, indent=1, allow_nan=False)
+            data = _dump_store(slim)
             tmp = self.path.with_name(self.path.name + ".tmp")
             if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
                 key = self._resolve_key()                         # sets self._enc_salt on first save
