@@ -1324,5 +1324,23 @@
       "tests/test_distill_reports_failures.py",
       "tests/test_cli_provenance.py"
     ]
+  },
+  {
+    "name": "the routed delete drops the erasure fields again",
+    "file": "inspeximus/core.py",
+    "old": "                    \"forgotten\": res.get(\"forgotten\", 0),\n                    \"coverage\": res.get(\"coverage\"),\n                    \"residue_in_store\": res.get(\"residue_in_store\")}",
+    "new": "                    \"forgotten\": res.get(\"forgotten\", 0)}",
+    "tests": [
+      "tests/test_route_delete_answers_like_an_erasure.py"
+    ]
+  },
+  {
+    "name": "the empty forget early return loses coverage again",
+    "file": "inspeximus/core.py",
+    "old": "            return {\"forgotten\": 0, \"ids\": [], \"scrubbed_links\": 0, \"tombstones\": 0,\n                    \"coverage\": self._erasure_coverage(None, len(getattr(self, \"_erasure_targets\", []))),",
+    "new": "            return {\"forgotten\": 0, \"ids\": [], \"scrubbed_links\": 0, \"tombstones\": 0,",
+    "tests": [
+      "tests/test_route_delete_answers_like_an_erasure.py"
+    ]
   }
 ]

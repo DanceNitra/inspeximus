@@ -2521,7 +2521,11 @@ class Inspeximus:
                       for t in sorted(target)[:10]]
             return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True}
         if not target:
+            # `coverage` belongs here for the same reason `residue_in_store` does, and it was the one
+            # early return still missing it: a caller who has to check whether the field exists before
+            # reading it will eventually read its absence as "nothing to report".
             return {"forgotten": 0, "ids": [], "scrubbed_links": 0, "tombstones": 0,
+                    "coverage": self._erasure_coverage(None, len(getattr(self, "_erasure_targets", []))),
                     "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # Capture what we are about to destroy, ONLY if the caller asked for a residue check. After the
         # rows are gone the values are gone with them, so this is the one moment it can be done at all --
@@ -4469,8 +4473,13 @@ class Inspeximus:
             ids = [r["id"] for r in self.items if r.get("key") == k and r.get("status") == "active"
                    and r.get("tenant") == self.tenant]
             res = self.forget(ids=ids) if ids else {"forgotten": 0}
+            # This IS an erasure the caller triggered, so it answers like one. forget() computed both
+            # fields underneath and route dropped them on the floor -- the caller of route() had no way
+            # to learn that a survivor still held what they just deleted.
             return {"intent": "delete", "action": "deleted", "event": "DELETE", "key": k,
-                    "forgotten": res.get("forgotten", 0)}
+                    "forgotten": res.get("forgotten", 0),
+                    "coverage": res.get("coverage"),
+                    "residue_in_store": res.get("residue_in_store")}
         if self._ROUTE_REVERT.search(low):
             k = key or self._route_key(low)
             if k is None:
