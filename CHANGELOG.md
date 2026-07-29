@@ -3,7 +3,7 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased - erasure left the subject's CURRENT value behind
+## 1.88.0 - UPGRADE IF YOU RELY ON ERASURE: an erasure left the subject's CURRENT value behind
 
 Same class as the 1.87.0 fix below, pointing the other way. 1.86.0 erased a stranger's records
 (over-erasure); this is under-erasure, and what survives is the live data rather than the stale copy.
