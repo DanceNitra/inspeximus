@@ -188,6 +188,10 @@ def main(argv=None):
 
     di = sub.add_parser("distill", help="LLM-distill a transcript into memories (needs INSPEXIMUS_LLM_URL)")
     di.add_argument("--file", help="read text from a file (else stdin)")
+    di.add_argument("--source", help="who or what the transcript came from ('crm/alice') — a distilled "
+                                     "transcript is usually ABOUT someone, and without this the memories "
+                                     "it produces are attributable to nothing, so forget-subject cannot "
+                                     "reach them")
 
     re_ = sub.add_parser("reembed", help="rebuild embeddings for records that have none (after an embed-recipe "
                                          "change dropped them); needs an embedder configured")
@@ -659,7 +663,15 @@ def main(argv=None):
         except RuntimeError as e:
             print(f"distill: {e}", file=sys.stderr)
             return 2
-        res = m.distill_and_remember(text, distiller)
+        # core.distill_and_remember has taken a `source` all along; the CLI simply never offered one, so
+        # a transcript distilled here produced records attributable to nothing. Same shape as the
+        # `decision` gap, one subcommand over -- found by reading the branch, not by a scan, because the
+        # scan that flagged it also flagged two subcommands that do not write at all.
+        # `{"doc": ...}`, not the bare string. My first version passed the string straight through, and
+        # remember() requires a dict -- every item would have raised and the command would have reported
+        # "captured: 0" with no error at all. Caught by running it rather than reading it.
+        res = m.distill_and_remember(text, distiller,
+                                     source={"doc": a.source} if a.source else None)
         m._save(force=True)
         _out(res, a.json) or print(f"distilled: {res.get('captured',0)} kept "
                                    f"({res.get('decisions',0)} decisions, {res.get('facts',0)} facts, "

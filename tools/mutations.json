@@ -1287,5 +1287,42 @@
     "tests": [
       "tests/test_route_correction_lineage.py"
     ]
+  },
+  {
+    "name": "distill swallows a failed write again",
+    "file": "inspeximus/core.py",
+    "old": "                errors.append(f\"{type(e).__name__}: {str(e)[:120]}\")",
+    "new": "                pass",
+    "tests": [
+      "tests/test_distill_reports_failures.py"
+    ]
+  },
+  {
+    "name": "distill reports an error block on a clean run",
+    "file": "inspeximus/core.py",
+    "old": "        if errors:\n            out[\"errors\"] = errors\n            out[\"failed\"] = len(errors)",
+    "new": "        out[\"errors\"] = errors\n        out[\"failed\"] = len(errors)",
+    "tests": [
+      "tests/test_distill_reports_failures.py"
+    ]
+  },
+  {
+    "name": "distill counts every failure as one",
+    "file": "inspeximus/core.py",
+    "old": "            out[\"failed\"] = len(errors)",
+    "new": "            out[\"failed\"] = 1",
+    "tests": [
+      "tests/test_distill_reports_failures.py"
+    ]
+  },
+  {
+    "name": "the CLI distill passes a bare string source",
+    "file": "inspeximus/cli.py",
+    "old": "                                     source={\"doc\": a.source} if a.source else None)",
+    "new": "                                     source=a.source or None)",
+    "tests": [
+      "tests/test_distill_reports_failures.py",
+      "tests/test_cli_provenance.py"
+    ]
   }
 ]

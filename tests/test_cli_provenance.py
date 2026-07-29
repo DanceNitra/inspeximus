@@ -32,6 +32,23 @@ def _cli(store_path, *args):
     return r.stdout
 
 
+def test_distill_offers_a_source():
+    """`core.distill_and_remember` has taken a `source` all along; the CLI never offered one, so a
+    transcript distilled through it produced records attributable to nothing. Found by READING the branch
+    -- the scan that flagged it also flagged two subcommands that do not write at all.
+
+    Asserts the PARSER, not the source text: the flag has to be reachable by a user, which is a property
+    of the argparse tree and not of how the branch happens to be written."""
+    import inspeximus.cli as cli
+    parser = cli._build_parser() if hasattr(cli, "_build_parser") else None
+    if parser is None:                      # parser is built inline; fall back to running --help
+        out = _cli("ignored.json", "distill", "--help")
+        assert "--source" in out
+        return
+    sub = next(a for a in parser._actions if getattr(a, "choices", None) and "distill" in a.choices)
+    assert "--source" in {o for act in sub.choices["distill"]._actions for o in act.option_strings}
+
+
 def test_a_decision_with_a_source_is_erasable_by_subject(tmp_path):
     """THE defect. A decision about a person must be reachable by that person."""
     s = tmp_path / "s.json"

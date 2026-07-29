@@ -2236,7 +2236,7 @@ class Inspeximus:
                 return {"captured": 0, "decisions": 0, "facts": 0, "ids": [], "error": "unparseable_distiller_output"}
         if isinstance(items, dict):
             items = items.get("items", [])
-        ids, nd, nf, dropped = [], 0, 0, 0
+        ids, nd, nf, dropped, errors = [], 0, 0, 0, []
         for it in (items or []):
             if not isinstance(it, dict):
                 continue
@@ -2254,9 +2254,21 @@ class Inspeximus:
                     ids.append(self.remember(t, mtype="semantic", tags=["distilled"],
                                              key=("fact::" + topic) if topic else None,
                                              object=topic, source=source)); nf += 1
-            except Exception:
+            except Exception as e:
+                # COUNTED AND NAMED, not swallowed. This bare `continue` turned every failed write into
+                # silence: pass a `source` in the wrong shape and remember() raises "must be a dict, got
+                # str" for every item, while this returned {captured: 0, dropped: 0, ids: []} -- which
+                # reads as "the transcript had nothing worth keeping" when the truth is "everything was
+                # extracted and then thrown away". Measured, found by a caller (me) passing a string.
+                # `dropped` alone would still not say WHY, and the two reasons are opposite: an
+                # unsupported item is the guard working, an errored one is the caller's bug.
+                errors.append(f"{type(e).__name__}: {str(e)[:120]}")
                 continue
-        return {"captured": len(ids), "decisions": nd, "facts": nf, "dropped": dropped, "ids": ids}
+        out = {"captured": len(ids), "decisions": nd, "facts": nf, "dropped": dropped, "ids": ids}
+        if errors:
+            out["errors"] = errors
+            out["failed"] = len(errors)
+        return out
 
     def observe(self, text: str, key: str, object: str | None = None, support=None,
                 meta: dict | None = None) -> dict:
