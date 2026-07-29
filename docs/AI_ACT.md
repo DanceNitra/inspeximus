@@ -31,6 +31,16 @@ AI-Act alignment.)*
 - **Art. 12 & 19 — record-keeping / logs kept ≥ 6 months.** Every write is a hash-linked, timestamped receipt;
   `anchor()` signs a tree head over the whole history; `inspeximus audit-build` exports a **content-free** bundle
   an auditor re-verifies from genesis **offline** (`audit-verify`) — no live store, no key.
+
+  **Receipts are OPT-IN, and off by default on the MCP server and the CLI.** Enable them with
+  `receipts=True` in Python, or `INSPEXIMUS_RECEIPTS=1` for the server and `--receipts` for the CLI; a store
+  that already has a `.receipts.json` sidecar keeps them on. The default is off because enabling them
+  creates that sidecar next to your store, and a memory server should not grow files in your directory
+  unasked — but it means **a fresh store has no chain, and this section's guarantee does not hold until you
+  turn it on**. `verify_writes()` says so rather than reporting clean: *"write receipts are DISABLED: N
+  record(s) exist with no write chain, so there is nothing to verify — which is not the same as verified."*
+  This paragraph exists because the surface-conformance suite caught the omission on its first run; the
+  behaviour is pinned in `tests/test_surface_conformance.py` so document and product cannot drift apart.
 - **Art. 15 — accuracy, robustness, cybersecurity.** Keyed supersession serves the corrected value and resists
   the stale one resurfacing (`echo_guard`); the influence gate and witness co-signing resist memory-poisoning
   and operator-side tampering (`detect_split_view`).
