@@ -210,6 +210,73 @@ def test_compliance_report_through_CLI(tmp_path):
     assert "art" in blob and ("17" in blob or "12" in blob), out[:300]
 
 
+# ── the README's four operations: the ones a claim-census found unreached ────────────────────────
+def test_forget_truly_deletes_through_MCP(mcp):
+    """README: `forget` is "the one op that TRULY deletes (the rest is append-only)... so a forgotten
+    memory can't resurface via recall, a consolidation link, or the dream pass".
+
+    Found unreached by a census of the two documents: the suite exercised remember and recall through the
+    surface and never `forget`, though the README names it as the operation that deletes. That is the
+    same shape as the two defects that shipped."""
+    rid = mcp.remember("the launch code is hunter2", key="sec", object="hunter2")["id"]
+    mcp.forget(ids=[rid])
+    assert not mcp.get(rid), "forget must delete, not hide"
+    hits = mcp.recall("launch code", k=10)
+    assert "hunter2" not in " ".join(h.get("text", "") for h in hits), \
+        "a forgotten memory resurfaced through recall"
+
+
+def test_forget_leaves_the_rest_alone_through_MCP(mcp):
+    """CONTROL. An op that deletes everything would pass the test above."""
+    keep = mcp.remember("the office is in brno", key="loc", object="brno")["id"]
+    drop = mcp.remember("the launch code is hunter2", key="sec", object="hunter2")["id"]
+    mcp.forget(ids=[drop])
+    assert mcp.get(keep), "forget took an unrelated record with it"
+
+
+def test_revert_on_command_through_MCP(mcp):
+    """README: "Revert on command" -- the store's supersession ledger knows what the current value
+    replaced, so no value token is needed."""
+    mcp.remember("the deploy region is frankfurt", key="cfg::region", object="frankfurt")
+    mcp.remember("the deploy region is ohio", key="cfg::region", object="ohio")
+    mcp.revert("cfg::region")
+    hits = mcp.recall("deploy region", k=5)
+    text = " ".join(h.get("text", "") for h in hits)
+    assert "frankfurt" in text and "ohio" not in text, text
+
+
+def test_revert_on_command_through_CLI(tmp_path):
+    s = tmp_path / "s.json"
+    cli(s, "--json", "remember", "the deploy region is frankfurt", "--key", "cfg::region",
+        "--object", "frankfurt")
+    cli(s, "--json", "remember", "the deploy region is ohio", "--key", "cfg::region",
+        "--object", "ohio")
+    cli(s, "revert", "cfg::region")
+    out = cli(s, "--json", "recall", "deploy region").stdout
+    assert "frankfurt" in out and "ohio" not in out
+
+
+def test_contradictions_are_flagged_through_MCP(mcp):
+    """README: `contradictions()` flags mutually-incompatible RELATED memories for human review.
+
+    The first version of this asserted `isinstance(pairs, list)` -- a test with no teeth by construction,
+    which would pass against a function that always returned []. It now names the pair."""
+    mcp.remember("the office is in brno", key="a::loc", object="brno")
+    mcp.remember("the office is not in brno", key="b::loc", object="not brno")
+    pairs = mcp.contradictions()
+    assert len(pairs) == 1, pairs
+    texts = {pairs[0]["a_text"], pairs[0]["b_text"]}
+    assert texts == {"the office is in brno", "the office is not in brno"}
+
+
+def test_agreeing_memories_are_not_flagged_through_MCP(mcp):
+    """CONTROL. A detector that flags everything is as useless as one that flags nothing, and only this
+    arm separates them."""
+    mcp.remember("the office is in brno", key="a::loc", object="brno")
+    mcp.remember("the office is in brno city centre", key="b::loc", object="brno centre")
+    assert mcp.contradictions() == []
+
+
 def test_retention_dry_run_through_CLI(tmp_path):
     """The guarantee: "DRY-RUN: what would be erased (GDPR Art. 5(1)(e))"."""
     s = tmp_path / "s.json"
