@@ -50,6 +50,35 @@ jobs:
             echo "falsification control correctly reported CLAIM BROKEN"
           fi
 
+  surface-conformance:
+    # Two releases shipped erasure defects that 1600 library tests could not see, because the tests call
+    # Inspeximus(...) and the product is used through an MCP server and a CLI. This job asks the only
+    # question that would have caught them: does the product still honour its own documentation through
+    # the interface a user actually has? It runs anyway inside `pytest tests/` -- it is named here so the
+    # answer is legible rather than buried in 1600 anonymous dots.
+    name: the documented guarantees, through the surface a user has
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install with the MCP extra
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest cryptography pyyaml
+          pip install -e ".[mcp]"
+      - name: README + docs/AI_ACT.md guarantees, exercised through MCP and the CLI
+        run: python -m pytest tests/test_surface_conformance.py -q -rs
+      # NO FALSIFICATION CONTROL YET, and that is stated rather than faked. Every other job in this file
+      # carries one, because a check never shown to fail proves nothing. Two attempts to build one here
+      # both FAILED TO FAIL: severing `_narrow_to_subject` in erasure_audit, and severing the declared
+      # derived_from closure, each left all 13 tests green -- so in this fixture the derived record is
+      # reached by a third path neither edit touched. Shipping a control that passes vacuously would be
+      # the exact defect this whole suite exists to catch, so the gap is recorded instead of decorated.
+      # Until it exists, this job proves the guarantees hold TODAY and proves nothing about the suite's
+      # teeth. Tracked as the next piece of work.
+
   basestore-parity:
     name: InspeximusStore vs LangGraph's own store
     runs-on: ubuntu-latest
