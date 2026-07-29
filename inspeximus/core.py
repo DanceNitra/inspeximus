@@ -4394,6 +4394,22 @@ class Inspeximus:
 
         Returns {"intent", "action", "key", ...} describing what was done."""
         low = text.lower()
+        # ONE rule for every write site in this function, not four copies of it. `route` has five places
+        # that call remember(), and provenance was added to exactly one of them -- the correction -- while
+        # a commit message said the hole was closed. The echo branch then wrote an unattributed record
+        # holding the subject's address verbatim, and it survived her erasure.
+        #
+        # `_parent()` is the OWNED half: a correction, reaffirm or echo is about whatever the key already
+        # holds, and the store knows which record that is, so it declares the edge rather than forwarding
+        # a caller's argument. It returns None when there is no key or nothing current -- declaring a
+        # parent that does not exist would be inventing provenance, which is the failure this month
+        # produced twice.
+        _src = {"doc": source} if isinstance(source, str) and source else source
+
+        def _parent():
+            cur_rec = self._current_active(key) if key else None
+            return [cur_rec["id"]] if cur_rec else None
+
         if (key is None or object is None) and self.extractor is not None:
             try:
                 ex = self.extractor(text)
@@ -4465,7 +4481,9 @@ class Inspeximus:
             return {"intent": "revert", "action": "reverted" if res.get("ok") else "failed",
                     "key": k, **{kk: vv for kk, vv in res.items() if kk != "ok"}}
         if object is None or key is None:
-            rid = self.remember(text, key=key, object=object)
+            # No key means nothing to derive from, so `source` is the only lever here -- and it is the
+            # caller's to pull. Inferring a subject from the text would be inventing one.
+            rid = self.remember(text, key=key, object=object, source=_src, derived_from=_parent())
             return {"intent": "assert", "action": "remembered", "event": "ADD", "key": key, "id": rid}
         chain = self._route_chain(key)
         cur = chain[-1] if chain else None
@@ -4485,10 +4503,7 @@ class Inspeximus:
             #
             # The caller can still name a source; when they do not, the lineage edge alone is enough for
             # forget_subject to reach the correction, because it cascades along derived_from.
-            prev = self._current_active(key) if cur is not None else None
-            rid = self.remember(text, key=key, object=object,
-                                source={"doc": source} if isinstance(source, str) and source else source,
-                                derived_from=([prev["id"]] if prev else None))
+            rid = self.remember(text, key=key, object=object, source=_src, derived_from=_parent())
             intent = "correct" if (cur is not None and self._ROUTE_CORRECT.search(low)) else "assert"
             event = "UPDATE" if cur is not None else "ADD"   # supersedes a prior value vs first value for the key
             return {"intent": intent, "action": "remembered", "event": event, "key": key, "id": rid}
@@ -4500,12 +4515,24 @@ class Inspeximus:
                 return {"intent": "reaffirm", "action": "authorization_required", "key": key,
                         "target": object, "challenge": self.revert_challenge(key)}
             rid = self.remember(text, key=key, object=object, reaffirm=True, capability=capability,
-                                meta={"routed": f"reaffirm_{policy}"})
+                                meta={"routed": f"reaffirm_{policy}"},
+                                source=_src, derived_from=_parent())
             return {"intent": "reaffirm", "action": "restored", "key": key, "target": object, "id": rid}
+        # THE SAME ARGUMENT AS THE CORRECTION BRANCH, and it was missed here. A reaffirm or an echo is a
+        # RESTATEMENT of a value on a key, so it is about whatever that key already holds -- and route
+        # knows which record that is. Measured before this: an echo record carrying "alice addr is 5 Elm
+        # St and 9OakAve" survived forget_subject('hr/alice') with source=None and derived_from=None,
+        # holding her address verbatim. Found by the in-store residue check, which flagged ok=false on a
+        # branch nobody was looking at -- one write site fixed and three left is the class defect this
+        # repository keeps recording, applied inside a single function this time.
         if self.echo_guard:
-            rid = self.remember(text, key=key, object=object)      # guard retires it, judge-logged
+            rid = self.remember(text, key=key, object=object,      # guard retires it, judge-logged
+                                source=_src, derived_from=_parent())
         else:
-            rid = self.remember(text, meta={"routed": "echo_unkeyed"})  # keyless: cannot LWW-clobber
+            # Deliberately KEYLESS so it cannot LWW-clobber the current value. Keyless is not the same as
+            # unattributable: the lineage edge still connects it to the record it restates.
+            rid = self.remember(text, meta={"routed": "echo_unkeyed"},
+                                source=_src, derived_from=_parent())
         return {"intent": "echo", "action": "blocked", "key": key, "id": rid,
                 "policy": policy, "note": "unmarked restatement of a superseded value; not restored"}
 

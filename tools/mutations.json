@@ -1127,33 +1127,6 @@
     ]
   },
   {
-    "name": "a routed correction stops declaring the record it corrects",
-    "file": "inspeximus/core.py",
-    "old": "                                derived_from=([prev[\"id\"]] if prev else None))",
-    "new": "                                derived_from=None)",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "a routed correction derives from the WRONG record",
-    "file": "inspeximus/core.py",
-    "old": "            prev = self._current_active(key) if cur is not None else None",
-    "new": "            prev = (self.items[0] if self.items else None) if cur is not None else None",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the routed correction drops the source it was given",
-    "file": "inspeximus/core.py",
-    "old": "                                source={\"doc\": source} if isinstance(source, str) and source else source,\n                                derived_from=([prev[\"id\"]] if prev else None))",
-    "new": "                                source=None,\n                                derived_from=([prev[\"id\"]] if prev else None))",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
     "name": "the erasure stops checking its own store for residue",
     "file": "inspeximus/core.py",
     "old": "        out[\"residue_in_store\"] = scan_records(self.items, _residue_values)",
@@ -1214,6 +1187,60 @@
     "new": "                \"coverage\": res.get(\"coverage\", cov),\n                \"residue_in_store\": None}",
     "tests": [
       "tests/test_instore_residue.py"
+    ]
+  },
+  {
+    "name": "route stops declaring a parent at every write site",
+    "file": "inspeximus/core.py",
+    "old": "            cur_rec = self._current_active(key) if key else None\n            return [cur_rec[\"id\"]] if cur_rec else None",
+    "new": "            return None",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "route declares a parent even when there is no key",
+    "file": "inspeximus/core.py",
+    "old": "            cur_rec = self._current_active(key) if key else None",
+    "new": "            cur_rec = self._current_active(key) if key else (self.items[0] if self.items else None)",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "route drops the source at every write site",
+    "file": "inspeximus/core.py",
+    "old": "        _src = {\"doc\": source} if isinstance(source, str) and source else source",
+    "new": "        _src = None",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "the echo branch writes without provenance again",
+    "file": "inspeximus/core.py",
+    "old": "            rid = self.remember(text, key=key, object=object,      # guard retires it, judge-logged\n                                source=_src, derived_from=_parent())",
+    "new": "            rid = self.remember(text, key=key, object=object)",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "the keyless echo branch writes without provenance again",
+    "file": "inspeximus/core.py",
+    "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+    "new": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"})",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "the keyless echo branch gains a key and can clobber",
+    "file": "inspeximus/core.py",
+    "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+    "new": "            rid = self.remember(text, key=key, object=object, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
     ]
   }
 ]

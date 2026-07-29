@@ -134,6 +134,77 @@ def test_a_ghost_subject_still_reaches_nothing():
     assert m.forget_subject("hr/nobody-here", request_id="G", basis="art17")["erased"] == 0
 
 
+def test_an_ECHO_record_goes_with_the_subject_too():
+    """`route` writes at five sites and the first fix gave provenance to ONE of them -- the correction --
+    while the commit message said the hole was closed. The echo branch then wrote an unattributed record
+    holding the subject's address verbatim, and it survived her erasure:
+
+        forget_subject('hr/alice')  ->  erased 2
+        survivors: ['alice addr is 5 Elm St and 9OakAve']
+
+    Found by the in-store residue check built an hour earlier, which flagged ok=false on a branch nobody
+    was looking at. Audit EVERY door -- this repository's own rule, broken inside a single function."""
+    m = _store()
+    m.remember("alice addr is 5 Elm St", key="a::addr", object="5 Elm St", source={"doc": "hr/alice"})
+    m.route("actually alice moved to X", key="a::addr", object="X")
+    out = m.route("alice addr is 5 Elm St and 9OakAve", key="a::addr", object="5 Elm St")
+    assert out["intent"] == "echo", "this test is about the echo branch; the fixture stopped reaching it"
+    res = m.forget_subject("hr/alice", request_id="D", basis="art17")
+    assert res["erased"] == 3
+    assert "9OakAve" not in _blob(m)
+    assert res["residue_in_store"]["ok"] is True
+
+
+def test_the_echo_is_still_blocked_not_restored():
+    """CONTROL. Giving the echo record provenance must not turn a refusal into an acceptance -- the
+    whole point of the branch is that the stale value does NOT come back."""
+    m = _store()
+    m.remember("v is A", key="k", object="A")
+    m.route("actually v is B", key="k", object="B")
+    out = m.route("v is A", key="k", object="A")
+    assert (out["intent"], out["action"]) == ("echo", "blocked")
+    active = [r.get("object") for r in m.items if r.get("key") == "k" and r.get("status") == "active"]
+    assert active == ["B"]
+
+
+def test_a_route_with_no_key_declares_no_parent():
+    """A mutation that made `_parent()` fall back to `self.items[0]` when there is no key SURVIVED: no
+    test covered the keyless call at all. Without a key there is nothing this write is a restatement OF,
+    and naming some arbitrary record would be inventing provenance."""
+    m = _store()
+    m.remember("an unrelated earlier record", key="other", object="x")
+    out = m.route("alice mentioned something in passing")
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert out["intent"] == "assert"
+    assert not rec.get("derived_from")
+
+
+def test_the_keyless_echo_carries_provenance_too():
+    """The guard-OFF echo branch. A mutation removing its provenance SURVIVED because the only test
+    touching that branch asserted the active value and never looked at the record it wrote."""
+    m = _store()
+    m.echo_guard = False
+    m.remember("alice addr is 5 Elm St", key="a::addr", object="5 Elm St", source={"doc": "hr/alice"})
+    m.route("actually alice moved to X", key="a::addr", object="X")
+    out = m.route("alice addr is 5 Elm St", key="a::addr", object="5 Elm St")
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert rec.get("derived_from"), "the keyless echo record declares no parent"
+    assert not rec.get("key"), "it must stay KEYLESS -- that is why this branch exists"
+
+
+def test_the_keyless_echo_still_cannot_clobber():
+    """CONTROL for the guard-off branch, which writes KEYLESS on purpose so it cannot LWW-clobber the
+    current value. Keyless is not the same as unattributable, and adding the lineage edge must not
+    quietly give it a key back."""
+    m = _store()
+    m.echo_guard = False
+    m.remember("v is A", key="k", object="A")
+    m.route("actually v is B", key="k", object="B")
+    m.route("v is A", key="k", object="A")
+    active = [r.get("object") for r in m.items if r.get("key") == "k" and r.get("status") == "active"]
+    assert active == ["B"]
+
+
 def test_a_correction_on_a_subjectless_key_erases_nothing_by_subject():
     """CONTROL. Config has no data subject; a DSAR must not start sweeping up unrelated records just
     because they now carry a lineage edge."""
