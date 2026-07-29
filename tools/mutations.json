@@ -1192,7 +1192,7 @@
   {
     "name": "route stops declaring a parent at every write site",
     "file": "inspeximus/core.py",
-    "old": "            cur_rec = self._current_active(key) if key else None\n            return [cur_rec[\"id\"]] if cur_rec else None",
+    "old": "            cur_rec = self._current_active(kk) if kk else None\n            return [cur_rec[\"id\"]] if cur_rec else None",
     "new": "            return None",
     "tests": [
       "tests/test_route_correction_lineage.py"
@@ -1201,8 +1201,8 @@
   {
     "name": "route declares a parent even when there is no key",
     "file": "inspeximus/core.py",
-    "old": "            cur_rec = self._current_active(key) if key else None",
-    "new": "            cur_rec = self._current_active(key) if key else (self.items[0] if self.items else None)",
+    "old": "            cur_rec = self._current_active(kk) if kk else None",
+    "new": "            cur_rec = self._current_active(kk) if kk else (self.items[0] if self.items else None)",
     "tests": [
       "tests/test_route_correction_lineage.py"
     ]
@@ -1239,6 +1239,51 @@
     "file": "inspeximus/core.py",
     "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
     "new": "            rid = self.remember(text, key=key, object=object, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "_parent ignores the resolved key and reads the parameter",
+    "file": "inspeximus/core.py",
+    "old": "            kk = k if k is not None else key",
+    "new": "            kk = key",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "the revert-restore branch stops declaring a parent",
+    "file": "inspeximus/core.py",
+    "old": "                                    capability=capability, meta={\"routed\": \"revert_named\"},\n                                    source=_src, derived_from=_parent(k))",
+    "new": "                                    capability=capability, meta={\"routed\": \"revert_named\"})",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "the revert-to-original branch stops declaring a parent",
+    "file": "inspeximus/core.py",
+    "old": "                                    capability=capability, meta={\"routed\": \"revert_original\"},\n                                    source=_src, derived_from=_parent(k))",
+    "new": "                                    capability=capability, meta={\"routed\": \"revert_original\"})",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "the keyless delete branch drops the caller's source",
+    "file": "inspeximus/core.py",
+    "old": "                rid = self.remember(text, source=_src)\n                return {\"intent\": \"delete\"",
+    "new": "                rid = self.remember(text)\n                return {\"intent\": \"delete\"",
+    "tests": [
+      "tests/test_route_correction_lineage.py"
+    ]
+  },
+  {
+    "name": "the keyless revert branch drops the caller's source",
+    "file": "inspeximus/core.py",
+    "old": "                rid = self.remember(text, source=_src)      # same as the delete branch",
+    "new": "                rid = self.remember(text)      # same as the delete branch",
     "tests": [
       "tests/test_route_correction_lineage.py"
     ]

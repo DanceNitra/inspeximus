@@ -205,6 +205,92 @@ def test_the_keyless_echo_still_cannot_clobber():
     assert active == ["B"]
 
 
+def test_a_revert_restore_goes_with_the_subject_too():
+    """The census found route() has NINE write sites where five had been fixed. These two --
+    `restore {k} to {named}` and `restore {k} to {chain[0]}` -- write ON A KEY, so the same argument as
+    the correction and echo branches applies, and they were missed when those were done. Fourth instance
+    in one night of fixing the sites I measured and writing as though I had fixed the class."""
+    m = _store()
+    m.remember("alice addr is 5 Elm St", key="alice::addr", object="5 Elm St",
+               source={"doc": "hr/alice"})
+    m.route("actually alice moved to 9OakAve", key="alice::addr", object="9OakAve")
+    out = m.route("go back to 5 Elm St", key="alice::addr", object="5 Elm St", policy="trusting")
+    assert out["intent"] == "revert", "the fixture stopped reaching the restore branch"
+    res = m.forget_subject("hr/alice", request_id="D", basis="art17")
+    assert res["erased"] == 3
+    assert "9OakAve" not in _blob(m) and "5 Elm" not in _blob(m)
+    assert res["residue_in_store"]["ok"] is True
+
+
+def test_the_restore_declares_the_record_it_restores_over():
+    """`_parent()` closed over the `key` PARAMETER, while the revert branches resolve their own
+    (`k = key or self._route_key(low)`). A helper reading the wrong variable is worse than four copies:
+    it looks like it was applied everywhere and silently declares no parent where it matters."""
+    m = _store()
+    m.remember("v is A", key="cfg::mode", object="A")
+    m.route("actually v is B", key="cfg::mode", object="B")
+    out = m.route("restore cfg::mode to A", key="cfg::mode", object="A", policy="trusting")
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    parents = rec.get("derived_from") or []
+    assert len(parents) == 1
+    assert any(r["id"] == parents[0] for r in m.items), "the declared parent is not a real record"
+
+
+def test_the_revert_to_ORIGINAL_branch_declares_a_parent_too():
+    """A separate branch from `restore {k} to {named}`: "go back to the original" walks to chain[0].
+    Its mutation SURVIVED because no test uttered anything matching `\\b(original|very first|started
+    with|initial)\\b`, so the branch was never entered."""
+    m = _store()
+    m.remember("the deploy region is frankfurt", key="deploy::region", object="frankfurt",
+               source={"doc": "hr/alice"})
+    m.route("actually the region is ohio", key="deploy::region", object="ohio")
+    m.route("actually the region is tokyo", key="deploy::region", object="tokyo")
+    out = m.route("go back to the original", key="deploy::region", policy="trusting")
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert (rec.get("meta") or {}).get("routed") == "revert_original", \
+        "this test is about the ORIGINAL branch; the fixture stopped reaching it"
+    assert rec.get("derived_from"), "the restore-to-original record declares no parent"
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["residue_in_store"]["ok"] is True
+
+
+def test_the_parent_uses_the_key_route_RESOLVED_not_the_one_passed_in():
+    """`_parent()` used to close over the `key` parameter. Every existing test passed `key=` explicitly,
+    so `k` and `key` were always equal and the mutation that reverts to reading `key` SURVIVED. Here the
+    key is resolved FROM THE UTTERANCE with no `key=` argument, which is the case the helper exists for."""
+    m = _store()
+    m.remember("the deploy::region is frankfurt", key="deploy::region", object="frankfurt",
+               source={"doc": "hr/alice"})
+    m.route("actually the deploy::region is ohio", key="deploy::region", object="ohio")
+    out = m.route("go back to the original deploy::region", policy="trusting")
+    assert out["intent"] == "revert" and out.get("key") == "deploy::region", \
+        f"the key was not resolved from the utterance: {out}"
+    rec = next(r for r in m.items if r["id"] == out["id"])
+    assert rec.get("derived_from"), "no parent declared when the key came from the utterance"
+
+
+def test_the_keyless_branches_keep_the_callers_source():
+    """`delete` and `revert` utterances that resolve NO key wrote with no source at all, though the
+    caller had supplied one. There is nothing to derive from without a key -- but a source is still a
+    source, and dropping it made the record unattributable for no reason."""
+    m = _store()
+    for utterance, intent in (("forget about that thing", "delete"),
+                              ("go back to what we had", "revert")):
+        out = m.route(utterance, source="hr/alice")
+        assert out["intent"] == intent and out["key"] is None
+        rec = next(r for r in m.items if r["id"] == out["id"])
+        assert rec["source"] == {"doc": "hr/alice"}
+
+
+def test_a_revert_on_a_subjectless_key_is_not_swept_up():
+    """CONTROL. Config has no data subject; giving restores a lineage edge must not enlist them in an
+    unrelated DSAR."""
+    m = _store()
+    m.remember("region is frankfurt", key="cfg::r", object="frankfurt")
+    m.route("actually the region is ohio", key="cfg::r", object="ohio")
+    m.route("go back to frankfurt", key="cfg::r", object="frankfurt", policy="trusting")
+    assert m.forget_subject("hr/alice", request_id="D", basis="art17")["erased"] == 0
+
+
 def test_a_correction_on_a_subjectless_key_erases_nothing_by_subject():
     """CONTROL. Config has no data subject; a DSAR must not start sweeping up unrelated records just
     because they now carry a lineage edge."""

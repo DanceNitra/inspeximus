@@ -4406,8 +4406,14 @@ class Inspeximus:
         # produced twice.
         _src = {"doc": source} if isinstance(source, str) and source else source
 
-        def _parent():
-            cur_rec = self._current_active(key) if key else None
+        def _parent(k=None):
+            # Takes the key EXPLICITLY, because the revert branches resolve their own
+            # (`k = key or self._route_key(low)`) and closing over the `key` parameter would have looked
+            # up a different key -- or None -- and silently declared no parent on exactly the branches
+            # this was extended to cover. A helper that reads the wrong variable is worse than four
+            # copies, because it looks like it was applied everywhere.
+            kk = k if k is not None else key
+            cur_rec = self._current_active(kk) if kk else None
             return [cur_rec["id"]] if cur_rec else None
 
         if (key is None or object is None) and self.extractor is not None:
@@ -4429,7 +4435,9 @@ class Inspeximus:
         if self._ROUTE_DELETE.search(low) and object is None and not self._ROUTE_REVERT.search(low):
             k = key or self._route_key(low)
             if k is None:
-                rid = self.remember(text)
+                # No key resolved, so there is nothing this is a restatement OF -- but the caller's
+                # source is still a source, and dropping it made the record unattributable for no reason.
+                rid = self.remember(text, source=_src)
                 return {"intent": "delete", "action": "noted", "event": "NOOP", "key": None, "id": rid,
                         "reason": "no ledger key resolved to delete"}
             # A routed delete is IRREVERSIBLE (forget() is a hard delete of every active record for the key),
@@ -4454,8 +4462,8 @@ class Inspeximus:
         if self._ROUTE_REVERT.search(low):
             k = key or self._route_key(low)
             if k is None:
-                rid = self.remember(text)
-                return {"intent": "revert", "action": "noted", "key": None, "id": rid,
+                rid = self.remember(text, source=_src)      # same as the delete branch: no key, but a
+                return {"intent": "revert", "action": "noted", "key": None, "id": rid,   # source is one
                         "reason": "no ledger key resolved from the utterance"}
             chain = self._route_chain(k)
             cur = chain[-1] if chain else None
@@ -4470,12 +4478,17 @@ class Inspeximus:
             if named is None and object is not None and object in chain[:-1]:
                 named = object
             if named is not None and named != cur:
+                # A restore writes ON A KEY, so it is about whatever that key holds -- the same argument
+                # as the correction and echo branches, and these two were missed when those were fixed.
+                # `_parent(k)` is passed the RESOLVED key, not the parameter, which may be None here.
                 rid = self.remember(f"restore {k} to {named}", key=k, object=named, reaffirm=True,
-                                    capability=capability, meta={"routed": "revert_named"})
+                                    capability=capability, meta={"routed": "revert_named"},
+                                    source=_src, derived_from=_parent(k))
                 return {"intent": "revert", "action": "restored", "key": k, "target": named, "id": rid}
             if self._ROUTE_ORIGINAL.search(low) and len(chain) > 1 and chain[0] != cur:
                 rid = self.remember(f"restore {k} to {chain[0]}", key=k, object=chain[0], reaffirm=True,
-                                    capability=capability, meta={"routed": "revert_original"})
+                                    capability=capability, meta={"routed": "revert_original"},
+                                    source=_src, derived_from=_parent(k))
                 return {"intent": "revert", "action": "restored", "key": k, "target": chain[0], "id": rid}
             res = self.revert(k, capability=capability)
             return {"intent": "revert", "action": "reverted" if res.get("ok") else "failed",
