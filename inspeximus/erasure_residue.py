@@ -44,6 +44,63 @@ def _fingerprint(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
 
 
+def scan_records(records, values, max_pairs: int = 2_000_000) -> dict:
+    """Do any SURVIVING records still carry a value that was just erased?
+
+    `scan_residue` answers this for OTHER stores on disk; nothing answered it for THIS one. Measured: a
+    record reading "summary: she lives at 5 Elm St" survived `forget_subject('hr/alice')` holding the
+    erased address verbatim, and the erasure reported `erased: 1` with nothing else to say.
+
+    It has to happen AT ERASURE TIME. Tombstones are content-free by design -- a hash of PII is still
+    PII -- so the values are gone the instant the rows are, and a check bolted on afterwards has nothing
+    to compare against. This is the only moment the comparison is possible at all.
+
+    HEURISTIC, and it is labelled as one wherever it surfaces: a paraphrase carries the fact without the
+    string, so a clean result is not proof of absence; and a short value ("5", "ok") matches everywhere,
+    so values under 4 characters are skipped rather than reported as residue in every record.
+
+    Returns {ok, checked_records, searched_values, findings, problems}. Findings carry the record id, the
+    field, and a FINGERPRINT -- never the value. The caller already knows what they erased; a report they
+    will paste into a ticket should not reintroduce it.
+    """
+    vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 4]
+    recs = list(records or [])
+    if not vals:
+        return {"ok": False, "checked_records": len(recs), "searched_values": 0, "findings": [],
+                "problems": ["no values were searchable (all empty or under 4 characters), so nothing "
+                             "was compared -- an empty search is not a clean result"]}
+
+    problems: list[str] = []
+    # Bound the work, and SAY SO when bounded. Silent truncation would turn a partial scan into a clean
+    # report, which is the defect this whole surface exists to avoid.
+    budget = max_pairs
+    findings: list[dict] = []
+    checked = 0
+    for r in recs:
+        if budget <= 0:
+            problems.append(f"stopped after {checked} record(s): the comparison budget was reached, so "
+                            f"{len(recs) - checked} record(s) were NOT examined")
+            break
+        checked += 1
+        for field in ("text", "object"):
+            blob = r.get(field)
+            if not isinstance(blob, str) or not blob:
+                continue
+            low = blob.lower()
+            for v in vals:
+                budget -= 1
+                if v.lower() in low:
+                    findings.append({"id": r.get("id"), "field": field,
+                                     "fingerprint": _fingerprint(v)})
+    if findings:
+        problems.append("a surviving record still contains a value that was just erased; the row went "
+                        "and the string did not, so the erasure is incomplete within this store")
+    return {"ok": not findings, "checked_records": checked, "searched_values": len(vals),
+            "findings": findings, "problems": problems,
+            "method": "substring match on text/object -- a paraphrase is NOT caught, so a clean result "
+                      "is evidence and not proof"}
+
+
 def _is_sqlite(path: str) -> bool:
     try:
         with open(path, "rb") as fh:

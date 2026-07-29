@@ -2509,19 +2509,23 @@ class Inspeximus:
                       for t in sorted(target)[:10]]
             return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True}
         if not target:
-            return {"forgotten": 0, "ids": [], "scrubbed_links": 0, "tombstones": 0}
+            return {"forgotten": 0, "ids": [], "scrubbed_links": 0, "tombstones": 0,
+                    "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # Capture what we are about to destroy, ONLY if the caller asked for a residue check. After the
         # rows are gone the values are gone with them, so this is the one moment it can be done at all --
         # which is why a residue check bolted on afterwards can never work. Held in a local, written
         # nowhere, and dropped when this call returns.
         _residue_values = list(residue_values or [])
-        if verify_residue_in:
-            for r in self._items:
-                if r["id"] in target:
-                    for field in ("text", "object"):
-                        v = r.get(field)
-                        if isinstance(v, str) and v.strip():
-                            _residue_values.append(v)
+        # Captured UNCONDITIONALLY now, not only when a cross-store scan was requested. The in-store
+        # check below needs the same values, and this is the single instant they exist: once the rows
+        # go the values go with them, and the tombstone is content-free by design. Held in a local,
+        # written nowhere, dropped when this call returns.
+        for r in self._items:
+            if r["id"] in target:
+                for field in ("text", "object"):
+                    v = r.get(field)
+                    if isinstance(v, str) and v.strip():
+                        _residue_values.append(v)
         self._items = [r for r in self._items if r["id"] not in target]
         scrubbed = 0
         if redact_links:
@@ -2558,6 +2562,14 @@ class Inspeximus:
         # when it is sometimes absent -- its absence reads as "nothing to report" rather than "nobody
         # looked". forget() is the base every other path funnels through, so it belongs here.
         out["coverage"] = self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))
+        # THIS store, always. `verify_residue_in` answers the question for other stores on disk and
+        # nothing answered it here: measured, a record reading "summary: she lives at 5 Elm St" survived
+        # forget_subject('hr/alice') holding the erased address verbatim, and the erasure returned
+        # `erased: 1` with nothing else to say. The values were in hand at that moment and nobody looked.
+        # Heuristic and labelled as one -- a paraphrase carries the fact without the string -- so it is
+        # reported beside the count, never as the verdict.
+        from .erasure_residue import scan_records
+        out["residue_in_store"] = scan_records(self.items, _residue_values)
         if verify_residue_in:
             # Prove the bytes went, not just the rows. The report carries fingerprints, never the values.
             from .erasure_residue import scan_residue
@@ -2712,7 +2724,8 @@ class Inspeximus:
             # coverage belongs here too: "nothing matched" is itself an answer a DSAR reply is built on,
             # and a field the caller can only rely on when it is ALWAYS present.
             return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
-                    "coverage": self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))}
+                    "coverage": self._erasure_coverage(None, len(getattr(self, "_erasure_targets", []))),
+                    "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # capture the sensitive values BEFORE deletion so the cross-store residue check has something to
         # verify against (caller-supplied `values` win; else the erased records' own text/object strings).
         targets = list(getattr(self, "_erasure_targets", []))
@@ -2731,7 +2744,13 @@ class Inspeximus:
         res = self.forget(ids=subj_ids, request_id=request_id, basis=basis,
                           authorized_by=authorized_by, authorization=authorization)
         out = {"erased": res["forgotten"], "ids": res["ids"],
-               "request_id": request_id, "tombstones": len(res["ids"])}
+               "request_id": request_id, "tombstones": len(res["ids"]),
+               # PROPAGATED, not recomputed -- and this is the third time a field added to forget() had
+               # to be carried up by hand. `coverage` was the same shape this morning, and the fix at one
+               # caller while a sibling keeps the gap is what _resolve_subject's docstring records 1.53.0
+               # doing. A field the caller relies on is worse than useless when it is sometimes absent:
+               # its absence reads as "nothing to report" rather than "nobody looked".
+               "residue_in_store": res.get("residue_in_store")}
         if targets:
             out["manifest"] = self._erasure_manifest(subject, values or [], targets, request_id,
                                                      basis, authorized_by, already_erased=res["forgotten"])
@@ -3234,13 +3253,15 @@ class Inspeximus:
         cov = self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))
         if not target:
             return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
-                    "coverage": cov}
+                    "coverage": cov,
+                    "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # same as forget_subject: forget() emits the receipts, so pass the reason through it rather
         # than writing a second tombstone per record on top of the one it already wrote
         res = self.forget(ids=target, request_id=request_id, basis=basis or "pii_minimization")
         return {"erased": res["forgotten"], "ids": res["ids"],
                 "request_id": request_id, "tombstones": len(res["ids"]),
-                "coverage": res.get("coverage", cov)}
+                "coverage": res.get("coverage", cov),
+                "residue_in_store": res.get("residue_in_store")}
 
     def for_tenant(self, tenant: str):
         """Return a TENANT VIEW over THIS store (one physical store, many logically-isolated tenants). The view

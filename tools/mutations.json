@@ -1152,5 +1152,68 @@
     "tests": [
       "tests/test_route_correction_lineage.py"
     ]
+  },
+  {
+    "name": "the erasure stops checking its own store for residue",
+    "file": "inspeximus/core.py",
+    "old": "        out[\"residue_in_store\"] = scan_records(self.items, _residue_values)",
+    "new": "        out[\"residue_in_store\"] = {\"ok\": True, \"findings\": [], \"problems\": [], \"checked_records\": 0, \"searched_values\": 0, \"method\": \"\"}",
+    "tests": [
+      "tests/test_instore_residue.py"
+    ]
+  },
+  {
+    "name": "the residue report echoes the erased value instead of a fingerprint",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": _fingerprint(v)})",
+    "new": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": v})",
+    "tests": [
+      "tests/test_instore_residue.py"
+    ]
+  },
+  {
+    "name": "an empty in-store search reports clean",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "        return {\"ok\": False, \"checked_records\": len(recs), \"searched_values\": 0, \"findings\": [],",
+    "new": "        return {\"ok\": True, \"checked_records\": len(recs), \"searched_values\": 0, \"findings\": [],",
+    "tests": [
+      "tests/test_instore_residue.py"
+    ]
+  },
+  {
+    "name": "short values are searched, so residue matches everywhere",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "    vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 4]",
+    "new": "    vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 1]",
+    "tests": [
+      "tests/test_instore_residue.py"
+    ]
+  },
+  {
+    "name": "a bounded in-store scan does not say it was bounded",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "            problems.append(f\"stopped after {checked} record(s): the comparison budget was reached, so \"\n                            f\"{len(recs) - checked} record(s) were NOT examined\")",
+    "new": "            pass",
+    "tests": [
+      "tests/test_instore_residue.py"
+    ]
+  },
+  {
+    "name": "forget_subject stops carrying the residue report",
+    "file": "inspeximus/core.py",
+    "old": "               \"residue_in_store\": res.get(\"residue_in_store\")}\n        if targets:",
+    "new": "               \"residue_in_store\": None}\n        if targets:",
+    "tests": [
+      "tests/test_instore_residue.py"
+    ]
+  },
+  {
+    "name": "forget_pii stops carrying the residue report",
+    "file": "inspeximus/core.py",
+    "old": "                \"coverage\": res.get(\"coverage\", cov),\n                \"residue_in_store\": res.get(\"residue_in_store\")}",
+    "new": "                \"coverage\": res.get(\"coverage\", cov),\n                \"residue_in_store\": None}",
+    "tests": [
+      "tests/test_instore_residue.py"
+    ]
   }
 ]
