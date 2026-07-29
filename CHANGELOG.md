@@ -29,6 +29,28 @@ required of the caller**, which is the point: the callers who hit it are the one
 provenance. `route(source=...)` exists as well, for the case lineage cannot reach — a `route()` asserting
 on a new key has no parent.
 
+**NEW: an erasure now reports whether a SURVIVOR still holds what it just erased.** Every erasure return
+carries `residue_in_store`:
+
+```
+remember("alice home address is 5 Elm St", source={"doc": "hr/alice"})
+remember("summary: she lives at 5 Elm St", source={"doc": "svc"})   # not attributable, not derived
+forget_subject("hr/alice")
+  -> erased: 1
+     residue_in_store: {ok: False, findings: [{id: ..., field: "text", fingerprint: "4016c1ad3454"}]}
+```
+
+`scan_residue` answered this for OTHER stores on disk; nothing answered it for this one. It can only be
+done AT ERASURE TIME — tombstones are content-free by design, so the values vanish with the rows and no
+later audit can compare against them.
+
+The report carries a **fingerprint, never the value**: a compliance report gets pasted into tickets, and
+reprinting the erased string would undo part of the erasure it certifies. A search that compared nothing
+reports `ok: False` (values under 4 characters are skipped, because "ok" matches everywhere — and skipping
+them all is not a clean result), and a bounded scan says how many records it did not examine. It is a
+**heuristic** and says so: a paraphrase carries the fact without the string, so a clean result is evidence,
+not proof. Measured cost: 18 ms over a 1000-record store.
+
 Also: **`inspeximus decision` (CLI) gained `--source` / `--derived-from`**, the last surface that could not
 attribute a decision to the person it is about; and the skip census stopped **reading a guard out of
 prose** (it text-searched top-level nodes, and a module docstring is one, so a file whose comment merely
