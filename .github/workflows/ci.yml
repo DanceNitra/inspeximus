@@ -39,7 +39,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest cryptography numpy pyyaml
-          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]"
+          # `google-adk>=2` is NOT redundant. Adding the mcp<2 cap changed pip's search order in this
+          # nine-extra install and it settled on a valid-but-terrible solution: google-adk 1.14.1, ten
+          # majors back, which has no `google.adk.cli.service_registry` -- so the job failed on an import
+          # while claiming to test the integration. MEASURED: with the cap, this line alone resolves to
+          # 1.14.1; with an explicit floor it resolves to 2.5.0 and mcp 1.29.0 together, so the good
+          # solution existed and pip simply did not find it. Realistic installs are unaffected --
+          # `.[mcp,google-adk]` gives 2.5.0 on its own. Stating the floor means a genuine conflict fails
+          # LOUDLY here instead of silently testing a version no user would get.
+          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]" "google-adk>=2"
           pip install haystack-ai
       - name: Run tests
         run: python -m pytest tests/ -q -rs

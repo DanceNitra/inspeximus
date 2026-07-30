@@ -32,6 +32,12 @@ Research = "https://dancenitra.github.io/agora/"
 # resolved to 2.0.0 and the MCP server raised ImportError on import -- every tool, unusable. Measured in a
 # clean venv on 2026-07-30; CI never saw it because the dev image already had 1.28.1 pinned by its lockfile.
 # Supporting 2.x is a real port (the module was reorganised, not renamed in place) and is not attempted here.
+# The cap has a MEASURED cost, recorded so it is not forgotten: adding it changed pip's search order in
+# the nine-extra CI install and pip settled on google-adk 1.14.1 (ten majors back, no
+# google.adk.cli.service_registry) even though google-adk 2.5.0 with mcp 1.29.0 satisfies every
+# constraint. Realistic installs are fine -- `.[mcp,google-adk]` resolves to 2.5.0 -- and CI now states
+# google-adk>=2 explicitly so a real conflict fails loudly. This is the documented downside of a library
+# upper bound; it is carried deliberately, because without it the MCP server does not start at all.
 # The FLOOR is measured too, not inherited. ">=1.0" was never a tested claim; a resolver under an older
 # interpreter, a conflicting co-dependency, or a --resolution=lowest CI run can hand you mcp 1.0.0, where
 # FastMCP exists but the surrounding API does not match this code -- a subtler failure than the clean
