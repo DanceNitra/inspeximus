@@ -193,9 +193,13 @@ def _dump_store(items) -> str:
 
     This layout keeps both. The C encoder runs per record, and the only added whitespace is a newline
     between records, so a store stays line-diffable and greppable while getting most of the speedup.
-    Measured (n=20,000 records): indent=1 = 227.3 ms / 8.66 MB; this = 91.8 ms / 7.20 MB (2.5x faster and
-    17% SMALLER than before); fully compact = 57.5 ms / 7.78 MB. Round-trip verified identical for all
-    three, and this is formatting only — every digest in the library (state_digest, receipts, the audit
+    Measured, n=20,000 records of ~48 characters, median of 5 (byte counts are exact, not medians):
+    indent=1 = 237 ms / 7,704,892 B; this = 80 ms / 6,164,892 B (2.96x faster, 20.0% smaller); fully
+    compact = 45 ms / 6,124,891 B. Compact is smaller than this by exactly 40,001 B -- two characters per
+    record -- which is the whole price of staying line-diffable. (An earlier revision of this docstring
+    put compact at 7.78 MB, LARGER than the one-record-per-line form; that is arithmetically impossible,
+    since this layout is the compact encoding plus a separator per record, and the figure was wrong.)
+    Round-trip verified identical for all three, and this is formatting only — every digest in the library (state_digest, receipts, the audit
     bundle) hashes PARSED per-record fields, never the file bytes, so no digest changes.
 
     `allow_nan=False` is preserved per record: a caller-supplied NaN/Infinity would otherwise be written
@@ -639,7 +643,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "1.88.0"
+__version__ = "1.88.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -6983,12 +6987,17 @@ class Inspeximus:
         the work each one does: every one of the 400 is a full `recall`, which scores every active record.
         So the redundancy estimate is O(400 x n), and n is the whole store.
 
-        MEASURED on this machine, no embedder (the lexical path), median of 3:
+        MEASURED on this machine, no embedder (the lexical path), records of the shape
+        "record N alpha beta gamma deploy salary" over 7 sources, median of 5 with the observed range:
 
-            n=2,000    1.76 s
-            n=8,000   10.19 s
+            n=2,000    ~2 s    (1.81-2.34, spread 25%)
+            n=8,000   ~12 s   (10.63-12.41, spread 15%)
 
-        Profiled at n=4,000, 12.8 s of the run's 12.8 s is inside those 400 recalls -- 1.6M _lexsim calls.
+        Two significant figures, deliberately: the run-to-run spread here is 15-25%, so a three-digit
+        number would be a precision this measurement cannot support. Treat these as the order of
+        magnitude on one machine, not a benchmark. The call COUNT is the part that does not vary --
+        profiled at n=4,000, essentially the whole run is inside those 400 recalls (1.6M _lexsim calls),
+        and tests/test_memory_report_cost_is_as_documented.py pins the count rather than the seconds.
         The other four figures (active, superseded, by_type, linked, decayed) are single passes and
         effectively free; if you want a cheap store summary, they are what you are paying for.
 

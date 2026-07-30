@@ -939,8 +939,9 @@ def memory_report(dup_threshold: float = 0.9) -> dict:
     duplicates (>= dup_threshold), and integrity posture. The at-a-glance store-health view. Read-only.
 
     NOT free, and the caller here is a model mid-conversation. The duplicate estimate samples 400 records
-    and runs a FULL recall for each, so it is O(400 x n) over the whole store: measured 1.76 s at n=2,000
-    and 10.19 s at n=8,000 (no embedder). "At-a-glance" describes the output, not the wait. The counts
+    and runs a FULL recall for each, so it is O(400 x n) over the whole store: measured ~2 s at n=2,000
+    and ~12 s at n=8,000 (no embedder; median of 5, run-to-run spread 15-25%, so two significant figures
+    is all this supports). "At-a-glance" describes the output, not the wait. The counts
     (active/superseded/by_type/linked/decayed) are single passes and effectively free -- if that is all you
     need, this tool is the expensive way to get it."""
     return _MEM.memory_report(dup_threshold=dup_threshold)
@@ -953,11 +954,19 @@ def digest_resource() -> str:
 
     NOT CHEAP, AND THE COST IS ALL IN ONE FIELD. This was described as a compact session-start overview,
     which is false on any real store: `contradictions()` is an all-pairs O(n^2) scan (check_conflict()'s
-    docstring names it as such), and it is ~100% of this resource's runtime. MEASURED 2026-07-29:
+    docstring names it as such), and it is ~100% of this resource's runtime.
 
-        n=500 records    1.00 s
-        n=2000 records  16.45 s
-        n=8000 records   284 s  (4.7 minutes)
+    RE-MEASURED 2026-07-30 on the merged tree, and the earlier figures no longer describe this code. They
+    were taken before the per-anchor tokenization was hoisted out of the pair loop (that change measured
+    1.46-1.88x on its own), so the docstring was quoting a cost the shipped code no longer has. Fixture:
+    records alternating "the deploy key N is/is not rotated monthly" over 37 keys, median of 3 at n=2,000
+    (single run at n=8,000, which takes minutes):
+
+        n=2,000 records    9.5 s   (9.24-9.72, spread 5%)
+        n=8,000 records  162 s     (2.7 minutes)
+
+    Cost is fixture-dependent -- it scales with how many pairs actually clash -- so read these as the
+    order of magnitude for a store with real contradictions in it, not as a constant.
 
     A client that loads this at session start therefore appears to hang, and the bigger the user's store
     the worse it gets. `cohorts` by comparison costs 0.2-0.7 ms.
@@ -983,7 +992,7 @@ def contradictions_resource() -> str:
     UNBOUNDED RESPONSE, and the pair count grows quadratically rather than with the store. MEASURED
     2026-07-29 on a store with a real clash every 7th record: n=500 -> 30,816 pairs; n=2000 -> 490,204
     pairs. Each pair carries two 120-char snippets, so n=2000 serialises to roughly 150 MB of JSON down
-    the JSON-RPC channel. Plus the O(n^2) scan cost itself (16.45 s at n=2000, 284 s at n=8000).
+    the JSON-RPC channel. Plus the O(n^2) scan cost itself (~9.5 s at n=2,000, ~162 s at n=8,000).
 
     No bound is applied here because adding one would silently truncate a governance-relevant list, and a
     truncation the caller cannot see is worse than a slow answer. Bounding it properly means paging or an

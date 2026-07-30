@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "inspeximus"
-version = "1.88.0"
+version = "1.88.1"
 description = "The self-correcting memory layer for AI agents: when a fact is corrected, Inspeximus serves the new value and resists the old one resurfacing. Zero-dependency single file + MCP server — value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -32,7 +32,12 @@ Research = "https://dancenitra.github.io/agora/"
 # resolved to 2.0.0 and the MCP server raised ImportError on import -- every tool, unusable. Measured in a
 # clean venv on 2026-07-30; CI never saw it because the dev image already had 1.28.1 pinned by its lockfile.
 # Supporting 2.x is a real port (the module was reorganised, not renamed in place) and is not attempted here.
-mcp = ["mcp[cli]>=1.0,<2"]
+# The FLOOR is measured too, not inherited. ">=1.0" was never a tested claim; a resolver under an older
+# interpreter, a conflicting co-dependency, or a --resolution=lowest CI run can hand you mcp 1.0.0, where
+# FastMCP exists but the surrounding API does not match this code -- a subtler failure than the clean
+# ImportError the ceiling fixes. 1.28.1 and 1.29.0 are the versions this code has actually been imported
+# and tested against.
+mcp = ["mcp[cli]>=1.28,<2"]
 # Agent-framework integrations (inspeximus.integrations.*) — opt-in; the core library stays zero-dependency.
 langchain = ["langchain-core"]
 langgraph = ["langgraph"]

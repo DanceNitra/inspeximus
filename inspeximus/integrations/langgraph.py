@@ -98,9 +98,30 @@ class InspeximusStore(BaseStore, ComplianceMixin):
         e = InspeximusStore._esc
         return "lg::" + "/".join(e(p) for p in namespace) + "::" + e(key)
 
+    @staticmethod
+    def _addr(rec) -> tuple:
+        """The address a record actually holds, read from the structured fields every put writes.
+
+        NOT the joined `mkey`. That string is lossy, and -- decisively -- it CHANGED when escaping was
+        introduced, while the records already on disk did not. Matching on it made every legacy record
+        whose namespace or key contained "/" or ":" invisible: measured, get() returned None and
+        forget_subject reported erased:0 while the record stayed active and a certificate was still
+        issued. Rewriting those records to the new string is not available either -- it breaks their
+        write receipts (verify_writes: "stored content no longer matches its write receipt"), which is
+        the one thing a tamper-evident store must never do to its own data.
+
+        `lg_ns` and `lg_key` are exact, were always written, and are identical on both sides of the
+        boundary. Reading identity from them makes the encoding change invisible to existing stores.
+        """
+        m = rec.get("meta") or {}
+        return (tuple(m.get("lg_ns") or ()), m.get("lg_key"))
+
+    def _rows_for(self, namespace, key):
+        want = (tuple(namespace), key)
+        return [r for r in self.store.items if InspeximusStore._addr(r) == want]
+
     def _active(self, namespace, key):
-        mk = self._mkey(namespace, key)
-        rows = [r for r in self.store.items if r.get("status") == "active" and (r.get("meta") or {}).get("mkey") == mk]
+        rows = [r for r in self._rows_for(namespace, key) if r.get("status") == "active"]
         return rows[-1] if rows else None
 
     def _to_item(self, rec) -> Item:
@@ -118,8 +139,8 @@ class InspeximusStore(BaseStore, ComplianceMixin):
             elif isinstance(op, PutOp):
                 mk = self._mkey(op.namespace, op.key)
                 if op.value is None:                                   # LangGraph convention: value=None deletes
-                    ids = [r["id"] for r in self.store.items
-                           if r.get("status") == "active" and (r.get("meta") or {}).get("mkey") == mk]
+                    ids = [r["id"] for r in self._rows_for(op.namespace, op.key)
+                           if r.get("status") == "active"]
                     if ids:
                         self.store.forget(ids=ids)
                     if not self.prune_empty_namespaces:
@@ -130,7 +151,7 @@ class InspeximusStore(BaseStore, ComplianceMixin):
                         if not any((r.get("meta") or {}).get("nskey") == nsk for r in self.store.items):
                             self.store.remember("lg namespace " + "/".join(op.namespace), key=nsk,
                                                 tags=["_langgraph"],
-                                                source={"doc": "lg::" + "::".join(InspeximusStore._esc(p) for p in op.namespace)},
+                                                source={"doc": "lg::" + "::".join(op.namespace)},
                                                 meta={"nskey": nsk, "lg_ns": list(op.namespace)})
                 else:
                     # The NAMESPACE is LangGraph's per-user boundary — ("users", "u1") — so it is the
@@ -140,7 +161,7 @@ class InspeximusStore(BaseStore, ComplianceMixin):
                     # A path-shaped subject is a collision by construction; this separator survives.
                     self.store.remember((op.key + " " + json.dumps(op.value, ensure_ascii=False, sort_keys=True))[:2000],
                                         key=mk, object=json.dumps(op.value, sort_keys=True),
-                                        source={"doc": "lg::" + "::".join(InspeximusStore._esc(p) for p in op.namespace)},
+                                        source={"doc": "lg::" + "::".join(op.namespace)},
                                         meta={"mkey": mk, "lg_ns": list(op.namespace), "lg_key": op.key,
                                               "value": op.value})
                 results.append(None)
@@ -152,7 +173,7 @@ class InspeximusStore(BaseStore, ComplianceMixin):
                 pref = list(op.namespace_prefix)
                 pool = [r for r in self.store.items if r.get("status") == "active"
                         and not (r.get("meta") or {}).get("nskey")
-                        and (r.get("meta") or {}).get("mkey")
+                        and (r.get("meta") or {}).get("lg_key") is not None
                         and list((r.get("meta") or {}).get("lg_ns") or ())[:len(pref)] == pref]
                 if op.query:
                     ranked = self.store.recall(op.query, k=op.limit + op.offset + 10)
@@ -214,12 +235,45 @@ class InspeximusStore(BaseStore, ComplianceMixin):
     async def abatch(self, ops) -> list:
         return self.batch(ops)
 
+    def erase_namespace(self, namespace: tuple[str, ...], request_id: str | None = None,
+                        include_children: bool = False) -> dict:
+        """Erase exactly the records at this namespace, resolved STRUCTURALLY. Use this for a DSAR.
+
+        WHY THIS EXISTS, stated plainly because the alternative looks like it works. The per-record
+        `source.doc` is `"lg::" + "::".join(namespace)`, and that join is lossy: `("a","b")` and
+        `("a::b",)` produce the SAME subject string, so `store.forget_subject("lg::a::b")` hard-deletes
+        both -- measured, 2 of 2. Erasure is irreversible, so that is the worst direction to be loose in.
+
+        The obvious fix -- escape the components in `source.doc` too -- is NOT available, and this is the
+        finding that shaped this method. It would change the subject string for every record already on
+        disk, so a DSAR for a namespace containing "/" or ":" would match nothing: measured, erased:0
+        with the record left active and an erasure certificate still issued. Rewriting those records to
+        the new string is worse again: it breaks their write receipts (`verify_writes` -> "stored content
+        no longer matches its write receipt"), i.e. a tamper-evident store forging its own evidence.
+
+        So the subject string stays legacy-compatible and coarse, and THIS is the precise path: it
+        resolves ids from the structured `lg_ns` every record carries, which is exact, has no delimiter,
+        and reads the same on both sides of the encoding change. `include_children=True` also takes
+        deeper namespaces under this one (`("users","u1","notes")` under `("users","u1")`).
+
+        Returns forget()'s result: {forgotten, ids, tombstones, ...}.
+        """
+        want = tuple(namespace)
+        n = len(want)
+        ids = [r["id"] for r in self.store.items
+               if r.get("status") == "active"
+               and (tuple((r.get("meta") or {}).get("lg_ns") or ())[:n] == want
+                    if include_children else
+                    tuple((r.get("meta") or {}).get("lg_ns") or ()) == want)]
+        if not ids:
+            return {"forgotten": 0, "ids": [], "tombstones": 0}
+        return self.store.forget(ids=ids, request_id=request_id, basis="erase_namespace")
+
     # ── inspeximus-only bonus: the history a plain KV store discards ──
     def history(self, namespace: tuple[str, ...], key: str) -> list[dict]:
         """Every value this (namespace, key) has held, oldest-first — including superseded ones the built-in
         InMemoryStore would have overwritten and lost. Backed by inspeximus's bi-temporal supersession ledger."""
-        mk = self._mkey(namespace, key)
-        rows = [r for r in self.store.items if (r.get("meta") or {}).get("mkey") == mk]
+        rows = list(self._rows_for(namespace, key))
         rows.sort(key=lambda r: r.get("valid_from", r.get("ts", 0)))
         return [(r.get("meta") or {}).get("value") for r in rows]
 

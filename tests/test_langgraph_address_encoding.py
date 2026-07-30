@@ -90,24 +90,60 @@ def test_an_ordinary_key_encodes_exactly_as_before_so_existing_stores_still_reso
     assert InspeximusStore._esc("notes") == "notes"
 
 
-def test_an_erasure_for_one_namespace_does_not_hard_delete_another(ours):
-    """The same lossy join was the DSAR SUBJECT, and erasure is irreversible.
+def test_the_raw_subject_string_is_COARSE_and_erase_namespace_is_the_precise_path(ours):
+    """The honest scope of the erasure surface, pinned so it cannot be quietly forgotten.
 
-    `source.doc` was "lg::" + "::".join(namespace), so ("a","b") and ("a::b",) were literally the same
-    subject string. MEASURED before the fix: forget_subject("lg::a::b") erased 2 of 2 and only the
-    unrelated record survived. Unlike a bad read, this one cannot be undone.
+    `source.doc` is "lg::" + "::".join(namespace), which is lossy: ("a","b") and ("a::b",) are the SAME
+    subject string, so forget_subject on it takes both -- measured, 2 of 2, and erasure is irreversible.
+
+    Escaping the subject the way the record id is escaped is NOT available, and the measurements are why:
+    it changes the subject for every record already written, so a DSAR for a namespace containing "/"
+    matched nothing (erased:0, record still active, certificate still issued); and rewriting stored
+    records to the new subject breaks their write receipts ("stored content no longer matches its write
+    receipt"), which is a tamper-evident store falsifying its own evidence.
+
+    So the coarse path stays coarse and compatible, and erase_namespace() is exact.
     """
     ours.put(("a", "b"), "k", {"who": "tenant-a-b"})
     ours.put(("a::b",), "k", {"who": "tenant-a-colons-b"})
     ours.put(("other",), "k", {"who": "untouched"})
 
-    res = ours.store.forget_subject("lg::a::b")
-    survivors = sorted((r.get("meta") or {}).get("value", {}).get("who", "?") for r in ours.store.items)
-
-    assert res["erased"] == 1, (
-        f"a DSAR naming one namespace erased {res['erased']} records -- it reached into a namespace the "
-        f"request did not name, and erasure is irreversible")
+    precise = ours.erase_namespace(("a", "b"))
+    survivors = sorted((r.get("meta") or {}).get("value", {}).get("who", "?")
+                       for r in ours.store.items if r.get("status") == "active")
+    assert precise["forgotten"] == 1, precise
     assert survivors == ["tenant-a-colons-b", "untouched"], survivors
+
+    # and the coarse path is coarse -- documented, not fixed
+    ours.put(("a", "b"), "k", {"who": "tenant-a-b"})
+    coarse = ours.store.forget_subject("lg::a::b")
+    assert coarse["erased"] == 2, (
+        "the raw-subject path stopped being coarse -- if that was deliberate, this docstring and "
+        "erase_namespace's are now wrong; if not, the subject encoding changed and legacy stores broke")
+
+
+def test_erase_namespace_reaches_a_legacy_record_whose_id_predates_escaping(tmp_path):
+    """The regression this whole rework exists to prevent: data written before the fix stays erasable."""
+    m = InspeximusStore(str(tmp_path / "legacy.json"))
+    m.put(("users", "u/1"), "notes", {"pii": "alice"})       # "/" in a namespace element
+    m.put(("users", "u2"), "notes", {"pii": "bob"})
+
+    assert m.get(("users", "u/1"), "notes").value == {"pii": "alice"}, "the read path lost a legacy row"
+    r = m.erase_namespace(("users", "u/1"))
+    assert r["forgotten"] == 1, r
+    left = sorted((x.get("meta") or {}).get("value", {}).get("pii", "?")
+                  for x in m.store.items if x.get("status") == "active")
+    assert left == ["bob"], left
+
+
+def test_erase_namespace_can_take_the_subtree_when_asked_and_not_otherwise(tmp_path):
+    m = InspeximusStore(str(tmp_path / "tree.json"))
+    m.put(("users", "u1"), "notes", {"v": 1})
+    m.put(("users", "u1", "deep"), "n", {"v": 2})
+
+    assert m.erase_namespace(("users", "u1"))["forgotten"] == 1, "exact must not take the child"
+    assert m.erase_namespace(("users", "u1"), include_children=True)["forgotten"] == 1
+    assert [x for x in m.store.items if x.get("status") == "active"] == []
 
 
 def test_an_ordinary_namespace_keeps_its_subject_string_so_a_pending_dsar_still_matches(ours):

@@ -3,6 +3,119 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 1.88.1 - UPGRADE IF YOU USE THE MCP SERVER OR THE LANGGRAPH STORE
+
+Two of these are broken for users on 1.88.0 right now, not latent.
+
+**The MCP server would not start on a fresh install.** The `mcp` extra declared `mcp[cli]>=1.0` with no
+upper bound. mcp 2.0 renamed `FastMCP` to `MCPServer` and removed `mcp.server.fastmcp`, which this package
+imports, so `pip install "inspeximus[mcp]"` resolved to 2.0.0 and every MCP tool raised ImportError. The
+extra is now `mcp[cli]>=1.28,<2` -- the bound the MCP SDK's own migration guide prescribes for v1
+dependents, not a judgement call of ours -- with the floor raised because `>=1.0` was never a tested claim
+and a lowest-resolution install could hand you an API this code does not match. The cap is on an optional
+server extra; the core library stays zero-dependency, and the cap lifts once the server is ported to v2's
+`MCPServer`. The error
+message also named `pip install "mcp[cli]"` as the remedy, which is the command that produces the failure;
+it now distinguishes "SDK absent" from "SDK present but 2.x" and gives a bounded install in both. Support
+for mcp 2.x is a real port and is not attempted here.
+
+**A LangGraph search matched the namespace prefix as a string instead of by segment.**
+`search(("user1",))` also returned records under `("user10",)` -- a sibling namespace the caller never
+asked for -- because `"lg::user1"` is a string prefix of `"lg::user10::notes"`. It is now a segment-wise
+prefix; LangGraph's reference `InMemoryStore` returns only `user1` and ours now matches it, while deeper
+namespaces under `user1` stay in scope as they should.
+
+This is a scoping-correctness defect against the `BaseStore` contract. It is NOT a failure of this
+library's separate `tenant=` isolation, which we measured and found unaffected: two `for_tenant()` handles
+writing the same `(namespace, key)` through the adapter each read back only their own record, and
+`search`/`list_namespaces` stay scoped. But if your application relied on namespace scoping to keep users
+apart, upgrade.
+
+**Two distinct (namespace, key) addresses could resolve to one record.** The record id joined the
+namespace with `/` and appended the key after `::`, and both separators are legal INSIDE a namespace
+element and inside a key (LangGraph rejects only `.` in namespace labels, and does not validate keys at
+all), so `("a","b")+"k"` and `("a/b",)+"k"` shared a record, as did `("u1",)+"b::k"` and `("u1::b",)+"k"`.
+The reference `InMemoryStore` keeps each pair distinct. Components are now percent-escaped, and -- more
+importantly -- reads no longer depend on that string at all: `get`, `search`, `history` and delete resolve
+identity from the structured namespace/key already stored on every record.
+
+No user reported this. We fixed it because the failure is silent -- the second write overwrites the first
+with no error -- and a store advertising `BaseStore` parity should not depend on which characters the
+caller happens to avoid.
+
+That second half is what makes this safe on an existing store. Escaping alone would have re-addressed
+every record whose namespace or key contains `/` or `:`, making them invisible: measured, `get()` returned
+None and `forget_subject` reported `erased: 0` with the record still active and an erasure certificate
+still issued. Rewriting stored records to the new id is not an option either -- it breaks their write
+receipts (`verify_writes`: "stored content no longer matches its write receipt"). Reading identity from
+the structured fields makes the change invisible to data written by earlier versions.
+
+**New: `InspeximusStore.erase_namespace(namespace, include_children=False)`.** The per-record subject
+string is `"lg::" + "::".join(namespace)`, which is lossy and is deliberately left that way for
+compatibility, so `store.forget_subject("lg::a::b")` still erases both `("a","b")` and `("a::b",)`. Use
+`erase_namespace()` for a data-subject request: it resolves ids from the structured namespace, so it is
+exact, and it reaches records written by earlier versions.
+
+**A blank substring deleted the whole store.** The two surfaces differed, so precisely: the pydantic-ai
+`forget(contains=...)` tool deleted 3 of 3 memories on `forget("")`. The CLI already refused
+`--contains ""` -- but only as an accident of falsiness, and it answered "pass --key, --id, or
+--contains" to someone who had just passed `--contains` -- while `--contains " "` deleted 3 of 3, because
+every multi-word memory contains a space. Both now refuse any blank (empty or whitespace-only) needle. The pydantic-ai one is a tool the MODEL calls, so an empty slot is an ordinary failure mode. A
+non-blank needle is still deliberately broad ("ann" reaches "Joanna"); that is unchanged.
+
+**`influence_gate_report` contradicted the gate it reports on.** It re-derived the corroboration test
+inline and had drifted: it ignored the slashed/orphan blocks and `credit_requires_warrant`. On a store
+with `credit_requires_warrant=True`, six records with unwarranted credit and two slashed, the gate passed
+0 of 6 while the report claimed 6 of 6 with `would_block_frac 0.00` -- wrong in the direction that causes
+an outage, since the report exists to say whether enabling the gate is affordable. One predicate now
+serves both, and `why_recalled` reports which bar decided a record.
+
+**An audit bundle's governance summary could contradict the tombstone chain beside it.** A bundle claiming
+`erasures_total: 0` while carrying two tombstones verified `ok=True`. The summary is now cross-checked
+against the chain, and the per-request breakdown against its own total.
+
+### Faster
+
+Measured on one machine; fixtures stated because these numbers move with the data.
+
+- **Erasure.** `_emit_tombstone` rewrote the entire tombstone chain on every tombstone, so erasing k
+  records cost k rewrites of a chain growing to k. It is now written once per batch. TWO changes compound
+  on this path -- that batching and the serialization change below -- and we did not measure them
+  separately, so these figures are their joint effect, not the tombstone fix alone. `forget_subject` with
+  k subject records among n others, median of 3: k=50/n=2,000 ~0.12s -> ~0.03s; k=200/n=4,000 ~0.53s ->
+  ~0.13s; k=400/n=8,000 ~2.0s -> ~0.37s; k=800/n=8,000 ~5.2s -> ~0.7s. Read that as roughly 3x to 7x, not
+  as precise figures: run-to-run spread on this machine reaches 20% on some workloads. What is not noisy
+  is the shape -- at fixed n, doubling k used to cost ~2.6x and now costs ~1.95x, i.e. linear in the size
+  of the erasure. (Not 4x before: the total also carries O(n) work that does not scale with k, so the
+  quadratic term was never the whole cost -- only the part that is now gone.) Deferring is also safer: the old order left j-of-k tombstones on
+  disk claiming erasures the store save had not performed.
+- **Store writes.** The store is serialized one record per line instead of `json.dumps(indent=1)`, which
+  keeps CPython's C encoder. n=20,000 records of ~48 characters, median of 5: ~240ms -> ~80ms, roughly
+  3x. The byte counts are exact rather than timed: 7,704,892 -> 6,164,892, i.e. 20.0% smaller. Still
+  line-diffable; fully compact would be ~45ms and just 40,001 bytes smaller.
+- **`contradictions()`** tokenizes each anchor once instead of once per pair: 1.46-1.88x depending on n.
+  It remains an all-pairs O(n^2) scan -- ~9.5s at n=2,000 and ~162s at n=8,000 on a store with real
+  clashes -- and the MCP session-start digest that runs it now says so with current numbers.
+
+### Documented, not fixed
+
+- **`memory_report` is a ~12 second call at n=8,000** (~2s at n=2,000; median of 5, run-to-run spread
+  15-25%). It samples 400 records and runs a full recall for each, so it is O(400 x n). Both the method
+  and the MCP tool description now state this; the cheap counts are single passes.
+- **The erasure residue scan is a literal, case-sensitive byte match.** Planting one secret in eight
+  encodings and scanning for the original: exact and JSON-quoted are FOUND; lowercased, uppercased,
+  double-spaced, newline-separated, base64 and hex are MISSED. `ok=True` means "this exact byte sequence
+  is absent", never "the value is gone".
+
+### Also
+
+CLI: `-k 0` and `-k -5` are rejected instead of returning an empty result with exit 0; a `--path` whose
+directory does not exist now warns instead of reading as an empty store. `check_code` no longer reports a
+clean build gate on a store it could not read. `install` refuses a non-object config file instead of
+crashing on it. `credit()`, `slash()`, `monitor()`, `spend_irreversible()` and `rederive()` accept a bare
+string id -- previously a str was iterated over its characters and the call silently did nothing. Opt-in
+`credit_burst_window` collapses repeated credit from one source within a window.
+
 ## 1.88.0 - UPGRADE IF YOU RELY ON ERASURE: an erasure left the subject's CURRENT value behind
 
 Same class as the 1.87.0 fix below, pointing the other way. 1.86.0 erased a stranger's records

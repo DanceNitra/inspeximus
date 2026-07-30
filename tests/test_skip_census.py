@@ -71,7 +71,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: integrations/langgraph.py imports langgraph.store.base at module level, so nothing in it is reachable
 #: without the dependency. The `tests` CI job installs the extras and does run all six.
 #: Exactly +6, no slack: 144 + 6 = 150.
-MAX_HIDDEN_IN_BASE_ENV = 150
+#: RAISED 150 -> 152 on 2026-07-30, same file, two more tests in it: the legacy-record rework added
+#: test_erase_namespace_reaches_a_legacy_record_whose_id_predates_escaping and the subtree case. Both
+#: need langgraph for the same reason the rest of that file does. Exactly +2: 150 + 2 = 152.
+MAX_HIDDEN_IN_BASE_ENV = 152
 
 
 def _base_env_census():
