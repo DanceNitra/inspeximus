@@ -156,6 +156,23 @@ def _canon(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
+def _as_ids(ids):
+    """Accept a single id as a bare string, not just a list.
+
+    Every ids-taking method iterated its argument directly, and a str IS iterable -- over its
+    CHARACTERS. So the most natural single-id call, `credit("2dfd5c3133", True)`, iterated ten
+    one-character ids, matched none of them, and returned {'updated': []}. Silently doing nothing on a
+    plausible input is the same defect class this module keeps finding elsewhere: the caller gets a
+    success-shaped result for work that never happened. Measured before the fix on credit(), slash(),
+    monitor(), spend_irreversible() and rederive() -- all five.
+    """
+    if ids is None:
+        return []
+    if isinstance(ids, str):
+        return [ids]
+    return list(ids)
+
+
 def _sha256_hex(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
@@ -5861,13 +5878,51 @@ class Inspeximus:
         FAIL-CLOSED PROVENANCE: an ORPHAN (a declared transformation output that named no parent, meta-flag
         rec['orphan']) is likewise not corroborated on any path -- missing lineage is treated as unverified, so
         an app-side summary that dropped its derived_from cannot quietly earn standing or survive a retraction."""
-        if (rec.get("meta") or {}).get("slashed") or rec.get("orphan"):
-            return False
+        return Inspeximus._corroboration_verdict(rec, by_id, strict, require_warrant)[0]
+
+    @staticmethod
+    def _corroboration_verdict(rec: dict, by_id: dict, strict: bool = False,
+                               require_warrant: bool = False) -> tuple:
+        """The gate predicate AND the reason, as one value: (passes, reason).
+
+        SINGLE SOURCE OF TRUTH, and it exists because there was a second one. `influence_gate_report()`
+        re-derived this test inline and had already DRIFTED from it: it omitted the slashed/orphan hard
+        blocks, ignored require_warrant (counting raw `good` where the gate counts `good_warranted`), and
+        did not apply the require_warrant condition on the semantic path. All three errors run the same
+        way -- the report counted records as corroborated that the gate refuses -- so it OVERSTATED
+        corroborated_frac and UNDERSTATED would_block_frac on exactly the stores that had switched the
+        extra defenses on. MEASURED on a store with credit_requires_warrant=True, six records with
+        unwarranted good credit and two of them slashed: the gate passes 0 of 6, the report claimed 6 of
+        6 with would_block_frac 0.00. That report's stated purpose is to tell an operator whether the
+        gate is affordable before enabling it, so the instrument was maximally wrong in the direction
+        that causes an outage -- enable it on that advice and recall(influence_only=True) returns
+        nothing. A predicate with two implementations has one implementation and one bug waiting.
+
+        `reason` names the bar that decided it, so an inspector can say WHY a record was refused without
+        re-deriving any of this a third time.
+        """
+        if (rec.get("meta") or {}).get("slashed"):
+            return False, "slashed: a landed retraction blocks corroboration on every path"
+        if rec.get("orphan"):
+            return False, "orphan: declared derivation named no parent, so lineage is unverified"
         good = float(rec.get("good", 0) or 0)
         bad = float(rec.get("bad", 0) or 0)
         good_earned = float(rec.get("good_warranted", 0) or 0) if require_warrant else good
         if good_earned > 0 and good >= bad:
-            return True
+            return True, ("earned outcome (warranted good %.3g >= bad %.3g)" % (good_earned, bad)
+                          if require_warrant else
+                          "earned outcome (good %.3g >= bad %.3g)" % (good, bad))
+        # NAME THE BAR THAT ACTUALLY DECIDED. A record that once had standing and lost it to negative
+        # outcomes must not be reported as "0 corroborating sources" -- that is the last test in the
+        # chain, not the one that refused it, and it hides the single case an operator most needs to
+        # see: a constraint suppressed by accumulated bad credit rather than one that never earned any.
+        if good > 0 and bad > good:
+            return False, ("outcome standing lost (good %.3g < bad %.3g)" % (good, bad)
+                           + ("" if not require_warrant else
+                              "; warranted good %.3g" % good_earned))
+        if require_warrant and good > 0 and good_earned <= 0:
+            return False, ("good %.3g present but none warranted, and credit_requires_warrant is on"
+                           % good)
         if rec.get("mtype") == "semantic":
             # A 'semantic' mtype counts as corroborated because it is normally an EARNED, graduated-durable
             # memory. But remember() also auto-classifies short declarative statements as semantic AT WRITE
@@ -5876,10 +5931,12 @@ class Inspeximus:
             # only EARNED semantic (graduated_from_episodic through the corroboration bar) passes; a write-time
             # semantic classification is treated as an unproven episodic claim.
             if not require_warrant or (rec.get("meta") or {}).get("graduated_from_episodic"):
-                return True
+                return True, "semantic tier (earned/graduated)" if require_warrant else "semantic tier"
         if strict:
-            return Inspeximus._distinct_verified_keys(rec.get("links"), by_id) >= 2
-        return Inspeximus._distinct_sources(rec.get("links"), by_id) >= 2
+            n = Inspeximus._distinct_verified_keys(rec.get("links"), by_id)
+            return (n >= 2), "%d distinct verified corroborating key(s), need 2" % n
+        n = Inspeximus._distinct_sources(rec.get("links"), by_id)
+        return (n >= 2), "%d distinct corroborating source(s), need 2" % n
 
     def _coherence(self, a_rec: dict, b_rec: dict) -> float:
         """Semantic coherence of two records in [0,1]: embedder cosine if `embed` is set and both carry a vec,
@@ -5994,21 +6051,42 @@ class Inspeximus:
         outcome oracle the attacker CANNOT SELF-GRADE. A MINJA-style self-graded outcome (arXiv:2503.03704)
         collapses the gate at every density — it can even block legit MORE than poison. Never let recalled
         memory content drive its own credit(); issue outcomes from the application, on real resolved work.
-        Returns {active, corroborated, corroborated_frac, would_block_frac, by_path{earned_outcome, semantic,
+        Returns {active, corroborated, corroborated_frac, would_block_frac, standing_lost, by_path{earned_outcome, semantic,
         multi_source}, advice}. Read-only; no side effects."""
         byid = {x["id"]: x for x in self.items}
         active = [r for r in self.items if r.get("status") == "active"]
         n = len(active)
         earned = sem = multi = corr = 0
+        blocked = 0
         for r in active:
-            g = float(r.get("good", 0) or 0); b = float(r.get("bad", 0) or 0)
-            if g > 0 and g >= b:
-                corr += 1; earned += 1
-            elif r.get("mtype") == "semantic":
-                corr += 1; sem += 1
-            elif (self._distinct_verified_keys(r.get("links"), byid) if self.strict_corroboration
-                  else self._distinct_sources(r.get("links"), byid)) >= 2:
-                corr += 1; multi += 1
+            # Route through the SAME predicate recall() uses, via the instance wrapper so the opt-in
+            # coherence/temporal/trust-seed gates apply too. This replaced an inline re-derivation that
+            # had drifted from the gate (no slashed/orphan block, require_warrant ignored) and therefore
+            # told operators the gate was cheaper than it is -- see _corroboration_verdict.
+            ok = self._corroborated(r, byid)
+            if ok:
+                corr += 1
+                _, why = Inspeximus._corroboration_verdict(
+                    r, byid, self.strict_corroboration, getattr(self, "credit_requires_warrant", False))
+                if why.startswith("earned"):
+                    earned += 1
+                elif why.startswith("semantic"):
+                    sem += 1
+                else:
+                    multi += 1
+            else:
+                blocked += 1
+                # THE EMIT. A record with good>0 and bad>good did not merely fail to earn standing --
+                # it HAD standing and lost it to accumulated negative outcomes. That is the shape of a
+                # suppressed constraint, and until now nothing surfaced it: a caller had to suspect a
+                # specific record and interrogate it. Counting it here puts it in a routine surface, so
+                # an operator who never suspected suppression still sees a non-zero number.
+                # Deliberately a COUNT, not an alarm: losing standing is also what correction looks
+                # like when a memory was genuinely wrong, and the two are not distinguishable from the
+                # counters alone. It says "look here", not "you are under attack".
+        standing_lost = sum(1 for r in active
+                            if float(r.get("good", 0) or 0) > 0
+                            and float(r.get("bad", 0) or 0) > float(r.get("good", 0) or 0))
         frac = (corr / n) if n else 0.0
         advice = ("cheap - most active memories are corroborated" if frac >= 0.7 else
                   "affordable" if frac >= 0.4 else
@@ -6018,6 +6096,7 @@ class Inspeximus:
                 "would_block_frac": round(1.0 - frac, 3), "strict_corroboration": self.strict_corroboration,
                 "by_path": {"earned_outcome": earned, "semantic": sem,
                             ("multi_verified_key" if self.strict_corroboration else "multi_source"): multi},
+                "standing_lost": standing_lost,
                 "advice": advice}
 
     @staticmethod
@@ -6109,7 +6188,7 @@ class Inspeximus:
         good = Inspeximus._outcome_good(outcome)
         by_id = {x["id"]: x for x in self._tenant_rows()}
         key, updated = ("good" if good else "bad"), []
-        for i in (ids or []):
+        for i in _as_ids(ids):
             rec = by_id.get(i)
             if rec is None:
                 continue
@@ -6326,7 +6405,7 @@ class Inspeximus:
         the dominant control). Returns {slashed, sources, ids}. Records + raw text untouched; only good/bad/mtype
         change, auditable via meta['slashed']. Reversible: nothing is deleted."""
         by_id = {x["id"]: x for x in self.items}
-        caught = [by_id[i] for i in (ids or []) if i in by_id]
+        caught = [by_id[i] for i in _as_ids(ids) if i in by_id]
         if scope == "source":
             bad_sources = set().union(*(Inspeximus._rec_sources(r) for r in caught)) if caught else set()
             # a record is caught if its own source OR any inherited taint intersects the slashed sources ->
@@ -6379,7 +6458,7 @@ class Inspeximus:
         deliberate cost of the retroactive lever: because the penalty is heavy (whole accrued standing), the
         appeal has to be cheap — otherwise slash() itself becomes the attack surface."""
         by_id = {x["id"]: x for x in self.items}
-        seed = [by_id[i] for i in (ids or []) if i in by_id]
+        seed = [by_id[i] for i in _as_ids(ids) if i in by_id]
         if scope == "source":
             srcs = set().union(*(Inspeximus._rec_sources(r) for r in seed)) if seed else set()
             targets = [r for r in self.items if (Inspeximus._rec_sources(r) & srcs) and (r.get("meta") or {}).get("slashed")]
@@ -6475,7 +6554,7 @@ class Inspeximus:
         self.credit(ids, outcome, weight)                    # standing accrues normally...
         bad = 0.0 if Inspeximus._outcome_good(outcome) else 1.0
         by_id = {x["id"]: x for x in self.items}
-        recs = [by_id[i] for i in (ids or []) if i in by_id]
+        recs = [by_id[i] for i in _as_ids(ids) if i in by_id]
         srcs = set().union(*(Inspeximus._rec_sources(r) for r in recs)) if recs else set()
         _peers = [r for r in self._tenant_rows() if Inspeximus._rec_sources(r) & srcs]
         _coll = self._source_expansion_collisions(recs, _peers)
@@ -6584,7 +6663,7 @@ class Inspeximus:
         Returns {allowed, exhausted, sources, spent}. Deliberately no cheap programmatic refund — raise a reviewed
         source's ceiling by calling with a higher budget or editing the side file by hand."""
         by_id = {x["id"]: x for x in self.items}
-        recs = [by_id[i] for i in (ids or []) if i in by_id]
+        recs = [by_id[i] for i in _as_ids(ids) if i in by_id]
         srcs = sorted(set().union(*(Inspeximus._rec_sources(r) for r in recs)) if recs else set())
         _peers = [r for r in self._tenant_rows() if Inspeximus._rec_sources(r) & set(srcs)]
         _coll = self._source_expansion_collisions(recs, _peers)
@@ -6753,9 +6832,23 @@ class Inspeximus:
         now = time.time()
         qvec = self._qvec(query) if self.embed else None
         qtok = _tokens(query)
-        ranked = self.recall(query, k=k)
+        # reinforce=False: this is documented "Read-only", but recall() defaults reinforce=True,
+        # so every inspection bumped value/last_access on the very records it was reporting
+        # on -- an instrument that changes the state it measures.
+        ranked = self.recall(query, k=k, reinforce=False)
         rank_of = {r["id"]: i + 1 for i, r in enumerate(ranked)}
         _full = {x["id"]: x for x in self._tenant_rows()}          # recall() may return vec-less projections
+
+        def _verdict(r):
+            return Inspeximus._corroboration_verdict(
+                r, _full, self.strict_corroboration,
+                getattr(self, "credit_requires_warrant", False))
+
+        def _passes(r):
+            return self._corroborated(r, _full)
+
+        def _why(r):
+            return _verdict(r)[1]
 
         def _brk(rec):
             r = _full.get(rec["id"], rec)                 # resolve the full record so the vec is present
@@ -6766,7 +6859,11 @@ class Inspeximus:
                     "semantic": round(float(sem), 4), "lexical": round(float(lex), 4),
                     "effective_value": round(self._effective_value(r, now), 4),
                     "good": float(r.get("good", 0) or 0), "bad": float(r.get("bad", 0) or 0),
-                    "stale_derived": bool(r.get("_stale_derived")), "rank": rank_of.get(r["id"])}
+                    "stale_derived": bool(r.get("_stale_derived")), "rank": rank_of.get(r["id"]),
+                    # The gate's OWN verdict, not a re-derivation. `good`/`bad` above are inputs to
+                    # it, not the test -- a caller reading them as corroboration gets it wrong when
+                    # a record is slashed, orphaned, or unwarranted under credit_requires_warrant.
+                    "gated_out": not _passes(r), "gate_reason": _why(r)}
         if id is not None:
             rec = next((r for r in self._tenant_rows() if r["id"] == id), None)
             if rec is None:
