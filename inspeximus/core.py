@@ -2567,7 +2567,15 @@ class Inspeximus:
         now = time.time()
         for tid in sorted(target):                           # deterministic order -> reproducible chain
             self._emit_tombstone(tid, now, request_id, basis=basis or "forget",
-                                 authorized_by=authorized_by, authorization=authorization)
+                                 authorized_by=authorized_by, authorization=authorization, defer=True)
+        # ONE sidecar write for the whole batch. Each _emit_tombstone used to rewrite the ENTIRE chain, so
+        # erasing k records cost k rewrites of a chain growing to k -- O(k^2) serialization plus k atomic
+        # replaces. Deferring is also strictly SAFER on a crash: the old order left j-of-k tombstones on
+        # disk claiming erasures the store save had not yet performed, i.e. a deletion proof for records
+        # still present. Now it is all-or-nothing, and still written BEFORE _save, so a crash can only lose
+        # the proof of a deletion that did not happen -- never the reverse.
+        if target:
+            self._flush_tombstones()
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
         out = {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
@@ -2603,7 +2611,7 @@ class Inspeximus:
 
     def _emit_tombstone(self, memory_id: str, ts: float, request_id: str | None,
                         basis: str | None = None, authorized_by: str | None = None,
-                        authorization: str | None = None) -> dict:
+                        authorization: str | None = None, defer: bool = False) -> dict:
         """Append one hash-chained (optionally signed) deletion marker. Commits to the record's random surrogate
         id + ts + opaque request_id, PLUS an optional tamper-evident AUTHORITY/BASIS block: `basis` (why the
         record was erased — the decision basis), `authorized_by` (the authorizing principal's PUBLIC key), and
@@ -2622,16 +2630,25 @@ class Inspeximus:
             t["pubkey"] = self.receipt_pubkey
             t["sig"] = sk.sign(bytes.fromhex(t["hash"])).hex()
         self._tombstones.append(t)
-        if self._tombstones_path:
-            try:
-                Inspeximus._atomic_write(self._tombstones_path,
-                                         json.dumps(self._tombstones, indent=2, ensure_ascii=False))
-            except Exception as e:
-                # A tombstone is the PROOF an erasure happened. Silently losing it meant forget_subject
-                # returned tombstones:1 and erasure_certificate said verified, while a reload showed
-                # erasures_total: 0 — the deletion record a DSAR response rests on, gone without a word.
-                self._sidecar_errors["tombstones"] = f"{self._tombstones_path}: {type(e).__name__}: {e}"
+        # `defer` is for a BATCH erasure, which is the only caller that emits more than one: it writes the
+        # chain once at the end instead of once per tombstone. The default stays False so a single emit is
+        # durable the moment it returns, exactly as before.
+        if not defer:
+            self._flush_tombstones()
         return t
+
+    def _flush_tombstones(self) -> None:
+        """Persist the whole tombstone chain. Split out of _emit_tombstone so a batch erasure can write once."""
+        if not self._tombstones_path:
+            return
+        try:
+            Inspeximus._atomic_write(self._tombstones_path,
+                                     json.dumps(self._tombstones, indent=2, ensure_ascii=False))
+        except Exception as e:
+            # A tombstone is the PROOF an erasure happened. Silently losing it meant forget_subject
+            # returned tombstones:1 and erasure_certificate said verified, while a reload showed
+            # erasures_total: 0 — the deletion record a DSAR response rests on, gone without a word.
+            self._sidecar_errors["tombstones"] = f"{self._tombstones_path}: {type(e).__name__}: {e}"
 
     def register_erasure_target(self, target) -> "Inspeximus":
         """Register an APP-SIDE store (the app's vector index, an embedding/response cache, a retrieval log)
@@ -2713,8 +2730,12 @@ class Inspeximus:
             # hard-deleted. That is the third-party over-erasure the guard exists to prevent, reintroduced by
             # its own escape hatch. `_erasure_collisions` says the derived tier cannot separate colliding
             # subjects and that it "refuses rather than guessing" — so exact must not guess either.
+            # The id-map is built ONCE. It used to sit inside this comprehension's condition, so it was
+            # rebuilt for every rid in subj_ids -- an O(len(subj_ids) x n) scan in the erasure path.
+            # Pure function of _tenant_rows(), which nothing here mutates, so hoisting is identical.
+            _rows_by_id = {r["id"]: r for r in self._tenant_rows()}
             roots = {rid for rid in subj_ids
-                     if self._raw_source({r["id"]: r for r in self._tenant_rows()}.get(rid, {})) == subject}
+                     if self._raw_source(_rows_by_id.get(rid, {})) == subject}
             keep, frontier = set(roots), set(roots)
             while frontier:                       # forward closure over declared derived_from edges
                 nxt = {r["id"] for r in self._tenant_rows()
