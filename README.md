@@ -2,16 +2,17 @@
 
 <img src="https://raw.githubusercontent.com/DanceNitra/inspeximus/main/assets_readme/hero_banner.png" alt="inspeximus — a glowing digital memory layer resting on a robust machined-steel base" width="800">
 
-# inspeximus
+# inspeximus — a zero-dependency Python agent-memory library
+
+**Correct a fact once and it stays corrected. Delete it, and get a signed certificate that it is gone.** A delete that returns success is not a delete: we measured one that left the data recoverable in **five of six** places the application had put it.
 
 *"We have inspected" — the medieval charter that recites an earlier one word for word and
 attests it unaltered. The self-correcting memory layer for AI agents.*
 
-*Correct a fact once and it stays corrected: inspeximus serves the new value and refuses to let the old one creep
-back — deterministically, with no LLM on the write path. Extracted from an autonomous research OS that has run
-it daily over 10,000 notes.*
+*It serves the new value and refuses to let the old one creep back — deterministically, with no LLM on the
+write path. Extracted from an autonomous research OS that has run it daily over 10,000 notes.*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.88.1
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [DOI](https://doi.org/10.5281/zenodo.21128549) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.88.1
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -653,7 +654,7 @@ so retroactive relabeling is detectable is Hasan, Sion & Winslett, *The Case of 
 Forgery with Secure Provenance* (USENIX FAST 2009; journal version ACM TOS 5(4), 2009); answering provenance facets from one call is standard in provenance-aware
 databases (Perm, ProvSQL, ProQL); signed, Merkle-logged lineage for LLM agent memory specifically is
 MemLineage ([arXiv:2605.14421](https://arxiv.org/abs/2605.14421)), which inspeximus's lineage auto-stamping
-already credits. What is ours is the packaging: all of it in one zero-dependency file, on by default, with
+already credits. What is ours is the packaging: all of it with zero third-party dependencies, on by default, with
 the limits attached to the answer.
 
 ## Five rules it won't break (each one cost us to learn)
