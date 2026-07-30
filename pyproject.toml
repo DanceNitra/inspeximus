@@ -49,7 +49,13 @@ langchain = ["langchain-core"]
 langgraph = ["langgraph"]
 llamaindex = ["llama-index-core"]
 autogen = ["autogen-agentchat", "autogen-core"]
-google-adk = ["google-adk"]
+# `>=2` is a FLOOR, not a cap, and it is measured: integrations/google_adk.py's register() imports
+# google.adk.cli.service_registry, which exists in 2.5.0 and does NOT in 1.14.1. Declared unbounded, the
+# mcp<2 cap changed pip's search order enough that a nine-extra install resolved to 1.14.1 and the
+# integration was untestable. Stating the floor fixes every install site at once -- CI and users alike --
+# instead of patching each pip line, which is how the release workflow kept a copy of the bug after ci.yml
+# was fixed.
+google-adk = ["google-adk>=2"]
 openai-agents = ["openai-agents"]
 pydantic-ai = ["pydantic-ai"]
 crewai = ["crewai"]

@@ -20,6 +20,12 @@ The error message also named `pip install "mcp[cli]"` as the remedy -- the comma
 failure. It now distinguishes "SDK absent" from "SDK present but 2.x" and gives a bounded install in
 both. Supporting mcp 2.x is a real port and is not attempted here.
 
+**The `google-adk` extra now declares `google-adk>=2`.** `register()` imports
+`google.adk.cli.service_registry`, which exists in 2.5.0 and does not in 1.14.1. Declared unbounded, the
+new `mcp<2` cap was enough to change pip's search order and an all-extras install resolved to 1.14.1,
+where that import fails. This is a floor, not a cap: it states the versions the integration actually
+works against.
+
 **A LangGraph search matched the namespace prefix as a string instead of by segment.**
 `search(("user1",))` also returned records under `("user10",)` -- a sibling namespace the caller never
 asked for -- because `"lg::user1"` is a string prefix of `"lg::user10::notes"`. It is now a segment-wise
