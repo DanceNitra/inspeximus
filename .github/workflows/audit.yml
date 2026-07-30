@@ -86,13 +86,21 @@ jobs:
           import pathlib
           p = pathlib.Path("inspeximus/core.py")
           s = p.read_text(encoding="utf-8")
-          old = '''        keep, frontier = set(roots), set(roots)
-          while frontier:
-              nxt = {r["id"] for r in self.items
-                     if r["id"] not in keep and (set(r.get("derived_from") or []) & frontier)}
-              keep |= nxt
-              frontier = nxt
-          keep |= inherited'''.replace("\n          ", "\n        ")
+          # Indentation lives INSIDE the quotes, one line per entry. The previous version was a
+          # triple-quoted block whose continuation lines relied on a .replace() to re-add indentation
+          # -- but a YAML block scalar has already stripped the common indent by the time Python sees
+          # it, so there was nothing to replace and the target came out with line 1 indented and the
+          # rest flush left. It could never match, and the audit job was red for exactly that. The
+          # assert below is what caught it: the control working as designed, on itself.
+          old = chr(10).join([
+              '        keep, frontier = set(roots), set(roots)',
+              '        while frontier:',
+              '            nxt = {r["id"] for r in self.items',
+              '                   if r["id"] not in keep and (set(r.get("derived_from") or []) & frontier)}',
+              '            keep |= nxt',
+              '            frontier = nxt',
+              '        keep |= inherited',
+          ])
           assert s.count(old) == 1, f"falsification target appears {s.count(old)}x -- the control is aimed at nothing"
           p.write_text(s.replace(old, "        keep = set(roots) | inherited", 1), encoding="utf-8")
           PY
