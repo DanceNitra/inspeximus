@@ -7089,8 +7089,15 @@ class Inspeximus:
         flags = []
         for i, a in enumerate(active):
             avec = self._qvec(a["text"])             # embed each anchor once, not once per partner
+            # ...and TOKENIZE it once too. _similarity() takes a hoisted `qtok` for exactly this and
+            # this caller never passed it, so on the no-embedder path (the zero-dependency default)
+            # _tokens(a["text"]) ran again for every partner — O(n^2) tokenizations of n distinct
+            # strings. Pure function of the text, so passing the precomputed set is result-identical.
+            # This does NOT change the O(n^2) pair scan, which is inherent to an all-pairs check and is
+            # documented as such in check_conflict(); it removes redundant work inside it.
+            atok = _tokens(a["text"])
             for b in active[i + 1:]:
-                if self._similarity(a["text"], b, avec) >= sim_threshold and inc(a["text"], b["text"]):
+                if self._similarity(a["text"], b, avec, atok) >= sim_threshold and inc(a["text"], b["text"]):
                     flags.append({"a": a["id"], "b": b["id"],
                                   "a_text": a["text"][:120], "b_text": b["text"][:120]})
         return flags
