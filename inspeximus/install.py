@@ -236,6 +236,18 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
             res["error"] = err
             return res
         before = json.dumps(data, indent=2) + "\n" if path.exists() else ""
+        # THE TOP LEVEL, checked before the key inside it. The guard below already refuses a
+        # root_key whose value is not an object, but it runs AFTER data.setdefault(), which needs
+        # `data` to be a dict in the first place. A config that is valid JSON but not an object (a
+        # bare list, string or number) therefore crashed plan() with
+        # `AttributeError: 'list' object has no attribute 'setdefault'` and a raw traceback --
+        # while a MALFORMED file was refused cleanly. plan() is documented to work out what would
+        # change "without touching anything" and to report trouble in res["error"]; raising breaks
+        # that contract for --dry-run too. Same refusal, one level out.
+        if not isinstance(data, dict):
+            res["error"] = (f"{path}: top level is {type(data).__name__}, not an object; "
+                            f"refusing to touch it")
+            return res
         servers = data.setdefault(spec["root_key"], {})
         if not isinstance(servers, dict):
             res["error"] = f"{path}: '{spec['root_key']}' is not an object; refusing to touch it"
