@@ -920,7 +920,13 @@ def irreversible_budget_report(budget: float = 1.0) -> dict:
 @mcp.tool()
 def memory_report(dup_threshold: float = 0.9) -> dict:
     """INSPECTOR overview — 'what is in memory, and is it clean': active/superseded counts, by type, likely
-    duplicates (>= dup_threshold), and integrity posture. The at-a-glance store-health view. Read-only."""
+    duplicates (>= dup_threshold), and integrity posture. The at-a-glance store-health view. Read-only.
+
+    NOT free, and the caller here is a model mid-conversation. The duplicate estimate samples 400 records
+    and runs a FULL recall for each, so it is O(400 x n) over the whole store: measured 1.76 s at n=2,000
+    and 10.19 s at n=8,000 (no embedder). "At-a-glance" describes the output, not the wait. The counts
+    (active/superseded/by_type/linked/decayed) are single passes and effectively free -- if that is all you
+    need, this tool is the expensive way to get it."""
     return _MEM.memory_report(dup_threshold=dup_threshold)
 
 

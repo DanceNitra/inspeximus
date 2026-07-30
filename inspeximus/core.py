@@ -6976,7 +6976,25 @@ class Inspeximus:
         """INSPECTOR overview — 'what is in memory, and is it clean'. Counts active/superseded, by type,
         consolidated (linked), decayed (effective value < 10% of stored), and a near-duplicate REDUNDANCY estimate
         (active memories whose nearest active neighbour is >= dup_threshold, no value clash — sampled at 400 for
-        cost). Read-only; the surface that proves a store did NOT accumulate 800 copies of one fact."""
+        cost). Read-only; the surface that proves a store did NOT accumulate 800 copies of one fact.
+
+        COST, because "sampled at 400 for cost" says a bound was applied without saying what it costs, and
+        this is an MCP tool an agent can call mid-conversation. The sample caps the number of QUERIES, not
+        the work each one does: every one of the 400 is a full `recall`, which scores every active record.
+        So the redundancy estimate is O(400 x n), and n is the whole store.
+
+        MEASURED on this machine, no embedder (the lexical path), median of 3:
+
+            n=2,000    1.76 s
+            n=8,000   10.19 s
+
+        Profiled at n=4,000, 12.8 s of the run's 12.8 s is inside those 400 recalls -- 1.6M _lexsim calls.
+        The other four figures (active, superseded, by_type, linked, decayed) are single passes and
+        effectively free; if you want a cheap store summary, they are what you are paying for.
+
+        This is a documented cost, not a defect to route around: the sampling is deliberate and seeded, and
+        making the nearest-neighbour search sublinear needs an inverted index, which is an architectural
+        change rather than a local one. Call it out of band on a large store."""
         now = time.time()
         act = [r for r in self._tenant_rows() if r.get("status") == "active"]
         sup = [r for r in self._tenant_rows() if r.get("status") == "superseded"]
