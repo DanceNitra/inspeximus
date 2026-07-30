@@ -61,7 +61,47 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False):
     # receipts (OPT-IN): builds the tamper-evident write/erasure chain (persisted to <path>.receipts.json) that
     # `audit-build` exports; reload needs it on too, so audit-build/governance force it regardless of the flag.
     from ._surface import open_store
+    _warn_if_store_dir_missing(path)
     return open_store(path, embed=_embedder(), persist_vectors=persist_vectors, receipts=receipts)
+
+
+def _positive_k(raw: str) -> int:
+    """`-k` must be >= 1. argparse's type=int caught `abc` but not 0 or -5, and those returned an empty
+    result with exit 0 — a bad request reported as 'you have no memories'."""
+    try:
+        v = int(raw)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{raw!r} is not an integer")
+    if v < 1:
+        raise argparse.ArgumentTypeError(f"must be >= 1, got {v}")
+    return v
+
+
+def _warn_if_store_dir_missing(path) -> None:
+    """A --path whose DIRECTORY does not exist is a typo, not an empty store.
+
+    Reads against such a path printed "(nothing in memory for that query)" and exited 0, so a user or a
+    script could not tell a mistyped path from a genuinely empty memory. Writes already fail loudly here
+    (_flush_or_fail returns 3, 'NOT PERSISTED'), so only the read side was silent.
+
+    This WARNS rather than exits: a missing FILE in an existing directory is the legitimate
+    brand-new-store case and must keep working, and changing read exit codes would alter the contract
+    that `_flush_or_fail(required=False)` deliberately established for read-only files. Making the typo
+    visible is the part that can be done without touching that contract; turning it into a non-zero exit
+    for read commands is a behaviour change and is written up instead.
+    """
+    try:
+        parent = os.path.dirname(os.path.abspath(str(path)))
+        if parent and not os.path.isdir(parent):
+            # ASCII ONLY. This lands on a Windows console that is not UTF-8 (cp1250 here): an em dash
+            # rendered as a replacement character, and on a stricter console non-ASCII raises
+            # UnicodeEncodeError and takes the whole command down. A diagnostic must never be the thing
+            # that crashes the run it is diagnosing.
+            print(f"warning: no such directory {parent!r} - nothing can be read from or written to "
+                  f"{str(path)!r}. If this is a typo, results below are from an EMPTY store, not your data.",
+                  file=sys.stderr)
+    except Exception:
+        pass          # diagnostics must never break a command
 
 
 def _out(obj, as_json):
@@ -115,7 +155,11 @@ def main(argv=None):
 
     q = sub.add_parser("recall", help="retrieve current-truth memories (superseded values hidden)")
     q.add_argument("query")
-    q.add_argument("-k", type=int, default=6, help="how many to return")
+    # RANGE, not just type. argparse already rejected `-k abc` (exit 2), but `-k 0` and `-k -5` were
+    # accepted and printed "(nothing in memory for that query)" with exit 0 — a caller that computes k
+    # and lands on 0 or negative got an answer indistinguishable from an empty store. An invalid
+    # request must not be reported as an empty result.
+    q.add_argument("-k", type=_positive_k, default=6, help="how many to return (>= 1)")
 
     v = sub.add_parser("revert", help="roll a key back to the value it superseded")
     v.add_argument("key")
