@@ -1355,8 +1355,8 @@
   {
     "name": "the corrected SD stops stating its own uncertainty",
     "file": "tools/probe_gate.py",
-    "old": "    return math.sqrt(max(0.0, 1.0 - c * c)) / c",
-    "new": "    return math.sqrt(max(0.0, 1.0 - c * c))",
+    "old": "    rel = math.sqrt(max(0.0, 1.0 - c * c)) / c",
+    "new": "    rel = math.sqrt(max(0.0, 1.0 - c * c))",
     "tests": [
       "tests/test_probe_gate.py"
     ]
@@ -1366,6 +1366,33 @@
     "file": "probes/identity_gate_supersession_probe.py",
     "old": "    cand_per_run = ncand / SEEDS",
     "new": "    cand_per_run = ncand / 5",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "the kurtosis inflation is dropped from sd_rel_error",
+    "file": "tools/probe_gate.py",
+    "old": "        rel *= max(1.0, math.sqrt(max(0.0, 1.0 + g2 / 2.0)))",
+    "new": "        rel *= 1.0",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "the inflation loses its floor and may SHRINK the stated uncertainty",
+    "file": "tools/probe_gate.py",
+    "old": "        rel *= max(1.0, math.sqrt(max(0.0, 1.0 + g2 / 2.0)))",
+    "new": "        rel *= math.sqrt(max(0.0, 1.0 + g2 / 2.0))",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "spread() stops passing its values, so the +/- reverts to pure normal theory",
+    "file": "tools/probe_gate.py",
+    "old": "        rel = sd_rel_error(n, vals if n >= 4 else None)",
+    "new": "        rel = sd_rel_error(n)",
     "tests": [
       "tests/test_probe_gate.py"
     ]

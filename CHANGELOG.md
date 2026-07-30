@@ -5,6 +5,52 @@ All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a 
 
 ## Unreleased - measurement tooling (no library code; nothing in the wheel changes)
 
+**The stated +/- was normal theory, and it ran too tight in the flattering direction.** `sd_rel_error(n)`
+returned `sqrt(1-c4^2)/c4`, exact for normal data. Var(s) carries an excess-kurtosis term, so the truth
+scales by roughly `sqrt(1 + kappa/2)`. Measured over 40,000 subsamples per cell, quoted-over-actual:
+
+    pool (excess kurtosis)      n=5     n=20
+    ungated  (-0.26)           1.04x   1.07x    conservative
+    normal   ( 0.00)           0.98x   0.99x    right
+    gated    (+0.52)           0.84x   0.87x    TOO TIGHT
+    lognormal(+~4)             0.58x   0.40x    far too tight
+
+Too tight is the direction that flatters, which is the failure this module exists to stop, so it was
+reporting the disease it was written to cure. `sd_rel_error(n, values)` now applies the sample inflation
+`sqrt(1 + g2/2)`, floored at 1.0 so the figure can only widen, and `spread()` passes its values.
+
+**It is a partial fix and the docstring says so, with the residual as a number.** The correction moves
+quoted-over-actual from 0.84x to 0.90x on the gated arm and 0.58x to 0.66x on the lognormal. It cannot do
+better: sample kurtosis is a FOURTH-moment statistic, even more extremum-sensitive than a range, and a
+small sample from a heavy tail usually contains no tail point, so it looks light-tailed. The detector
+fails in the same regime as the thing it detects. Two alternatives were measured and are worse -- a
+bootstrap SE of the estimate reports 0.69x-0.89x of the truth across these arms (0.47x on the lognormal).
+So the printed figure is labelled a FLOOR, and a non-positive g2 does not clear a sample as normal.
+
+**The bootstrap paragraph in `spread()` was wrong and is replaced.** Schenker 1985 (JASA 80:360-361)
+already established that percentile and bias-corrected intervals for a normal variance under-cover badly
+at small n, which is why Efron built BCa in 1987; our run reproduces that rather than discovers it
+(percentile 62.1% and 64.0% at n=5 on our pool and a normal control, BCa 59.7% and 65.1%, so BCa does not
+rescue it -- Schenker's own point). The stated MECHANISM was a guess: "five points cannot be resampled
+into a tail they never sampled" is falsified by a chi-square interval built from those same five points,
+which covers 94.2% on normals and 96.4% on our pool. The support is not the binding constraint; the
+non-pivotality of s is. No figure is quoted for a studentized interval because two of our own
+implementations disagree by ten points on the identical question.
+
+**A coverage number should not be read to three digits.** Across six independently built 120-seed pools
+the n=5 coverage ranged 46.6% to 67.6%; binomial error alone would have said +/-0.8 points. Separately,
+the 4-value arm's low coverage is partly not about skew: 6.2% of five-draws there come out all-identical,
+giving a zero-width interval that cannot cover by construction, and excluding those it is 50.5% against
+62.3% on the 13-value arm.
+
+Seven mutations registered and killed. One of them survived its first run: the guard compared a rounded
+printed percentage against a truncated threshold (15 against 14), so deleting the entire fix still passed.
+It now asserts the exact figure. A threshold loose enough to admit the absence of the thing it guards is
+not a guard.
+
+This came out of a retroactive adversarial audit that should have run before the result was described
+publicly and did not.
+
 **The trial floor was the symptom; the RANGE was the defect.** `ProbeGate.spread()` gated on `n >= 20`
 and then quoted a range. A range is an extremum statistic: its expectation only grows with n, so a small
 sample can only ever understate it -- which is why an under-sampled spread does not read as noisy, it

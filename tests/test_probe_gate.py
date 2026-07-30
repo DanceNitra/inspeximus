@@ -177,6 +177,55 @@ def test_de_biasing_does_not_remove_the_need_for_trials():
     assert sd_rel_error(5) > 2 * sd_rel_error(20)
 
 
+def test_the_uncertainty_widens_on_a_heavy_tailed_sample_and_never_shrinks():
+    """The closed form is NORMAL theory. Measured over 40,000 subsamples it runs 0.84x of the truth on
+    our own positive-kurtosis arm and 0.58x on a lognormal, which is the flattering direction and the
+    exact failure this module exists to stop. Passing the values applies sqrt(1 + g2/2), floored at 1.
+
+    The floor is load-bearing in both directions: a light-tailed sample must not SHRINK the figure, or a
+    uniform ramp would print a tighter +/- than normal theory allows.
+    """
+    import re
+
+    n = 24
+    ramp = [0.30 + 0.01 * i for i in range(n)]                 # platykurtic: g2 well below 0
+    heavy = [0.30] * (n - 2) + [0.90, -0.30]                   # two outliers: g2 well above 0
+
+    base = sd_rel_error(n)
+    assert sd_rel_error(n, ramp) == base, "a light-tailed sample must not shrink the stated uncertainty"
+    assert sd_rel_error(n, heavy) > base * 1.5, (
+        f"heavy tails must widen it: got {sd_rel_error(n, heavy):.3f} against a normal-theory {base:.3f}")
+
+    g = _gate()
+    g.spread("heavy", heavy)
+    detail = next(d for l, _, d in g.checks if l.startswith("SPREAD"))
+    assert "FLOOR" in detail, "the figure must be labelled a floor, not a measurement of the truth"
+
+    # Assert the EXACT figure the widened estimator gives, not merely "bigger than the plain one". The
+    # first version of this line compared the printed (rounded) percentage against int(base*100), which
+    # truncates: normal theory at n=24 is 0.1487, printed as 15%, tested against a threshold of 14. So
+    # 15 > 14 passed with the inflation removed entirely, and the mutation that deletes the whole fix
+    # SURVIVED. A threshold loose enough to admit the absence of the thing it guards is not a guard.
+    reported = int(re.search(r"\+/-(\d+)%", detail).group(1))
+    assert reported == round(sd_rel_error(n, heavy) * 100), (
+        f"the gate printed +/-{reported}%; the widened estimator says "
+        f"{round(sd_rel_error(n, heavy) * 100)}% and plain normal theory says {round(base * 100)}%")
+    assert reported > round(base * 100) + 5, "and the two must be far enough apart to tell apart"
+
+
+def test_the_uncertainty_is_documented_as_a_floor_not_a_cure():
+    """The kurtosis correction is PARTIAL and saying so is part of the fix. Measured: it moves
+    quoted-over-actual from 0.84x to 0.90x on the skewed arm and 0.58x to 0.66x on a lognormal. It cannot
+    do better, because sample kurtosis is a fourth-moment statistic and a small sample from a heavy tail
+    usually contains no tail point -- the detector fails in the same regime as the thing it detects.
+    A docstring that claimed a cure would be the more dangerous artifact.
+    """
+    doc = sd_rel_error.__doc__
+    assert "PARTIAL" in doc and "not be read as a cure" in doc.lower()
+    assert "0.90x" in doc and "0.66x" in doc, "the residual shortfall must be stated as a number"
+    assert "fourth-moment" in doc.lower() or "FOURTH-moment" in doc, "state WHY it cannot be cured"
+
+
 def test_the_reported_spread_carries_the_estimator_and_its_uncertainty():
     """A number with no stated uncertainty invites the next reader to treat it as exact."""
     g = _gate()

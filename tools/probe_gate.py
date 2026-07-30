@@ -46,7 +46,20 @@ def c4(n: int) -> float:
     return math.sqrt(2.0 / (n - 1)) * math.exp(math.lgamma(n / 2.0) - math.lgamma((n - 1) / 2.0))
 
 
-def sd_rel_error(n: int) -> float:
+def _excess_kurtosis(vals) -> float:
+    """Sample excess kurtosis, moment form. Returns 0.0 when it is not defined."""
+    n = len(vals)
+    if n < 4:
+        return 0.0
+    m = sum(vals) / n
+    m2 = sum((x - m) ** 2 for x in vals) / n
+    if m2 <= 0:
+        return 0.0
+    m4 = sum((x - m) ** 4 for x in vals) / n
+    return m4 / (m2 * m2) - 3.0
+
+
+def sd_rel_error(n: int, values=None) -> float:
     """The bias-corrected SD's OWN relative standard error: sqrt(1 - c4(n)^2) / c4(n).
 
     De-biasing fixes the direction of the error, not its size, and this is the number that says so:
@@ -54,11 +67,41 @@ def sd_rel_error(n: int) -> float:
     three decimals). So a bias-corrected SD from five trials is unbiased and still lands anywhere
     between 0.55x and 1.49x the truth, 10th to 90th percentile. That residual is what the trial floor
     buys, and it is why correcting the estimator does not remove the floor.
+
+    THIS FIGURE IS NORMAL THEORY AND IT UNDERSTATES ON HEAVY TAILS. Var(s) ~ sigma^2 (2 + kappa)/(4n),
+    so the truth scales by roughly sqrt(1 + kappa/2) in the excess kurtosis. Measured against 40,000
+    subsamples per cell, quoted-over-actual:
+
+        pool (excess kurtosis)      n=5     n=20        so the printed +/- is
+        ungated  (-0.26)           1.04x   1.07x        conservative
+        normal   ( 0.00)           0.98x   0.99x        right
+        gated    (+0.52)           0.84x   0.87x        TOO TIGHT
+        lognormal(+~4)             0.58x   0.40x        far too tight
+
+    Too tight is the direction that flatters, which is the whole failure this module exists to stop, so
+    passing `values` applies the inflation sqrt(1 + g2/2) from the sample's own excess kurtosis, floored
+    at 1.0 so the figure can only ever widen.
+
+    IT IS A PARTIAL FIX AND MUST NOT BE READ AS A CURE. Measured with the same 40,000 subsamples, the
+    correction moves quoted-over-actual from 0.84x to 0.90x on the gated arm and 0.58x to 0.66x on the
+    lognormal: better, still short. The reason is exactly the reason the range failed. Sample kurtosis is
+    a FOURTH-moment statistic, even more extremum-sensitive than a range, and a small sample from a heavy
+    tail usually contains no tail point, so it looks light-tailed. The detector fails in the same regime
+    as the thing it detects. Two other candidates were measured and are worse: a bootstrap SE of the
+    estimate reports 0.69x-0.89x of the truth across these arms (0.47x on the lognormal), and a raw
+    normal constant with no inflation is the 0.84x/0.58x row above.
+
+    So: a NON-positive g2 does not clear a sample as normal, it only fails to convict. The honest reading
+    of this number is a floor, and the only instrument that reliably widens it is more trials.
     """
     c = c4(n)
     if not (c == c) or c <= 0:                       # NaN guard: n < 2 has no spread to speak of
         return float("inf")
-    return math.sqrt(max(0.0, 1.0 - c * c)) / c
+    rel = math.sqrt(max(0.0, 1.0 - c * c)) / c
+    if values is not None:
+        g2 = _excess_kurtosis(list(values))
+        rel *= max(1.0, math.sqrt(max(0.0, 1.0 + g2 / 2.0)))
+    return rel
 
 
 class ProbeGate:
@@ -178,21 +221,37 @@ class ProbeGate:
         states outright -- +/-36% at n=5 against +/-16% at n=20. Precision is bought with trials and
         cannot be bought with algebra.
 
-        A BOOTSTRAP INTERVAL WAS THE OTHER CANDIDATE AND IT WAS MEASURED AND REJECTED at the n where it
-        would have mattered. A percentile-bootstrap 95% CI for the SD covers 62.7% at n=5, 85.9% at n=20
-        and 85.8% at n=25 on the pool above (47.6% at n=5 on the skewed gated arm); it only reaches ~90%
-        by n=50. Resampling five points cannot invent a tail that five points never sampled. A CI that
-        announces 95% and delivers 63% is worse than the range it replaced, because it ships a guarantee.
+        A BOOTSTRAP INTERVAL WAS THE OTHER CANDIDATE AND IT IS NOT USED HERE, but the honest reason is
+        narrower than the one first written down, and the prior art is older than the measurement.
+        Schenker 1985 (JASA 80:360-361) already showed that percentile and bias-corrected intervals for a
+        normal VARIANCE under-cover badly at small n; that paper is why Efron built BCa in 1987. Our own
+        run reproduces it rather than discovers it: at n=5, nominal 95%, percentile covers 62.1% on the
+        pool above and 64.0% on a normal control, and BCa does not rescue it (59.7% and 65.1%) -- which
+        was Schenker's point.
+
+        What was written down first and is WRONG: "five points cannot be resampled into a tail they never
+        sampled" as the mechanism. Measured here, a plain chi-square interval built from those same five
+        points covers 94.2% on normals and 96.4% on the pool above. The support is not the binding
+        constraint; the non-pivotality of s is. A studentized interval also beats percentile at n=5, and
+        we do not quote a figure for it because two of our own implementations disagree by ten points on
+        the identical question (83.4% and 73.5% on normals), which is not a number anyone should publish.
+
+        One further caveat on our own numbers: a coverage figure like 62.1% carries pool-to-pool
+        variation, not just binomial error, so it should not be read to three digits.
         """
         vals = list(values or [])
         ok = len(vals) >= min_trials
         n = len(vals)
         rng = (max(vals) - min(vals)) if vals else 0.0
         sd_hat = (statistics.stdev(vals) / c4(n)) if n >= 2 else 0.0
-        rel = sd_rel_error(n)
+        # pass the values: the closed form is NORMAL theory and runs 0.84x too tight on our own skewed
+        # arm, which is the flattering direction. See sd_rel_error -- the inflation is partial, not a cure.
+        rel = sd_rel_error(n, vals if n >= 4 else None)
         return self._add(f"SPREAD: {label}", ok,
                          f"{len(vals)} trial(s), sd {sd_hat:.4f} +/-{rel * 100:.0f}% (bias-corrected; the "
-                         f"+/- is this estimator's OWN uncertainty at n={n}, not the measurement's), "
+                         f"+/- is this estimator's OWN uncertainty at n={n}, not the measurement's, and it "
+                         f"is a FLOOR -- normal theory plus a partial kurtosis inflation, measured to run "
+                         f"0.90x of the truth on a skewed arm and 0.66x on a heavy-tailed one), "
                          f"observed range {rng:.4f} (descriptive only -- an extremum grows with n and is "
                          f"not comparable across different n). A spread needs >= {min_trials} trials: the "
                          f"mean converges quickly and dispersion does not, so a spread from a handful of "
