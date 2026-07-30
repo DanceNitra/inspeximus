@@ -927,8 +927,23 @@ def memory_report(dup_threshold: float = 0.9) -> dict:
 # ── RESOURCES (read-only URIs — the second MCP primitive; lets a client browse memory as addressable context) ──
 @mcp.resource("inspeximus://digest")
 def digest_resource() -> str:
-    """A compact digest of the store: size, cohorts, contradictions count, governance posture — a session-start
-    overview a client can load as context without a tool call."""
+    """A digest of the store: size, cohorts, contradictions count, governance posture.
+
+    NOT CHEAP, AND THE COST IS ALL IN ONE FIELD. This was described as a compact session-start overview,
+    which is false on any real store: `contradictions()` is an all-pairs O(n^2) scan (check_conflict()'s
+    docstring names it as such), and it is ~100% of this resource's runtime. MEASURED 2026-07-29:
+
+        n=500 records    1.00 s
+        n=2000 records  16.45 s
+        n=8000 records   284 s  (4.7 minutes)
+
+    A client that loads this at session start therefore appears to hang, and the bigger the user's store
+    the worse it gets. `cohorts` by comparison costs 0.2-0.7 ms.
+
+    Treat this as an OFFLINE/on-demand resource, not a session-start one, until the contradictions field
+    is bounded or dropped -- that is a behaviour change on a published MCP resource, so it is written up
+    rather than made here.
+    """
     items = getattr(_MEM, "items", [])
     active = [r for r in items if r.get("status") != "superseded"]
     try:
@@ -941,7 +956,18 @@ def digest_resource() -> str:
 
 @mcp.resource("inspeximus://contradictions")
 def contradictions_resource() -> str:
-    """The current mutually-incompatible memory pairs (flagged, not auto-resolved) as a browsable resource."""
+    """The current mutually-incompatible memory pairs (flagged, not auto-resolved) as a browsable resource.
+
+    UNBOUNDED RESPONSE, and the pair count grows quadratically rather than with the store. MEASURED
+    2026-07-29 on a store with a real clash every 7th record: n=500 -> 30,816 pairs; n=2000 -> 490,204
+    pairs. Each pair carries two 120-char snippets, so n=2000 serialises to roughly 150 MB of JSON down
+    the JSON-RPC channel. Plus the O(n^2) scan cost itself (16.45 s at n=2000, 284 s at n=8000).
+
+    No bound is applied here because adding one would silently truncate a governance-relevant list, and a
+    truncation the caller cannot see is worse than a slow answer. Bounding it properly means paging or an
+    explicit limit with a "there are more" signal -- a behaviour change on a published MCP resource, so it
+    is written up rather than made here.
+    """
     return json.dumps(_MEM.contradictions(), default=str)
 
 
