@@ -14,10 +14,11 @@ extra is now `mcp[cli]>=1.28,<2` -- the bound the MCP SDK's own migration guide 
 dependents, not a judgement call of ours -- with the floor raised because `>=1.0` was never a tested claim
 and a lowest-resolution install could hand you an API this code does not match. The cap is on an optional
 server extra; the core library stays zero-dependency, and the cap lifts once the server is ported to v2's
-`MCPServer`. The error
-message also named `pip install "mcp[cli]"` as the remedy, which is the command that produces the failure;
-it now distinguishes "SDK absent" from "SDK present but 2.x" and gives a bounded install in both. Support
-for mcp 2.x is a real port and is not attempted here.
+`MCPServer`.
+
+The error message also named `pip install "mcp[cli]"` as the remedy -- the command that produces the
+failure. It now distinguishes "SDK absent" from "SDK present but 2.x" and gives a bounded install in
+both. Supporting mcp 2.x is a real port and is not attempted here.
 
 **A LangGraph search matched the namespace prefix as a string instead of by segment.**
 `search(("user1",))` also returned records under `("user10",)` -- a sibling namespace the caller never
@@ -60,8 +61,9 @@ exact, and it reaches records written by earlier versions.
 `forget(contains=...)` tool deleted 3 of 3 memories on `forget("")`. The CLI already refused
 `--contains ""` -- but only as an accident of falsiness, and it answered "pass --key, --id, or
 --contains" to someone who had just passed `--contains` -- while `--contains " "` deleted 3 of 3, because
-every multi-word memory contains a space. Both now refuse any blank (empty or whitespace-only) needle. The pydantic-ai one is a tool the MODEL calls, so an empty slot is an ordinary failure mode. A
-non-blank needle is still deliberately broad ("ann" reaches "Joanna"); that is unchanged.
+every multi-word memory contains a space. Both now refuse any blank (empty or whitespace-only) needle. The pydantic-ai one is a tool the MODEL
+calls, so an empty slot is an ordinary failure mode, not an exotic one. A non-blank needle is still
+deliberately broad ("ann" reaches "Joanna"); that is unchanged.
 
 **`influence_gate_report` contradicted the gate it reports on.** It re-derived the corroboration test
 inline and had drifted: it ignored the slashed/orphan blocks and `credit_requires_warrant`. On a store
@@ -87,8 +89,8 @@ Measured on one machine; fixtures stated because these numbers move with the dat
   as precise figures: run-to-run spread on this machine reaches 20% on some workloads. What is not noisy
   is the shape -- at fixed n, doubling k used to cost ~2.6x and now costs ~1.95x, i.e. linear in the size
   of the erasure. (Not 4x before: the total also carries O(n) work that does not scale with k, so the
-  quadratic term was never the whole cost -- only the part that is now gone.) Deferring is also safer: the old order left j-of-k tombstones on
-  disk claiming erasures the store save had not performed.
+  quadratic term was never the whole cost -- only the part that is now gone.) Deferring is also safer:
+  the old order left j-of-k tombstones on disk claiming erasures the store save had not performed.
 - **Store writes.** The store is serialized one record per line instead of `json.dumps(indent=1)`, which
   keeps CPython's C encoder. n=20,000 records of ~48 characters, median of 5: ~240ms -> ~80ms, roughly
   3x. The byte counts are exact rather than timed: 7,704,892 -> 6,164,892, i.e. 20.0% smaller. Still
