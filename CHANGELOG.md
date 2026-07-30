@@ -3,6 +3,53 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## Unreleased - measurement tooling (no library code; nothing in the wheel changes)
+
+**The trial floor was the symptom; the RANGE was the defect.** `ProbeGate.spread()` gated on `n >= 20`
+and then quoted a range. A range is an extremum statistic: its expectation only grows with n, so a small
+sample can only ever understate it -- which is why an under-sampled spread does not read as noisy, it
+reads as *tight*, the direction that flatters a result. Measured over 200,000 draws of five, a 5-sample
+range sits below its own 25-sample expectation in 95.7% of runs. The sample SD has no such shape; its
+small-sample bias is a known constant (c4 = 0.9400 at n=5) and dividing it out leaves an estimator that is
+too low in 52.8% of runs -- a coin flip, not a direction. `spread()` now reports the bias-corrected SD and
+keeps the range only as a descriptive figure, marked not-comparable across different n.
+
+Subsampling a 400-seed pool of `identity_gate_supersession_probe.py` (true SD 0.0569, true range 0.300):
+
+    n            5       10      20      25      50
+    E[s/c4]   0.0574  0.0572  0.0569  0.0570  0.0570   <- settled by five
+    E[range]  0.131   0.170   0.203   0.213   0.242    <- still climbing at fifty
+
+c4 is normal theory and this metric is a bounded proportion on a 0.025 grid, so the transfer was measured,
+not assumed: the correction lands at 1.008x the pool SD on the milder arm (skew 0.40) and 0.971x on the
+skewed one (skew 1.13, four distinct values), so ~3% of bias survives there at n=5. Both beat the range's
+0.437x and 0.489x.
+
+**The floor stays, for a different reason than it was given.** De-biasing fixes the DIRECTION of the
+error, not its SIZE: a corrected SD from five trials still lands between 0.55x and 1.49x the truth. New
+`sd_rel_error(n)` states that outright and `spread()` prints it with every number (+/-36% at n=5, +/-16%
+at n=20), so the estimator declares its own uncertainty instead of a threshold standing in for it.
+
+**A bootstrap interval was the other candidate, and it was measured and rejected.** A percentile-bootstrap
+95% CI for the SD covers 62.7% at n=5 on that pool (47.6% on the skewed arm), 85.8% at n=25, and only
+nears 90% by n=50. Resampling five points cannot invent a tail five points never sampled, and a CI that
+announces 95% and delivers 63% is worse than the range it replaced because it ships a guarantee.
+
+**The probe's saved artifact disagreed with the line it printed.** `identity_gate_supersession_result.json`
+recorded `candidates_per_run: 326.0` where stdout said 65: `ncand` was divided by the literal `5`, the
+seed count from before it was raised to 25. 326 is not merely wrong, it is impossible -- the scenario only
+makes E*ROUNDS = 240 corrections, so it cannot fork more than 240. Guarded now by that physical bound plus
+an artifact-vs-stdout agreement check, neither of which needs to know the right answer. The artifact also
+carries `seeds`, both SDs and `sd_rel_error` now. A sweep of every probe declaring a trial count found no
+second instance.
+
+The falsification control for all of this failed its own first mutation: it re-implemented `stdev(x)/c4(5)`
+inside the test, so deleting the correction from `spread()` left it green. It now reads the number the
+gate reports. Three mutations registered in `tools/mutations.json` and killed.
+
+Credit throughout: jacksonxly, who pointed out that the range is an extremum estimator and the SD's bias
+is correctable.
+
 ## 1.88.1 - UPGRADE IF YOU USE THE MCP SERVER OR THE LANGGRAPH STORE
 
 Two of these are broken for users on 1.88.0 right now, not latent.

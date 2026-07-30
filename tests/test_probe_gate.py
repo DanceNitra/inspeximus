@@ -21,7 +21,7 @@ import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
-from probe_gate import GateFailed, ProbeGate  # noqa: E402
+from probe_gate import GateFailed, ProbeGate, c4, sd_rel_error  # noqa: E402
 
 
 def _gate(name="t"):
@@ -101,6 +101,96 @@ def test_the_floor_is_stated_in_the_failure():
     assert "2 trial(s)" in detail and ">= 20" in detail
 
 
+# ── the estimator, not just the floor ───────────────────────────────────────────────────────────────
+# The floor above was the symptom. The RANGE was the defect: an extremum statistic whose expectation
+# only grows with n, so a small sample can only understate it -- which is the direction that flatters a
+# result, and the reason an under-sampled spread reads as tight rather than as noisy. Credit: jacksonxly.
+def test_c4_matches_the_closed_form_at_the_points_the_docstring_quotes():
+    """If these drift, every corrected SD the gate reports is quietly wrong."""
+    assert round(c4(5), 4) == 0.9400
+    assert round(c4(20), 4) == 0.9869
+    assert round(c4(25), 4) == 0.9896
+    assert all(c4(n) < c4(n + 1) for n in range(2, 60)), "the bias must shrink monotonically with n"
+    assert c4(500) > 0.999, "and vanish in the limit"
+    assert sd_rel_error(1) == float("inf"), "one trial has no spread, and must not report a finite one"
+
+
+def test_the_correction_de_biases_and_the_range_structurally_cannot():
+    """THE falsification control for this change.
+
+    Draw many samples of five from a known pool. The corrected SD must recover the pool's sigma; the raw
+    SD must sit ~6% low; and the range must sit far below its own large-n expectation. Delete the `/c4(n)`
+    from `spread()` and the middle assertion is what goes red.
+    """
+    import random
+    import statistics as st
+
+    rnd = random.Random(20260730)
+    DRAWS, SIGMA = 20000, 1.0
+    raw, corrected, ranges = [], [], []
+    for _ in range(DRAWS):
+        x = [rnd.gauss(0.0, SIGMA) for _ in range(5)]
+        raw.append(st.stdev(x))
+        corrected.append(st.stdev(x) / c4(5))
+        ranges.append(max(x) - min(x))
+
+    assert abs(st.mean(raw) / SIGMA - 0.94) < 0.02, "the raw SD is biased low at n=5, by the c4 constant"
+    assert abs(st.mean(corrected) / SIGMA - 1.00) < 0.02, "dividing by c4 must remove that bias"
+
+    # the asymmetry that motivated the change: the range errs in ONE direction, the corrected SD in both
+    e_range_25 = 3.93 * SIGMA                       # E[range]/sigma at n=25, measured over 200k draws
+    understates = sum(1 for v in ranges if v < e_range_25) / DRAWS
+    assert understates > 0.90, "a 5-sample range almost always understates the 25-sample one"
+    low = sum(1 for v in corrected if v < SIGMA) / DRAWS
+    assert 0.45 < low < 0.60, "a corrected SD is too low about half the time -- a coin flip, not a bias"
+
+
+def test_the_gate_ITSELF_reports_the_corrected_sd_not_the_raw_one():
+    """The assertions above are about the CONSTANT; this one is about the CALL SITE, and only this one
+    fails when `/ c4(n)` is deleted from `spread()`.
+
+    Written after the first version of the control passed a mutation that removed the correction: it
+    re-implemented `stdev(x)/c4(5)` inside the test and compared that to itself, so it could not see the
+    shipping code at all. A guard that recomputes the answer is checking arithmetic, not the object.
+    """
+    import re
+    import statistics as st
+
+    vals = [0.40, 0.41, 0.42, 0.43, 0.44]
+    g = _gate()
+    g.spread("five", vals)
+    detail = next(d for l, _, d in g.checks if l.startswith("SPREAD"))
+    reported = float(re.search(r"sd (\d+\.\d+)", detail).group(1))
+
+    raw, corrected = st.stdev(vals), st.stdev(vals) / c4(5)
+    assert round(corrected, 4) != round(raw, 4), "the fixture must be able to tell the two apart"
+    assert abs(reported - round(corrected, 4)) < 1e-9, (
+        f"the gate reported sd={reported}; corrected is {corrected:.4f} and the raw sample SD is "
+        f"{raw:.4f}. Reporting the raw one puts every published spread {100 * (1 - c4(5)):.0f}% low "
+        f"at n=5.")
+
+
+def test_de_biasing_does_not_remove_the_need_for_trials():
+    """The correction fixes the DIRECTION of the error, not its SIZE, so the floor survives it."""
+    assert sd_rel_error(5) > 0.35, "a corrected SD from five trials still carries +/-36% of its own"
+    assert sd_rel_error(20) < 0.17, "twenty buys +/-16% -- which is what the floor is actually for"
+    assert sd_rel_error(5) > 2 * sd_rel_error(20)
+
+
+def test_the_reported_spread_carries_the_estimator_and_its_uncertainty():
+    """A number with no stated uncertainty invites the next reader to treat it as exact."""
+    g = _gate()
+    g.spread("keyed arm", [0.38 + 0.002 * i for i in range(20)])
+    detail = next(d for l, _, d in g.checks if l.startswith("SPREAD"))
+    assert "bias-corrected" in detail and "+/-16%" in detail
+    assert "descriptive only" in detail, "the raw range must be marked as not comparable across n"
+
+    g2 = _gate()
+    g2.spread("five", [0.40, 0.41, 0.42, 0.43, 0.44])
+    d2 = next(d for l, _, d in g2.checks if l.startswith("SPREAD"))
+    assert "+/-36%" in d2, "and the stated uncertainty must move with n, not be a fixed string"
+
+
 # ── the report refuses to hand back a number when a check failed ────────────────────────────────────
 def test_report_raises_while_any_check_failed():
     g = _gate()
@@ -175,6 +265,31 @@ def test_the_seeded_probe_declares_enough_seeds_and_actually_runs(seeded_probe_r
 
     r = seeded_probe_run
     assert "per-seed" in r.stdout
+
+
+def test_the_saved_artifact_agrees_with_the_line_that_was_printed(seeded_probe_run):
+    """The probe printed 65 candidates/run and SAVED 326.0, because `ncand` was divided by the literal 5
+    -- the seed count from before it was raised to 25. Nobody reads a JSON file next to a correct stdout.
+
+    326 is not merely wrong; it is impossible. A run makes E*ROUNDS = 240 corrections, so it cannot fork
+    more than 240 candidates, and the bound is checkable without knowing the right answer. Both halves are
+    asserted here: the artifact must agree with the printed line, and it must respect the physical ceiling.
+    """
+    import json
+    import re
+
+    r = seeded_probe_run
+    m = re.search(r"review-queue cost: (\d+) candidates/run", r.stdout)
+    assert m, f"the probe no longer prints the review-queue cost:\n{r.stdout[-600:]}"
+    printed = float(m.group(1))
+
+    art = json.load(open(os.path.join(ROOT, "probes", "identity_gate_supersession_result.json")))
+    saved = art["candidates_per_run"]
+    ceiling = art["E"] * art["rounds"]
+    assert saved <= ceiling, (
+        f"{saved} candidates/run exceeds the {ceiling} corrections a run makes: a stale denominator")
+    assert abs(saved - printed) <= 0.5, f"artifact says {saved}, stdout said {printed}"
+    assert art.get("seeds") == 25, "the artifact must carry the trial count it was measured over"
 
 
 def test_the_probe_reports_n_alongside_the_range(seeded_probe_run):

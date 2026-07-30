@@ -452,8 +452,8 @@
   {
     "name": "the probe stops printing n with the range",
     "file": "probes/identity_gate_supersession_probe.py",
-    "old": "          f\"range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  \"",
-    "new": "          f\"range {min(ung):.3f}-{max(ung):.3f}  \"",
+    "old": "          f\"sd {sd_u:.3f} +/-{rel*100:.0f}%  range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  \"",
+    "new": "          f\"sd {sd_u:.3f} +/-{rel*100:.0f}%  range {min(ung):.3f}-{max(ung):.3f}  \"",
     "tests": [
       "tests/test_probe_gate.py"
     ]
@@ -1341,6 +1341,33 @@
     "new": "            return {\"forgotten\": 0, \"ids\": [], \"scrubbed_links\": 0, \"tombstones\": 0,",
     "tests": [
       "tests/test_route_delete_answers_like_an_erasure.py"
+    ]
+  },
+  {
+    "name": "the spread is reported without the c4 bias correction",
+    "file": "tools/probe_gate.py",
+    "old": "        sd_hat = (statistics.stdev(vals) / c4(n)) if n >= 2 else 0.0",
+    "new": "        sd_hat = (statistics.stdev(vals)) if n >= 2 else 0.0",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "the corrected SD stops stating its own uncertainty",
+    "file": "tools/probe_gate.py",
+    "old": "    return math.sqrt(max(0.0, 1.0 - c * c)) / c",
+    "new": "    return math.sqrt(max(0.0, 1.0 - c * c))",
+    "tests": [
+      "tests/test_probe_gate.py"
+    ]
+  },
+  {
+    "name": "the probe artifact divides by a stale seed count again",
+    "file": "probes/identity_gate_supersession_probe.py",
+    "old": "    cand_per_run = ncand / SEEDS",
+    "new": "    cand_per_run = ncand / 5",
+    "tests": [
+      "tests/test_probe_gate.py"
     ]
   }
 ]

@@ -16,9 +16,49 @@ hypothesis with a patch that had destroyed the arm it was meant to isolate.
 
 from __future__ import annotations
 
+import math
+import statistics
+
 
 class GateFailed(AssertionError):
     pass
+
+
+def c4(n: int) -> float:
+    """E[s]/sigma for n iid normal draws: sqrt(2/(n-1)) * Gamma(n/2)/Gamma((n-1)/2).
+
+    The sample SD is a BIASED estimator of sigma, and at small n the bias is large and KNOWN --
+    0.9400 at n=5, 0.9869 at n=20, 0.9896 at n=25 -- so dividing by it de-biases the estimate.
+    Verified against 200,000 Monte-Carlo draws per n: measured E[s]/sigma = 0.9390 at n=5 where the
+    closed form says 0.9400, and E[(s/c4)]/sigma = 0.9989.
+
+    c4 IS NORMAL THEORY, AND OUR DATA IS NOT NORMAL, so the transfer was measured rather than assumed.
+    Against a 400-seed pool of the identity-gate probe (values on a 0.025 grid, 13 distinct levels,
+    skew 0.40) a corrected SD from five draws recovers 1.008x the pool's SD. On the gated arm -- skew
+    1.13, four distinct levels, about as far from normal as our metrics get -- it recovers 0.971x, so
+    roughly 3% of bias survives the correction at n=5. Both beat the range, which recovers 0.437x and
+    0.489x of the pool range at the same n.
+
+    This is the estimator the range should have been. Credit: jacksonxly.
+    """
+    if n < 2:
+        return float("nan")
+    return math.sqrt(2.0 / (n - 1)) * math.exp(math.lgamma(n / 2.0) - math.lgamma((n - 1) / 2.0))
+
+
+def sd_rel_error(n: int) -> float:
+    """The bias-corrected SD's OWN relative standard error: sqrt(1 - c4(n)^2) / c4(n).
+
+    De-biasing fixes the direction of the error, not its size, and this is the number that says so:
+    0.363 at n=5, 0.239 at n=10, 0.163 at n=20, 0.145 at n=25 (closed form; Monte-Carlo agrees to
+    three decimals). So a bias-corrected SD from five trials is unbiased and still lands anywhere
+    between 0.55x and 1.49x the truth, 10th to 90th percentile. That residual is what the trial floor
+    buys, and it is why correcting the estimator does not remove the floor.
+    """
+    c = c4(n)
+    if not (c == c) or c <= 0:                       # NaN guard: n < 2 has no spread to speak of
+        return float("inf")
+    return math.sqrt(max(0.0, 1.0 - c * c)) / c
 
 
 class ProbeGate:
@@ -106,22 +146,57 @@ class ProbeGate:
                          f"exactly {sorted(k for k in expected if moved.get(k))} moved, "
                          f"across {len(before)} records; no other key differs")
 
-    # 2c ── a SPREAD needs far more trials than a mean does
+    # 2c ── a SPREAD needs far more trials than a mean does, AND a better estimator than the range
     def spread(self, label, values, min_trials: int = 20):
         """A spread quoted from five runs is run-to-run noise wearing a result's clothes.
 
         Measured on our own data: five trials gave 0.4067-0.4200 (spread 0.0133); the same operating point
         over ~25 trials gave 0.380-0.420 -- 0.04, three times as wide. The mean had long since settled.
-        Credit again to jacksonxly: "spread converges a lot slower than the mean", which is the reason a
-        post about measurement discipline shipped an under-sampled number.
+        Credit to jacksonxly: "spread converges a lot slower than the mean", which is the reason a post
+        about measurement discipline shipped an under-sampled number.
+
+        THE FLOOR WAS THE SYMPTOM; THE RANGE WAS THE DEFECT. A range is an extremum statistic, so its
+        expectation only GROWS with n and a small sample can only ever understate it -- which is why an
+        under-sampled spread does not read as noisy, it reads as tight. Measured over 200,000 draws of
+        five: the range understates its own n=25 expectation in 95.7% of runs. The sample SD has no such
+        shape; its small-sample bias is a known constant (c4, 0.9400 at n=5) and dividing it out leaves an
+        estimator that is too low in 52.8% of runs -- a coin flip, not a direction. So this check now
+        reports the bias-corrected SD, and keeps the range only as a descriptive figure that must never be
+        compared between runs of different n.
+
+        The sharpest way to see it, subsampling our own 400-seed pool (true SD 0.0569, true range 0.300):
+
+            n            5       10       20       25       50
+            E[s/c4]   0.0574   0.0572   0.0569   0.0570   0.0570   <- settled by five
+            E[range]  0.131    0.170    0.203    0.213    0.242    <- still climbing at fifty
+
+        The corrected SD estimates a parameter. The range estimates the sample size.
+
+        The floor survives the fix because it answers the other half. De-biasing corrects the DIRECTION of
+        the error, not its SIZE: a corrected SD from five trials still lands between 0.55x and 1.49x the
+        truth (10th-90th pct on normals; 0.57x-1.46x measured on the pool above), which `sd_rel_error`
+        states outright -- +/-36% at n=5 against +/-16% at n=20. Precision is bought with trials and
+        cannot be bought with algebra.
+
+        A BOOTSTRAP INTERVAL WAS THE OTHER CANDIDATE AND IT WAS MEASURED AND REJECTED at the n where it
+        would have mattered. A percentile-bootstrap 95% CI for the SD covers 62.7% at n=5, 85.9% at n=20
+        and 85.8% at n=25 on the pool above (47.6% at n=5 on the skewed gated arm); it only reaches ~90%
+        by n=50. Resampling five points cannot invent a tail that five points never sampled. A CI that
+        announces 95% and delivers 63% is worse than the range it replaced, because it ships a guarantee.
         """
         vals = list(values or [])
         ok = len(vals) >= min_trials
+        n = len(vals)
         rng = (max(vals) - min(vals)) if vals else 0.0
+        sd_hat = (statistics.stdev(vals) / c4(n)) if n >= 2 else 0.0
+        rel = sd_rel_error(n)
         return self._add(f"SPREAD: {label}", ok,
-                         f"{len(vals)} trial(s), observed spread {rng:.4f}. A spread needs >= {min_trials} "
-                         f"trials: the mean converges quickly and the RANGE does not, so a range from a "
-                         f"handful of runs understates itself and reads like a tight result.")
+                         f"{len(vals)} trial(s), sd {sd_hat:.4f} +/-{rel * 100:.0f}% (bias-corrected; the "
+                         f"+/- is this estimator's OWN uncertainty at n={n}, not the measurement's), "
+                         f"observed range {rng:.4f} (descriptive only -- an extremum grows with n and is "
+                         f"not comparable across different n). A spread needs >= {min_trials} trials: the "
+                         f"mean converges quickly and dispersion does not, so a spread from a handful of "
+                         f"runs understates itself and reads like a tight result.")
 
     # 3 ── the measurement must be able to come out the other way
     def can_fail(self, label, negative_control):

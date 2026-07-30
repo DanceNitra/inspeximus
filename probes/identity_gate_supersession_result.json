@@ -1,10 +1,22 @@
 {
-  "inspeximus": "1.85.0",
+  "inspeximus": "1.88.1",
   "E": 40,
   "rounds": 6,
   "p_miss": 0.2,
   "fork_below": 0.7,
+  "seeds": 25,
   "ungated_corruption": 0.131,
   "gated_corruption": 0.015,
-  "candidates_per_run": 326.0
+  "ungated_sd": 0.0537,
+  "gated_sd": 0.0219,
+  "sd_rel_error": 0.145,
+  "ungated_range": [
+    0.025,
+    0.225
+  ],
+  "gated_range": [
+    0.0,
+    0.075
+  ],
+  "candidates_per_run": 65.2
 }

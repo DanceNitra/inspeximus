@@ -109,24 +109,46 @@ def main():
         g, nc = run("gated", rng)
         ung.append(u); gat.append(g); ncand += nc
     import statistics
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools")))
+    from probe_gate import c4, sd_rel_error                                  # noqa: E402
+
     mu_u, mu_g = statistics.mean(ung), statistics.mean(gat)
-    # n is printed WITH the range, always: "0.025-0.225 over 25 seeds" is a claim, "0.025-0.225" is not,
-    # and the next person to quote it cannot otherwise know whether it was sampled enough. At 5 seeds this
-    # same probe reported an ungated range of 0.100 where 25 show 0.200 -- the mean did not move.
+    # The dispersion we QUOTE is the bias-corrected SD, not the range. A range is an extremum statistic:
+    # its expectation grows with n, so a small sample can only ever understate it (measured: a 5-sample
+    # range is below its own 25-sample expectation in 95.7% of runs) and an under-sampled spread reads as
+    # tight rather than as noisy. s/c4 has no such direction. The range stays printed as a descriptive
+    # figure only -- it is not comparable against a run with a different seed count.
+    # n is printed WITH both, always: "0.025-0.225 over 25 seeds" is a claim, "0.025-0.225" is not.
+    sd_u = statistics.stdev(ung) / c4(SEEDS)
+    sd_g = statistics.stdev(gat) / c4(SEEDS)
+    rel = sd_rel_error(SEEDS)
     print(f"UNGATED (auto-commit, mem0/inspeximus-default): corruption {mu_u:.3f}  "
-          f"range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  "
+          f"sd {sd_u:.3f} +/-{rel*100:.0f}%  range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  "
           f"(per-seed {[round(x,3) for x in ung]})")
     print(f"GATED   (identity_confidence < {FORK_BELOW} -> candidate): corruption {mu_g:.3f}  "
-          f"range {min(gat):.3f}-{max(gat):.3f} over seeds={SEEDS}  "
+          f"sd {sd_g:.3f} +/-{rel*100:.0f}%  range {min(gat):.3f}-{max(gat):.3f} over seeds={SEEDS}  "
           f"(per-seed {[round(x,3) for x in gat]})")
-    print(f"review-queue cost: {ncand/SEEDS:.0f} candidates/run forked for steward reconciliation")
+    # ncand accumulates over SEEDS runs. It was divided by the literal 5 -- the seed count this probe had
+    # BEFORE it was raised to 25 -- so the saved artifact read 326.0 candidates/run where the printed line
+    # read 65. 326 is not merely wrong, it is impossible: a run offers only E*ROUNDS = 240 corrections to
+    # fork. The assert below is the guard that does not need to know the right answer.
+    cand_per_run = ncand / SEEDS
+    assert 0 <= cand_per_run <= E * ROUNDS, (
+        f"{cand_per_run:.1f} candidates/run exceeds the {E * ROUNDS} corrections a run even makes -- "
+        f"the denominator is wrong")
+    print(f"review-queue cost: {cand_per_run:.0f} candidates/run forked for steward reconciliation")
     print(f"\n=> the gate cuts confident-wrong authoritative writes {mu_u:.3f} -> {mu_g:.3f} "
           f"({(1-mu_g/mu_u)*100:.0f}% reduction) at the cost of a review queue.")
     print("Residual gated corruption = misresolutions that scored ABOVE the threshold (the gate is only as good "
           "as the confidence signal; Fellegi-Sunter's clerical-review zone, not a proof).")
     json.dump({"inspeximus": __version__, "E": E, "rounds": ROUNDS, "p_miss": P_MISS, "fork_below": FORK_BELOW,
+               "seeds": SEEDS,                                  # the artifact states its own trial count
                "ungated_corruption": round(mu_u, 3), "gated_corruption": round(mu_g, 3),
-               "candidates_per_run": round(ncand / 5, 1)},
+               "ungated_sd": round(sd_u, 4), "gated_sd": round(sd_g, 4),
+               "sd_rel_error": round(rel, 3),                   # this estimator's own +/- at this n
+               "ungated_range": [round(min(ung), 3), round(max(ung), 3)],
+               "gated_range": [round(min(gat), 3), round(max(gat), 3)],
+               "candidates_per_run": round(cand_per_run, 1)},
               open(os.path.join(os.path.dirname(__file__), "identity_gate_supersession_result.json"), "w"), indent=2)
 
 
