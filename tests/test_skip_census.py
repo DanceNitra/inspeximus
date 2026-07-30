@@ -62,7 +62,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: `pytest.importorskip("mcp")` was counted as entirely hidden -- inflating this pin by 6 with tests that
 #: were never hidden. That is worse than under-counting: a pin raised to cover phantoms then absorbs the
 #: real growth it exists to surface. It now matches a CALL, not the word.
-MAX_HIDDEN_IN_BASE_ENV = 144
+#: RAISED 144 -> 150 on 2026-07-30, for the one file added by the LangGraph address-encoding fix:
+#:     test_langgraph_address_encoding.py (6)   needs langgraph
+#: The guard is not avoidable here, and the reason is the point of the file: every assertion in it is a
+#: PARITY assertion against LangGraph's own InMemoryStore -- ours must return what the reference returns.
+#: That is what makes it evidence rather than an opinion about what the contract ought to be, and it means
+#: the reference has to be importable. Splitting the two encoding-only assertions out would not help:
+#: integrations/langgraph.py imports langgraph.store.base at module level, so nothing in it is reachable
+#: without the dependency. The `tests` CI job installs the extras and does run all six.
+#: Exactly +6, no slack: 144 + 6 = 150.
+MAX_HIDDEN_IN_BASE_ENV = 150
 
 
 def _base_env_census():

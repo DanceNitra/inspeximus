@@ -74,8 +74,29 @@ class InspeximusStore(BaseStore, ComplianceMixin):
         self.prune_empty_namespaces = prune_empty_namespaces
 
     @staticmethod
+    def _esc(part: str) -> str:
+        """Percent-escape the separators `_mkey` joins on, so the joined string is a FAITHFUL encoding.
+
+        Without this, "/" and ":" are legal inside a namespace element and inside a key while also being
+        the delimiters, so distinct addresses collapsed onto one id. MEASURED against LangGraph's own
+        InMemoryStore, which keeps both pairs apart:
+
+            put(("a","b"), "k", A) then put(("a/b",), "k", B)   -> ours returned B for BOTH
+            put(("u1",), "b::k", A) then put(("u1::b",), "k", B) -> ours returned B for BOTH
+
+        The namespace is LangGraph's per-user boundary, so where element 0 is a user id that is one user
+        reading and overwriting another's record through a drop-in replacement.
+
+        Escaping is a no-op for any component containing none of `% / :` -- "notes" encodes to "notes" --
+        so every store written before this change keeps resolving. Only the components that were already
+        ambiguous move, and those were reading the wrong record anyway.
+        """
+        return str(part).replace("%", "%25").replace("/", "%2F").replace(":", "%3A")
+
+    @staticmethod
     def _mkey(namespace: tuple[str, ...], key: str) -> str:
-        return "lg::" + "/".join(namespace) + "::" + key
+        e = InspeximusStore._esc
+        return "lg::" + "/".join(e(p) for p in namespace) + "::" + e(key)
 
     def _active(self, namespace, key):
         mk = self._mkey(namespace, key)
@@ -105,11 +126,11 @@ class InspeximusStore(BaseStore, ComplianceMixin):
                         # The value is erased; only the namespace name survives, as a marker carrying
                         # no value at all. That is what lets list_namespaces match the reference after
                         # a delete without keeping any of the deleted content.
-                        nsk = "lgns::" + "/".join(op.namespace)
+                        nsk = "lgns::" + "/".join(InspeximusStore._esc(p) for p in op.namespace)
                         if not any((r.get("meta") or {}).get("nskey") == nsk for r in self.store.items):
                             self.store.remember("lg namespace " + "/".join(op.namespace), key=nsk,
                                                 tags=["_langgraph"],
-                                                source={"doc": "lg::" + "::".join(op.namespace)},
+                                                source={"doc": "lg::" + "::".join(InspeximusStore._esc(p) for p in op.namespace)},
                                                 meta={"nskey": nsk, "lg_ns": list(op.namespace)})
                 else:
                     # The NAMESPACE is LangGraph's per-user boundary — ("users", "u1") — so it is the
@@ -119,15 +140,20 @@ class InspeximusStore(BaseStore, ComplianceMixin):
                     # A path-shaped subject is a collision by construction; this separator survives.
                     self.store.remember((op.key + " " + json.dumps(op.value, ensure_ascii=False, sort_keys=True))[:2000],
                                         key=mk, object=json.dumps(op.value, sort_keys=True),
-                                        source={"doc": "lg::" + "::".join(op.namespace)},
+                                        source={"doc": "lg::" + "::".join(InspeximusStore._esc(p) for p in op.namespace)},
                                         meta={"mkey": mk, "lg_ns": list(op.namespace), "lg_key": op.key,
                                               "value": op.value})
                 results.append(None)
             elif isinstance(op, SearchOp):
-                pref = "lg::" + "/".join(op.namespace_prefix)
+                # Prefix on the SEGMENTS, not on the joined string. A string prefix does not respect the
+                # delimiter: "lg::user1" is a prefix of "lg::user10::notes", so a search scoped to user1
+                # returned user10's records. MEASURED -- the reference InMemoryStore returns ['user1'],
+                # ours returned ['user1', 'user10'] -- and namespace element 0 is routinely the tenant.
+                pref = list(op.namespace_prefix)
                 pool = [r for r in self.store.items if r.get("status") == "active"
                         and not (r.get("meta") or {}).get("nskey")
-                        and str((r.get("meta") or {}).get("mkey", "")).startswith(pref)]
+                        and (r.get("meta") or {}).get("mkey")
+                        and list((r.get("meta") or {}).get("lg_ns") or ())[:len(pref)] == pref]
                 if op.query:
                     ranked = self.store.recall(op.query, k=op.limit + op.offset + 10)
                     order = {h["id"]: i for i, h in enumerate(ranked)}
