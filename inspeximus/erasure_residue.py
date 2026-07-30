@@ -18,6 +18,31 @@ Measured on mem0 2.0.11 with a local qdrant while building this: after `delete()
 was in NO live row anywhere, and remained only as unreclaimed bytes in the vector store's sqlite. That is
 the honest reading, and it is why the distinction exists.
 
+MATCHING SCOPE -- read this before treating `ok=True` as an all-clear. The search is a LITERAL,
+CASE-SENSITIVE byte/substring match for each value exactly as you passed it. Measured 2026-07-30 by
+planting one secret in eight encodings and scanning for the original:
+
+    exact                     FOUND
+    JSON-quoted               FOUND
+    lowercased                MISSED
+    uppercased                MISSED
+    double space between words MISSED
+    newline between words     MISSED
+    base64                    MISSED
+    hex                       MISSED
+
+Elsewhere this library discloses only that "a paraphrase is NOT caught". That understates it: a change
+of CASE is not a paraphrase, and neither is a whitespace difference or a transport encoding. Any store
+that normalises case on write, re-wraps text, or keeps a base64/hex copy holds residue this returns
+`ok=True` for. So a clean result means "this exact byte sequence is absent", never "the value is gone".
+
+Two ways to use it honestly: pass every form you know the value can take (`values=[v, v.lower(),
+v.upper(), ...]`), and treat the result as evidence rather than proof. Making the match itself
+case/whitespace-insensitive would raise recall and is cheap, but it changes verdicts -- a scan that was
+`ok=True` can become `ok=False` -- so it is a behaviour change and is proposed rather than made here.
+tests/test_erasure_residue_matching_scope.py pins the table above so the gap stays visible and cannot
+silently widen.
+
 The values you are searching for are secrets by construction, so this never echoes one. Findings carry a
 short SHA-256 fingerprint instead, which is enough to correlate and useless to leak.
 
