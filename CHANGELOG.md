@@ -44,12 +44,9 @@ No user reported this. We fixed it because the failure is silent -- the second w
 with no error -- and a store advertising `BaseStore` parity should not depend on which characters the
 caller happens to avoid.
 
-That second half is what makes this safe on an existing store. Escaping alone would have re-addressed
-every record whose namespace or key contains `/` or `:`, making them invisible: measured, `get()` returned
-None and `forget_subject` reported `erased: 0` with the record still active and an erasure certificate
-still issued. Rewriting stored records to the new id is not an option either -- it breaks their write
-receipts (`verify_writes`: "stored content no longer matches its write receipt"). Reading identity from
-the structured fields makes the change invisible to data written by earlier versions.
+Existing stores need no migration and no record is rewritten: because identity is read from the
+structured fields rather than the joined string, records written by earlier versions keep resolving
+through `get`, `search`, `history`, delete and erasure exactly as before.
 
 **New: `InspeximusStore.erase_namespace(namespace, include_children=False)`.** The per-record subject
 string is `"lg::" + "::".join(namespace)`, which is lossy and is deliberately left that way for
