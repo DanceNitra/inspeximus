@@ -49,8 +49,24 @@ except ImportError as e:  # pragma: no cover
     # Raise, do not print. This module is optional and anything that walks the package's submodules
     # imports it; writing to stderr here put "needs the MCP SDK" on every line of unrelated output.
     # The message belongs in the exception, where whoever actually tried to start the server sees it.
+    #
+    # TWO DIFFERENT FAILURES, and they need different advice. The message used to say
+    # `pip install "mcp[cli]"` for both -- which, on a fresh install today, is the command that CAUSES
+    # the second one. Measured in a clean venv: `pip install "mcp[cli]"` resolves to mcp 2.0.0, where
+    # `mcp.server.fastmcp` no longer exists (the package is there and `import mcp` succeeds; the module
+    # was reorganised, `mcp.server` now carries `mcpserver` and friends). So the SDK was present, the
+    # server would not start, and the remedy printed reproduced the fault. An error message that names a
+    # remedy nobody tested is worse than one that says less.
+    _sdk_present = True
+    try:
+        import mcp  # noqa: F401
+    except Exception:
+        _sdk_present = False
     raise ImportError(
-        'the inspeximus MCP server needs the MCP SDK: pip install "mcp[cli]"'
+        'the inspeximus MCP server needs mcp 1.x: the installed SDK has no "mcp.server.fastmcp" '
+        '(mcp 2.0 reorganised it). Install a supported one: pip install "mcp[cli]<2"'
+        if _sdk_present else
+        'the inspeximus MCP server needs the MCP SDK: pip install "mcp[cli]<2"'
     ) from e
 
 

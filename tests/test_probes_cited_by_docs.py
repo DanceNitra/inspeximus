@@ -130,7 +130,21 @@ def _optional_third_party():
     with open(os.path.join(ROOT, "pyproject.toml"), encoding="utf-8") as fh:
         block = fh.read().split("[project.optional-dependencies]", 1)
     if len(block) == 2:
-        for dep in _re.findall(r'"([A-Za-z0-9_.\[\]-]+)', block[1].split("\n[", 1)[0]):
+        section = block[1].split("\n[", 1)[0]
+        # COMMENTS ARE NOT DEPENDENCIES. This regexes a TOML section, and it used to regex the comments
+        # too -- so a comment that merely QUOTED a package spec silently added it to the skip allowlist.
+        # It happened: a note explaining the mcp bound mentioned `pip install "inspeximus[mcp]"`, and
+        # `inspeximus` -- OUR OWN package -- landed in OPTIONAL_THIRD_PARTY, which is the exact set that
+        # decides "may a probe be SKIPPED because this is absent?". A missing sibling of ours would then
+        # have been skipped away instead of failing, which is the finding
+        # test_a_missing_sibling_of_ours_is_not_skipped_away exists to prevent. That test caught it.
+        # Prose near a dependency list must not be able to widen it.
+        lines = []
+        for ln in section.split("\n"):
+            if ln.lstrip().startswith("#"):
+                continue
+            lines.append(ln.split(" #", 1)[0])
+        for dep in _re.findall(r'"([A-Za-z0-9_.\[\]-]+)', "\n".join(lines)):
             names.add(dep.split("[")[0].split(">")[0].split("=")[0].replace("-", "_"))
     # distribution name -> import name, where they differ
     names |= {"langchain_core", "llama_index", "autogen_core", "autogen_agentchat",

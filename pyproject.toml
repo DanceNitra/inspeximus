@@ -27,7 +27,12 @@ Issues = "https://github.com/DanceNitra/inspeximus/issues"
 Research = "https://dancenitra.github.io/agora/"
 
 [project.optional-dependencies]
-mcp = ["mcp[cli]>=1.0"]
+# Upper bound is load-bearing, not caution. mcp 2.0 removed `mcp.server.fastmcp`, which is what
+# inspeximus/mcp_server.py imports, so with an unbounded `>=1.0` a fresh `pip install "inspeximus[mcp]"`
+# resolved to 2.0.0 and the MCP server raised ImportError on import -- every tool, unusable. Measured in a
+# clean venv on 2026-07-30; CI never saw it because the dev image already had 1.28.1 pinned by its lockfile.
+# Supporting 2.x is a real port (the module was reorganised, not renamed in place) and is not attempted here.
+mcp = ["mcp[cli]>=1.0,<2"]
 # Agent-framework integrations (inspeximus.integrations.*) — opt-in; the core library stays zero-dependency.
 langchain = ["langchain-core"]
 langgraph = ["langgraph"]
