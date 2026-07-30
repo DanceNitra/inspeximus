@@ -483,8 +483,17 @@ def main(argv=None):
 
     elif a.cmd == "forget":
         where = None
-        if a.contains:
+        if a.contains is not None:
+            # A blank needle is not a narrow query, it is "everything": MEASURED, `--contains " "` deleted
+            # 3 of 3 memories, because every multi-word text contains a space. `--contains ""` was already
+            # refused, but only as an accident of falsiness -- and the message it printed ("pass --key,
+            # --id, or --contains") told the user to pass the flag they had just passed. `is not None`
+            # routes both to the same honest refusal.
             needle = a.contains.lower()
+            if not needle.strip():
+                print("forget: --contains needs a non-blank substring; every memory contains a blank one, "
+                      "so this would delete the whole store and the delete is irreversible", file=sys.stderr)
+                return 2
             where = lambda rec: needle in (rec.get("text") or "").lower()
         elif a.key:
             where = lambda rec: rec.get("key") == a.key
