@@ -102,6 +102,10 @@ def _warn_if_store_dir_missing(path) -> None:
                   file=sys.stderr)
     except Exception:
         pass          # diagnostics must never break a command
+def _resolve_store_path(path):
+    """The file the CLI will actually use, resolved the same way open_store() resolves it."""
+    from ._surface import resolve_path
+    return resolve_path(path)
 
 
 def _out(obj, as_json):
@@ -346,6 +350,10 @@ def main(argv=None):
     # audit-build/compliance/retention must have the receipt+tombstone chains, so force receipts on.
     # `provenance` REPORTS on the receipt chain, so it must load it — otherwise a receipted store would be
     # described as "receipts off at write time", which is not merely unhelpful but wrong.
+    # Captured BEFORE the store is opened: Inspeximus() CREATES the parent directory, so any
+    # "does this store exist?" question asked afterwards always answers yes. (A first version of the
+    # check-code gate below tested the directory after this line and could therefore never fire.)
+    _store_existed = os.path.exists(str(_resolve_store_path(a.path)))
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention", "provenance"))
 
     if a.cmd == "retention":
@@ -674,7 +682,27 @@ def main(argv=None):
                                    + (f"  ({res['reason']})" if res['reason'] else ""))
 
     elif a.cmd == "check-code":
-        from inspeximus.code_guard import scan_lines
+        from inspeximus.code_guard import scan_lines, _deprecations
+        # A GATE MUST NOT GO GREEN ON A STORE IT COULD NOT READ. check-code is run in CI and
+        # pre-commit to FAIL a build, and it already fails closed on a source file it cannot open
+        # (OSError -> exit 2). The store side was the opposite: a mistyped --path produced an empty
+        # store, an empty store declares no deprecations, and scan_lines() then returns [] for every
+        # file. Measured: the same violating file exits 1 against the real store and 0 with silent
+        # output against a --path whose directory does not exist. A green build that checked nothing
+        # is the worst outcome a guard can produce, because it is indistinguishable from a clean one.
+        #
+        # The two cases are NOT the same and are treated differently on purpose:
+        #   unusable store path  -> exit 2. There is no honest verdict to give.
+        #   zero deprecations    -> still exit 0, because a project that has declared none is a real
+        #                           and correct state -- but SAY SO, so "clean" is never silent about
+        #                           having had nothing to check against.
+        # ASCII only: this prints to a Windows console that is not UTF-8 (cp1250 here), where a
+        # non-ASCII character can raise UnicodeEncodeError and kill the command.
+        if not _store_existed:
+            print(f"check-code: no store at {str(_resolve_store_path(a.path))!r}, so no deprecation "
+                  f"could be read and nothing was checked. Refusing to report clean.", file=sys.stderr)
+            return 2
+        _dep_count = len(_deprecations(m))
         violations = []
         for path in a.paths:
             try:
@@ -691,8 +719,12 @@ def main(argv=None):
             for h in violations:
                 print(f"{h['file']}:{h['line']}: resurrected `{h['symbol']}` -> use `{h['replacement']}`"
                       + (f" ({h['reason']})" if h['reason'] else ""))
-            print(f"check-code: {'clean' if not violations else str(len(violations)) + ' resurrected deprecated symbol(s)'}",
-                  file=sys.stderr)
+            # Name what was checked AGAINST. "clean" with zero deprecations declared means the gate
+            # had nothing to compare to, which reads identically to a real pass unless it says so.
+            _against = (f"0 deprecations declared in {_resolve_store_path(a.path)} - nothing to check against"
+                        if not _dep_count else f"{_dep_count} deprecation(s) declared")
+            print(f"check-code: {'clean' if not violations else str(len(violations)) + ' resurrected deprecated symbol(s)'}"
+                  f" ({_against})", file=sys.stderr)
         return 1 if violations else 0
 
     elif a.cmd == "distill":
