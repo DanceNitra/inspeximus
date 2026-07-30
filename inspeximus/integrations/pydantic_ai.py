@@ -49,7 +49,18 @@ def inspeximus_toolset(store: Any = None, path: str | None = None, k: int = 5, e
 
     def forget(contains: str) -> int:
         """Delete every memory whose text contains this substring (case-insensitive) — an erasure / hard
-        correction. Returns how many were removed."""
+        correction. Returns how many were removed.
+
+        A BLANK substring is refused. Every string contains "", so `forget("")` is not a filter at all --
+        MEASURED, it deleted 3 of 3 memories and left the store empty. This is a tool the MODEL calls, so
+        the argument is model-generated and an empty slot is an ordinary failure mode, not an exotic one;
+        the delete is irreversible. Raising gives the model something it can correct, which returning 0
+        would not. A non-blank needle is still deliberately broad -- "ann" reaches "Joanna" -- and that is
+        the documented contract."""
+        if not (contains or "").strip():
+            raise ValueError(
+                "forget(contains=...) needs a non-blank substring: every memory contains a blank one, so "
+                "this would erase the whole store, irreversibly. Pass the text you want removed.")
         return store.forget(where=lambda r: contains.lower() in r["text"].lower())["forgotten"]
 
     from pydantic_ai.toolsets import FunctionToolset
