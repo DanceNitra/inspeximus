@@ -287,6 +287,27 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             + (f": {'; '.join(map(str, proof.get('problems') or []))}" if proof.get("problems") else "")
             + " -- the chains below re-walk consistently, but the RECORDS no longer match their receipts")
 
+    # (6b) the governance SUMMARY must agree with the tombstone chain it summarises. Every sibling
+    # figure already gets this: n_records is checked against the write chain below, and the anchor's
+    # counts against both chains in (2)/(3). governance was the one that was not, so a bundle could
+    # carry `erasures_total: 0, by_request: {}` while its own tombstone_chain held two tombstones and
+    # still verify with ZERO problems -- demonstrated. That is the summary an auditor reads FIRST
+    # contradicting the evidence underneath it.
+    # SCOPE, matching the note above: this is an internal-consistency check, not operator honesty. An
+    # exporter determined to lie edits both halves and re-seals; only the witness co-signature in (5)
+    # reaches that. This catches the misconfigured or accidentally-mangled export -- the common case --
+    # and, unlike before, stops the two halves of the same fact disagreeing in silence.
+    gov_total = gov.get("erasures_total")
+    if isinstance(gov_total, int) and gov_total != len(tc):
+        bad(f"governance.erasures_total says {gov_total} but the tombstone chain carries {len(tc)} "
+            f"tombstone(s) -- the summary and the evidence in this same bundle disagree")
+    gov_by_req = gov.get("by_request")
+    if isinstance(gov_by_req, dict) and isinstance(gov_total, int):
+        summed = sum(v.get("erased", 0) for v in gov_by_req.values() if isinstance(v, dict))
+        if summed != gov_total:
+            bad(f"governance.by_request accounts for {summed} erasure(s) but erasures_total says "
+                f"{gov_total} -- the per-request breakdown does not add up to its own total")
+
     # (7) an empty chain proves nothing, and 'PASS' on nothing is the most misleading output here. A
     # receipts-disabled store exported a bundle that verified clean with writes=0.
     n_records = bundle.get("n_records")
