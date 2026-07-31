@@ -6548,7 +6548,14 @@ class Inspeximus:
                 # Append-only, so the amendment is itself evidence of when standing was revoked.
                 self._emit_write_receipt(r, amends=("mtype",))
         if slashed:
-            self._save()
+            # DURABLE, NOT THROTTLED. `_save()` batches writes on a 5s timer, which is right for a
+            # remember() in a hot loop and wrong for the one operation whose whole purpose is to take
+            # standing AWAY. Measured 2026-07-31: slash() a credited record, lose the process before
+            # the timer fires, reopen -- meta.slashed and the zeroed good/bad are GONE and the record
+            # is load-bearing again. A retraction that a crash can undo is not a retraction, and the
+            # failure is silent on both sides: the caller got {"slashed": 1} and believed it.
+            # Found by an adversarial reviewer of a reply that was about to assert the opposite.
+            self._save(force=True)
         return {"slashed": len(slashed), "sources": sources, "ids": slashed}
 
     def restore(self, ids, scope: str = "source", allow_ambiguous: bool = False) -> dict:
@@ -6596,7 +6603,10 @@ class Inspeximus:
                 # after a legitimate exoneration. slash and restore must be symmetric here.
                 self._emit_write_receipt(r, amends=("mtype",))
         if restored:
-            self._save()
+            # Durable for the same reason slash() is: a restore the process can lose leaves the
+            # record slashed on disk while every in-memory reader believes it was rehabilitated.
+            # The safety valve has to be at least as durable as the lever it undoes.
+            self._save(force=True)
         return {"restored": len(restored), "sources": sources, "ids": restored}
 
     def _cusum_state(self) -> dict:
