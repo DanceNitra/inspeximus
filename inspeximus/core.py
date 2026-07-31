@@ -1385,20 +1385,32 @@ class Inspeximus:
         # countable at all. `derived_from` is the substrate everything else (cap, slash) is deterrence math on.
         if derived_from:
             _by = {x["id"]: x for x in self.items}
-            taint, links = set(), []
+            taint, links, unresolved = set(), [], []
             for pid in derived_from:
                 p = _by.get(pid)
                 if p is None:
+                    # DO NOT DROP IT SILENTLY. A parent id that does not resolve used to vanish here, so a
+                    # caller who declared `derived_from=["<typo>"]` got a record with no lineage AND full
+                    # primary standing -- the write announced itself as derived and was banked as an
+                    # observation. Standing inflation through a typo. Keep the id for audit, and let the
+                    # orphan rule below see that lineage was CLAIMED and none of it landed.
+                    unresolved.append(str(pid))
                     continue
                 links.append(pid)
                 taint |= Inspeximus._rec_sources(p)     # parent's own source + its inherited taint (transitive)
             if taint:
                 rec["taint"] = sorted(taint)
+            if unresolved:
+                rec["derived_from_unresolved"] = unresolved
             if links:
                 rec["links"] = links
                 rec["derived_from"] = list(links)   # explicit lineage (distinct from corroboration links) so
                 #                                     a derived memory's evidence grade can be capped at its
                 #                                     weakest parent's -- trust taint propagates, not just source taint
+            else:
+                # Lineage was claimed and NONE of it resolved: the record is exactly the orphan case the
+                # `derived=True` rule below covers, reached by a different door. Same treatment.
+                rec["orphan"] = True
         # INTEGRITY-FLOOR FOR SELF-DECLARED TRANSFORMATION OUTPUTS (prompted by jacksonxly). A write the caller
         # DECLARES a transformation output (derived=True -- a summary / consolidation / LLM rewrite) that could
         # not name/resolve ANY parent is an ORPHAN: missing lineage is treated as unverified, so it earns NO
@@ -6514,14 +6526,48 @@ class Inspeximus:
             bad_sources = set().union(*(Inspeximus._rec_sources(r) for r in caught)) if caught else set()
             # a record is caught if its own source OR any inherited taint intersects the slashed sources ->
             # forfeiting a source also burns every derived summary/consolidation it fed (provenance-carried).
-            targets = [r for r in self._tenant_rows() if r.get("status") == "active"
-                       and (Inspeximus._rec_sources(r) & bad_sources)]
+            _rows = [r for r in self._tenant_rows() if r.get("status") == "active"]
+            targets = [r for r in _rows if (Inspeximus._rec_sources(r) & bad_sources)]
+            # DEPENDENCY-DIRECTED RETRACTION, walked at SLASH time (Doyle, A Truth Maintenance System,
+            # AIJ 12(3) 1979: retract by propagating through justification edges; Biba 1975 low-water-mark
+            # for the integrity direction). Until now this was a set intersection against `taint`, which is
+            # computed ONCE at write time and never revisited -- so a descendant whose parent's provenance
+            # arrived later, or whose taint was written before the parent had a source, kept full standing
+            # through a retraction it declared its dependence on. `forget_subject` already closed forward
+            # over `derived_from`; the accountability lever did not, and the two disagreed about who a
+            # retraction reaches. They now walk the same edges.
+            # Cost is one pass per newly-reached generation, bounded by the number of active records.
+            _ids = {r["id"] for r in targets}
+            while True:
+                _next = [r for r in _rows if r["id"] not in _ids
+                         and (set(r.get("derived_from") or []) & _ids)]
+                if not _next:
+                    break
+                targets.extend(_next)
+                _ids |= {r["id"] for r in _next}
             _coll = self._source_expansion_collisions(caught, targets)
             if _coll and not allow_ambiguous:
                 raise Inspeximus._ambiguous_error(
                     ", ".join(sorted({self._raw_source(r) for r in caught if self._raw_source(r)})),
                     _coll, "slash(scope='source')")
             sources = sorted(bad_sources)
+        elif scope == "lineage":
+            # NAMED RECORDS PLUS EVERYTHING TRANSITIVELY DERIVED FROM THEM, and nothing else. The case
+            # scope='memory' cannot serve and scope='source' over-serves: you caught ONE memory driving a
+            # bad outcome and want the conclusions built on it to lose standing too, without forfeiting
+            # every other memory that happens to share its source. Doyle's dependency-directed retraction
+            # with the justification set given explicitly instead of inferred from a source label.
+            _rows = [r for r in self._tenant_rows() if r.get("status") == "active"]
+            targets = list(caught)
+            _ids = {r["id"] for r in targets}
+            while True:
+                _next = [r for r in _rows if r["id"] not in _ids
+                         and (set(r.get("derived_from") or []) & _ids)]
+                if not _next:
+                    break
+                targets.extend(_next)
+                _ids |= {r["id"] for r in _next}
+            sources = []
         else:                                    # scope='memory' — only the named records
             targets, sources = caught, []
         slashed = []
@@ -6572,7 +6618,20 @@ class Inspeximus:
         seed = [by_id[i] for i in _as_ids(ids) if i in by_id]
         if scope == "source":
             srcs = set().union(*(Inspeximus._rec_sources(r) for r in seed)) if seed else set()
-            targets = [r for r in self.items if (Inspeximus._rec_sources(r) & srcs) and (r.get("meta") or {}).get("slashed")]
+            _slashed_rows = [r for r in self.items if (r.get("meta") or {}).get("slashed")]
+            targets = [r for r in _slashed_rows if (Inspeximus._rec_sources(r) & srcs)]
+            # THE SAME EDGES, IN THE OTHER DIRECTION. slash() now walks `derived_from` forward, so restore()
+            # must walk it too or the appeal is narrower than the penalty: a descendant reached only by the
+            # lineage walk would stay forfeit forever, with no operation able to clear it. An exoneration
+            # that cannot reach everything the forfeiture reached is not an exoneration.
+            _ids = {r["id"] for r in targets}
+            while True:
+                _next = [r for r in _slashed_rows if r["id"] not in _ids
+                         and (set(r.get("derived_from") or []) & _ids)]
+                if not _next:
+                    break
+                targets.extend(_next)
+                _ids |= {r["id"] for r in _next}
             _coll = self._source_expansion_collisions(seed, targets)
             if _coll and not allow_ambiguous:
                 # Exonerating A silently exonerated B: measured, restore([alice], scope='source') cleared a
@@ -6582,6 +6641,19 @@ class Inspeximus:
                     ", ".join(sorted({self._raw_source(r) for r in seed if self._raw_source(r)})),
                     _coll, "restore(scope='source')")
             sources = sorted(srcs)
+        elif scope == "lineage":
+            # mirrors slash(scope='lineage') exactly, or the appeal is narrower than the penalty
+            _slashed_rows = [r for r in self.items if (r.get("meta") or {}).get("slashed")]
+            targets = [r for r in seed if (r.get("meta") or {}).get("slashed")]
+            _ids = {r["id"] for r in targets}
+            while True:
+                _next = [r for r in _slashed_rows if r["id"] not in _ids
+                         and (set(r.get("derived_from") or []) & _ids)]
+                if not _next:
+                    break
+                targets.extend(_next)
+                _ids |= {r["id"] for r in _next}
+            sources = []
         else:
             targets, sources = [r for r in seed if (r.get("meta") or {}).get("slashed")], []
         restored = []
