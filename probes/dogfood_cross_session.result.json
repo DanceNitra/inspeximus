@@ -1,0 +1,580 @@
+{
+  "probe": "dogfood_cross_session",
+  "question": "does inspeximus return the facts an agent needs to resume work after a session boundary?",
+  "generated_utc": "2026-08-01T21:27:22Z",
+  "inspeximus_version": "1.89.0",
+  "operating_point": {
+    "store_records": 2571,
+    "active_records": 2570,
+    "distractors": 2400,
+    "topical_siblings": 156,
+    "siblings_per_target": 12,
+    "targets": 13,
+    "seed": 20260801,
+    "embedder": null,
+    "recall_mode": "lexical",
+    "recall_mode_note": "no embedder configured -> lexical, the zero-dependency default the MCP server runs with nothing set",
+    "session_boundary": "separate OS process, cold read from disk",
+    "session_scoping": "unused: user_id/agent_id/session_id are left unset on every write and every read, so recall's hierarchy filter (core.py:5336) is a wildcard and removes nothing. That is also how our MCP server writes and reads, and it is the library's ONLY notion of a session in the data model.",
+    "records_loaded_by_cold_reader": 2571
+  },
+  "controls": {
+    "positive": {
+      "passed": true,
+      "rank_headline": 1,
+      "rank_by_arm": {
+        "cold_reinforce_on": 1,
+        "cold_reinforce_off": 1
+      },
+      "query_is_verbatim_record_text": true,
+      "record_value": "library default (no boost)",
+      "note": "a verbatim copy of the query was retrieved at rank 1, so the instrument retrieves and the hit rates below are about the library"
+    },
+    "discrimination": {
+      "passed": true,
+      "mismatched_hit@5_by_arm": {
+        "cold_reinforce_on": 0.0,
+        "cold_reinforce_off": 0.0
+      },
+      "real_hit@5_by_arm": {
+        "cold_reinforce_on": 0.8462,
+        "cold_reinforce_off": 0.8462
+      },
+      "note": "each target scored against another target's question comes in below the real rate, so the questions pick out their own fact rather than any decision record"
+    },
+    "contest": {
+      "passed": true,
+      "mean_own_siblings_in_top5": 0.077,
+      "mean_own_siblings_in_top25": 0.615,
+      "targets_with_no_sibling_in_top25": 8,
+      "note": "same-subject records reach the top of the list, so the hit rate was measured under contest rather than on a corpus where the answer is the only record about its subject"
+    }
+  },
+  "store_observations": {
+    "no_relevance_floor_fill": {
+      "query": "which vendor did we pick for the on-premise fax gateway and what did the annual licence end up costing",
+      "subject_absent_from_store": true,
+      "target_decisions_returned_in_top25_by_arm": {
+        "cold_reinforce_on": 3,
+        "cold_reinforce_off": 3
+      },
+      "a_target_decision_was_the_top_answer_by_arm": {
+        "cold_reinforce_on": false,
+        "cold_reinforce_off": false
+      },
+      "note": "with min_relevance unset, recall FILLS k rather than abstaining, so a question about a subject the store has never seen still returns decisions. Documented behaviour (pass min_relevance to abstain instead) and reported here because it is what a resuming agent would actually be handed. Not a harness control: at small store sizes there is nothing better to return, so gating on it would fire on the operating point rather than on a defect."
+    }
+  },
+  "bar": {
+    "hit@5": 0.8,
+    "recency_hit@5": true,
+    "positive_control_rank": 1
+  },
+  "arms": {
+    "cold_reinforce_on": {
+      "loaded_records": 2571,
+      "recall_mode": "lexical",
+      "reinforce": true,
+      "per_fact": [
+        {
+          "fact": "llm_backend",
+          "need": "which model backend to use before issuing any generation call",
+          "query": "where are the model tiers running right now, and why that choice?",
+          "age_days": 4,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.167,
+          "top1_text": "DECISION: run every model tier on the local GPU through the Ollama endpoint \u2014 because: the hosted provider ret"
+        },
+        {
+          "fact": "reasoning_budget",
+          "need": "the token budget to pass to the reasoning tier",
+          "query": "how many tokens do I have to allow the reasoning model before it answers?",
+          "age_days": 11,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.167,
+          "top1_text": "DECISION: floor the reasoning tier token budget at 16000 and never cap it \u2014 because: at a 600-token cap the mo"
+        },
+        {
+          "fact": "watchdog",
+          "need": "how the long-running worker is supposed to be kept alive",
+          "query": "what keeps the background worker alive, and is a supervisor supposed to be running?",
+          "age_days": 23,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 2,
+          "query_overlap_with_decision": 0.182,
+          "top1_text": "DECISION: keep exactly one worker process alive from the main service watchdog and run zero external superviso"
+        },
+        {
+          "fact": "safe_push",
+          "need": "the safe way to commit changes to the notes repository",
+          "query": "how do I commit changes in the notes repository without losing files?",
+          "age_days": 37,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.333,
+          "top1_text": "DECISION: commit the notes repository only through the safe push tool, never a bulk add \u2014 because: roughly 380"
+        },
+        {
+          "fact": "killed_centering",
+          "need": "which experiments are dead and must not be re-run",
+          "query": "was the embedding post-processing question already settled or is it still open?",
+          "age_days": 52,
+          "recency": false,
+          "rank": 2,
+          "hit@1": false,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 1,
+          "query_overlap_with_decision": 0.5,
+          "top1_text": "open question: does receipt still matter now that capped has changed?"
+        },
+        {
+          "fact": "reinforce_order",
+          "need": "why two identical measurement runs disagree",
+          "query": "two runs of the same retrieval measurement gave different answers, what causes that?",
+          "age_days": 19,
+          "recency": false,
+          "rank": null,
+          "hit@1": false,
+          "hit@5": false,
+          "hit@25": false,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.25,
+          "top1_text": "DECISION: compact the read path in the retrieval index - because: the measurement noise was the same size as t",
+          "deep_rank": 45,
+          "diagnosis": "ranked below k=25 but present at 45"
+        },
+        {
+          "fact": "publish_gate",
+          "need": "what has to happen before anything is published",
+          "query": "what is the checklist before we send anything public?",
+          "age_days": 66,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 1,
+          "query_overlap_with_decision": 0.25,
+          "top1_text": "DECISION: run validate, then storm, then audit, then verify before anything goes outward \u2014 because: every full"
+        },
+        {
+          "fact": "track_record_blocked",
+          "need": "whether the forecast track record can be published yet",
+          "query": "can the forecasting track record go public yet or is it blocked?",
+          "age_days": 8,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.333,
+          "top1_text": "DECISION: block the plan to publish the forecast track record \u2014 because: the main forecaster scores reliably w"
+        },
+        {
+          "fact": "who_posts",
+          "need": "who is allowed to post which reply where",
+          "query": "who sends the reply on the discussion forum, me or the owner?",
+          "age_days": 44,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.429,
+          "top1_text": "DECISION: the owner posts to the discussion forum and the agent posts on the issue tracker \u2014 because: the foru"
+        },
+        {
+          "fact": "stale_reader",
+          "need": "what to do after a script writes to the store from outside the running server",
+          "query": "I backfilled the store with a script, what do I need to do to the running server?",
+          "age_days": 15,
+          "recency": false,
+          "rank": 2,
+          "hit@1": false,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.111,
+          "top1_text": "DECISION: freeze the release branch until the retrieval regression is closed \u2014 because: the regression changes"
+        },
+        {
+          "fact": "receipt_rotation",
+          "need": "whether a cited evidence id can still be resolved",
+          "query": "how long do evidence receipts stay resolvable before they rotate out?",
+          "age_days": 29,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 1,
+          "own_siblings_in_top25": 3,
+          "query_overlap_with_decision": 0.286,
+          "top1_text": "DECISION: check that a cited evidence id still resolves before gating on it \u2014 because: the evidence ledger is "
+        },
+        {
+          "fact": "today_release_freeze",
+          "need": "today's decision, the one a session resuming tomorrow morning most needs",
+          "query": "what did we decide today about shipping the next release?",
+          "age_days": 0,
+          "recency": true,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 1,
+          "query_overlap_with_decision": 0.143,
+          "top1_text": "DECISION: freeze the release branch until the retrieval regression is closed \u2014 because: the regression changes"
+        },
+        {
+          "fact": "release_channel_current",
+          "need": "how a release actually gets published today, not how it used to",
+          "query": "how does a release get published these days?",
+          "age_days": 2,
+          "recency": false,
+          "rank": null,
+          "hit@1": false,
+          "hit@5": false,
+          "hit@25": false,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.0,
+          "top1_text": "draft: a short summary of how release, closed and correctly interact today",
+          "deep_rank": 29,
+          "diagnosis": "ranked below k=25 but present at 29"
+        }
+      ],
+      "hit@1": 0.6923,
+      "hit@5": 0.8462,
+      "hit@25": 0.8462,
+      "missed_at_5": [
+        "reinforce_order",
+        "release_channel_current"
+      ],
+      "missed_at_25": [
+        "reinforce_order",
+        "release_channel_current"
+      ],
+      "control_rank": 1,
+      "control_top1_text": "CONTROL RECORD: the nightly consolidation pass merges near-duplicate summary records and writes one consolidat",
+      "mean_own_siblings_in_top5": 0.077,
+      "mean_own_siblings_in_top25": 0.615,
+      "targets_with_no_sibling_in_top25": 8,
+      "absence_top1_is_target": false,
+      "absence_weak_fill_in_25": 3,
+      "mismatched_hit@5": 0.0,
+      "stale_decision_served": false
+    },
+    "cold_reinforce_off": {
+      "loaded_records": 2571,
+      "recall_mode": "lexical",
+      "reinforce": false,
+      "per_fact": [
+        {
+          "fact": "llm_backend",
+          "need": "which model backend to use before issuing any generation call",
+          "query": "where are the model tiers running right now, and why that choice?",
+          "age_days": 4,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.167,
+          "top1_text": "DECISION: run every model tier on the local GPU through the Ollama endpoint \u2014 because: the hosted provider ret"
+        },
+        {
+          "fact": "reasoning_budget",
+          "need": "the token budget to pass to the reasoning tier",
+          "query": "how many tokens do I have to allow the reasoning model before it answers?",
+          "age_days": 11,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.167,
+          "top1_text": "DECISION: floor the reasoning tier token budget at 16000 and never cap it \u2014 because: at a 600-token cap the mo"
+        },
+        {
+          "fact": "watchdog",
+          "need": "how the long-running worker is supposed to be kept alive",
+          "query": "what keeps the background worker alive, and is a supervisor supposed to be running?",
+          "age_days": 23,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 2,
+          "query_overlap_with_decision": 0.182,
+          "top1_text": "DECISION: keep exactly one worker process alive from the main service watchdog and run zero external superviso"
+        },
+        {
+          "fact": "safe_push",
+          "need": "the safe way to commit changes to the notes repository",
+          "query": "how do I commit changes in the notes repository without losing files?",
+          "age_days": 37,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.333,
+          "top1_text": "DECISION: commit the notes repository only through the safe push tool, never a bulk add \u2014 because: roughly 380"
+        },
+        {
+          "fact": "killed_centering",
+          "need": "which experiments are dead and must not be re-run",
+          "query": "was the embedding post-processing question already settled or is it still open?",
+          "age_days": 52,
+          "recency": false,
+          "rank": 2,
+          "hit@1": false,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 1,
+          "query_overlap_with_decision": 0.5,
+          "top1_text": "open question: does receipt still matter now that capped has changed?"
+        },
+        {
+          "fact": "reinforce_order",
+          "need": "why two identical measurement runs disagree",
+          "query": "two runs of the same retrieval measurement gave different answers, what causes that?",
+          "age_days": 19,
+          "recency": false,
+          "rank": null,
+          "hit@1": false,
+          "hit@5": false,
+          "hit@25": false,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.25,
+          "top1_text": "DECISION: compact the read path in the retrieval index - because: the measurement noise was the same size as t",
+          "deep_rank": 43,
+          "diagnosis": "ranked below k=25 but present at 43"
+        },
+        {
+          "fact": "publish_gate",
+          "need": "what has to happen before anything is published",
+          "query": "what is the checklist before we send anything public?",
+          "age_days": 66,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 1,
+          "query_overlap_with_decision": 0.25,
+          "top1_text": "DECISION: run validate, then storm, then audit, then verify before anything goes outward \u2014 because: every full"
+        },
+        {
+          "fact": "track_record_blocked",
+          "need": "whether the forecast track record can be published yet",
+          "query": "can the forecasting track record go public yet or is it blocked?",
+          "age_days": 8,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.333,
+          "top1_text": "DECISION: block the plan to publish the forecast track record \u2014 because: the main forecaster scores reliably w"
+        },
+        {
+          "fact": "who_posts",
+          "need": "who is allowed to post which reply where",
+          "query": "who sends the reply on the discussion forum, me or the owner?",
+          "age_days": 44,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.429,
+          "top1_text": "DECISION: the owner posts to the discussion forum and the agent posts on the issue tracker \u2014 because: the foru"
+        },
+        {
+          "fact": "stale_reader",
+          "need": "what to do after a script writes to the store from outside the running server",
+          "query": "I backfilled the store with a script, what do I need to do to the running server?",
+          "age_days": 15,
+          "recency": false,
+          "rank": 2,
+          "hit@1": false,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.111,
+          "top1_text": "DECISION: freeze the release branch until the retrieval regression is closed \u2014 because: the regression changes"
+        },
+        {
+          "fact": "receipt_rotation",
+          "need": "whether a cited evidence id can still be resolved",
+          "query": "how long do evidence receipts stay resolvable before they rotate out?",
+          "age_days": 29,
+          "recency": false,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 1,
+          "own_siblings_in_top25": 3,
+          "query_overlap_with_decision": 0.286,
+          "top1_text": "DECISION: check that a cited evidence id still resolves before gating on it \u2014 because: the evidence ledger is "
+        },
+        {
+          "fact": "today_release_freeze",
+          "need": "today's decision, the one a session resuming tomorrow morning most needs",
+          "query": "what did we decide today about shipping the next release?",
+          "age_days": 0,
+          "recency": true,
+          "rank": 1,
+          "hit@1": true,
+          "hit@5": true,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 1,
+          "query_overlap_with_decision": 0.143,
+          "top1_text": "DECISION: freeze the release branch until the retrieval regression is closed \u2014 because: the regression changes"
+        },
+        {
+          "fact": "release_channel_current",
+          "need": "how a release actually gets published today, not how it used to",
+          "query": "how does a release get published these days?",
+          "age_days": 2,
+          "recency": false,
+          "rank": 25,
+          "hit@1": false,
+          "hit@5": false,
+          "hit@25": true,
+          "own_siblings_in_top5": 0,
+          "own_siblings_in_top25": 0,
+          "query_overlap_with_decision": 0.0,
+          "top1_text": "draft: a short summary of how release, closed and correctly interact today"
+        }
+      ],
+      "hit@1": 0.6923,
+      "hit@5": 0.8462,
+      "hit@25": 0.9231,
+      "missed_at_5": [
+        "reinforce_order",
+        "release_channel_current"
+      ],
+      "missed_at_25": [
+        "reinforce_order"
+      ],
+      "control_rank": 1,
+      "control_top1_text": "CONTROL RECORD: the nightly consolidation pass merges near-duplicate summary records and writes one consolidat",
+      "mean_own_siblings_in_top5": 0.077,
+      "mean_own_siblings_in_top25": 0.615,
+      "targets_with_no_sibling_in_top25": 8,
+      "absence_top1_is_target": false,
+      "absence_weak_fill_in_25": 3,
+      "mismatched_hit@5": 0.0,
+      "stale_decision_served": false
+    }
+  },
+  "headline_arm": "cold_reinforce_on",
+  "headline": {
+    "hit@1": 0.6923,
+    "hit@5": 0.8462,
+    "hit@25": 0.8462,
+    "missed_at_5": [
+      "reinforce_order",
+      "release_channel_current"
+    ],
+    "missed_at_25": [
+      "reinforce_order",
+      "release_channel_current"
+    ]
+  },
+  "recency_case": {
+    "fact": "today_release_freeze",
+    "written": "today (age 0 days)",
+    "query": "what did we decide today about shipping the next release?",
+    "rank_by_arm": {
+      "cold_reinforce_on": 1,
+      "cold_reinforce_off": 1
+    },
+    "hit@5": true,
+    "note": "the case observed failing in the real dogfood: a record written the same day, at k=5"
+  },
+  "correction_case": {
+    "current_decision_found_at": null,
+    "retired_decision_served": false,
+    "note": "keyed supersession must serve the current decision and withhold the retired one"
+  },
+  "arm_agreement": {
+    "hit@1_reinforce_on": 0.6923,
+    "hit@1_reinforce_off": 0.6923,
+    "hit@5_reinforce_on": 0.8462,
+    "hit@5_reinforce_off": 0.8462,
+    "hit@25_reinforce_on": 0.8462,
+    "hit@25_reinforce_off": 0.9231,
+    "facts_whose_rank_moved": [
+      {
+        "fact": "release_channel_current",
+        "rank_reinforce_on": null,
+        "rank_reinforce_off": 25
+      }
+    ],
+    "note": "reinforce=True is the library default and rewrites the value and decay clock of every record it returns, so each query changes the ranking the NEXT query sees. Any fact listed in facts_whose_rank_moved is that effect measured on this corpus; both arms read the same bytes from disk, and the only difference is the default. The off arm is the order-independent number and is the one to compare across releases."
+  },
+  "caveats": [
+    "This is a SYNTHETIC reproduction of the shape of the failure, not the store it was seen on. It currently measures BETTER than the hand observation it was built for (2 of 5 facts found there, 11 of 13 here at k=5). Either this corpus is easier than the real one, or the real failure has a cause this fixture does not yet model. Treat the number as a REGRESSION LINE for releases, not as a claim that the dogfood is fine.",
+    "No embedder is configured, so recall is lexical -- the zero-dependency default. A store with an embedder is a different operating point and this probe does not measure it.",
+    "The boundary crossed here is a PROCESS boundary. The library's only session concept is the optional meta.sid stamp and recall's hierarchy filter, both left unset (wildcard) throughout, so nothing is scoped out. A repo audit put the original handoff failure down to that missing scoping rather than to ranking; this probe measures the current state and proposes no ranking change.",
+    "The store sets no relevance floor, so a deep k is always FILLED; see the absence control.",
+    "The headline arm uses the library default reinforce=True, whose answers depend on query order. The query order here is the fixture order, fixed; the reinforce=off arm is the order-free number."
+  ],
+  "bar_failures": [],
+  "verdict": "PASS",
+  "exit_code": 0
+}
