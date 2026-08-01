@@ -352,10 +352,11 @@ def main() -> int:
 
     if "1" in stages:
         print("STAGE 1 — mechanism control, zero LLM calls")
-        out["stage1"] = stage1(rows, k=a.k)
+        out["stage1"] = stage1(rows)
         out["F1a"] = verdict_f1a(out["stage1"])
-        print(f"  F1a: {out['F1a']['verdict']}  on={out['F1a']['on']} off={out['F1a']['off']} "
-              f"delta={out['F1a']['delta']}\n")
+        print(f"  F1a: {out['F1a']['verdict']}  current_rank on={out['F1a']['current_rank_on']} "
+              f"off={out['F1a']['current_rank_off']} delta={out['F1a']['delta']}\n"
+              f"       {out['F1a']['reading']}\n")
 
     if "2" in stages:
         print("STAGE 2 — their metric, 2x2 factorial + full context")

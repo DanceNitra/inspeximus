@@ -12,17 +12,84 @@
  "hops": 2,
  "recall_reinforce": false,
  "inspeximus_version": "1.89.0",
- "generated": "2026-08-01T22:35:44",
+ "generated": "2026-08-01T23:06:23",
  "stage1": [
   {
    "row": 0,
    "arm": "on",
    "facts": 455,
    "conflicted_keys": 154,
+   "k": 1,
+   "current_in_topk": 0.994,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
    "k": 15,
    "current_in_topk": 1.0,
-   "stale_in_topk": 0.351,
-   "slots_to_stale": 0.065
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 1,
+   "current_in_topk": 0.994,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.333
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.2
   },
   {
    "row": 0,
@@ -31,8 +98,42 @@
    "conflicted_keys": 154,
    "k": 15,
    "current_in_topk": 1.0,
+   "current_rank": 1.006,
    "stale_in_topk": 1.0,
-   "slots_to_stale": 0.14
+   "slots_to_stale": 0.07
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 1,
+   "current_in_topk": 0.988,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
   },
   {
    "row": 1,
@@ -41,8 +142,42 @@
    "conflicted_keys": 250,
    "k": 15,
    "current_in_topk": 1.0,
-   "stale_in_topk": 0.412,
-   "slots_to_stale": 0.061
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 1,
+   "current_in_topk": 0.988,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.02,
+   "stale_in_topk": 0.992,
+   "slots_to_stale": 0.331
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.02,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.2
   },
   {
    "row": 1,
@@ -51,31 +186,74 @@
    "conflicted_keys": 250,
    "k": 15,
    "current_in_topk": 1.0,
-   "stale_in_topk": 0.996,
-   "slots_to_stale": 0.133
+   "current_rank": 1.02,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.067
   }
  ],
  "F1a": {
-  "prediction": "F1a",
-  "metric": "current_in_topk (our derived probe on their facts)",
-  "on": 1.0,
-  "off": 1.0,
-  "delta": 0.0,
-  "per_row": [
+  "prediction": "F1a (re-specified, PREREGISTRATION Appendix B)",
+  "metric": "current_rank, lower is better (OUR derived probe on THEIR facts)",
+  "per_k": [
    {
-    "row": 0,
-    "on": 1.0,
-    "off": 1.0,
-    "delta": 0.0
+    "k": 1,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.009,
+    "delta": 0.0,
+    "current_in_topk_on": 0.991,
+    "current_in_topk_off": 0.991,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 0.0,
+    "ceilinged": false
    },
    {
-    "row": 1,
-    "on": 1.0,
-    "off": 1.0,
-    "delta": 0.0
+    "k": 3,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.013,
+    "delta": -0.004,
+    "current_in_topk_on": 1.0,
+    "current_in_topk_off": 1.0,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 0.996,
+    "ceilinged": true
+   },
+   {
+    "k": 5,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.013,
+    "delta": -0.004,
+    "current_in_topk_on": 1.0,
+    "current_in_topk_off": 1.0,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 1.0,
+    "ceilinged": true
+   },
+   {
+    "k": 15,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.013,
+    "delta": -0.004,
+    "current_in_topk_on": 1.0,
+    "current_in_topk_off": 1.0,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 1.0,
+    "ceilinged": true
    }
   ],
+  "decided_on_k": [
+   1
+  ],
+  "current_rank_on": 1.009,
+  "current_rank_off": 1.009,
+  "delta": 0.0,
   "verdict": "RED",
   "reading": "supersession does NOT improve what reaches the window — the CR result must not be published as a supersession result"
+ },
+ "stage2": [],
+ "stage2_not_measured": "answerer unavailable: qwen2.5:7b @ http://127.0.0.1:11434/api: '591'",
+ "F1": {
+  "prediction": "F1",
+  "verdict": "NOT-MEASURED",
+  "reason": "stage 2 did not run"
  }
 }

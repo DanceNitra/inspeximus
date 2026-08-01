@@ -95,15 +95,24 @@ class LLM:
 
     # ---------------------------------------------------------------- liveness
     def probe(self) -> dict:
-        """Liveness with a NONCE and an answer check. A tier that returns a cached string is not alive."""
-        a, b = random.Random(time.time_ns()).randrange(100, 900), random.Random(os.getpid()).randrange(10, 90)
+        """Liveness with a NONCE and an answer check.
+
+        The nonce is what makes this a call rather than a cache hit — a 0.0 s reply to a prompt the
+        daemon has served before proves nothing. The task is an ECHO, deliberately not arithmetic: an
+        earlier version asked the model to add two numbers and blocked the entire benchmark when a 7B
+        model got one sum wrong, which tests the model's mental arithmetic rather than whether the
+        endpoint answers. Liveness and competence are different questions and only the first one is a gate.
+        """
+        nonce = "".join(random.Random(time.time_ns() ^ os.getpid()).choices(
+            "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", k=8))
         t0 = time.time()
-        out = self.chat("Reply with only the digits, nothing else.",
-                        f"What is {a} plus {b}?", max_tokens=12, retries=1)
+        out = self.chat("Repeat the token you are given, exactly, and nothing else.",
+                        f"Token: {nonce}", max_tokens=16, retries=1)
         dt = time.time() - t0
-        ok = str(a + b) in (out or "")
+        ok = nonce.lower() in (out or "").lower()
         return {"alive": bool(ok), "latency_s": round(dt, 3), "answer": (out or "")[:80],
-                "expected": a + b, "model": self.model, "endpoint": self.base_url}
+                "expected": nonce, "model": self.model, "endpoint": self.base_url,
+                "cache_hit_suspected": bool(dt < 0.02)}
 
     def require(self) -> dict:
         p = self.probe()

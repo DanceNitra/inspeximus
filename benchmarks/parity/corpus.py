@@ -1,8 +1,13 @@
 """Deterministic corpus for the cross-system parity harness.
 
 One corpus, five axes. Nothing is downloaded and no external dataset is required, so every cell in the
-published table can be reproduced from this file plus a seed. The generated JSON is committed under
-`corpus/` so a reader can inspect the exact fixture the numbers came from without trusting the generator.
+published table can be reproduced from this file plus a seed.
+
+The corpus is **generated, not stored.** What is committed is this generator, the seed, and a SHA-256 per
+subset in `corpus_manifest.json`. Regenerate and compare the digest to prove you hold byte-for-byte the
+fixture the published numbers came from — which is the property that matters, and it costs ten lines of
+diff instead of eighteen thousand. `load()` performs that check on every run and refuses to continue if
+the generator has drifted from the pinned digest.
 
 Design constraints, all of them deliberate (see PREREGISTRATION.md):
 
@@ -19,6 +24,7 @@ Design constraints, all of them deliberate (see PREREGISTRATION.md):
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import pathlib
 import random
@@ -194,24 +200,54 @@ _STOP = {"the", "a", "an", "is", "are", "for", "of", "to", "in", "on", "at", "do
 SUBSETS = {"small": (12, 8), "full": (50, 40)}
 
 
-def load(subset: str) -> dict:
-    """Prefer the committed JSON (that is the fixture the published numbers came from); regenerate only
-    if it is absent. Measure the corpus that SHIPS, not the one the generator would make today."""
-    p = HERE / "corpus" / f"{subset}.json"
-    if p.exists():
-        return json.loads(p.read_text(encoding="utf-8"))
+MANIFEST = HERE / "corpus_manifest.json"
+
+
+def digest(corpus: dict) -> str:
+    """SHA-256 over the canonical serialisation. This is what gets committed instead of the corpus."""
+    blob = json.dumps(corpus, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def load(subset: str, verify: bool = True) -> dict:
+    """Regenerate the corpus from the seed, and verify it against the committed manifest.
+
+    The corpus is **generated, not stored**. An 18k-line JSON blob in the diff is unreviewable, and a
+    reader cannot tell a hand-edited fixture from a generated one by looking at it. What is committed is
+    the generator, the seed, and a SHA-256 per subset — so anyone can regenerate and prove byte-for-byte
+    that they hold the same fixture the published numbers came from, which is the property that actually
+    matters. `verify=False` is for deliberately exploring a different seed.
+    """
     threads, distractors = SUBSETS[subset]
-    return build(threads, distractors)
+    c = build(threads, distractors)
+    if verify and MANIFEST.exists():
+        want = json.loads(MANIFEST.read_text(encoding="utf-8")).get("subsets", {}).get(subset, {})
+        got = digest(c)
+        if want.get("sha256") and want["sha256"] != got:
+            raise SystemExit(
+                f"CORPUS MISMATCH for subset {subset!r}: manifest {want['sha256'][:16]}... but "
+                f"regenerated {got[:16]}...\nThe generator changed without the manifest being "
+                f"re-pinned. Every published number for this subset was measured on the OLD fixture.")
+    return c
 
 
 def main() -> None:
-    (HERE / "corpus").mkdir(exist_ok=True)
+    """Write the manifest. Deliberately does NOT write the corpus itself to disk."""
+    subsets = {}
     for name, (threads, distractors) in SUBSETS.items():
         c = build(threads, distractors)
-        (HERE / "corpus" / f"{name}.json").write_text(
-            json.dumps(c, indent=1, ensure_ascii=False), encoding="utf-8")
+        subsets[name] = {"threads": threads, "distractors_per_thread": distractors,
+                         "writes": threads * (distractors + 6), "probes": threads * distractors,
+                         "sha256": digest(c)}
         print(f"{name}: {threads} threads x {distractors} distractors "
-              f"-> {threads * (distractors + 6)} writes, {threads * distractors} probes")
+              f"-> {subsets[name]['writes']} writes, {subsets[name]['probes']} probes  "
+              f"sha256={subsets[name]['sha256'][:16]}...")
+    MANIFEST.write_text(json.dumps(
+        {"generator": "benchmarks/parity/corpus.py", "seed": SEED,
+         "note": "The corpus is generated, not stored. Run `python benchmarks/parity/corpus.py` and "
+                 "compare these digests to prove you hold the same fixture.",
+         "subsets": subsets}, indent=1), encoding="utf-8")
+    print(f"wrote {MANIFEST.name}")
 
 
 if __name__ == "__main__":
