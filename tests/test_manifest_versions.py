@@ -13,6 +13,8 @@ import re
 import subprocess
 import sys
 
+import pytest
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
@@ -174,3 +176,64 @@ def test_the_homepage_tool_count_matches_the_server():
 def test_the_homepage_names_the_residue_check():
     assert "inspeximus residue" in _index_html(), \
         "a shipped capability absent from the homepage does not exist for anyone who visits it"
+
+
+# ── the pinner missed the two places a USER actually reads (found on the 1.89.0 release) ───────────
+def _seed(tmp_path):
+    """A minimal ROOT the pinner can work on: the manifests plus the two files added in 1.89.0."""
+    import shutil
+    shutil.copy(os.path.join(ROOT, "pyproject.toml"), tmp_path / "pyproject.toml")
+    shutil.copy(os.path.join(ROOT, "server.json"), tmp_path / "server.json")
+    shutil.copytree(os.path.join(ROOT, ".claude-plugin"), tmp_path / ".claude-plugin")
+    (tmp_path / "inspeximus").mkdir()
+    shutil.copy(os.path.join(ROOT, "inspeximus", "core.py"), tmp_path / "inspeximus" / "core.py")
+    shutil.copy(os.path.join(ROOT, "README.md"), tmp_path / "README.md")
+    return tmp_path
+
+
+def test_the_pinner_pins_the_version_a_user_reads(tmp_path):
+    """`inspeximus.__version__` and the README badge, neither of which the pinner touched until 1.89.0.
+
+    Bumping pyproject.toml and running the pinner left core.py at the PREVIOUS version -- and core.py is
+    what `import inspeximus; inspeximus.__version__` returns, i.e. the number a user sees. Only
+    `test_the_package_version_is_the_one_source_of_truth` caught it, at release time; without that test
+    the wheel would have announced the version before it.
+
+    This asserts the OUTCOME (the files now carry the new number), never the presence of a filename
+    string in the pinner's source. That mistake is documented in `main()`: a guard that greps this file
+    for "plugin.json" was satisfied by the docstring while the code covered nothing.
+    """
+    root = _seed(tmp_path)
+    target = "99.98.97"                      # cannot collide with any real version in these files
+    assert _pinner(root).main(["_", target]) == 0
+
+    core = (root / "inspeximus" / "core.py").read_text(encoding="utf-8")
+    assert f'__version__ = "{target}"' in core, "core.py __version__ was not pinned"
+    assert core.count("__version__ = ") == 1, "more than one __version__ assignment; pinning is ambiguous"
+
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    assert f"v{target}" in readme, "the README version badge was not pinned"
+    assert not re.search(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])',
+                         readme.replace(f"v{target}", "")), "a vX.Y.Z token was left behind"
+
+
+def test_the_pinner_refuses_a_core_that_lost_its_version_line(tmp_path):
+    """THE FALSIFICATION CONTROL. If the assignment is renamed, the pinner must FAIL, not quietly pin
+    nothing — silently covering zero files is the failure this whole module exists to prevent."""
+    root = _seed(tmp_path)
+    p = root / "inspeximus" / "core.py"
+    p.write_text(p.read_text(encoding="utf-8").replace('__version__ = "', '__ver__ = "', 1),
+                 encoding="utf-8")
+    with pytest.raises(SystemExit):
+        _pinner(root).main(["_", "99.98.97"])
+
+
+def test_a_missing_core_is_skipped_rather_than_fatal(tmp_path):
+    """The sibling case, kept distinct on purpose: a partial ROOT (a harness) is not a defect, so the
+    pinner reports and continues. Without this the pre-existing idempotence test, which copies no
+    core.py, would die on an unrelated change."""
+    import shutil
+    shutil.copy(os.path.join(ROOT, "pyproject.toml"), tmp_path / "pyproject.toml")
+    shutil.copy(os.path.join(ROOT, "server.json"), tmp_path / "server.json")
+    shutil.copytree(os.path.join(ROOT, ".claude-plugin"), tmp_path / ".claude-plugin")
+    assert _pinner(tmp_path).main(["_", "99.98.97"]) == 0

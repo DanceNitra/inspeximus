@@ -73,11 +73,11 @@ without having to split the release.
 
 ```bash
 python -m pytest -q                       # green first, always
-# bump BY HAND, the two that are the source of truth:
-#   inspeximus/core.py __version__, pyproject.toml     (they must agree; a test asserts it)
-# then PIN the rest -- do not hand-edit them:
-python packages/_pin_server_json.py       # server.json, .claude-plugin/{plugin,marketplace}.json
-# README.md footer (v X.Y.Z) is still manual
+# bump BY HAND exactly ONE file -- pyproject.toml is the source of truth:
+#   version = "X.Y.Z"
+# then PIN everything else -- do not hand-edit any of them:
+python packages/_pin_server_json.py       # server.json, .claude-plugin/{plugin,marketplace}.json,
+                                          # inspeximus/core.py __version__, README.md vX.Y.Z badges
 # CHANGELOG.md: newest entry on top; lead with who should upgrade and why
 python tools/mutation_check.py tools/mutations.json    # must exit 0: 0 survived AND 0 skipped
 git commit && git tag vX.Y.Z && git push origin main && git push origin vX.Y.Z
@@ -90,6 +90,16 @@ release workflow but nowhere in the human procedure, so the manifests were stale
 tests ran on. (`release` does not depend on `tests`, so the package published anyway: the wheel was
 correct, the registry manifests advertised 1.85.0.) A step that only a human remembers is a step that
 gets skipped; that is what the pinner is for, and it now appears where the human is looking.
+
+**And on 1.89.0 the same class bit a THIRD time, one layer in.** The checklist above still asked a human
+to bump `inspeximus/core.py` by hand and called the README badge "still manual" — so bumping
+`pyproject.toml` and running the pinner left `core.py` at the previous version, which is the number
+`import inspeximus; inspeximus.__version__` returns to a user. Only
+`test_the_package_version_is_the_one_source_of_truth` caught it. The pinner now covers both, the
+checklist names exactly one file to edit by hand, and two tests assert the pinner's *behaviour* on a
+copied tree (plus a control that it REFUSES when the `__version__` assignment goes missing, rather than
+quietly pinning nothing). Both new tests fail against the pre-1.89.0 pinner, which is the only evidence
+that they test anything.
 
 Then **verify from PyPI, not from the repo** — install the published wheel in a clean venv and exercise
 the fix. The repo passing proves the repo passes.

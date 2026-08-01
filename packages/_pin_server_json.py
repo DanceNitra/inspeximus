@@ -71,6 +71,48 @@ def main(argv: list[str]) -> int:
         _write(p, d)
         print(f"marketplace.json pinned to {version} ({len(d.get('plugins', []))} plugin entries)")
 
+    # THE THIRD INSTANCE OF THE SAME CLASS, found on the 1.89.0 release. Bumping pyproject.toml and
+    # running this pinner left `inspeximus/core.py` at 1.88.1 -- and core.py's `__version__` is what
+    # `import inspeximus; inspeximus.__version__` returns, i.e. the number a USER reads. It is also
+    # what `test_the_package_version_is_the_one_source_of_truth` compares against pyproject, so the
+    # release was caught here rather than in the wheel; without that test it would have shipped a
+    # package announcing the previous version. The README badge had drifted the same way. Two more
+    # places a human had to remember, in a file whose entire docstring is about not making a human
+    # remember. Pin them.
+    # A MISSING FILE and a PRESENT FILE WITH NO VERSION are different situations and are treated
+    # differently on purpose. The first is a harness pointing ROOT at a partial copy; the second is
+    # the assignment having been renamed or removed under us, which would make this pinner silently
+    # cover nothing -- the exact failure the docstring above describes twice. So: skip the first with
+    # a line that says so, refuse the second loudly.
+    p = ROOT / "inspeximus" / "core.py"
+    if not p.exists():
+        print("core.py not present under this ROOT; nothing pinned there")
+    else:
+        text = p.read_text(encoding="utf-8")
+        new, n = re.subn(r'^__version__ = "[^"]+"$', f'__version__ = "{version}"',
+                         text, count=1, flags=re.M)
+        if n != 1:
+            raise SystemExit("::error::core.py has no single __version__ assignment to pin; "
+                             "refusing to guess where the version lives")
+        if new != text:
+            p.write_text(new, encoding="utf-8")
+        print(f"core.py __version__ pinned to {version}")
+
+    # The README badge is the first version a reader sees, and it is prose, so it gets a NARROW
+    # pattern: only the standalone `v<semver>` token, never a bare number that might be a citation,
+    # a DOI fragment or a dependency bound. If the token is absent the pinner says so and moves on
+    # rather than inventing a place to write.
+    p = ROOT / "README.md"
+    if p.exists():
+        text = p.read_text(encoding="utf-8")
+        new, n = re.subn(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', f"v{version}", text)
+        if n:
+            if new != text:
+                p.write_text(new, encoding="utf-8")
+            print(f"README.md version badge pinned to v{version} ({n} occurrence(s))")
+        else:
+            print("README.md carries no vX.Y.Z badge; nothing pinned there")
+
     return 0
 
 
