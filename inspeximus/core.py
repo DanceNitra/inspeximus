@@ -5060,13 +5060,20 @@ class Inspeximus:
         toks = [self._rec_tokens(t[2]) for t in pool]
         sigs = [self._rec_sig(t[2]) for t in pool]
         # birth of a VALUE = earliest assertion of its signature anywhere in the store, superseded rows
-        # included — an echo restating a retired value inherits the retired birth and can never look fresh
+        # included — an echo restating a retired value inherits the retired birth and can never look fresh.
+        # The birth key is (event_time, WRITE POSITION), not the bare timestamp. `ts` is a wall clock with
+        # ~15 ms granularity here, so records written in a loop sometimes share a tick and sometimes do not:
+        # measured, two values born in the same tick made this resolver pick a different winner between runs
+        # and recall returned 5 distinct orders over 60 identical single-process runs, in EVERY mode. Position
+        # says "asserted later" exactly and cannot drift, and it is unique per record, so the key is TOTAL —
+        # which is why the old `s` (signature-string) tiebreak on the max below is gone rather than kept as a
+        # third component that nothing can reach.
         birth: dict = {}
-        for r in self.items:
+        for i, r in enumerate(self.items):
             sg = self._rec_sig(r)
-            ts = r.get("valid_from") or r.get("ts") or 0
-            if sg not in birth or ts < birth[sg]:
-                birth[sg] = ts
+            b = (r.get("valid_from") or r.get("ts") or 0, i)
+            if sg not in birth or b < birth[sg]:
+                birth[sg] = b
         clusters: list[list[int]] = []
         for i in range(len(pool)):
             placed = False
@@ -5089,7 +5096,7 @@ class Inspeximus:
                 by_val.setdefault(sigs[i], []).append(i)
             if len(by_val) < 2:
                 continue                                           # restatements of ONE value: dedup is MMR's job
-            win_sig = max(by_val, key=lambda s: (birth.get(s, 0), s))   # newest birth wins; sig tiebreak = determinism
+            win_sig = max(by_val, key=lambda s: birth.get(s, (0, -1)))  # newest birth wins; the key is total
             winner = min(by_val[win_sig])                          # its highest-scored member
             lose = [i for i in cl if sigs[i] != win_sig]
             if lose:
@@ -5590,7 +5597,13 @@ class Inspeximus:
             _top_sim = max(t[1] for t in scored)
             _tied = [t for t in scored if t[1] >= _top_sim - _eps]
             _rest = [t for t in scored if t[1] < _top_sim - _eps]
-            _tied.sort(key=lambda t: -(t[2].get("valid_from") or t[2]["ts"]))
+            # TOTAL key: event time, then WRITE POSITION. `ts` alone is not total -- the wall clock here has
+            # ~15 ms granularity, so records written in a loop share a tick in one run and not in the next,
+            # and the band (which arrives in SCORE order, not write order) then reordered differently between
+            # runs: measured 3 distinct orders over 60 identical single-process runs. Position is the same
+            # policy without the clock, and it is what the main sort above already uses.
+            _tied.sort(key=lambda t: (-(t[2].get("valid_from") or t[2]["ts"]),
+                                      -_pos.get(t[2].get("id"), -1)))
             scored = _tied + _rest
         # OPT-IN READ-TIME CONFLICT RESOLVER (resolve_conflicts=True, default OFF -> byte-identical legacy).
         # The write-time guards (keyed supersession, echo_guard) cannot reach an UN-KEYED re-assertion of a
@@ -5705,7 +5718,12 @@ class Inspeximus:
             pool, tail = scored[:_mp], scored[_mp:]
             rb = rerank_by.lower()
             if rb == "recency":
-                pool.sort(key=lambda t: -(t[2].get("valid_from") or t[2].get("ts") or 0))
+                # TOTAL key (event time, then WRITE POSITION) for the same measured reason as the tie_recent
+                # band above: this pool arrives in SCORE order, and a wall clock too coarse to separate a
+                # write loop makes the sort's tie STRUCTURE differ between runs. Measured on this reranker:
+                # 31 distinct orders over 60 identical single-process runs, at one fixed PYTHONHASHSEED.
+                pool.sort(key=lambda t: (-(t[2].get("valid_from") or t[2].get("ts") or 0),
+                                         -_pos.get(t[2].get("id"), -1)))
             elif rb == "value":
                 pool.sort(key=lambda t: -float(t[2].get("value") or 0))
             elif rb == "reliability":

@@ -17,11 +17,24 @@ Three attempts, and the two failures are the instructive part:
   * quantising the score to 12 decimals was the right kind of fix at the wrong SIZE -- two orders of
     magnitude below the noise it was meant to absorb.
 
-What holds it: the score is quantised to `_RANK_QUANTUM` places (measured, ~10,000x above the noise and
-1000x finer than the score recall reports), then a TOTAL tie-break -- insertion position, then text -- so
-equal scores can never fall through to arrival order.
+What holds it -- and the description below is the CURRENT one; an earlier version of this docstring
+described a `_RANK_QUANTUM` that no longer exists in the code:
+
+  * the noise was removed at its SOURCE, in two places, because quantising the ranking score was tried
+    and REVERTED. In a crowded store the target ranked first while being exactly tied with 58 competitors
+    and 5.7e-10 above two more, so the noise and the smallest meaningful gap were the same size and no
+    quantum could separate them. The two sources: BM25 sums its query terms in SORTED order (float
+    addition is not associative and `qtok` is a set), and the decay age is quantised to whole seconds (an
+    hours-long half-life has no sub-second meaning).
+  * ties then resolve on a TOTAL key -- score, then WRITE POSITION -- so equal scores can never fall
+    through to arrival order. Position, not `ts`: the wall clock here has ~15 ms granularity, so records
+    written in a loop share a tick in one run and not in the next.
+
+The same "`ts` is not a total order" defect survived in three OPT-IN levers that this file did not cover
+(`tie_recent`, `rerank_by='recency'`, `resolve_conflicts`) and is now tested below.
 """
 import collections
+import hashlib
 import os
 import subprocess
 import sys
@@ -32,6 +45,24 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from inspeximus import Inspeximus  # noqa: E402
 
+_DIM = 64
+
+
+def _embed(text):
+    """A deterministic, zero-dependency bag-of-words hashing embedder, so `mode='semantic'` and
+    `mode='hybrid'` actually RUN. Without one, `recall` falls back to lexical and a test parametrized
+    over the four modes silently measures the same path four times.
+
+    sha256, never Python's `hash()`: a seed-dependent embedder would inject the very noise the tests
+    are looking for and every cross-seed assertion here would be measuring the fixture.
+    """
+    v = [0.0] * _DIM
+    for w in (text or "").lower().split():
+        v[int.from_bytes(hashlib.sha256(w.encode()).digest()[:8], "big") % _DIM] += 1.0
+    n = sum(x * x for x in v) ** 0.5 or 1.0
+    return [x / n for x in v]
+
+
 TEXTS = ["the capital of France is Paris", "photosynthesis converts light to chemical energy",
          "Paris hosted the 2024 Olympics", "the mitochondria is the powerhouse of the cell",
          "France borders Spain and Germany", "chlorophyll gives plants their green color",
@@ -39,11 +70,27 @@ TEXTS = ["the capital of France is Paris", "photosynthesis converts light to che
 QUERY = "what is in Paris France"
 RUNS = 60          # at the measured 7% rotation rate, 60 runs miss it with probability ~0.013
 
+# The WIDE fixture: 12 records of 40 tokens against a 45-token query, so each BM25 score is a sum of ~40
+# addends. This is the only fixture here that can express the accumulation defect -- with the eight short
+# TEXTS above, each score is a sum of two or three addends and CPython gives the same set order under
+# every seed, so restoring set-iteration order in `_bm25_scores` changes nothing that can be observed.
+# Measured on this fixture with the fix mutated out: 6 distinct BM25 score vectors across 6 hash seeds,
+# max spread 2.66e-15, and 6 distinct top-k orders in mode='hybrid'.
+WIDE_QUERY = " ".join(f"term{i}" for i in range(45))
 
-def _fresh():
-    m = Inspeximus(path=None)
+
+def _fresh(embed=None):
+    m = Inspeximus(path=None, embed=embed)
     for i, t in enumerate(TEXTS):
         m.remember(t, key=f"k{i}")
+    return m
+
+
+def _wide(embed=None):
+    m = Inspeximus(path=None, embed=embed)
+    for i in range(12):
+        body = " ".join(f"term{(i * 7 + j) % 45}" for j in range(40))
+        m.remember(f"record {i} " + body, key=f"k{i}")
     return m
 
 
@@ -53,12 +100,30 @@ def _orders(runs=RUNS, **kw):
 
 
 @pytest.mark.parametrize("mode", ["auto", "lexical", "semantic", "hybrid"])
-def test_the_same_store_and_query_give_one_answer(mode):
-    """The fixture is chosen so three records tie exactly -- that is where the defect lived, and a
-    fixture without a tie could not fail."""
-    orders = _orders(mode=mode)
+@pytest.mark.parametrize("fixture", ["tie", "wide"])
+def test_the_same_store_and_query_give_one_answer(mode, fixture):
+    """The `tie` fixture is chosen so three records tie exactly -- that is where the defect lived, and a
+    fixture without a tie could not fail. The `wide` fixture is the one whose BM25 scores are long enough
+    sums to move at all.
+
+    An EMBEDDER is supplied, and the mode actually reached is asserted. Without one,
+    `recall(mode='semantic')` and `recall(mode='hybrid')` fall back to lexical -- so the earlier version
+    of this test ran the identical code path four times and reported it as four modes covered.
+    """
+    build = _fresh if fixture == "tie" else _wide
+    query = QUERY if fixture == "tie" else WIDE_QUERY
+    orders = collections.Counter()
+    reached = set()
+    for _ in range(RUNS):
+        m = build(embed=_embed)
+        orders[tuple(h["text"] for h in m.recall(query, k=5, mode=mode))] += 1
+        reached.add(m._last_mode)
+    # ASSERT THE TARGET RESOLVES. 'auto' below the semantic_threshold is lexical BY DESIGN; the other
+    # three must reach the channel they name or this test is measuring nothing it claims to.
+    want = "lexical" if mode == "auto" else mode
+    assert reached == {want}, f"mode={mode} reached {reached}, not {{'{want}'}}"
     assert len(orders) == 1, (
-        f"mode={mode}: {len(orders)} distinct top-k orders over {RUNS} identical runs "
+        f"mode={mode} fixture={fixture}: {len(orders)} distinct top-k orders over {RUNS} identical runs "
         f"(counts {sorted(orders.values(), reverse=True)})")
 
 
@@ -78,22 +143,71 @@ def test_reinforcement_does_not_change_the_ranking():
     assert list(a)[0] == list(b)[0]
 
 
-def test_the_order_is_the_same_under_a_different_hash_seed():
-    """The root cause is candidate order arriving through sets of record-id STRINGS, whose iteration
-    depends on per-process hash randomisation. A single-process test cannot see that at all."""
-    code = ("import sys; sys.path.insert(0, %r)\n"
-            "from inspeximus import Inspeximus\n"
-            "T = %r\n"
-            "m = Inspeximus(path=None)\n"
-            "[m.remember(t, key='k%%d' %% i) for i, t in enumerate(T)]\n"
-            "print('|'.join(h['text'] for h in m.recall(%r, k=5)))\n" % (ROOT, TEXTS, QUERY))
-    seen = set()
-    for seed in ("0", "1", "2", "3"):
-        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=300,
+# The child of the cross-process test: one process = one PYTHONHASHSEED. It rebuilds the store for every
+# run so nothing carries over, and prints one line per (fixture, mode) holding the distinct top-k orders
+# that seed produced. Kept as source text rather than a helper module because it has to run under a
+# DIFFERENT interpreter environment -- hash randomisation is per process, so an in-process loop is blind
+# to it (a set built the same way iterates the same way all day inside one interpreter).
+_SEED_CHILD = '''
+import hashlib, sys
+sys.path.insert(0, %(root)r)
+from inspeximus import Inspeximus
+DIM = 64
+def embed(text):
+    v = [0.0] * DIM
+    for w in (text or "").lower().split():
+        v[int.from_bytes(hashlib.sha256(w.encode()).digest()[:8], "big") %% DIM] += 1.0
+    n = sum(x * x for x in v) ** 0.5 or 1.0
+    return [x / n for x in v]
+TEXTS = %(texts)r
+def tie():
+    m = Inspeximus(path=None, embed=embed)
+    for i, t in enumerate(TEXTS):
+        m.remember(t, key="k%%d" %% i)
+    return m, %(query)r
+def wide():
+    m = Inspeximus(path=None, embed=embed)
+    for i in range(12):
+        m.remember("record %%d " %% i + " ".join("term%%d" %% ((i * 7 + j) %% 45) for j in range(40)),
+                   key="k%%d" %% i)
+    return m, " ".join("term%%d" %% i for i in range(45))
+for name, build in (("tie", tie), ("wide", wide)):
+    for mode in ("lexical", "semantic", "hybrid", "auto"):
+        seen = set()
+        for _ in range(%(runs)d):
+            m, q = build()
+            seen.add("|".join(h["text"] for h in m.recall(q, k=5, mode=mode)))
+        print("%%s/%%s\\t%%d\\t%%s" %% (name, mode, len(seen), sorted(seen)[0]))
+'''
+
+SEEDS = ("0", "1", "2", "3", "4", "5")
+SEED_RUNS = 120
+
+
+def test_one_answer_over_120_runs_x_6_hash_seeds_in_every_mode():
+    """THE headline measurement, and the reason it has to be a subprocess: the root cause was candidate
+    order arriving through sets of record-id STRINGS, whose iteration depends on per-process hash
+    randomisation. A single-process test cannot see that at all.
+
+    720 observations per (fixture, mode); 8 combinations; must collapse to exactly one order each.
+    Supersedes an earlier 4-seed, single-mode, no-embedder version of this test, which this one contains.
+    """
+    code = _SEED_CHILD % {"root": ROOT, "texts": TEXTS, "query": QUERY, "runs": SEED_RUNS}
+    union = collections.defaultdict(set)
+    for seed in SEEDS:
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=900,
                            env={**os.environ, "PYTHONHASHSEED": seed, "PYTHONIOENCODING": "utf-8"})
-        assert r.returncode == 0, r.stderr[-600:]
-        seen.add(r.stdout.strip())
-    assert len(seen) == 1, f"PYTHONHASHSEED changes the answer: {len(seen)} distinct orders"
+        assert r.returncode == 0, r.stderr[-800:]
+        lines = [ln for ln in r.stdout.splitlines() if ln.strip()]
+        assert len(lines) == 8, f"seed {seed} reported {len(lines)} combinations, expected 8"
+        for ln in lines:
+            combo, n, first = ln.split("\t")
+            assert int(n) == 1, f"seed {seed}, {combo}: {n} distinct orders within one process"
+            union[combo].add(first)
+    bad = {c: len(v) for c, v in union.items() if len(v) != 1}
+    assert not bad, (
+        f"the answer depends on PYTHONHASHSEED: {bad} "
+        f"({SEED_RUNS} runs x {len(SEEDS)} seeds = {SEED_RUNS * len(SEEDS)} observations per combination)")
 
 
 def test_bm25_sums_its_terms_in_a_fixed_order():
@@ -211,3 +325,132 @@ def test_the_declared_tie_order_survives_a_different_hash_seed():
                            env={**os.environ, "PYTHONHASHSEED": seed, "PYTHONIOENCODING": "utf-8"})
         assert r.returncode == 0, r.stderr[-600:]
         assert r.stdout.strip() == want, f"seed {seed}: {r.stdout.strip()[:120]}"
+
+
+# ── the crowded-store control: determinism must not cost the memory you asked for ──────────────────
+# This is the check that killed the previous fix. Quantising the ranking score made recall repeatable and
+# then merged away the margin that surfaced the target, so "deterministic but cannot find your memory in
+# a crowded store" shipped as an improvement. Any future change to the ranking has to clear BOTH bars, so
+# the scenario lives in the test suite rather than only in adk_audit.py.
+CROWD_QUERY = "quarterly revenue target"
+TARGET_TEXT = "the quarterly revenue target is 4.2 million"
+NOISE = "user {} says the quarterly revenue target is important"
+
+
+def _crowded(target_first=False, embed=None):
+    """adk_audit.py::sc_crowded_store, as a store: 60 other users' memories plus the one you asked for."""
+    m = Inspeximus(path=None, embed=embed)
+    if target_first:
+        m.remember(TARGET_TEXT, key="target")
+    for i in range(60):
+        m.remember(NOISE.format(i), key=f"n{i}")
+    if not target_first:
+        m.remember(TARGET_TEXT, key="target")
+    return m
+
+
+@pytest.mark.parametrize("mode", ["auto", "lexical", "semantic", "hybrid"])
+def test_a_crowded_store_still_returns_the_memory_you_asked_for(mode):
+    """60 other users' memories all matching the query, plus the one that answers it. The target must come
+    back FIRST -- not merely be present."""
+    hits = _crowded(embed=_embed).recall(CROWD_QUERY, k=5, mode=mode)
+    texts = [h["text"] for h in hits]
+    assert texts and texts[0] == TARGET_TEXT, f"mode={mode}: target not first, got {texts}"
+
+
+def test_the_crowded_store_target_wins_the_bm25_channel_on_a_real_margin():
+    """...and it is a REAL margin, not a rounding artefact — which is the whole reason the score is no
+    longer quantised for ranking.
+
+    Measured here: BM25 gives the target 0.02852 against 0.02423 for every competitor, a margin of
+    4.29e-3. The run-to-run accumulation noise, measured on the `wide` fixture with the sorted-terms fix
+    mutated out, is 2.66e-15. The margin is ~12 orders of magnitude above the noise, so the BM25 channel
+    separates this store on content and owes nothing to luck.
+    """
+    from inspeximus.core import _tokens
+    m = _crowded()
+    scores = m._bm25_scores(_tokens(CROWD_QUERY), list(m._items))
+    ti = next(i for i, r in enumerate(m._items) if r["text"] == TARGET_TEXT)
+    best_other = max(s for i, s in enumerate(scores) if i != ti)
+    margin = scores[ti] - best_other
+    assert margin > 1e-6, f"BM25 no longer separates the target: {scores[ti]!r} vs {best_other!r}"
+    assert margin > 1e6 * 2.66e-15, f"margin {margin:.3g} is within reach of the accumulation noise"
+
+
+def test_the_overlap_coefficient_cannot_separate_a_crowded_store():
+    """The honest limit behind the test above, asserted so nobody re-derives it from a passing suite.
+
+    `mode='lexical'` scores relevance as |q & t| / min(|q|, |t|), which SATURATES: every one of the 61
+    records contains all three query tokens, so all 61 score exactly 1.0 and the composite score ties
+    61 ways. The target comes back first in the ADK scenario purely because it is written LAST and the
+    declared tie-break is newest-first. Write it FIRST and it lands at rank 60.
+
+    That is a property of the overlap-coefficient channel, not of determinism -- it is identical before
+    and after this branch, and BM25 (`mode='hybrid'`) ranks the target first from either write position.
+    Changing it means changing the lexical relevance function, which needs its own retrieval benchmark,
+    not a determinism fix. If someone does change it, this test fails and says so.
+    """
+    from inspeximus.core import _tokens
+    m = _crowded()
+    q = _tokens(CROWD_QUERY)
+    sims = {len(q & m._rec_tokens(r)) / min(len(q), len(m._rec_tokens(r))) for r in m._items}
+    assert sims == {1.0}, f"the overlap coefficient no longer saturates here: {sorted(sims)}"
+
+    ranks = {}
+    for first in (False, True):
+        hits = _crowded(target_first=first).recall(CROWD_QUERY, k=61, mode="lexical")
+        ranks[first] = next(i for i, h in enumerate(hits) if h["text"] == TARGET_TEXT)
+    assert ranks == {False: 0, True: 60}, f"the lexical tie no longer resolves by write order: {ranks}"
+
+    # ...while the BM25-bearing channel finds it from either end, which is what makes the limit tolerable.
+    for first in (False, True):
+        hits = _crowded(target_first=first, embed=_embed).recall(CROWD_QUERY, k=5, mode="hybrid")
+        assert hits[0]["text"] == TARGET_TEXT, f"hybrid, target_first={first}: {[h['text'] for h in hits]}"
+
+
+# ── the same defect, three levers this file never covered ──────────────────────────────────────────
+# `ts` is not a total order: the wall clock here has ~15 ms granularity, so 32 records written in a loop
+# carry only 4 distinct timestamps spanning 2.3 ms, and WHICH records share a tick changes between runs.
+# The main sort learned that and ranks ties by write position. Three opt-in levers had not, and each was
+# reordering its pool on the bare timestamp. Measured on unmodified main, 60 identical runs in ONE process
+# at a fixed PYTHONHASHSEED (so this is clock jitter, not hash randomisation):
+#   rerank_by='recency'   31 distinct orders
+#   resolve_conflicts     5 distinct orders, in every mode
+#   tie_recent            3 distinct orders
+LEVER_RUNS = 60
+
+
+def _lever_store():
+    """Two families that both match, and 20 records written in one loop so they share clock ticks."""
+    m = Inspeximus(path=None, embed=_embed)
+    for i in range(12):
+        m.remember(f"record {i} " + " ".join(f"term{(i * 7 + j) % 45}" for j in range(40)), key=f"k{i}")
+    for i in range(20):
+        m.remember(f"the quarterly revenue target is important note {i}", key=f"q{i}")
+    return m
+
+
+@pytest.mark.parametrize("lever", [
+    {"rerank_by": "recency"},
+    {"tie_recent": 0.01},
+    {"resolve_conflicts": True},
+])
+@pytest.mark.parametrize("mode", ["lexical", "hybrid"])
+def test_the_opt_in_recency_levers_are_deterministic_too(lever, mode):
+    """Each of these ordered its pool by `valid_from or ts` alone. The pool arrives in SCORE order, so
+    when the clock happened to separate two records the sort moved them and when it did not the score
+    order stood -- a different answer per run, with no set and no hash seed involved."""
+    orders = collections.Counter()
+    for _ in range(LEVER_RUNS):
+        m = _lever_store()
+        orders[tuple(h["text"] for h in m.recall(WIDE_QUERY, k=8, mode=mode, **lever))] += 1
+    assert len(orders) == 1, (
+        f"{lever} mode={mode}: {len(orders)} distinct top-k orders over {LEVER_RUNS} identical runs in "
+        f"one process (counts {sorted(orders.values(), reverse=True)})")
+
+
+def test_the_lever_fixture_really_does_share_clock_ticks():
+    """Otherwise the test above passes over a case that could never have shown the bug: with one record
+    per tick, `ts` is already a total order and the fix is unobservable."""
+    ts = [r["ts"] for r in _lever_store()._items]
+    assert len(set(ts)) < len(ts), f"every record got its own timestamp ({len(ts)} records, no tie)"
