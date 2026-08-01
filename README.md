@@ -12,7 +12,7 @@ attests it unaltered. The self-correcting memory layer for AI agents.*
 *It serves the new value and refuses to let the old one creep back — deterministically, with no LLM on the
 write path. Extracted from an autonomous research OS that has run it daily over 10,000 notes.*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.88.1
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.89.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -428,7 +428,7 @@ inspeximus check-code src/**/*.py                                            # e
 ```yaml
 # .pre-commit-config.yaml  (point INSPEXIMUS_PATH at a store committed to the repo, e.g. .inspeximus/memory.json)
 - repo: https://github.com/<owner>/inspeximus
-  rev: v1.39.0
+  rev: v1.89.0
   hooks: [{ id: inspeximus-check-code }]
 ```
 

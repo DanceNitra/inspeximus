@@ -3,7 +3,45 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased - measurement tooling (no library code; nothing in the wheel changes)
+## 1.89.0 - UPGRADE IF YOU USE `slash()`/`restore()`: a retraction could be lost, and it walked a stale graph
+
+Two defects on the accountability path, both found by adversarially reviewing a claim we were about to
+publish about our own behaviour. Both are in the wheel.
+
+**A retraction the process could lose was not a retraction.** `slash()` and `restore()` went through the
+throttled `_save()`, which batches on a 5-second timer. That is right for `remember()` in a hot loop and
+wrong for the one operation whose purpose is to take standing away. Measured: slash a credited record,
+lose the process before the timer fires, reopen the store, and you get `meta:{}`, `good:null`,
+`bad:null`. The retraction is gone and the record is load-bearing again, while the caller was told
+`{"slashed": 1}` and had no way to learn otherwise. Silent on both sides. Both operations now force the
+write; re-measured across a lost process, slash survives (`meta.slashed` true, good 0.0, bad 6.0) and
+restore survives (good 5.0 restored exactly).
+
+**`slash(scope='source')` picked targets from a frozen `taint` set.** That set is computed once inside
+`remember()` and never revisited, so a `derived_from` edge arriving AFTER the write was invisible to the
+lever. The ordinary case is a summariser that learns its inputs late, or an app repairing lineage it
+discovered downstream: the descendant named the retracted record as its evidence and kept full standing
+anyway. `forget_subject` had been closing forward over those same edges all along, so two operations
+answering "who does this reach?" walked different graphs and only one was right. They now walk the same
+one, a forward closure over declared `derived_from`, mirrored in `restore()` so an appeal can never be
+narrower than the penalty. (Doyle, *A Truth Maintenance System*, AIJ 12(3) 1979, for the mechanism;
+Biba 1975 for the integrity direction.)
+
+**New: `scope='lineage'`** — the named records plus everything transitively derived from them, and
+nothing else. Neither existing scope served the common case: `'memory'` stops at the named record and
+`'source'` forfeits every sibling sharing a source label, so catching ONE poisoned memory and retiring
+the conclusions built on it had no primitive. `scope='memory'` keeps its documented meaning.
+
+**`derived_from` ids that do not resolve are no longer dropped silently.** A typo produced a record with
+no lineage AND full primary standing: the write announced itself as derived and was banked as an
+observation. Unresolvable parents are kept as `derived_from_unresolved`, and a write whose entire claimed
+lineage fails to resolve is an orphan.
+
+12 tests, 7 of which fail on the pre-fix code. `test_the_frozen_taint_really_is_empty` is a fixture
+control that fails if the defect stops reproducing, so a later refactor cannot leave the suite green
+because the case never arises.
+
+### Also in this release - measurement tooling (no library code; nothing in the wheel changes)
 
 **The stated +/- was normal theory, and it ran too tight in the flattering direction.** `sd_rel_error(n)`
 returned `sqrt(1-c4^2)/c4`, exact for normal data. Var(s) carries an excess-kurtosis term, so the truth
