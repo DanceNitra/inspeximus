@@ -3,6 +3,51 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## Unreleased - every published number now has a command, and a test that fails when one does not
+
+Docs and tooling only; no library behaviour changed.
+
+We had already marked the headline retrieval pair (recall@25 0.783 / 0.648) "reported, not
+independently reproducible from this repo". Auditing the rest of the reader-facing surface found that
+this was a **class**, not an instance:
+
+- **31 receipt paths** in the README, `docs/` and this file pointed at `inspeximus/probes/...` while
+  the probes live at `probes/...`. The 1.48.0 entry below already records fixing *two* of them. Every
+  one of the other 31 resolved correctly once the prefix was dropped, so every "run this to reproduce"
+  line in `docs/API.md` and `docs/INTEGRATIONS.md` had been broken since it was written.
+- **five README anchors** pointed at sections that had been moved out of the file — including the one
+  advertising "the measured integrity number below", which was no longer on the page at all.
+- **the MCP tool count was published three ways at once**: 30 in `MCP_LISTINGS.md`, 15 and 56 on the
+  homepage, against a server registering 56. Three surfaces, one truth, no error anywhere.
+- **two figures had no producing artifact**: "measured 15/15 on a verified-forgetting severe-test" and
+  "severe-test 8/8". Both are withdrawn; the sentences now cite what the committed probes actually
+  print (`0.17` / `1.00` over six stores, and `0/24`).
+- **a whole README section documented `maintain.py` and `second_brain_mcp.py`**, neither of which is in
+  this repository. Removed, with the gap stated where the pointer used to be.
+- **`Letta has no undo` was false** — and our own `claims_audit.py` said so, on the line below it. Letta
+  has an engine-level `undo_checkpoint_block`; the honest claim is that inspeximus exposes revert
+  deterministically as a named memory operation, not that reverting is unavailable elsewhere. The same
+  correction went into `docs/API.md`, and the two unscoped universal negatives (one asserting a rival
+  could not copy the write-path design, one asserting nobody shipped external witnessing) are
+  rephrased as what we measured on a dated scan of nine libraries.
+
+**The fix is a gate, not a proofread.** `claims_audit.py` gained a published-number audit: every numeric
+token a reader sees on `README.md`, `MCP_LISTINGS.md` and `index.html` must be registered, either as a
+claim with a reproduction command and a status (`REPRODUCIBLE`, `REPRODUCIBLE-WITH-DEPS`,
+`PENDING-HARNESS`, `EXTERNAL`, `WITHDRAWN`) or as a declared non-claim with a reason and an **exact
+expected count**. It runs on every invocation and counts toward the exit code.
+`docs/CLAIMS.md` is generated from that registry: **229 published tokens, 96 of them claims in 53 rows,
+25 reproducible by a committed command**. Self-referential figures — the MCP tool count, the example
+audit summary — are read from the code rather than trusted.
+
+`tests/test_claims_coverage.py` carries the controls, because a guard nobody has watched fail is not a
+guard: planting a bogus number, a second occurrence of a registered token, a moved pin sentence, a
+deleted probe, a disagreeing tool count and a figure hidden in an HTML `data-count` attribute each
+fail the audit by name. Review of the first version caught two **false-safe** holes in the scanner
+itself — a unit-glued number (`--object 90d`) and a negative number (`z=-4.79`) were invisible, so the
+registry's counts agreed with a checker that shared its blind spot — plus a control that ran the CLI
+against the real repo instead of its own sandbox and passed forever while testing nothing.
+
 ## Unreleased - integration conformance: three adapters were broken against current upstream
 
 `tools/integration_conformance.py` runs every adapter in `inspeximus.integrations` through a real round
@@ -87,7 +132,6 @@ GPU pre-flight forbade `llama-server.exe` as evidence of a competing job, which 
 Ollama runs a model: the gate forbade the benchmark's own inference backend and could never pass once a
 model loaded. Both are now checked by tests that assert the count and the classification rather than the
 absence of an exception.
-
 
 ## 1.89.0 - UPGRADE IF YOU USE `slash()`/`restore()`: a retraction could be lost, and it walked a stale graph
 
@@ -2075,7 +2119,7 @@ The README claimed *"every number in this README traces to a runnable probe"*. T
 not: the harness behind the LOCOMO **retrieval-recall@25 0.78 / 0.65** pair is not in the repository, and the
 file the README named does not exist. The numbers are now marked **reported, not independently reproducible
 from this repo**, and the "every number" line says "almost every", with the exception flagged in place. Also
-fixed: probe paths pointed at `inspeximus/probes/` (2 files) instead of `probes/`; `claims_audit.py`
+fixed: probe paths pointed at `probes/` (2 files) instead of `probes/`; `claims_audit.py`
 pip-downloaded a package name that is not on PyPI; the version line said 1.48.0; `recall()` examples showed
 strings when it returns dicts; and "zero dependencies — one file" is now "zero required dependencies —
 pure-Python package" (15 modules).
@@ -3185,7 +3229,7 @@ witness the anchor externally for an operator-adversarial audit) — it is NOT s
 raw-disk/backup forensics (a plaintext store of any library leaves bytes in free space/backups → use an
 encrypted store + `shred()`, NIST SP 800-88 crypto-erasure) and NOT the app's own vector store/logs (register
 `ErasureTarget`s for cross-store cascade). Receipts:
-`inspeximus/probes/erasure_certificate_probe.py` (9/9) + `inspeximus/probes/erasure_raw_store_probe.py` (12/12).
+`probes/erasure_certificate_probe.py` (9/9) + `probes/erasure_raw_store_probe.py` (12/12).
 
 ## 1.12.4
 
@@ -3193,7 +3237,7 @@ encrypted store + `shred()`, NIST SP 800-88 crypto-erasure) and NOT the app's ow
 MCP server needed: `inspeximus remember "..." --key k`, `inspeximus recall "..."` (current-truth, superseded values
 hidden), `inspeximus revert <key>`, `inspeximus forget --key/--id/--contains`, `inspeximus list`, `inspeximus stats`. Shares the
 store with `inspeximus-mcp` (`--path` / `$INSPEXIMUS_PATH` / `./inspeximus_memory.json`); `--json` for scripting; lexical by
-default, semantic when `$INSPEXIMUS_EMBED_URL` is set. Zero dependencies. Receipt: `inspeximus/probes/inspeximus_cli_probe.py`
+default, semantic when `$INSPEXIMUS_EMBED_URL` is set. Zero dependencies. Receipt: `probes/inspeximus_cli_probe.py`
 (6/6).
 
 ## 1.12.3
@@ -3205,7 +3249,7 @@ unless the caller supplies one, the WRITE path is untouched, default `None` = ze
 fails open (a broken or wrong-length reranker keeps the pre-rerank order). Honest scope: the lift is only as
 good as the reranker — a model-READER reranker is the measured multi-hop lever (LoCoMo ~0.30->~0.48), whereas a
 generic query-relevance cross-encoder does NOT help multi-hop (measured: it hurts, because 2nd-hop evidence
-isn't directly query-relevant). Receipt: `inspeximus/probes/inspeximus_rerank_hook_probe.py` (5/5).
+isn't directly query-relevant). Receipt: `probes/inspeximus_rerank_hook_probe.py` (5/5).
 
 ## 1.12.2
 
@@ -3230,7 +3274,7 @@ Additive only, no breaking changes.
 (`save`/`search`/`reset`) you hand to `ExternalMemory` (or any custom-storage slot). `search()` retrieves
 through inspeximus's supersession-filtered `recall()`, so a corrected fact never returns into the crew's context.
 Duck-typed — CrewAI is matched structurally and never imported, so the zero-dependency core is untouched.
-Opt-in extra: `pip install "inspeximus[crewai]"`. Receipt: `inspeximus/probes/inspeximus_crewai_adapter_probe.py` (6/6).
+Opt-in extra: `pip install "inspeximus[crewai]"`. Receipt: `probes/inspeximus_crewai_adapter_probe.py` (6/6).
 
 **Claude Code plugin: optional semantic recall.** The auto-capture plugin (`inspeximus.claude_code`) now supports
 SEMANTIC recall against any OpenAI-compatible `/embeddings` endpoint (e.g. local Ollama), configured by env
@@ -3260,11 +3304,11 @@ without the caller passing an explicit `key`. Both fail-open (a returned `None` 
 results are supersession-filtered — a corrected fact is never retrieved back into the prompt) and
 `InspeximusChatMessageHistory`. Opt-in extra: `pip install "inspeximus[langchain]"`.
 
-**Tuned recall recipe + a measured LOCOMO number.** `inspeximus/examples/recall_recipe_locomo.py` shows the built-in
+**Tuned recall recipe + a measured LOCOMO number.** `examples/recall_recipe_locomo.py` shows the built-in
 levers (an embedder → lexical+semantic hybrid RRF; a soft speaker/entity prefilter via `recall(prefer=...)`) that
 put inspeximus in the top tier on retrieval. Measured on the full LOCOMO benchmark (n=1536), LLM-free and reproducible:
 retrieval-recall@25 = 0.783 (any evidence turn) / 0.648 (all). Run `probes/retrieval_recall_locomo.py`.
-*(CORRECTED 2026-07-27: that path was `inspeximus/probes/...` and the file was not in the repository at all
+*(CORRECTED 2026-07-27: that path was `probes/...` and the file was not in the repository at all
 — cited as a receipt for two years and committed only after CHANGELOG.md was brought into the probe-citation
 guard. "Reproducible" holds only if you have the LoCoMo dataset, which we cannot redistribute.)*
 

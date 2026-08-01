@@ -171,8 +171,11 @@ methodology: [`probes/INTEGRITY_BENCHMARK.md`](../probes/INTEGRITY_BENCHMARK.md)
 | mem0 2.0.11 (native, gpt-4o-mini) | 0.20 | [0.08, 0.42] |
 | Graphiti (native, live neo4j) | 0.00 | [0.00, 0.16] |
 
-Only inspeximus exposes a channel to undo a correction on command; inspeximus's and mem0's CIs do not overlap, so the
-capability gap survives at n=20. We lead with the cell we *don't* win: **echo-resurrection is a tie** — all
+Of the three systems in this cell, only inspeximus exposes an undo-a-correction channel on the retrieval surface;
+inspeximus's and mem0's CIs do not overlap, so the capability gap survives at n=20. Scope that honestly: Letta
+(not in this cell) has an engine-level `undo_checkpoint_block` over `BlockHistory`, so "nobody else can revert"
+is false — what inspeximus does is expose it deterministically as a named memory operation, zero-LLM, in a
+package with no required dependencies. We lead with the cell we *don't* win: **echo-resurrection is a tie** — all
 three defend against a restated stale value. This is a narrow, adversarial, command-driven cut, not a general
 "inspeximus is better" claim; run it yourself or add your system.
 
@@ -550,7 +553,7 @@ returns `False` for any slash'd record on **every** path (credit, graduation, an
 alike). Measured: one slash revokes 5/5 provenance-reached descendants (incl. a depth-2 rollup and the
 link-corroborated one), restore recovers 5/5; the only survivor is a lineage-stripped orphan (preserve
 `derived_from` through summarization — a usage requirement, not a store bug). Runnable receipt:
-[`inspeximus/probes/retraction_propagation.py`](https://github.com/DanceNitra/agora/blob/main/inspeximus/probes/retraction_propagation.py).
+[`probes/retraction_propagation.py`](https://github.com/DanceNitra/agora/blob/main/inspeximus/probes/retraction_propagation.py).
 Credit: jacksonxly (the invariant) + marintkael (authenticated-but-false). Reversible; default behavior unchanged.
 
 ### Convergence-backed status: `convergence_report()` + `recall(with_status=)` (0.6.1)
@@ -620,7 +623,7 @@ boosts each record by `1 + trust*(coverage)*exp(-distance/half)` over the target
 normalised, coverage-weighted, NaN/bool-guarded). Soft (never hard-deletes; missing dims → neutral), composes
 with text sim and `prefer`, `near=None` = byte-identical legacy. MEASURED on a real TAT 5-D state trace:
 regime-relevance precision@5 **0.984 (near) vs 0.758 (plain text)**. It re-ranks the recall pool — not a
-vector index. Receipt: `inspeximus/probes/continuous_chunk_recall_probe.py`.
+vector index. Receipt: `probes/continuous_chunk_recall_probe.py`.
 
 ### Make the not-asserting visible: `recall(with_warrant=True)` + `spend_irreversible(provenance_lo=...)` (0.6.6)
 A silent low score for "no independent channel" decays into *"unverified but present"* — a downstream consumer
@@ -631,7 +634,7 @@ it, `spend_irreversible(ids, amount, budget, provenance_lo=0.15)` caps a source 
 contributing record** at the small `provenance_lo` instead of the full budget — a low-provenance memory
 recalled into an irreversible action binds that action's budget **against itself**, scoping the hard floor to
 the consequential slice rather than the whole store. Both opt-in (`with_warrant=False` / `provenance_lo=None` =
-legacy). Receipt: `inspeximus/probes/legible_warrant_scoped_budget_probe.py`.
+legacy). Receipt: `probes/legible_warrant_scoped_budget_probe.py`.
 
 ### Require earned outcome for the irreversible tail: `spend_irreversible(require_earned=True)` (0.6.7)
 By default `spend_irreversible(provenance_lo=...)` grants the full irreversible budget to any *corroborated*
@@ -641,16 +644,16 @@ attacker sets, so a forged-source sybil poison can earn the full budget for an i
 `good>=bad`, set by `credit()` on real downstream success) — the one signal a sybil cannot mint (a forged or
 attested ≥2-witness sybil clears corroboration but not this). Cost: any not-yet-earned legitimate source is
 throttled to `provenance_lo` too, so it is opt-in for high-stakes deployments; default `False` is a
-byte-identical legacy path. Receipt: `inspeximus/probes/spend_irreversible_require_earned_probe.py`.
+byte-identical legacy path. Receipt: `probes/spend_irreversible_require_earned_probe.py`.
 
 ### Near-tie recency reorder for corrected facts: `recall(tie_recent=eps)` (0.6.8)
 When a fact is later **corrected in free text**, SRO supersession never triggers and the stale value can
 outrank the fresh one: measured on MemBench (ACL 2025 Findings) knowledge-update questions, the **stale value
 wins rank-1 in 32.7%** of cases — identically for raw cosine and inspeximus's semantic recall (receipt:
-`inspeximus/probes/membench_recall_probe_v2.py`). `tie_recent=eps` re-orders candidates whose relevance is within
+`probes/membench_recall_probe_v2.py`). `tie_recent=eps` re-orders candidates whose relevance is within
 `eps` of the strongest candidate **newest-first** (by `valid_from`, falling back to `ts`); everything below the
 band keeps its score order. Measured sweep (222 questions incl. 3 non-update control splits, receipt:
-`inspeximus/probes/membench_recency_tiebreak_probe.py`): `tie_recent=0.05` on centered cosine cuts stale-beats-fresh
+`probes/membench_recency_tiebreak_probe.py`): `tie_recent=0.05` on centered cosine cuts stale-beats-fresh
 **0.327 → 0.109 (3×) at ~zero hit@1/5 cost on the control splits**; a *linear* position bonus was measured
 useless (no movement before it damages controls) — the band reorder is the shape that works. Honest scope: the
 benchmark's corrections always come after the original mention (by construction; the control-split cost is the
@@ -662,7 +665,7 @@ Opt-in; default `None` = byte-identical legacy recall.
 A fact is corrected (old value → superseded); later the OLD value is **re-stated** — a benign restatement or
 an attacker re-injection. On a plain recency / bi-temporal / last-writer-wins store the restatement carries a
 newer timestamp and **resurrects the stale value**. Measured on a MemBench echo fixture
-(`inspeximus/probes/echo_attack_probe_v2.py`, retrieval-level stale-answer-rate, 43 corrected-fact cases; echoes
+(`probes/echo_attack_probe_v2.py`, retrieval-level stale-answer-rate, 43 corrected-fact cases; echoes
 paraphrased cross-family with deepseek/kimi/glm): recency, a mem0-v1-faithful ADD/UPDATE/DELETE policy, and a
 **bi-temporal Graphiti-faithful** policy all go **0.21 → 1.00** under both verbatim *and* paraphrased echo; a
 verbatim-hash policy (MemStrata-style) holds against verbatim (0.21) but is **destroyed by paraphrase (1.00)**.
@@ -689,11 +692,11 @@ keyed supersession. An explicit argument always wins over the env var.
 ### Close the retrieval loop: `propagate_outcome()` (0.6.10)
 The un-self-gradable earned-outcome signal (`credit()`) is what the influence gate and `echo_guard` ride on
 — but on a live store we measured retrieval→earned **conversion at only ~28%** (16–62% across 8 agents;
-`inspeximus/probes/retrieval_exposure_coverage_probe.py`). That gap is an **attribution** problem, not a ceiling:
+`probes/retrieval_exposure_coverage_probe.py`). That gap is an **attribution** problem, not a ceiling:
 the app hand-credits only some acted-on recalls, so most retrieved-and-used memory never earns its signal.
 `propagate_outcome(outcome)` auto-credits the **decision-driving** subset of the last recall when the action
 is scored, so coverage rises toward the app's scored-action rate without hand-threading ids into `credit()`.
-Measured (`inspeximus/probes/outcome_propagation_probe.py`): conversion lifts from manual-attribution-limited to
+Measured (`probes/outcome_propagation_probe.py`): conversion lifts from manual-attribution-limited to
 the scored-action rate, and a **non-driver poison in the recall set earns 0%** under the default
 `driving_only` mode (vs **50%** if you credit the whole set with `driving_only=False`) — so closing the loop
 does **not** open a recall-set-attribution poison surface. Load-bearing limit: `driving_only=True, ids=None`
@@ -708,7 +711,7 @@ editing a row. It's the control-plane un-do for a keyed value, exposed as an MCP
 **object-less clobber guard**: on a key managed with explicit `object=` values (a value ledger), a keyed
 write carrying *no* object can no longer displace a real value — a hole our own pilot found, where a
 value-free reversion utterance ("go back to the old one") superseded the real value with junk text
-(`inspeximus/probes/revert_by_reference_probe.py`, resistance **0.00 → 1.00**). Discrimination gap 1.0 vs a
+(`probes/revert_by_reference_probe.py`, resistance **0.00 → 1.00**). Discrimination gap 1.0 vs a
 content-only store. Changing a ledgered value now requires an explicit object, `reaffirm=True`, or `revert()`.
 
 ### Lineage-aware correction: `retract_lineage(subject)` (0.7.16)
@@ -779,7 +782,7 @@ records — NOT secure at-rest erasure against raw-disk/backup forensics (a plai
 included, leaves bytes in free space/backups), and NOT the app's own vector store/logs. For secure at-rest
 erasure use an encrypted store + `shred()` (NIST SP 800-88 crypto-erasure: destroy the key, ciphertext and
 every backup die); for cross-store erasure register `ErasureTarget`s so `forget_subject` cascades. Receipts:
-`inspeximus/probes/erasure_certificate_probe.py`, `erasure_raw_store_probe.py`.
+`probes/erasure_certificate_probe.py`, `erasure_raw_store_probe.py`.
 
 ### Hydration witness + index coherence: "this answer reflects store state as of revision X" (1.21.0)
 A governed store can still serve a stale answer if the **derived index** (embeddings, caches) lags the store —
@@ -821,7 +824,7 @@ so a broken wiring produces an INCOMPLETE receipt, never a clean lie. Honest sco
 registered targets (not unregistered stores), and "complete" is verified-non-recoverable at check time, not proof
 of physical destruction — and it does not defend against reconstructing the subject from RETAINED embeddings
 (embedding inversion, Morris et al., EMNLP 2023) unless the embeddings are a registered target too. Receipt:
-`inspeximus/probes/org_wide_erasure_probe.py` (10/10, incl. a non-compliant backup correctly named + a tamper caught).
+`probes/org_wide_erasure_probe.py` (10/10, incl. a non-compliant backup correctly named + a tamper caught).
 
 ### Point-in-time / bi-temporal reads: `as_of()` + `history()` (0.6.14)
 Every keyed write already carries a `[valid_from, invalidated_at)` interval, so the timeline is
@@ -836,7 +839,7 @@ Append-only is unbounded; production memory isn't. `Inspeximus(capacity=N)` hard
 records past `N` via the verified value-protected + recency-aged rule (`protect_frac` of the cap is
 recency-immune so a rare-but-critical memory survives a flood; the rest fill by decay-weighted value so a
 stale high-value memory can't crowd out a fresh one). Superseded history isn't counted or evicted (it's cheap
-and preserves `as_of`). Default `None` = unbounded legacy, byte-identical. (`inspeximus/probes/` Lab 29992a.)
+and preserves `as_of`). Default `None` = unbounded legacy, byte-identical. (`probes/` Lab 29992a.)
 
 ### Defer the expensive reorg to idle: `sleep()` (0.6.16)
 Consolidation (cluster merge, keep-budget, capacity) is O(n); doing it on the write path taxes every
@@ -850,7 +853,7 @@ Corroboration by "≥2 distinct sources" (or, with `strict_corroboration`, ≥2 
 Cheng–Friedman 2005 prove only *asymmetric*, flow-based trust is Sybilproof). `trust_seeds` adds that anchor:
 a corroborating witness counts only if its source is in the trust closure grown from app-seeded roots via
 vouch edges (TrustRank/Advogato; Gyöngyi et al. 2004), up to `trust_hops`. Un-vouched self-minted sources
-contribute **zero** trusted witnesses (`inspeximus/probes/seed_anchored_trust_probe.py`, 4/4). Default empty set =
+contribute **zero** trusted witnesses (`probes/seed_anchored_trust_probe.py`, 4/4). Default empty set =
 byte-identical legacy. Honest limit: it relocates the residual to "earn *one* seed endorsement" and assumes
 sound seeds + attribution — the earned-outcome path (`credit()`) stays the orthogonal unforgeable channel.
 
@@ -860,7 +863,7 @@ A store's history says *what* was retired but not *why*. Every supersession path
 `objectless_guard` / `state_toggle` / `toggle_corroborated` / `toggle_persistence` / `keep_budget`);
 `history()` exposes it per row and `supersession_report()` aggregates counts per policy — the write-time
 judge log most memory systems omit (cf. TOKI, arXiv:2606.06240). Additive metadata only; no resolution
-decision changes (`inspeximus/probes/supersession_policy_stamp_probe.py`, 10/10).
+decision changes (`probes/supersession_policy_stamp_probe.py`, 10/10).
 
 ### Right-to-erasure that keeps the audit trail honest: `forget_subject()` + deletion tombstones (0.6.19+)
 `forget()` genuinely removes content — but a hard delete makes `verify_writes()` report the now-missing
@@ -877,7 +880,7 @@ caught by the same check. `erasure_report()` is the content-free proof-of-deleti
 logs, or backups); it is an integrity primitive, **not** a compliance certification, and the signature is
 load-bearing only against a party who does not hold `receipt_key`. Prior art: crypto-shredding; Cassandra /
 event-sourcing tombstones; GDPR Art. 30 erasure logs; Crosby-Wallach / Certificate-Transparency
-tamper-evident logs. Receipt: `inspeximus/probes/forget_subject_tombstone_probe.py` (8/8).
+tamper-evident logs. Receipt: `probes/forget_subject_tombstone_probe.py` (8/8).
 
 
 ### One answer to "where did this fact come from?": `provenance()` (1.47.0)

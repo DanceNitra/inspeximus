@@ -21,6 +21,7 @@ because verifying them means running those systems, not this one. They are not s
 passes.
 """
 import argparse
+import collections
 import hashlib
 import json
 import os
@@ -295,6 +296,763 @@ NOT_TESTABLE_HERE = [
 ]
 
 
+# =========================================================================== #
+#  PUBLISHED-NUMBER AUDIT                                                     #
+# =========================================================================== #
+# The checks above answer "does the code do what the prose says". This half answers a different
+# question the first half cannot see: "does every NUMBER we print have a command that reproduces it".
+#
+# Why it exists. Our own CHANGELOG carried the headline retrieval pair (recall@25 0.783 / 0.648) marked
+# "reported, not independently reproducible from this repo" -- a number a reader cannot re-run is not
+# evidence. The 2026-08-01 audit that added this file then found the failure was not one number but a
+# class: 31 receipt paths across README/docs pointed at `inspeximus/probes/...` when the probes live at
+# `probes/...` (a CHANGELOG entry had already "fixed" two of them and left the other 31); five internal
+# anchors pointed at sections that had been moved out of the README, including the one advertising "the
+# measured integrity number below"; the MCP tool count was published as 30, 15 and 56 on three surfaces
+# at once (56 is right); and a whole README section documented two files that are not in this repository.
+#
+# So the rule is now mechanical rather than remembered: every numeric token on the reader-facing surface
+# must be REGISTERED, either as a quantitative claim with a reproduction command and a status, or as a
+# non-claim (a citation year, an article number, an example literal) with a reason and an exact count.
+# An unregistered number fails this audit and fails CI. Adding one is meant to be inconvenient.
+
+SURFACE = ("README.md", "MCP_LISTINGS.md", "index.html")
+
+#: statuses a quantitative claim can carry.
+STATUSES = (
+    "REPRODUCIBLE",            # a committed command in THIS repo reproduces it, no external service
+    "REPRODUCIBLE-WITH-DEPS",  # committed command, but needs a service/dataset we cannot ship
+    "PENDING-HARNESS",         # a named harness is being built; do not quote it as verified yet
+    "EXTERNAL",                # produced outside this repo; the text says so, with a pointer
+    "WITHDRAWN",               # removed from the reader-facing surface by an audit
+)
+
+#: Numbers we KNOW are unbacked or unscoped, and that this audit does NOT enforce, because they live
+#: outside the three token-enforced files. Listed rather than omitted: "not in the table" and "not a
+#: problem" are different statements, and only one of them is true here. Each is a standing invitation
+#: to either scope it, wire it to a harness, or delete it -- and none of them may be promoted onto the
+#: reader-facing surface while it says PENDING-HARNESS.
+UNENFORCED_NOTES = [
+    ("inspeximus/core.py — `recall_iterative` docstring",
+     "0.057 -> 0.186 (3.3x)",
+     "PENDING-HARNESS",
+     "Quoted with no scope. That ratio is n=70 over the THREE HARDEST LoCoMo conversations; across the "
+     "full benchmark it is 0.145 -> 0.297 (2.05x), n=276, all ten conversations. A flattering subset "
+     "ratio published without the subset is the exact defect this audit exists to find, and neither "
+     "figure reproduces from a clean checkout (same LOCOMO dataset blocker as readme-locomo-headline). "
+     "Scope it to the subset AND give the full-benchmark pair, or drop it, once a harness lands."),
+    ("docs / docstrings — the recall tie policy",
+     "n/a (a stated policy, not a figure)",
+     "PENDING-HARNESS",
+     "'equal relevance => newest first' is measured to FAIL in hybrid and auto modes: RRF gives "
+     "equivalent records distinct fused scores, so the tie-break never fires and top-1 is the OLDEST. "
+     "Anywhere the policy is asserted unconditionally it needs scoping to the modes where it holds."),
+    ("bench/ — MemoryAgentBench Conflict Resolution",
+     "any CR score",
+     "PENDING-HARNESS",
+     "Our own gate killed the 'supersession wins CR' headline: a naive keep-all store ties us (97 vs 96, "
+     "and 85 vs 87 on the faithful re-run), and a 6k-vs-32k context discrepancy in bench/README.md is "
+     "still open. No CR number may go onto the reader-facing surface until that is resolved."),
+    ("index.html / MCP_LISTINGS.md / README.md — the MCP tool count",
+     "60",
+     "REPRODUCIBLE",
+     "No longer hypothetical. Between this audit and its rebase the server grew from 56 to 58 tools; a "
+     "sibling corrected ONE of the four places that publish the count (the homepage heading) and left "
+     "the homepage counter, both MCP_LISTINGS figures and the README at 56. This audit named all four "
+     "on its first run after the rebase. Checked against the live @mcp.tool() count, never typed."),
+    ("bench/README.md — its own committed JSON",
+     "9 of 12 cells",
+     "PENDING-HARNESS",
+     "Reported to disagree with the JSON it is generated from. Outside this audit's token-enforced "
+     "scope (README.md, MCP_LISTINGS.md, index.html), and left to the unit that owns the reconciliation "
+     "rather than guessed at from here."),
+    ("docs / homepage — LongMemEval end-to-end",
+     "0.45, vs a 0.50 oracle ceiling and a 0.05 no-memory floor, n=20",
+     "PENDING-HARNESS",
+     "Landed as a pilot. No figure from it has reached README.md, MCP_LISTINGS.md or index.html, and "
+     "none should until it carries its scope -- n=20, a pilot, and a band check that exits 5 by design."),
+]
+
+
+def _c(id, file, tokens, pin, claim, status, command="", note=""):
+    assert status in STATUSES, status
+    return {"id": id, "file": file, "tokens": tuple(tokens), "pin": pin,
+            "claim": claim, "status": status, "command": command, "note": note}
+
+
+#: Quantitative claims. `pin` is an exact substring that MUST still be in the file -- a row whose pin is
+#: gone describes nothing, so the registry cannot quietly outlive the sentence it audits.
+NUMBER_CLAIMS = [
+    # ---------------------------------------------------------------- README.md
+    _c("readme-erasure-fanout-hero", "README.md", ["0.17", "1.00"],
+       "soft delete scores 0.17 and names the five leaking stores",
+       "A soft delete leaves the value recoverable in 5 of 6 stores (0.17); a wired hard delete scores 1.00",
+       "REPRODUCIBLE", "python probes/forget_verification_bench.py"),
+    _c("readme-erasure-fanout-table", "README.md", ["1.00", "0.17"],
+       "a wired hard delete scores **1.00** with a verifying signed receipt",
+       "Same six-store fan-out measurement, restated in the four-operations table",
+       "REPRODUCIBLE", "python probes/forget_verification_bench.py",
+       "Replaced a 'measured 15/15 on a verified-forgetting severe-test' for which no artifact in this "
+       "repository produces a 15/15 of anything. The bench that DOES exist scores 0.17 / 1.00 over six "
+       "stores, so the sentence now cites the number the committed code prints."),
+    _c("readme-vault-hero", "README.md", ["10,000"],
+       "run it daily over a private ~10,000-note vault",
+       "inspeximus has run daily over a ~10,000-note vault",
+       "EXTERNAL", "",
+       "Our own private Obsidian vault. There is no command; the text now says so instead of implying "
+       "the reader could check it."),
+    _c("readme-vault-contradictions", "README.md", ["10,000"],
+       "runs in production over the 10,000-note vault",
+       "Contradiction detection runs in production over the ~10,000-note vault",
+       "EXTERNAL", "", "Same private deployment as the hero line."),
+    _c("readme-audit-summary", "README.md", ["13", "0", "5"],
+       "13 passed · 0 FAILED · 0 skipped · 5 not testable here",
+       "The example claims_audit run: 13 checks pass, 5 are not testable from this package",
+       "REPRODUCIBLE", "python claims_audit.py --local",
+       "Self-referential, so it is checked against len(CHECKS) and len(NOT_TESTABLE_HERE) rather than "
+       "trusted. The block used to name inspeximus-1.24.1 while the package was at 1.89.0; the version "
+       "line was dropped rather than pinned, because it would go stale on every release."),
+    _c("readme-memops-scenarios", "README.md", ["24", "50"],
+       "long-context scenarios (24 scenarios, ~50 sessions each)",
+       "MemOps: 24 long-context scenarios, ~50 sessions each",
+       "EXTERNAL", "", "Harness lives in the Agora repo (agora_output/lab/memops), already linked in place."),
+    _c("readme-memops-cost", "README.md", ["519", "917", "606", "24"],
+       "**519–917 s of LLM extraction** (median 606 s, n=24)",
+       "mem0's default pipeline spends 519-917 s (median 606) of LLM extraction per MemOps scenario",
+       "EXTERNAL", "", "Agora MemOps harness; needs mem0 + an LLM budget, so it cannot ship here."),
+    _c("readme-memops-acc-ours", "README.md", ["0.593"],
+       "indistinguishable** — inspeximus 0.593",
+       "MemOps answer accuracy: inspeximus 0.593", "EXTERNAL", ""),
+    _c("readme-memops-acc-others", "README.md", ["0.592", "0.544", "2"],
+       "a naive keep-all store 0.592, mem0 0.544",
+       "MemOps answer accuracy: keep-all 0.592, mem0 0.544; ~2% of mem0 extractions failed to parse",
+       "EXTERNAL", ""),
+    _c("readme-locomo-denominator", "README.md", ["1536"],
+       "n=1536), with the built-in tuned recipe",
+       "The LOCOMO question denominator behind the retrieval pair",
+       "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only"),
+    _c("readme-locomo-headline", "README.md", ["25", "0.83", "0.70"],
+       "retrieval-recall@25 is 0.83** (a supporting turn is retrieved) / **0.70**",
+       "LOCOMO retrieval-recall@25 = 0.83 (any evidence turn) / 0.70 (all), n=1536, reinforce=False",
+       "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only",
+       "This row was PENDING-HARNESS for the whole of this audit, and it is the reason that status "
+       "exists. The harness landed as benchmarks/locomo/ and the row moved WITHOUT the number having "
+       "been re-asserted in the meantime. Verified here against the committed result "
+       "benchmarks/locomo/results/full_retrieval.json rather than against the prose: recall_any 0.8262 "
+       "/ recall_all 0.6986 on the published 1536-question denominator, pinned at k=25, mode=hybrid, "
+       "prefer=speaker, reinforce=false. WITH-DEPS because LOCOMO is not ours to redistribute -- the "
+       "command needs locomo10.json downloaded (sha256 pinned in config.json), though the committed "
+       "result is readable without it."),
+    _c("readme-locomo-command", "README.md", ["0.83", "0.70"],
+       "--retrieval-only   # ~0.83 / 0.70, no model calls",
+       "The copy-paste command with its expected output inline",
+       "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only"),
+    _c("readme-locomo-old-pair", "README.md", ["0.7839", "0.6484", "0.783", "0.648", "1536"],
+       "0.7839 / 0.6484 against the published 0.783 / 0.648, on the identical 1536-question denominator",
+       "The OLD published pair reproduces exactly at its own operating point (reinforce=True)",
+       "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only",
+       "The pair this audit opened on. It was never wrong -- it was measured with recall()'s "
+       "reinforce=True default, which mutates value/last_access, so each benchmark query was answered "
+       "by a store the previous queries had modified and the score depended on question order. Pinning "
+       "reinforce=False makes the run deterministic and scores 4-5 points HIGHER. A number that moves "
+       "when you fix the instrument is exactly what an unreproducible number hides."),
+    _c("readme-locomo-caveat-dates", "README.md", ["2026", "0.78", "0.65"],
+       "**The old pair was 0.78 / 0.65, and it reproduces exactly**",
+       "The superseded pair, quoted inside the note that discharges its caveat",
+       "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only"),
+    _c("readme-locomo-n", "README.md", ["1536,"],
+       "on one LoCoMo config (n=1536, deterministic",
+       "The LoCoMo config size behind recall_any@1", "PENDING-HARNESS",
+       "python probes/retrieval_recall_locomo.py --k 25"),
+    _c("readme-competitor-judges", "README.md", ["66.9", "71.2"],
+       "mem0 reports 66.9% and Zep 71.2% under their own judges",
+       "mem0 and Zep's self-reported LLM-judged QA scores", "EXTERNAL", "",
+       "Other projects' published numbers, cited as not comparable across harnesses -- which is the "
+       "point the sentence makes."),
+    _c("readme-extractor-keyrate", "README.md", ["5.2", "1,037", "19,851"],
+       "it derived a key for 5.2% of sentences (1,037 of 19,851",
+       "regex_extractor derives a key for 5.2% of conversational sentences (1,037 of 19,851)",
+       "EXTERNAL", "", "Measured on the MemOps dataset by the Agora harness; flagged in place already."),
+    _c("readme-ramr-echo", "README.md", ["0.00", "0.57", "1.00"],
+       "(keyed-without-guard 0.00, an add-based system 0.57, guard 1.00)",
+       "RAMR ECHO-RESISTANCE: keyed-without-guard 0.00, add-based 0.57, echo_guard 1.00",
+       "EXTERNAL", "",
+       "From RAMR, a separate repository. The README presented these as if produced here; it now says "
+       "where they come from AND points at this repo's own echo cell, which measures a different "
+       "quantity and does NOT flatter us."),
+    _c("readme-integrity-echo-cell", "README.md", ["0.00", "0.05"],
+       "0.00, mem0 0.05, Graphiti 0.00",
+       "In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/integrity_bench_echo.py --systems inspeximus",
+       "The inspeximus column runs locally and free; the mem0/Graphiti columns need OPENAI_API_KEY and a "
+       "live neo4j, which is why this is WITH-DEPS rather than REPRODUCIBLE."),
+    _c("readme-recall-any1", "README.md", ["0.397"],
+       "lands recall_any@1 at 0.397",
+       "recall_any@1 = 0.397 with nomic task prefixes on one LoCoMo config",
+       "PENDING-HARNESS", "python probes/retrieval_recall_locomo.py --k 1",
+       "Same dataset blocker as the headline pair; already flagged in place as not reproducible here."),
+    _c("readme-locomo-confound", "README.md", ["0.19", "0.29"],
+       "0.19→0.29 delta was contaminated",
+       "A withdrawn 0.19->0.29 delta, cited as an example of a confound we found and corrected",
+       "EXTERNAL", "",
+       "Kept deliberately: it is a retraction, not a claim. Removing it would erase the correction."),
+    _c("readme-lexical-decay", "README.md", ["5", "0.94", "0.25"],
+       "lexical `recall@5` decays from **0.94** (small store) to **0.25**",
+       "Lexical recall@5 decays 0.94 -> 0.25 as the store grows", "EXTERNAL", "",
+       "Agora Lab b4c260, cited in place. No probe in this repository reproduces it."),
+    _c("readme-semantic-hold", "README.md", ["0.65", "2.6"],
+       "while semantic **holds at ~0.65** — ≈**2.6×** at full scale",
+       "Semantic recall@5 holds ~0.65 at full scale, ~2.6x lexical", "EXTERNAL", "",
+       "Agora Lab b4c260."),
+    _c("readme-paraphrase", "README.md", ["5", "0.86", "0.20"],
+       "semantic `recall@5` is **0.86 vs 0.20** lexical",
+       "On paraphrase queries semantic recall@5 is 0.86 vs 0.20 lexical", "EXTERNAL", "",
+       "Agora Lab 3501f1."),
+    _c("readme-hub-prune", "README.md", ["20"],
+       "lifts **lexical** recall ~20% only when a store is link-spammed",
+       "Pruning hub notes lifts lexical recall ~20% on a link-spammed store only", "EXTERNAL", ""),
+    _c("readme-consolidation-half", "README.md", ["1.8"],
+       "the budget shrinks** (≈1.8× at half",
+       "Value-ranked consolidation beats FIFO by ~1.8x at half budget", "EXTERNAL", ""),
+    _c("readme-consolidation-eighth", "README.md", ["4"],
+       "budget → ≈4× at one-eighth",
+       "...and by ~4x at one-eighth budget", "EXTERNAL", ""),
+    _c("readme-retention-cold", "README.md", ["30", "2.8"],
+       "At a 30% keep-budget the access-decay policy retained only **2.8%**",
+       "At a 30% keep-budget, access-decay retains 2.8% of high-value/low-frequency memories",
+       "EXTERNAL", "", "Agora Lab 19d802."),
+    _c("readme-retention-value", "README.md", ["20", "100", "64"],
+       "and **20%** of total value, vs **100%** and **64%** for",
+       "...20% of total value, vs 100% and 64% for the value-aware blend", "EXTERNAL", ""),
+    _c("readme-retention-gap", "README.md", ["3", "2.2", "7"],
+       "about **3× more value kept** (the gap persists, ≈2.2× retained value, even at a 7%",
+       "~3x more value kept, persisting at ~2.2x even at a 7% budget", "EXTERNAL", ""),
+    _c("readme-supersession-auroc", "README.md", ["0.61"],
+       "scores **AUROC ~0.61**",
+       "A cosine classifier separating a contradiction from a rephrase scores AUROC ~0.61",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py",
+       "Re-run 2026-08-01: AUROC 0.613. Needs a local nomic-embed-text (Ollama) and numpy."),
+    _c("readme-supersession-stale", "README.md", ["42"],
+       "serves the **stale value ~42% of the time**",
+       "A similarity-based store serves the stale value ~42% of the time",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py",
+       "Re-run 2026-08-01: 41.7%."),
+    _c("readme-supersession-zero", "README.md", ["0"],
+       "to **0%**. Re-run it: `python probes/supersession_replication.py`",
+       "The deterministic SRO key drives the stale-value rate to 0%",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py"),
+    _c("readme-supersession-rerun", "README.md", ["0.613", "41.7", "0.0"],
+       "reproduced AUROC 0.613, stale-fact-error 41.7% under pure cosine and 0.0% under the SRO key",
+       "The 2026-08-01 re-run of that probe, quoted with its date",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py"),
+    _c("readme-supersession-8of8-withdrawn", "README.md", ["0", "8"],
+       "0/24, no artifact here produces an 8/8, and that figure has been withdrawn",
+       "WITHDRAWN: 'severe-test 8/8' -- the probe reports 0/24 and nothing here produces an 8/8",
+       "WITHDRAWN", "python probes/supersession_replication.py"),
+    _c("readme-memops-parsefail", "README.md", ["2"],
+       "About 2% of mem0's extraction calls failed to parse",
+       "~2% of mem0's MemOps extraction calls failed to parse", "EXTERNAL", ""),
+    _c("readme-operating-cosine", "README.md", ["42"],
+       "store scores **42%** (fine on stable, but blind to",
+       "Operating-point trap: a cosine top-1 store scores 42%",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py",
+       "Needs a local nomic-embed-text (Ollama)."),
+    _c("readme-operating-recency", "README.md", ["0", "8", "67"],
+       "supersession — **0/8** on updated facts — and fooled by repeated lies); a **recency** store **67%**",
+       "...0/8 on updated facts; a recency store scores 67%",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py"),
+    _c("readme-operating-poison", "README.md", ["0", "8"],
+       "*freshest lie* — **0/8** on poison)",
+       "...and 0/8 on poison", "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py"),
+    _c("readme-operating-layered", "README.md", ["100"],
+       "value-ranking — is **100%**, robust across all three",
+       "The layered store scores 100% across all three operating points",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py"),
+    _c("readme-cohort-power", "README.md", ["0.36"],
+       "reached only ~0.36 power at realistic sample sizes",
+       "Per-memory outcome attribution reaches only ~0.36 power at n-of-1", "EXTERNAL", ""),
+    _c("readme-sybil-attack", "README.md", ["0.9", "10"],
+       "(~0.9 attack-success across 10 models",
+       "Content-declared corroboration falls to a sybil at ~0.9 attack-success across 10 models",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/memory_defense_layer_probe.py",
+       "The harness is committed; reproducing the number needs ten models and a judge, which no "
+       "checkout can ship."),
+    _c("readme-bedrock-directions", "README.md", ["8"],
+       "Checked from ~8 directions",
+       "The bedrock synthesis was checked from ~8 directions", "EXTERNAL", "",
+       "A count of the analytical directions taken, not a measurement. Left in because the sentence "
+       "labels itself 'a synthesis over those cases, not a proof'."),
+    _c("readme-mcp-tools", "README.md", ["60"],
+       "`inspeximus-mcp`, 60 tools",
+       "The MCP server exposes 60 tools", "REPRODUCIBLE",
+       'python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'
+       "'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))\"",
+       "Checked against the live @mcp.tool() count by _live_consistency(), not by reading it here."),
+
+    # ---------------------------------------------------------- MCP_LISTINGS.md
+    _c("mcp-tool-count", "MCP_LISTINGS.md", ["60"],
+       "`inspeximus-mcp`, 60 tools",
+       "The MCP server exposes 60 tools", "REPRODUCIBLE",
+       "python claims_audit.py --numbers",
+       "Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 "
+       "in another. Three surfaces, one server, no error anywhere. Now read from the code."),
+    _c("mcp-tool-list", "MCP_LISTINGS.md", ["60"],
+       "**Tools (60):**",
+       "The enumerated tool list matches the server", "REPRODUCIBLE",
+       "python claims_audit.py --numbers"),
+    _c("mcp-stale-30", "MCP_LISTINGS.md", ["30", "26", "2026"],
+       "It said 30 until 2026-08-01, when it was",
+       "WITHDRAWN: the previous '30 tools' figure, kept as the record of the correction",
+       "WITHDRAWN", "python claims_audit.py --numbers"),
+
+    # -------------------------------------------------------------- index.html
+    _c("site-mcp-tools-counter", "index.html", ["60", "0"],
+       'data-count="60">0</b><span>MCP tools',
+       "Homepage counter: 60 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+       "Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- "
+       "which is why the scanner hoists data-count out of the tag before stripping tags."),
+    _c("site-mcp-tools-heading", "index.html", ["60"],
+       "60 tools any MCP host can call",
+       "Homepage heading: 60 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
+    _c("site-adapters", "index.html", ["9", "0"],
+       'data-count="9">0</b><span>framework adapters',
+       "Homepage counter: 9 framework adapters", "REPRODUCIBLE",
+       "python -c \"import pathlib;print(sorted(p.stem for p in pathlib.Path('inspeximus/integrations')"
+       ".glob('*.py')))\"",
+       "Was 6 while the README said nine and the package ships nine agent-framework adapters "
+       "(autogen, crewai, google_adk, haystack, langchain, langgraph, llamaindex, openai_agents, "
+       "pydantic_ai)."),
+    _c("site-integration-conformance", "index.html", ["9", "12", "3"],
+       "9 of 12 verified against current upstream, 3 recorded broken",
+       "9 of 12 framework adapters verified against current upstream; 3 recorded broken",
+       "REPRODUCIBLE", "python tools/integration_conformance.py",
+       "Read from the committed ledger docs/integration_conformance.json by _live_consistency(), not "
+       "typed. The page previously said 'Drop-in for' all nine frameworks with no qualifier at all, "
+       "while crewai 1.15.6, openai-agents 0.18.3 and langgraph-checkpointer 1.2.9 were recorded "
+       "broken -- an unqualified capability claim contradicted by a JSON file in the same repo."),
+    _c("site-zero-deps", "index.html", ["0"],
+       "<b>0</b><span>runtime dependencies",
+       "Homepage counter: 0 runtime dependencies", "REPRODUCIBLE", "python claims_audit.py --local",
+       "This is the c_zero_deps check, which reads installed METADATA or, failing that, the declared "
+       "pyproject dependencies -- and hard-fails if it can read neither."),
+    _c("site-revert-bench", "index.html", ["0.75", "0.20", "0.00", "20", "95"],
+       "over 20 trials, with 95% Wilson intervals",
+       "Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/integrity_bench_revert.py --systems inspeximus --n 20",
+       "The inspeximus column runs locally; mem0 needs OPENAI_API_KEY and Graphiti a live neo4j. "
+       "Methodology and CIs: probes/INTEGRITY_BENCHMARK.md."),
+    _c("site-revert-counter", "index.html", ["0.75", "0.20", "20", "0"],
+       'data-count="0.75" data-decimals="2">0</b><span>revert success (vs 0.20, n=20)',
+       "Homepage counter restating the revert cell", "REPRODUCIBLE-WITH-DEPS",
+       "python probes/integrity_bench_revert.py --systems inspeximus --n 20"),
+    _c("site-bench-inspeximus", "index.html", ["0.75"], ">0.75<",
+       "Benchmark bar: inspeximus 0.75", "REPRODUCIBLE-WITH-DEPS",
+       "python probes/integrity_bench_revert.py --systems inspeximus --n 20"),
+    _c("site-bench-mem0", "index.html", ["0.20"], ">0.20<",
+       "Benchmark bar: mem0 0.20", "REPRODUCIBLE-WITH-DEPS",
+       "python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20"),
+    _c("site-bench-graphiti", "index.html", ["0.00"], ">0.00<",
+       "Benchmark bar: Graphiti 0.00", "REPRODUCIBLE-WITH-DEPS",
+       "python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20"),
+]
+
+#: Every remaining numeric token, with an exact expected count and a reason it is not a claim.
+#: The count is the guard: a NEW number under an already-registered token still fails, because the
+#: total moved. Nothing here may be a measurement -- if a row needs the word "measured", it belongs
+#: in NUMBER_CLAIMS with a command instead.
+NON_CLAIM_TOKENS = {
+    "README.md": {
+        "0": (6, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
+                 "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model"),
+        "1": (12, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
+                  "examples, recall_any@1 as a metric NAME, and counts in a pasted example output"),
+        "2": (15, "SOC 2 in a comparison cell and in the certification paragraph, the EU application dates "
+                  "2 Dec 2027 / 2 Aug 2028 / 2 Aug 2026, ordinals for demo 2 and rule 2, the corroboration "
+                  "threshold >=2, code literals (threshold=2, writes=2), the 'Cell 2' benchmark label, an "
+                  "example output line, and the '2 minutes' quickstart heading"),
+        "3": (3, "ordinals: demo 3, rule 3, and a count inside a pasted erasure-audit output"),
+        "4": (4, "ACM TOS issue number 5(4), rule 4, a back-reference to rule 4, and the '4-5 points' "
+                 "the reinforce=False fix moves the LOCOMO pair by"),
+        "5": (3, "ACM TOS volume 5(4), rule 5, and a back-reference to rule 5"),
+        "6": (1, "AI Act Art. 26(6) -- an article sub-paragraph number"),
+        "8": (1, "the withdrawn '8/8' quoted inside the sentence that withdraws it (see "
+                 "readme-supersession-8of8-withdrawn for the 0/24 the probe actually reports)"),
+        "12": (2, "AI Act Art. 12 / Article 12 -- article numbers"),
+        "15": (1, "AI Act Art. 15 -- an article number"),
+        "17": (1, "GDPR Art. 17 -- an article number"),
+        "19": (2, "AI Act Art. 19 -- an article number; and the Agora Lab id `19d802`"),
+        "24": (1, "the OJ publication date 24 Jul 2026"),
+        "26": (1, "AI Act Art. 26(6) -- an article number"),
+        "27": (1, "the in-force date 27 Jul 2026"),
+        "50": (1, "the documented default of INSPEXIMUS_MAX_K -- a configuration value, not a measurement"),
+        "60": (1, "the '60 seconds' section heading -- a reading-time figure, not a measurement"),
+        "90": (2, "the retention window in a copy-paste CLI example, written twice on one line as "
+                  "\"90 days\" and --object 90d"),
+        "03": (1, "a truncated record id (03dad5493e) inside a pasted erasure-audit output"),
+        "3501": (1, "the Agora Lab experiment id `3501f1`"),
+        "337961": (2, "a value FINGERPRINT (fp=337961f64779) in a pasted `inspeximus residue` output -- "
+                      "twice, because the example finds the value in two stores"),
+        "500": (1, "an illustrative sentence fed to regex_extractor ('The API rate limit is 500 rps')"),
+        "800": (1, "NIST SP 800-88 -- a standard's number"),
+        "1000": (2, "the example fact in the quickstart ('1000 req/min'), stated then recalled"),
+        "1998": (1, "USENIX Security 1998 -- a citation year"),
+        "1971": (1, "Lorden 1971 -- a citation year"),
+        "1977": (2, "Biba 1977 -- a citation year, twice"),
+        "1979": (1, "Doyle 1979 -- a citation year"),
+        "1982": (2, "Lamport-Shostak-Pease 1982 -- a citation year, twice"),
+        "1986": (1, "Moustakides 1986 -- a citation year"),
+        "1987": (1, "Garcia-Molina & Salem 1987 -- a citation year"),
+        "2001": (1, "Friedman-Resnick 2001 -- a citation year"),
+        "2002": (1, "Douceur 2002 -- a citation year"),
+        "2004": (1, "Prelec 2004 -- a citation year"),
+        "2005": (2, "Cheng-Friedman 2005 -- a citation year, twice"),
+        "2007,": (1, "Mobasher-Burke 2007 -- a citation year"),
+        "2009": (2, "USENIX FAST 2009 and the ACM TOS 2009 journal version -- citation years"),
+        "2009,": (1, "Mehta-Nejdl 2009 -- a citation year"),
+        "2010": (2, "IEEE S&P 2010 and Viswanath 2010 -- citation years"),
+        "2012,": (1, "SybilRank/Cao 2012 -- a citation year"),
+        "2017": (1, "Blanchard 2017 -- a citation year"),
+        "2018": (1, "Yin 2018 -- a citation year"),
+        "2020": (1, "USENIX Security 2020 -- a citation year"),
+        "2024": (1, "Zou 2024 (PoisonedRAG) -- a citation year"),
+        "2026": (8, "dates: the three AI Act deferral dates, the source-scan date 24 Jul 2026, the "
+                    "extractor measurement date 2026-07-20, the probe re-run date 2026-08-01, and the "
+                    "2026-08-01 / 2026-07-25 pair on the discharged LOCOMO caveat"),
+        "2027": (2, "the AI Act Annex III application date, 2 Dec 2027"),
+        "2028": (1, "the AI Act Annex I application date, 2 Aug 2028"),
+        "3.0": (2, "a fictional library version in the code-guard example ('removed in 3.0')"),
+        "1.0": (1, "a coverage ratio inside a pasted erasure-audit output"),
+        "5000": (1, "the corrected example fact in the quickstart ('5000 req/min')"),
+        "6962": (1, "RFC 6962 -- a standard's number"),
+        "9700": (1, "a port in a copy-paste command (--port 9700)"),
+        "14227": (1, "Claude Code issue #14227 -- an issue number"),
+        "27001": (1, "ISO 27001 -- a standard's number"),
+        "94107": (1, "an illustrative ZIP code fed to regex_extractor"),
+        "2606.26511": (1, "arXiv 2606.26511 (MemStrata / Yadav) -- an identifier"),
+        "2607.12893": (1, "arXiv 2607.12893 (MemOps) -- an identifier"),
+    },
+    "MCP_LISTINGS.md": {
+        "1": (2, "the ordinal for submission route 1, and 'route 1 below' referring to it"),
+        "2": (1, "the ordinal for submission route 2"),
+        "3": (1, "the ordinal for submission route 3"),
+        "4": (1, "the ordinal for submission route 4"),
+        "5": (1, "the ordinal for submission route 5"),
+        "12": (1, "the historical '12 tools' figure, quoted inside the record of an earlier correction"),
+        "26": (1, "how far short the stale count was -- arithmetic on two registered figures (56 - 30)"),
+        "30,": (1, "the stale '30' quoted inside the record of the earlier correction"),
+        "2026": (2, "the correction date 2026-07-21 and 'June 2026'"),
+        "404": (1, "\"404s on PyPI\" -- an HTTP status used as a verb"),
+        "4413": (1, "PR #4413 -- a pull-request number"),
+    },
+    "index.html": {
+        "0": (1, "the schema.org offer price, '0' USD -- a JSON-LD literal"),
+        "01": (1, "a section beat label"),
+        "02": (1, "a section beat label"),
+        "03": (1, "a section beat label"),
+        "17": (1, "GDPR Art. 17 -- an article number"),
+        "200": (2, "'200 OK' -- an HTTP status code"),
+        "800": (1, "NIST SP 800-88 -- a standard's number"),
+        "6962": (1, "RFC 6962 -- a standard's number"),
+    },
+}
+
+# A digit run a reader sees. The first version of this pattern missed two shapes, and both were
+# FALSE-SAFE misses -- the scanner reported a page clean while it carried an unregistered figure:
+#   * a UNIT-GLUED number (`--object 90d`, `42ms`): the trailing lookahead demanded a non-word char,
+#     so the 90 already on README.md:246 was invisible, and the registry's declared count of 1 for
+#     token "90" only looked right because the checker shared the scanner's blind spot. A guard and
+#     its target computed by the same broken rule agree with each other and with nothing else.
+#   * a NEGATIVE number (`z=-4.79`, `(-42%)`): the lookbehind ate the sign and the token with it.
+# The lookbehind still refuses a leading `-` for the UNSIGNED pattern, because allowing it would turn
+# every date (`2026-08-01`) and compound (`AES-256-GCM`, `SP 800-88`) into a shower of new tokens. The
+# sign is picked up by a second, narrower pattern that only fires where a minus can actually BE a sign.
+_NUM = re.compile(r"(?<![\w/.\-:])(\d[\d,]*(?:\.\d+)?)(?!\d)")
+_NEG = re.compile(r"(?<=[\s(\[=~,;:>])(-\d[\d,]*(?:\.\d+)?)(?!\d)")
+
+#: Top-level directories a "run this to reproduce" path can point into. Kept in ONE place: the first
+#: version had this prefix list copy-pasted into three checks with three different sets of directories,
+#: none of which knew about `docs/`, `bench/` or `site/` -- three copies of one rule, all too narrow,
+#: agreeing with each other. A consistency control cannot see a defect its copies share.
+ARTIFACT_DIRS = ("probes", "tests", "tools", "examples", "inspeximus", "perf", "bench", "benchmarks",
+                 "docs", "site", "packages", "audits", "assets", "assets_readme")
+ARTIFACT_PATH = re.compile(
+    r"(?<![\w/.\-])((?:" + "|".join(ARTIFACT_DIRS) + r")/[\w/.\-]+\.\w+)")
+
+# Spans that are not read as numbers by a reader: link targets, URLs, HTML tags, semver strings.
+# Kept deliberately SHORT. Every span here is a hole, so each one has to be self-evidently not a claim.
+_MASKS = (
+    re.compile(r"https?://\S+"),                 # a URL
+    re.compile(r"\]\([^)\s]*\)"),                # a markdown link target
+    re.compile(r"^\s*\[[^\]]+\]:\s*\S+", re.M),  # a markdown reference definition
+    re.compile(r"\bv?\d+\.\d+\.\d+[\w.\-]*"),    # a semver / release string
+    re.compile(r"<!--.*?-->", re.S),             # a comment
+)
+
+
+def _blank(m):
+    """Blank a span while preserving length AND line breaks, so offsets and line numbers survive."""
+    return "".join("\n" if c == "\n" else " " for c in m.group(0))
+
+
+def _readable(text: str, is_html: bool) -> str:
+    """The part of a file a reader actually sees, with everything else blanked out in place.
+
+    For HTML this is the crux: `data-count="58"` RENDERS as the number 56 (a script animates it into the
+    element), so it is a published figure even though it lives in an attribute. It is hoisted out of the
+    tag before tags are stripped -- the first version of this function stripped the tag first, which
+    silently exempted the exact figure that was wrong on the homepage. A masker that cannot see the
+    claim reports the page clean.
+    """
+    if is_html:
+        text = re.sub(r"<style\b.*?</style>", _blank, text, flags=re.S | re.I)
+        text = re.sub(r"<script\b(?![^>]*ld\+json).*?</script>", _blank, text, flags=re.S | re.I)
+        text = re.sub(
+            r'<([a-zA-Z][\w-]*)([^>]*?)\sdata-count="([\d.]+)"([^>]*)>',
+            lambda m: " " + m.group(3) + " <" + m.group(1) + m.group(2) + m.group(4) + ">",
+            text,
+        )
+        text = re.sub(r"<[^>]+>", _blank, text)
+    else:
+        # Bounded to a single line: an unmatched `<` in prose would otherwise let the tag stripper run
+        # away across paragraphs and blank out numbers it was never meant to touch.
+        text = re.sub(r"<[^>\s\n][^>\n]*>", _blank, text)
+    for mk in _MASKS:
+        text = mk.sub(_blank, text)
+    return text
+
+
+def scan_numbers(path):
+    """Every numeric token a reader sees in `path`, as (line_no, token, source_line)."""
+    p = pathlib.Path(path)
+    raw = p.read_text(encoding="utf-8", errors="replace")
+    readable = _readable(raw, p.suffix.lower() in (".html", ".htm"))
+    raw_lines = raw.splitlines()
+    out = []
+    for i, line in enumerate(readable.splitlines()):
+        src = raw_lines[i] if i < len(raw_lines) else line
+        hits = [(m.start(), m.group(1)) for m in _NUM.finditer(line)]
+        hits += [(m.start(), m.group(1)) for m in _NEG.finditer(line)]
+        for _pos, token in sorted(hits):
+            out.append((i + 1, token, src.strip()))
+    return out
+
+
+def _repo_root():
+    return pathlib.Path(__file__).resolve().parent
+
+
+def audit_numbers(root=None):
+    """Classify every published number. Returns (problems, stats).
+
+    Six independent ways to fail, because a single one would only catch a single shape of drift:
+      UNREGISTERED    a number is printed that no registry row accounts for
+      COUNT-DRIFT     a non-claim token's occurrence count moved
+      STALE-PIN       a claim's pinned sentence is gone -- the row now describes nothing
+      STALE-NONCLAIM  a declared non-claim token no longer appears at all
+      BROKEN-COMMAND  a claim's reproduction command names a path that does not exist
+      LIVE-MISMATCH   a self-referential figure disagrees with the code it describes
+    """
+    root = pathlib.Path(root or _repo_root())
+    problems, stats = [], {"published": 0, "claims": 0, "by_status": {}}
+
+    claims_by_file = {}
+    for c in NUMBER_CLAIMS:
+        claims_by_file.setdefault(c["file"], []).append(c)
+
+    for fname in SURFACE:
+        path = root / fname
+        if not path.exists():
+            problems.append(("MISSING-SURFACE", fname, f"{fname} is registered as a surface but does not exist"))
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        rows = claims_by_file.get(fname, [])
+        for c in rows:
+            if c["pin"] not in text:
+                problems.append(("STALE-PIN", fname, f"claim {c['id']!r} pins {c['pin']!r}, which is no longer in {fname}"))
+        declared = dict(NON_CLAIM_TOKENS.get(fname, {}))
+        seen = collections.Counter()
+        for line_no, token, src in scan_numbers(path):
+            stats["published"] += 1
+            owner = next((c for c in rows if token in c["tokens"] and c["pin"] in src), None)
+            if owner is not None:
+                stats["claims"] += 1
+                continue
+            seen[token] += 1
+        for token, count in seen.items():
+            if token not in declared:
+                problems.append(("UNREGISTERED", fname,
+                                 f"{token!r} x{count} is published in {fname} but has no entry in "
+                                 f"NUMBER_CLAIMS or NON_CLAIM_TOKENS"))
+            elif declared[token][0] != count:
+                problems.append(("COUNT-DRIFT", fname,
+                                 f"{token!r} appears {count}x, registry declares {declared[token][0]}x"))
+        for token, (count, _why) in declared.items():
+            if token not in seen:
+                problems.append(("STALE-NONCLAIM", fname,
+                                 f"{token!r} is declared {count}x as a non-claim but no longer appears"))
+
+    for c in NUMBER_CLAIMS:
+        stats["by_status"][c["status"]] = stats["by_status"].get(c["status"], 0) + 1
+        for tok in ARTIFACT_PATH.findall(c["command"]):
+            if not (root / tok).exists():
+                problems.append(("BROKEN-COMMAND", c["file"],
+                                 f"claim {c['id']!r} names {tok!r}, which does not exist"))
+
+    problems.extend(_live_consistency(root))
+    return problems, stats
+
+
+def _live_consistency(root):
+    """Figures that describe THIS repo must equal what this repo actually contains.
+
+    A published count is the easiest number to leave behind, because nothing breaks when it goes wrong:
+    the MCP tool count was simultaneously 30 (MCP_LISTINGS.md), 15 and 56 (the homepage) while the server
+    registered 56. Three surfaces, one truth, no error anywhere. So the count is read from the code.
+    """
+    out = []
+    server = root / "inspeximus" / "mcp_server.py"
+    if not server.exists():
+        return [("LIVE-MISMATCH", "inspeximus/mcp_server.py", "the MCP server is gone; the tool count cannot be checked")]
+    live = len(re.findall(r"@mcp\.tool\(\)", server.read_text(encoding="utf-8", errors="replace")))
+    for fname, pat in (("MCP_LISTINGS.md", r"inspeximus-mcp`, (\d+) tools"),
+                       ("MCP_LISTINGS.md", r"\*\*Tools \((\d+)\):\*\*"),
+                       ("index.html", r'data-count="(\d+)">0</b><span>MCP tools'),
+                       ("index.html", r">(\d+) tools any MCP host can call<"),
+                       ("README.md", r"`inspeximus-mcp`, (\d+) tools")):
+        p = root / fname
+        if not p.exists():
+            continue
+        m = re.search(pat, p.read_text(encoding="utf-8", errors="replace"))
+        if m is None:
+            out.append(("LIVE-MISMATCH", fname, f"expected a tool count matching {pat!r}; found none"))
+        elif int(m.group(1)) != live:
+            out.append(("LIVE-MISMATCH", fname, f"publishes {m.group(1)} MCP tools; the server registers {live}"))
+
+    # The integration counts come from the ledger the conformance runner writes, for the same reason the
+    # tool count comes from the server: the homepage said "Drop-in for" nine frameworks with no qualifier
+    # while a JSON file in this repo recorded three of them broken. Nothing reconciled the two.
+    ledger = root / "docs" / "integration_conformance.json"
+    site = root / "index.html"
+    if ledger.exists() and site.exists():
+        try:
+            rows = json.loads(ledger.read_text(encoding="utf-8"))["integrations"]
+        except (ValueError, KeyError) as e:
+            out.append(("LIVE-MISMATCH", "docs/integration_conformance.json",
+                        f"the conformance ledger could not be read ({e}), so the published adapter "
+                        f"counts were NOT checked -- which is not the same as checked"))
+        else:
+            broken = sum(1 for v in rows.values() if v.get("broken_against"))
+            m = re.search(r"(\d+) of (\d+) verified against current upstream, (\d+) recorded broken",
+                          site.read_text(encoding="utf-8", errors="replace"))
+            if m is None:
+                out.append(("LIVE-MISMATCH", "index.html",
+                            "the adapter conformance counts are gone from the page; they cannot be checked"))
+            elif (int(m.group(1)), int(m.group(2)), int(m.group(3))) != (len(rows) - broken, len(rows), broken):
+                out.append(("LIVE-MISMATCH", "index.html",
+                            f"publishes {m.group(1)}/{m.group(2)} verified and {m.group(3)} broken; the "
+                            f"ledger records {len(rows) - broken}/{len(rows)} and {broken}"))
+
+    readme = root / "README.md"
+    if readme.exists():
+        m = re.search(r"(\d+) passed · (\d+) FAILED · (\d+) skipped · (\d+) not testable here",
+                      readme.read_text(encoding="utf-8", errors="replace"))
+        if m is None:
+            out.append(("LIVE-MISMATCH", "README.md", "the example audit summary is gone; it cannot be checked"))
+        else:
+            if int(m.group(1)) != len(CHECKS):
+                out.append(("LIVE-MISMATCH", "README.md",
+                            f"the example run shows {m.group(1)} passing checks; this file defines {len(CHECKS)}"))
+            if int(m.group(4)) != len(NOT_TESTABLE_HERE):
+                out.append(("LIVE-MISMATCH", "README.md",
+                            f"the example run shows {m.group(4)} not-testable claims; this file lists "
+                            f"{len(NOT_TESTABLE_HERE)}"))
+            # The middle two counts were captured and never read -- so the page could advertise an
+            # example run with failures in it and this check would have shrugged. Four numbers on that
+            # line, two of them checked, is not "the line is checked".
+            if (int(m.group(2)), int(m.group(3))) != (0, 0):
+                out.append(("LIVE-MISMATCH", "README.md",
+                            f"the example run advertises {m.group(2)} FAILED / {m.group(3)} skipped; the "
+                            f"example is supposed to show a clean run"))
+    return out
+
+
+def render_claims_doc(root=None):
+    """Render docs/CLAIMS.md from the registry, so the document cannot drift from the checker."""
+    root = pathlib.Path(root or _repo_root())
+    _, stats = audit_numbers(root)
+    n = len(NUMBER_CLAIMS)
+    repro = sum(1 for c in NUMBER_CLAIMS if c["status"].startswith("REPRODUCIBLE"))
+    L = []
+    A = L.append
+    A("# Published numbers — every figure, its command, and its status")
+    A("")
+    A("<!-- GENERATED by `python claims_audit.py --write-claims`. Do not edit by hand:")
+    A("     the registry in claims_audit.py is the source, and a test fails if this file drifts from it. -->")
+    A("")
+    A("A number a reader cannot reproduce is not evidence. This table is the whole reader-facing surface's")
+    A("quantitative content, each figure against the exact command that produces it.")
+    A("")
+    A("**Scope, stated so a green result cannot be over-read.** The audit *enforces* registration on")
+    A("`README.md`, `MCP_LISTINGS.md` and `index.html`: every numeric token a reader sees on those three")
+    A("must be a row below or a declared non-claim, and `python claims_audit.py --numbers` fails otherwise.")
+    A("`CHANGELOG.md` and `docs/` are **not** token-enforced — they are covered only by the weaker check")
+    A("that every artifact path they name exists. Their numbers are not audited here, and reading this")
+    A("page as \"every number in the project is backed\" would be exactly the over-read it exists to prevent.")
+    A("")
+    A("## The ratio")
+    A("")
+    A(f"- **{stats['published']}** numeric tokens are published across the three enforced files.")
+    A(f"- **{stats['claims']}** of those are quantitative claims, in **{n}** registry rows below.")
+    A(f"- **{repro}** rows ({repro}/{n}) are reproducible by a command committed to this repository")
+    A("  (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or")
+    A("  dataset we cannot redistribute, named in the command column).")
+    A(f"- The remaining {n - repro} are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.")
+    A(f"- The other {stats['published'] - stats['claims']} tokens are declared non-claims — citation years,")
+    A("  article numbers, ordinals, ports, example literals — each with a reason and an exact expected")
+    A("  count, so adding one silently is not possible either.")
+    A("")
+    A("Counts by status:")
+    A("")
+    for s in STATUSES:
+        A(f"- `{s}` — {stats['by_status'].get(s, 0)}")
+    A("")
+    A("## The table")
+    A("")
+    A("| # | file | figure(s) | claim | status | command that reproduces it |")
+    A("|---|---|---|---|---|---|")
+    for i, c in enumerate(sorted(NUMBER_CLAIMS, key=lambda x: (x["file"], x["id"])), 1):
+        toks = " ".join(f"`{t}`" for t in c["tokens"]) or "—"
+        cmd = f"`{c['command']}`" if c["command"] else "—"
+        A(f"| {i} | `{c['file']}` | {toks} | {c['claim']} | **{c['status']}** | {cmd} |")
+    A("")
+    A("## Notes")
+    A("")
+    for c in sorted(NUMBER_CLAIMS, key=lambda x: (x["file"], x["id"])):
+        if c.get("note"):
+            A(f"- **{c['id']}** — {c['note']}")
+    A("")
+    A("## Known unenforced numbers")
+    A("")
+    A("These are outside the three token-enforced files, so the guard above does **not** cover them.")
+    A("They are listed because \"absent from the table\" and \"not a problem\" are different statements,")
+    A("and here only the first one is true. None may be promoted onto the reader-facing surface while it")
+    A("still says `PENDING-HARNESS`.")
+    A("")
+    A("| where | figure | status | why it is here |")
+    A("|---|---|---|---|")
+    for where, figure, status, why in UNENFORCED_NOTES:
+        A(f"| {where} | `{figure}` | **{status}** | {why} |")
+    A("")
+    A("## What was withdrawn, and why that is the point")
+    A("")
+    A("Removing a number we cannot back is a win. Every `WITHDRAWN` row above is a figure this audit")
+    A("deleted from the reader-facing surface rather than dress up: either no artifact in this repository")
+    A("produces it, or the artifact it named does not exist. Showing the gap is what makes the rest")
+    A("worth reading.")
+    A("")
+    return "\n".join(L)
+
+
 def counts_as_failure(ok, auditing_history: bool) -> bool:
     """Does this outcome fail the gate?
 
@@ -333,12 +1091,55 @@ def fetch_wheel(version, workdir):
     return wheel, pkg
 
 
+def report_numbers(root=None):
+    """Print the published-number audit. Returns the number of problems (0 = clean)."""
+    problems, stats = audit_numbers(root)
+    n = len(NUMBER_CLAIMS)
+    repro = sum(1 for c in NUMBER_CLAIMS if c["status"].startswith("REPRODUCIBLE"))
+    print("=" * 92)
+    print("PUBLISHED-NUMBER AUDIT — " + ", ".join(SURFACE))
+    print("=" * 92)
+    print(f"  {stats['published']} numeric tokens published; {stats['claims']} of them are quantitative "
+          f"claims in {n} registry rows")
+    print(f"  {repro}/{n} rows reproducible by a committed command "
+          f"(REPRODUCIBLE {stats['by_status'].get('REPRODUCIBLE', 0)} + "
+          f"REPRODUCIBLE-WITH-DEPS {stats['by_status'].get('REPRODUCIBLE-WITH-DEPS', 0)})")
+    for s in STATUSES:
+        print(f"    {s:24s} {stats['by_status'].get(s, 0)}")
+    print(f"  {stats['published'] - stats['claims']} tokens are declared non-claims (citation years, "
+          f"article numbers, ordinals, ports, example literals)")
+    if problems:
+        print("\n  PROBLEMS:")
+        for kind, where, msg in problems:
+            print(f"    [{kind}] {where}: {msg}")
+    else:
+        print("\n  every published number is registered, every pin resolves, every command names a real file")
+    print("=" * 92)
+    return len(problems)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--version", default=None, help="audit a specific released version")
     ap.add_argument("--local", action="store_true", help="audit the working tree instead of PyPI")
     ap.add_argument("--workers", type=int, default=min(12, (os.cpu_count() or 4) - 2))
+    ap.add_argument("--numbers", action="store_true",
+                    help="audit only the PUBLISHED NUMBERS (offline; no wheel download)")
+    ap.add_argument("--write-claims", action="store_true",
+                    help="regenerate docs/CLAIMS.md from the registry")
+    ap.add_argument("--root", default=None,
+                    help="audit the surface under this directory instead of the repo this file sits in "
+                         "(so a test can point the REAL entrypoint at a mutated copy)")
     a = ap.parse_args()
+
+    if a.write_claims:
+        out = pathlib.Path(a.root or _repo_root()) / "docs" / "CLAIMS.md"
+        out.write_text(render_claims_doc(a.root), encoding="utf-8", newline="\n")
+        print(f"wrote {out}")
+        return 1 if report_numbers(a.root) else 0
+
+    if a.numbers:
+        return 1 if report_numbers(a.root) else 0
 
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="inspeximus_claims_"))
     if a.local:
@@ -387,7 +1188,12 @@ def main():
     print(f"{npass} passed · {nfail} FAILED · {nskip} skipped · {len(NOT_TESTABLE_HERE)} not testable here")
     print("=" * 92)
     shutil.rmtree(tmp, ignore_errors=True)
-    return 1 if nfail else 0
+
+    # The number audit runs on every invocation and counts toward the exit code. Making it opt-in would
+    # have meant the default run kept passing while the page filled up with unbacked figures again --
+    # which is precisely how the 31 broken receipt paths and three different MCP tool counts survived.
+    nnum = report_numbers()
+    return 1 if (nfail or nnum) else 0
 
 
 if __name__ == "__main__":
