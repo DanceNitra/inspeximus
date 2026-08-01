@@ -1,0 +1,81 @@
+{
+ "benchmark": "MemoryAgentBench Conflict Resolution (Hu et al., arXiv:2507.05257)",
+ "dataset": "ai-hyz/MemoryAgentBench/data/Conflict_Resolution-00000-of-00001.parquet",
+ "dataset_cache": "C:\\Users\\Danculus\\.cache\\huggingface\\hub\\datasets--ai-hyz--MemoryAgentBench\\snapshots\\7ea066982b140a19337e17e60d45d4076e042faf\\data\\Conflict_Resolution-00000-of-00001.parquet",
+ "metric_stage2": "substring_exact_match (their metric)",
+ "metric_stage1": "current_in_topk / stale_in_topk / slots_to_stale (OUR derived single-hop probe on THEIR facts, not their metric)",
+ "rows": [
+  0,
+  1
+ ],
+ "k": 15,
+ "hops": 2,
+ "recall_reinforce": false,
+ "inspeximus_version": "1.89.0",
+ "generated": "2026-08-01T22:35:44",
+ "stage1": [
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "stale_in_topk": 0.351,
+   "slots_to_stale": 0.065
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.14
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "stale_in_topk": 0.412,
+   "slots_to_stale": 0.061
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "stale_in_topk": 0.996,
+   "slots_to_stale": 0.133
+  }
+ ],
+ "F1a": {
+  "prediction": "F1a",
+  "metric": "current_in_topk (our derived probe on their facts)",
+  "on": 1.0,
+  "off": 1.0,
+  "delta": 0.0,
+  "per_row": [
+   {
+    "row": 0,
+    "on": 1.0,
+    "off": 1.0,
+    "delta": 0.0
+   },
+   {
+    "row": 1,
+    "on": 1.0,
+    "off": 1.0,
+    "delta": 0.0
+   }
+  ],
+  "verdict": "RED",
+  "reading": "supersession does NOT improve what reaches the window — the CR result must not be published as a supersession result"
+ }
+}

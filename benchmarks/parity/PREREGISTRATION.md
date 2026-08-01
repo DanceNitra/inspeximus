@@ -234,3 +234,50 @@ win: supersession-as-accuracy has four independent nulls against it in this repo
 MemOps P2/P3, the MAB conflict-resolution tie, and the correction-layer QA ceiling), and none of them is
 retracted by this. Conflict Resolution is a narrower task than those, which is exactly why a win here can
 be real while the general claim stays dead.
+
+
+---
+
+# Appendix B — Stage 1 ceilinged; ONE re-specification, declared before re-running (2026-08-01)
+
+**The first Stage 1 run is on record and is not deleted.** At `k=15`, `current_in_topk` measured **1.000
+for both arms** on rows 0 and 1. Read literally that is `F1a` **RED**. It is not admissible as evidence
+either way, because a metric that reads 1.000 on both arms has no resolution: the probe hands the
+retriever the exact subject+relation string, every restatement of that key matches it, and at k=15 the
+window is large enough to hold all of them. I measured a ceiling, not a mechanism.
+
+Recorded numbers from that run, which stand:
+
+| row | facts | arm | current_in_topk | stale_in_topk | slots_to_stale |
+|---|---|---|---|---|---|
+| 0 | 455 | on | 1.000 | 0.351 | 0.065 |
+| 0 | 455 | off | 1.000 | 1.000 | 0.140 |
+| 1 | 2310 | on | 1.000 | 0.412 | 0.061 |
+| 1 | 2310 | off | 1.000 | 0.996 | 0.133 |
+
+## Two defects, and the ONE change allowed
+
+1. **`stale_in_topk` is contaminated.** The ON arm reads 0.35-0.41 where the mechanism says it should be
+   near zero. Cause: the check matches a stale value as a *substring of any retrieved line*, and CR values
+   are shared strings (city names, positions) that legitimately appear as the CURRENT value of a different
+   entity. The ON arm is being charged for other entities' correct facts. **Fix: match on the parsed
+   `(entity|relation)` key, not on the substring.** This is a bug fix in the instrument, and it moves the
+   number in OUR favour, so it is declared here before it is applied.
+2. **`current_in_topk` needs resolution.** Fix: sweep `k` over **{1, 3, 5, 15}** and add **`current_rank`**
+   — the rank of the first retrieved same-key statement carrying the current value, `k+1` when absent.
+   A rank never ceilings.
+
+**This is the only re-specification permitted.** Declaring it in advance is what stops this from becoming
+tuning the instrument until it agrees with me (the same rule the MemOps judge calibration ran under, where
+exactly one prompt change was allowed).
+
+## Re-stated decision rule
+
+> **F1a (re-specified).** Over the swept `k`, supersession-ON must place the current value **earlier**
+> than supersession-OFF: `mean current_rank(on) < mean current_rank(off)`.
+> **RED** if `on >= off`. The `k=15` ceiling is reported alongside whatever the sweep shows, and if the
+> sweep also shows no separation, F1a is RED and this unit says so in the PR title.
+
+No further changes to Stage 1 after this. If the re-specified metric still fails to discriminate, the
+honest report is "the retrieval-stage control is inconclusive on this data", and F1 (Stage 2, their
+metric) is the only evidence.
