@@ -173,10 +173,10 @@ class Bm25Arm(Arm):
             return "rank_bm25 ?"
 
     def open(self, ns):
-        try:
-            import rank_bm25  # noqa: F401
-        except ImportError as e:
-            raise Unavailable(f"rank_bm25 not installed: {e}") from e
+        import importlib.util
+        if importlib.util.find_spec("rank_bm25") is None:
+            raise Unavailable("rank_bm25 not installed (benchmark-only dependency; the inspeximus "
+                              "library itself stays zero-dependency)")
         return {"docs": [], "dir": self._mktmp("parity_bm25_")}
 
     @staticmethod

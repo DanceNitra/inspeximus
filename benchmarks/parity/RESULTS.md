@@ -77,5 +77,5 @@ current_rank, lower is better (OUR derived probe on THEIR facts). supersession d
 
 ### Stage 2 — their metric, 2x2 factorial
 
-**NOT-MEASURED** — answerer unavailable: qwen2.5:7b @ http://127.0.0.1:11434/api: '591'
+**NOT-MEASURED** — not requested in this run (--stage 1). Stage 2 needs a pinned answerer: at the time of writing both cloud endpoints were exhausted (OpenAI HTTP 429 insufficient_quota / credit_balance_exhausted; Ollama Cloud HTTP 429 weekly usage limit) and the local GPU failed pre-flight (4358 MiB free of 24576, 3x llama-server.exe resident). Re-run with --stage 1,2 on a quiesced GPU.
 

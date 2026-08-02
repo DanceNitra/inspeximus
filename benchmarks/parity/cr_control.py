@@ -93,6 +93,29 @@ def load_rows(rows):
     return [(r, df.iloc[r]) for r in rows], path
 
 
+def row_split(row) -> str:
+    """Which CR split a row is — `mh` (multi-hop) or `sh` (single-hop) — read from the row's own
+    `qa_pair_ids`, not inferred from its index.
+
+    This is the single most confusing thing about this benchmark and it has already caused a
+    discrepancy that looked like a contradiction. Rows 0-3 are multi-hop at 6k/32k/64k/262k; rows 4-7
+    are single-hop at the SAME four lengths. Rows 0 and 4 carry byte-identical 26,157-character
+    contexts and differ only in the questions asked. So a 6k single-hop score and a 6k multi-hop score
+    are not two measurements of the same thing at different context lengths — they are two different
+    tasks over one haystack, and MemoryAgentBench's own published table puts every multi-hop system
+    under 7% while single-hop runs far higher.
+    """
+    try:
+        ids = row["metadata"].get("qa_pair_ids")
+        first = str(list(ids)[0])
+    except Exception:                                                # noqa: BLE001
+        return "?"
+    for tag in ("_mh_", "_sh_"):
+        if tag in first:
+            return tag.strip("_")
+    return "?"
+
+
 def build_stores(lines):
     """The two arms of the supersession factor, built from the SAME lines in the SAME order.
 
@@ -350,6 +373,12 @@ def main() -> int:
            "rows": rows_idx, "k": a.k, "hops": HOPS, "recall_reinforce": False,
            "inspeximus_version": _version(), "generated": time.strftime("%Y-%m-%dT%H:%M:%S")}
 
+    out["splits"] = {r: row_split(row) for r, row in rows}
+    out["split_note"] = (
+        "Rows 0-3 are multi-hop, rows 4-7 single-hop, at 6k/32k/64k/262k each. Rows 0 and 4 hold "
+        "byte-identical 26,157-char contexts and differ only in the questions, so a single-hop and "
+        "a multi-hop score at the same length are two different TASKS, not a context-length effect.")
+
     if "1" in stages:
         print("STAGE 1 — mechanism control, zero LLM calls")
         out["stage1"] = stage1(rows)
@@ -383,6 +412,16 @@ def main() -> int:
                 "Accuracy is contention-invariant; latency is not. No latency claim is made from "
                 "stage 2 and none may be quoted from it.")
             print(f"  F1: {out['F1']['verdict']}  {out['F1']['checks']}\n")
+
+    if "2" not in stages:
+        out["stage2"] = []
+        out["stage2_not_measured"] = (
+            "not requested in this run (--stage %s). Stage 2 needs a pinned answerer: at the time "
+            "of writing both cloud endpoints were exhausted (OpenAI HTTP 429 insufficient_quota / "
+            "credit_balance_exhausted; Ollama Cloud HTTP 429 weekly usage limit) and the local GPU "
+            "failed pre-flight (4358 MiB free of 24576, 3x llama-server.exe resident). Re-run with "
+            "--stage 1,2 on a quiesced GPU." % a.stage)
+        out["F1"] = verdict_f1([])
 
     p = pathlib.Path(a.out)
     p.parent.mkdir(parents=True, exist_ok=True)

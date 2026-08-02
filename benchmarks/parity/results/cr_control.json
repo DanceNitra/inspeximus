@@ -12,7 +12,12 @@
  "hops": 2,
  "recall_reinforce": false,
  "inspeximus_version": "1.89.0",
- "generated": "2026-08-01T23:06:23",
+ "generated": "2026-08-02T13:34:40",
+ "splits": {
+  "0": "mh",
+  "1": "mh"
+ },
+ "split_note": "Rows 0-3 are multi-hop, rows 4-7 single-hop, at 6k/32k/64k/262k each. Rows 0 and 4 hold byte-identical 26,157-char contexts and differ only in the questions, so a single-hop and a multi-hop score at the same length are two different TASKS, not a context-length effect.",
  "stage1": [
   {
    "row": 0,
@@ -250,7 +255,7 @@
   "reading": "supersession does NOT improve what reaches the window — the CR result must not be published as a supersession result"
  },
  "stage2": [],
- "stage2_not_measured": "answerer unavailable: qwen2.5:7b @ http://127.0.0.1:11434/api: '591'",
+ "stage2_not_measured": "not requested in this run (--stage 1). Stage 2 needs a pinned answerer: at the time of writing both cloud endpoints were exhausted (OpenAI HTTP 429 insufficient_quota / credit_balance_exhausted; Ollama Cloud HTTP 429 weekly usage limit) and the local GPU failed pre-flight (4358 MiB free of 24576, 3x llama-server.exe resident). Re-run with --stage 1,2 on a quiesced GPU.",
  "F1": {
   "prediction": "F1",
   "verdict": "NOT-MEASURED",
