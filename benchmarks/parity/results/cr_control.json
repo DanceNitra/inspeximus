@@ -1,0 +1,264 @@
+{
+ "benchmark": "MemoryAgentBench Conflict Resolution (Hu et al., arXiv:2507.05257)",
+ "dataset": "ai-hyz/MemoryAgentBench/data/Conflict_Resolution-00000-of-00001.parquet",
+ "dataset_cache": "C:\\Users\\Danculus\\.cache\\huggingface\\hub\\datasets--ai-hyz--MemoryAgentBench\\snapshots\\7ea066982b140a19337e17e60d45d4076e042faf\\data\\Conflict_Resolution-00000-of-00001.parquet",
+ "metric_stage2": "substring_exact_match (their metric)",
+ "metric_stage1": "current_in_topk / stale_in_topk / slots_to_stale (OUR derived single-hop probe on THEIR facts, not their metric)",
+ "rows": [
+  0,
+  1
+ ],
+ "k": 15,
+ "hops": 2,
+ "recall_reinforce": false,
+ "inspeximus_version": "1.89.0",
+ "generated": "2026-08-02T13:34:40",
+ "splits": {
+  "0": "mh",
+  "1": "mh"
+ },
+ "split_note": "Rows 0-3 are multi-hop, rows 4-7 single-hop, at 6k/32k/64k/262k each. Rows 0 and 4 hold byte-identical 26,157-char contexts and differ only in the questions, so a single-hop and a multi-hop score at the same length are two different TASKS, not a context-length effect.",
+ "stage1": [
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 1,
+   "current_in_topk": 0.994,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "on",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 1,
+   "current_in_topk": 0.994,
+   "current_rank": 1.006,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.333
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.2
+  },
+  {
+   "row": 0,
+   "arm": "off",
+   "facts": 455,
+   "conflicted_keys": 154,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "current_rank": 1.006,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.07
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 1,
+   "current_in_topk": 0.988,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "on",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 1,
+   "current_in_topk": 0.988,
+   "current_rank": 1.012,
+   "stale_in_topk": 0.0,
+   "slots_to_stale": 0.0
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 3,
+   "current_in_topk": 1.0,
+   "current_rank": 1.02,
+   "stale_in_topk": 0.992,
+   "slots_to_stale": 0.331
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 5,
+   "current_in_topk": 1.0,
+   "current_rank": 1.02,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.2
+  },
+  {
+   "row": 1,
+   "arm": "off",
+   "facts": 2310,
+   "conflicted_keys": 250,
+   "k": 15,
+   "current_in_topk": 1.0,
+   "current_rank": 1.02,
+   "stale_in_topk": 1.0,
+   "slots_to_stale": 0.067
+  }
+ ],
+ "F1a": {
+  "prediction": "F1a (re-specified, PREREGISTRATION Appendix B)",
+  "metric": "current_rank, lower is better (OUR derived probe on THEIR facts)",
+  "per_k": [
+   {
+    "k": 1,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.009,
+    "delta": 0.0,
+    "current_in_topk_on": 0.991,
+    "current_in_topk_off": 0.991,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 0.0,
+    "ceilinged": false
+   },
+   {
+    "k": 3,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.013,
+    "delta": -0.004,
+    "current_in_topk_on": 1.0,
+    "current_in_topk_off": 1.0,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 0.996,
+    "ceilinged": true
+   },
+   {
+    "k": 5,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.013,
+    "delta": -0.004,
+    "current_in_topk_on": 1.0,
+    "current_in_topk_off": 1.0,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 1.0,
+    "ceilinged": true
+   },
+   {
+    "k": 15,
+    "current_rank_on": 1.009,
+    "current_rank_off": 1.013,
+    "delta": -0.004,
+    "current_in_topk_on": 1.0,
+    "current_in_topk_off": 1.0,
+    "stale_in_topk_on": 0.0,
+    "stale_in_topk_off": 1.0,
+    "ceilinged": true
+   }
+  ],
+  "decided_on_k": [
+   1
+  ],
+  "current_rank_on": 1.009,
+  "current_rank_off": 1.009,
+  "delta": 0.0,
+  "verdict": "RED",
+  "reading": "supersession does NOT improve what reaches the window — the CR result must not be published as a supersession result"
+ },
+ "stage2": [],
+ "stage2_not_measured": "not requested in this run (--stage 1). Stage 2 needs a pinned answerer: at the time of writing both cloud endpoints were exhausted (OpenAI HTTP 429 insufficient_quota / credit_balance_exhausted; Ollama Cloud HTTP 429 weekly usage limit) and the local GPU failed pre-flight (4358 MiB free of 24576, 3x llama-server.exe resident). Re-run with --stage 1,2 on a quiesced GPU.",
+ "F1": {
+  "prediction": "F1",
+  "verdict": "NOT-MEASURED",
+  "reason": "stage 2 did not run"
+ }
+}

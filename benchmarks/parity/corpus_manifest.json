@@ -1,0 +1,21 @@
+{
+ "generator": "benchmarks/parity/corpus.py",
+ "seed": 20260801,
+ "note": "The corpus is generated, not stored. Run `python benchmarks/parity/corpus.py` and compare these digests to prove you hold the same fixture.",
+ "subsets": {
+  "small": {
+   "threads": 12,
+   "distractors_per_thread": 8,
+   "writes": 168,
+   "probes": 96,
+   "sha256": "0bb5d9553759fe0b5abe2ca7a0b067585b0feea3ae57008d749c4b397f1cd3dc"
+  },
+  "full": {
+   "threads": 50,
+   "distractors_per_thread": 40,
+   "writes": 2300,
+   "probes": 2000,
+   "sha256": "b0b96ddbaff813d7415c39bef4d64ceb3645bf213c24c51f7e12cef22039b937"
+  }
+ }
+}

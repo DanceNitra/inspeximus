@@ -1,0 +1,346 @@
+{
+ "corpus": {
+  "subset": "small",
+  "seed": 20260801,
+  "threads": 12,
+  "distractors_per_thread": 8,
+  "sha256": "0bb5d9553759fe0b5abe2ca7a0b067585b0feea3ae57008d749c4b397f1cd3dc"
+ },
+ "k": 6,
+ "generated": "2026-08-01T23:10:30",
+ "inspeximus_path": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\batch2\\b4-parity\\inspeximus\\__init__.py",
+ "inspeximus_version": "1.89.0",
+ "reader": "top_value(): first retrieved item mentioning either candidate wins; both in one item, or neither anywhere, is `unclear`",
+ "arms": [
+  {
+   "arm": "inspeximus",
+   "status": "measured",
+   "positive_control": {
+    "arm": "inspeximus",
+    "passes": true,
+    "records": 1,
+    "found": true,
+    "sample": [
+     "the positive control marker for pc is zephyr991"
+    ],
+    "reason": ""
+   },
+   "info": {
+    "arm": "inspeximus",
+    "version": "1.89.0",
+    "needs_llm": false
+   },
+   "write": {
+    "writes": 144,
+    "wall_s": 0.514,
+    "s_per_100_writes": 0.3571,
+    "llm_calls": 0,
+    "llm_calls_per_write": 0.0
+   },
+   "axis_wall_s": {
+    "write": 0.51,
+    "revert": 0.17,
+    "echo": 0.17,
+    "erasure": 0.67,
+    "retrieval": 0.37
+   },
+   "revert": {
+    "revert_success": {
+     "rate": 1.0,
+     "k": 12,
+     "n": 12,
+     "ci95": [
+      0.757,
+      1.0
+     ]
+    },
+    "kept_corrected_B": 0,
+    "unclear": 0,
+    "valid_cases": 12,
+    "of_threads": 12,
+    "pre_attack_verdicts": {
+     "B": 12
+    },
+    "path": "route() intent router (deterministic, no LLM)"
+   },
+   "echo": {
+    "resurrection_rate": {
+     "rate": 0.0,
+     "k": 0,
+     "n": 12,
+     "ci95": [
+      0.0,
+      0.243
+     ]
+    },
+    "clean_current_rate": {
+     "rate": 1.0,
+     "k": 12,
+     "n": 12,
+     "ci95": [
+      0.757,
+      1.0
+     ]
+    },
+    "unclear": 0,
+    "valid_cases": 12,
+    "of_threads": 12,
+    "pre_attack_verdicts": {
+     "B": 12
+    }
+   },
+   "erasure": {
+    "retrieval_leakage": {
+     "rate": 0.0,
+     "k": 0,
+     "n": 12,
+     "ci95": [
+      0.0,
+      0.243
+     ]
+    },
+    "raw_residue_files": 0.0,
+    "over_forget": 0.0,
+    "over_forget_denominator": 36,
+    "steps": 1,
+    "llm_calls": 0,
+    "receipt": false,
+    "path": "forget(where=...) hard delete"
+   },
+   "retrieval": {
+    "hit@1": {
+     "rate": 0.125,
+     "k": 12,
+     "n": 96,
+     "ci95": [
+      0.073,
+      0.206
+     ]
+    },
+    "hit@6": {
+     "rate": 0.625,
+     "k": 60,
+     "n": 96,
+     "ci95": [
+      0.525,
+      0.715
+     ]
+    },
+    "k": 6
+   }
+  },
+  {
+   "arm": "naive",
+   "status": "measured",
+   "positive_control": {
+    "arm": "naive",
+    "passes": true,
+    "records": 1,
+    "found": true,
+    "sample": [
+     "the positive control marker for pc is zephyr991"
+    ],
+    "reason": ""
+   },
+   "info": {
+    "arm": "naive",
+    "version": "1.89.0",
+    "needs_llm": false
+   },
+   "write": {
+    "writes": 144,
+    "wall_s": 0.496,
+    "s_per_100_writes": 0.3447,
+    "llm_calls": 0,
+    "llm_calls_per_write": 0.0
+   },
+   "axis_wall_s": {
+    "write": 0.5,
+    "revert": 0.08,
+    "echo": 0.09,
+    "erasure": 0.73,
+    "retrieval": 0.47
+   },
+   "revert": {
+    "not_measured": "correction never took effect in this arm's read surface, so the revert attack has nothing to act on: 0 of 12 cases were valid (pre-attack verdict was Ax12; a valid case needs 'B')",
+    "valid_cases": 0,
+    "pre_attack_verdicts": {
+     "A": 12
+    }
+   },
+   "echo": {
+    "not_measured": "correction never took effect in this arm's read surface, so the echo attack has nothing to act on: 0 of 12 cases were valid (pre-attack verdict was Ax12; a valid case needs 'B')",
+    "valid_cases": 0,
+    "pre_attack_verdicts": {
+     "A": 12
+    }
+   },
+   "erasure": {
+    "retrieval_leakage": {
+     "rate": 0.0,
+     "k": 0,
+     "n": 12,
+     "ci95": [
+      0.0,
+      0.243
+     ]
+    },
+    "raw_residue_files": 0.0,
+    "over_forget": 0.0,
+    "over_forget_denominator": 36,
+    "steps": 1,
+    "llm_calls": 0,
+    "receipt": false,
+    "path": "forget(where=...) hard delete"
+   },
+   "retrieval": {
+    "hit@1": {
+     "rate": 0.125,
+     "k": 12,
+     "n": 96,
+     "ci95": [
+      0.073,
+      0.206
+     ]
+    },
+    "hit@6": {
+     "rate": 0.625,
+     "k": 60,
+     "n": 96,
+     "ci95": [
+      0.525,
+      0.715
+     ]
+    },
+    "k": 6
+   }
+  },
+  {
+   "arm": "bm25",
+   "status": "measured",
+   "positive_control": {
+    "arm": "bm25",
+    "passes": true,
+    "records": 3,
+    "found": true,
+    "sample": [
+     "the positive control marker for pc is zephyr991",
+     "the alpha setting for pc is aardvark101",
+     "the omega setting for pc is walrus303"
+    ],
+    "reason": ""
+   },
+   "info": {
+    "arm": "bm25",
+    "version": "rank_bm25 0.2.2",
+    "needs_llm": false
+   },
+   "write": {
+    "writes": 144,
+    "wall_s": 0.007,
+    "s_per_100_writes": 0.0045,
+    "llm_calls": 0,
+    "llm_calls_per_write": 0.0
+   },
+   "axis_wall_s": {
+    "write": 0.01,
+    "revert": 0.01,
+    "echo": 0.01,
+    "erasure": 0.03,
+    "retrieval": 0.03
+   },
+   "revert": {
+    "revert_success": {
+     "rate": 0.0,
+     "k": 0,
+     "n": 12,
+     "ci95": [
+      0.0,
+      0.243
+     ]
+    },
+    "kept_corrected_B": 12,
+    "unclear": 0,
+    "valid_cases": 12,
+    "of_threads": 12,
+    "pre_attack_verdicts": {
+     "B": 12
+    },
+    "path": "write (no revert channel exposed)"
+   },
+   "echo": {
+    "resurrection_rate": {
+     "rate": 0.0,
+     "k": 0,
+     "n": 12,
+     "ci95": [
+      0.0,
+      0.243
+     ]
+    },
+    "clean_current_rate": {
+     "rate": 1.0,
+     "k": 12,
+     "n": 12,
+     "ci95": [
+      0.757,
+      1.0
+     ]
+    },
+    "unclear": 0,
+    "valid_cases": 12,
+    "of_threads": 12,
+    "pre_attack_verdicts": {
+     "B": 12
+    }
+   },
+   "erasure": {
+    "retrieval_leakage": {
+     "rate": 0.0,
+     "k": 0,
+     "n": 12,
+     "ci95": [
+      0.0,
+      0.243
+     ]
+    },
+    "raw_residue_files": 0.0,
+    "over_forget": 0.0,
+    "over_forget_denominator": 36,
+    "steps": 1,
+    "llm_calls": 0,
+    "receipt": false,
+    "path": "drop every document containing the value"
+   },
+   "retrieval": {
+    "hit@1": {
+     "rate": 0.125,
+     "k": 12,
+     "n": 96,
+     "ci95": [
+      0.073,
+      0.206
+     ]
+    },
+    "hit@6": {
+     "rate": 0.75,
+     "k": 72,
+     "n": 96,
+     "ci95": [
+      0.655,
+      0.826
+     ]
+    },
+    "k": 6
+   }
+  }
+ ],
+ "summary": {
+  "measured": [
+   "inspeximus",
+   "naive",
+   "bm25"
+  ],
+  "not_measured": {}
+ }
+}
