@@ -41,7 +41,27 @@ def _embedder():
     return embed
 
 
-def _store(path, persist_vectors: bool = False, receipts: bool = False):
+def _receipt_key(key_file=None):
+    """The Ed25519 secret key the tombstones are signed with, as hex, or None.
+
+    Order: --receipt-key-file, then $INSPEXIMUS_RECEIPT_KEY_FILE, then $INSPEXIMUS_RECEIPT_KEY (hex).
+
+    A FILE rather than a flag value on purpose: an argument is visible in `ps`, in shell history and in
+    CI logs, and a signing key that leaks makes every tombstone it ever signed forgeable -- which is the
+    one property the certificate sells. There is deliberately no `--receipt-key <hex>`.
+
+    The key must be present when the ERASURE runs, not when the certificate is printed: tombstones are
+    signed as they are created. Passing it only to `erasure-certificate` yields an unsigned chain, and
+    `erasure-verify` then reports `signatures_valid: null` with an UNSIGNED limit rather than pretending.
+    """
+    p = key_file or os.environ.get("INSPEXIMUS_RECEIPT_KEY_FILE", "").strip()
+    if p:
+        with open(p, encoding="utf-8") as fh:
+            return fh.read().strip()
+    return os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip() or None
+
+
+def _store(path, persist_vectors: bool = False, receipts: bool = False, receipt_key=None):
     # Opened through the SHARED SURFACE opener (inspeximus/_surface.py), which is where both of the rules
     # this function used to own now live:
     #   RECEIPTS: a store that ALREADY has a receipt chain keeps it. Without this, a plain
@@ -62,7 +82,12 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False):
     # `audit-build` exports; reload needs it on too, so audit-build/governance force it regardless of the flag.
     from ._surface import open_store
     _warn_if_store_dir_missing(path)
-    return open_store(path, embed=_embedder(), persist_vectors=persist_vectors, receipts=receipts)
+    # A signing key implies receipts: signing an erasure into a chain that is not being kept writes a
+    # signature nothing will ever read. Inspeximus() already treats receipt_key as turning receipts on;
+    # passing it here too keeps the sidecar-detection branch in open_store from deciding otherwise.
+    extra = {"receipt_key": receipt_key} if receipt_key else {}
+    return open_store(path, embed=_embedder(), persist_vectors=persist_vectors,
+                      receipts=receipts or bool(receipt_key), **extra)
 
 
 def _positive_k(raw: str) -> int:
@@ -142,6 +167,10 @@ def main(argv=None):
     ap.add_argument("--json", action="store_true", help="emit JSON")
     ap.add_argument("--receipts", action="store_true",
                     help="enable the tamper-evident write/erasure chain (needed to later `audit-build`)")
+    ap.add_argument("--receipt-key-file", dest="receipt_key_file", default=None,
+                    help="file holding the hex Ed25519 SECRET key that signs tombstones (or "
+                         "$INSPEXIMUS_RECEIPT_KEY_FILE). A file, not a flag value: an argument is visible "
+                         "in ps and in shell history. Needed at ERASURE time, not certificate time.")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("remember", help="store a memory (a --key makes it correctable/supersedable)")
@@ -228,6 +257,26 @@ def main(argv=None):
     ea.add_argument("--subject", help="the canonical source that was erased (as passed to forget-subject)")
     ea.add_argument("--value", action="append", default=[],
                     help="an erased string to also scan for (heuristic; repeatable)")
+
+    ec = sub.add_parser("erasure-certificate",
+                        help="write the portable, independently-verifiable erasure certificate for a "
+                             "request (the receipt you hand an auditor)")
+    ec.add_argument("--out", default="erasure_certificate.json", help="output json path")
+    ec.add_argument("--request-id", help="scope the certificate to ONE request id (omit for the whole "
+                                         "erasure history)")
+    ec.add_argument("--expected-pubkey", default=None,
+                    help="pin the certificate's own self-check to this public key")
+
+    ev = sub.add_parser("erasure-verify",
+                        help="verify an erasure certificate WITHOUT the operator's private key (exit 1 if "
+                             "it does not verify) -- the auditor's side of the receipt")
+    ev.add_argument("certificate", help="the certificate json to verify")
+    ev.add_argument("--store", default=None,
+                    help="the store the certificate came from; without it the erased ids are NOT checked "
+                         "for absence, which is the strongest proof in the document")
+    ev.add_argument("--expected-pubkey", default=None, help="the public key you expect it signed by (hex)")
+    ev.add_argument("--expected-pubkey-file", default=None,
+                    help="read that public key from a file instead")
 
     pv = sub.add_parser("provenance", help="where a fact came from: source, lineage, trust grade, what it "
                                            "superseded, and whether it still matches its write receipt")
@@ -347,6 +396,45 @@ def main(argv=None):
                   f"{', operator-adversarial' if s.get('operator_adversarial') else ''})")
         return 0 if res["ok"] else 1
 
+    # erasure-verify is the AUDITOR's command and must never open a store: Inspeximus() creates the path it
+    # is given, so a mistyped --store would mint an empty store and every erased id would verify ABSENT from
+    # it -- a clean bill of health produced by the typo itself. This is the defect load_store_items() was
+    # written for in audit-verify, and the erasure certificate is where it was first measured.
+    if a.cmd == "erasure-verify":
+        from inspeximus.core import verify_erasure_certificate
+        with open(a.certificate, encoding="utf-8") as f:
+            cert = json.load(f)
+        pub = a.expected_pubkey
+        if a.expected_pubkey_file:
+            if pub:
+                print("erasure-verify: pass --expected-pubkey OR --expected-pubkey-file, not both",
+                      file=sys.stderr)
+                return 2
+            with open(a.expected_pubkey_file, encoding="utf-8") as f:
+                pub = f.read().strip()
+        items = None
+        if a.store:
+            from inspeximus.audit_bundle import load_store_items
+            items = load_store_items(a.store)          # ONE implementation; see its docstring
+            if items is None:
+                print(f"  FAIL --store {a.store} does not exist; refusing to create a store while "
+                      f"verifying, because every erased id is absent from an empty one")
+                return 1
+        res = verify_erasure_certificate(cert, store_items=items, expected_pubkey=pub)
+        if a.json:
+            _out(res, True)
+        else:
+            for name, val in res["checks"].items():
+                print(f"  {'OK  ' if val is True else 'FAIL' if val is False else 'n/a '} {name}")
+            for pr in res["problems"]:
+                print(f"  FAIL {pr}")
+            for lim in res.get("limits") or []:
+                print(f"  NOTE {lim}")
+            print(f"\nVERDICT: {'PASS' if res['valid'] else 'FAIL'}  "
+                  f"({res['count']} erasure(s) attested, absence "
+                  f"{'checked' if res['checks'].get('store_absent') is not None else 'NOT checked'})")
+        return 0 if res["valid"] else 1
+
     # audit-build/compliance/retention must have the receipt+tombstone chains, so force receipts on.
     # `provenance` REPORTS on the receipt chain, so it must load it — otherwise a receipted store would be
     # described as "receipts off at write time", which is not merely unhelpful but wrong.
@@ -354,7 +442,17 @@ def main(argv=None):
     # "does this store exist?" question asked afterwards always answers yes. (A first version of the
     # check-code gate below tested the directory after this line and could therefore never fire.)
     _store_existed = os.path.exists(str(_resolve_store_path(a.path)))
-    m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention", "provenance"))
+    try:
+        _rk = _receipt_key(a.receipt_key_file)
+    except OSError as e:
+        # A key file that cannot be read must NOT fall through to unsigned. The operator asked for signed
+        # tombstones; producing unsigned ones and reporting success is how an erasure ends up with evidence
+        # nobody can attribute, discovered only when the auditor pins a key months later.
+        print(f"cannot read the receipt key: {e}", file=sys.stderr)
+        return 2
+    m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
+                                                        "provenance", "erasure-certificate"),
+               receipt_key=_rk)
 
     if a.cmd == "retention":
         from inspeximus.compliance import retention_sweep
@@ -426,6 +524,21 @@ def main(argv=None):
                          derived_from=a.derived_from or None)
         m._save(force=True)
         _out({"id": mid, "key": a.key}, a.json) or print(f"remembered {mid}" + (f" [key={a.key}]" if a.key else ""))
+        # A --derived-from id that does not resolve is the quietest way to lose a DSAR. The library keeps the
+        # evidence (`derived_from_unresolved` + `orphan`), but THIS surface printed "remembered <id>" and
+        # exited 0, so the operator has been told the write succeeded and nothing has been told about the
+        # lineage. It has not: the record inherits no taint, forget_subject cannot reach it, and it survives
+        # a DSAR that erased everything else about that person -- which is the exact opposite of what
+        # --derived-from's own help text promises. Measured 2026-08-01 by mistyping one id in this file's
+        # own quickstart. Warn, do not fail: the write itself is legitimate, and a parent erased by an
+        # EARLIER DSAR is an honest reason for an id not to resolve.
+        _rec = next((r for r in m.items if r["id"] == mid), None)
+        _unres = (_rec or {}).get("derived_from_unresolved") or []
+        if _unres:
+            print(f"warning: {len(_unres)} --derived-from id(s) do not exist in this store and were NOT "
+                  f"linked: {', '.join(_unres)}. This record inherits no lineage from them, so "
+                  f"`forget-subject` will NOT reach it and it will survive their erasure. "
+                  f"Check the id, or re-write the record once the parent exists.", file=sys.stderr)
         return _flush_or_fail(m)
 
     elif a.cmd == "recall":
@@ -590,6 +703,30 @@ def main(argv=None):
             print("RESULT:", "clean - no residue found" if rep["ok"] else "residue found (see above)")
         # a non-zero exit so this is usable as a gate in CI or a DSAR runbook
         raise SystemExit(0 if rep["ok"] else 1)
+
+    elif a.cmd == "erasure-certificate":
+        cert = m.erasure_certificate(request_id=a.request_id, expected_pubkey=a.expected_pubkey)
+        with open(a.out, "w", encoding="utf-8") as f:
+            json.dump(cert, f, ensure_ascii=False, indent=2)
+        signed = sum(1 for t in cert["tombstones"] if t.get("sig"))
+        _out({"out": a.out, "count": cert["count"], "scoped_to": cert["scoped_to"],
+              "signed_tombstones": signed}, a.json) or print(
+            f"wrote erasure certificate -> {a.out}  ({cert['count']} erasure(s) attested"
+            + (f", scoped to {cert['scoped_to']}" if cert["scoped_to"] else ", whole history") + ")")
+        # A certificate for zero erasures is a document that certifies nothing, and it is exactly what an
+        # operator gets from a typo in --request-id. `erasure-verify` refuses it, so saying so HERE -- at
+        # the moment it is produced, not when the auditor rejects it -- is the difference between a typo
+        # and a compliance incident. Non-zero exit so a DSAR runbook cannot step past it.
+        if cert["count"] == 0:
+            print("REFUSED as evidence: this certificate attests to ZERO erasures"
+                  + (f" for request {a.request_id!r}" if a.request_id else " (nothing was ever erased)")
+                  + ". It was still written so you can inspect it, but `erasure-verify` will FAIL it.",
+                  file=sys.stderr)
+            return 1
+        if not signed:
+            print("NOTE: the tombstones are UNSIGNED, so the chain proves integrity but not authorship. "
+                  "Sign at ERASURE time with --receipt-key-file (or $INSPEXIMUS_RECEIPT_KEY_FILE); "
+                  "supplying it now cannot retro-sign what is already erased.", file=sys.stderr)
 
     elif a.cmd == "governance":
         _out(m.governance_report(), a.json) or print(json.dumps(m.governance_report(), indent=2, default=str))

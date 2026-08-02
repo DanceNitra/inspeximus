@@ -92,8 +92,8 @@
   {
     "name": "the headline CLI stops printing the scope",
     "file": "inspeximus/cli.py",
-    "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")",
-    "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")",
+    "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
+    "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
     "tests": [
       "tests/test_verify_bundle_content_scope.py"
     ]

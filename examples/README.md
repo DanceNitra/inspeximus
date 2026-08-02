@@ -9,6 +9,7 @@ Runnable, copy-paste examples. Each is self-contained and needs only `pip instal
 | [`03_semantic_recall.py`](03_semantic_recall.py) | plug **any** `embed=` function for semantic recall; runs as-is with a dependency-free stand-in |
 | [`04_encryption.py`](04_encryption.py) | AES-256-GCM **encryption-at-rest** + **crypto-shredding** erasure (needs `cryptography`) |
 | [`06_gdpr_erasure_receipt.py`](06_gdpr_erasure_receipt.py) | **signed erasure receipt** (GDPR Art. 17 / EU AI Act Art. 12): Ed25519-signed, hash-chained, content-free tombstones grouped by DSAR request id, provable end-to-end via `verify_writes()` + `governance_report()` |
+| [`11_verifiable_erasure.py`](11_verifiable_erasure.py) | the **three-command path** of [docs/ERASURE.md](../docs/ERASURE.md) end to end — delete, signed certificate, independent residue scan — with the control that makes it mean anything: the deleted record is gone **and** a different one is still there, and a tampered certificate FAILS |
 
 ```bash
 pip install inspeximus

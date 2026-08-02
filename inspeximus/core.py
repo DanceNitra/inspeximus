@@ -483,7 +483,10 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
       3. the anchor commits to the tombstone-chain tip (a rewrite that re-signs internally still fails this if
          you pinned the anchor against an externally-witnessed one);
       4. GIVEN the store (store_path to the JSON/encrypted file, or store_items as a decrypted list), every
-         erased memory id is genuinely ABSENT from it — the 'read the raw store' proof soft-delete systems fail.
+         erased memory id is genuinely ABSENT from it — the 'read the raw store' proof soft-delete systems fail;
+      5. the certificate ATTESTS TO AT LEAST ONE ERASURE. Checks 1-4 are consistency checks and all of them
+         pass vacuously on an empty scope, so a certificate for a request that erased nothing used to verify
+         `valid: true` — see `checks["attests_an_erasure"]`.
     Returns {valid, checks, problems}. Pure-stdlib + Ed25519; import it standalone: `from inspeximus import
     verify_erasure_certificate`. HONEST: signatures are load-bearing only against a party who does not hold
     receipt_key; for operator-adversarial audit, pin the anchor against one you witnessed out of band."""
@@ -532,7 +535,12 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     # the proof was not performed, and `valid` refuses to count it as passed.
     signed = [t for t in toms if t.get("sig")]
     limits: list = []
-    if toms and not signed:
+    # `toms and not signed` left the EMPTY chain to the else-branch, where `sigs_ok` is still its initial
+    # True — so a certificate with no tombstones at all reported `signatures_valid: true`. That is the same
+    # sentence this guard was written to stop a DPA reading, one case further out: the guard fixed "has
+    # tombstones, none signed" and not "has no tombstones", and the second is the case an empty certificate
+    # produces. Measured on a store with zero erasures.
+    if not signed:
         checks["signatures_valid"] = None
         checks["signed"] = False
         limits.append("UNSIGNED: no tombstone carries a signature, so nothing was verified against "
@@ -588,6 +596,28 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     checks["summary_derivable"] = not any(
         x.startswith(("erased_memory_ids", "count", "request_ids")) for x in problems)
 
+    # A CERTIFICATE THAT ATTESTS TO ZERO ERASURES IS NOT A VERIFIED ERASURE. Every other check here is a
+    # consistency check — chain, signatures, anchor, summary, absence — and all five pass VACUOUSLY on an
+    # empty scope: nothing to break a link, nothing to mis-sign, nothing to be present in the store. So
+    # `valid: true` came back for two documents that certify nothing, both measured 2026-08-01:
+    #   (a) a store with NO erasures at all -> count 0, and valid true;
+    #   (b) `erasure_certificate(request_id="DSAR-2026-999")` on a busy store, for a request that was never
+    #       performed -> count 0, `signed: true` (other requests' tombstones are signed), and valid true.
+    # (b) is the dangerous one: an operator can hand a regulator an independently-verifiable certificate for
+    # a deletion that never happened, and every field in it is honest. DeletionManifest.verify already
+    # refuses this ("nothing was audited, which is not the same as verified") and ErasureAuditor.audit was
+    # fixed for it in the same terms; this verifier was the sibling that kept the hole.
+    checks["attests_an_erasure"] = bool(scope_toms)
+    if not scope_toms:
+        _why = ("the tombstone chain is empty" if not toms else
+                "no tombstone in the chain falls within this certificate's scope "
+                f"({'request_id=' + repr(cert.get('scoped_to')) if 'scoped_to' in cert else 'the claimed request_ids'})")
+        # ASCII: this string is printed by `inspeximus erasure-verify` onto consoles that are not UTF-8
+        # (cp1250 here), where a stray em dash is a mojibake at best and a UnicodeEncodeError at worst.
+        problems.append(f"this certificate attests to ZERO erasures: {_why}. Nothing was erased under it, "
+                        f"so every other check below passed vacuously - 'nothing was audited' is not the "
+                        f"same as 'the data is gone'")
+
     erased = set(derived_ids)                # check ABSENCE against the chain, not against the claim
     checks["store_absent"] = None
     # Did the CALLER ask for the absence proof? Not asking is honest chain-only verification. Asking and
@@ -635,6 +665,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
 
     valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"]
              and checks["summary_derivable"] and checks["scope_intact"] is not False
+             and checks["attests_an_erasure"]
              and (checks["store_absent"] is True or not store_requested))
     # `limits` is separate from `problems` on purpose, the way verify_bundle already does it: a thing
     # that was NOT CHECKED is not a thing that FAILED, and collapsing the two either invalidates honest
