@@ -16,6 +16,7 @@ Every check carries a control that fails if the fixture stops reproducing the de
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import pathlib
 import sys
@@ -26,9 +27,17 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 PARITY = REPO / "benchmarks" / "parity"
 sys.path.insert(0, str(PARITY))
 
-corpus = pytest.importorskip("corpus")
-run = pytest.importorskip("run")
-adapters = pytest.importorskip("adapters")
+# Plain imports, NOT importorskip: these are repo-local modules that are always present. Guarding them
+# would hide all sixteen instrument tests from the base CI job -- which is the exact failure
+# tests/test_skip_census.py exists to catch, and it caught it. Only the genuinely optional
+# benchmark-only dependency (rank_bm25) is guarded, and only on the tests that need it.
+import adapters  # noqa: E402
+import corpus  # noqa: E402
+import run  # noqa: E402
+
+needs_bm25 = pytest.mark.skipif(
+    importlib.util.find_spec("rank_bm25") is None,
+    reason="rank_bm25 is a benchmark-only dependency; the library itself stays zero-dependency")
 
 
 # ---------------------------------------------------------------- corpus
@@ -89,6 +98,7 @@ def test_reader_never_credits_a_store_that_serves_both_values():
 
 
 # ---------------------------------------------------------------- arms
+@needs_bm25
 def test_positive_control_passes_for_local_arms():
     for name in adapters.LOCAL_ARMS:
         arm = adapters.build_arm(name)
@@ -97,6 +107,7 @@ def test_positive_control_passes_for_local_arms():
         assert pc["passes"], f"{name}: {pc['reason']}"
 
 
+@needs_bm25
 def test_positive_control_fails_loudly_for_a_broken_arm():
     """Control: an arm whose write path silently drops everything must FAIL the gate, not score zero."""
     class Broken(adapters.Bm25Arm):
@@ -109,6 +120,7 @@ def test_positive_control_fails_loudly_for_a_broken_arm():
     assert not pc["passes"] and pc["reason"]
 
 
+@needs_bm25
 def test_driver_reports_not_measured_instead_of_a_zero(monkeypatch):
     """The rule 'a competitor scoring 0.000 is our bug' has to live in the driver, not in the author.
 
