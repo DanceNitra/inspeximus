@@ -6956,10 +6956,26 @@ class Inspeximus:
         detail lives in a memory NOT similar to the query). This does: retrieve -> let a capable model read the
         results and name what's missing, emitting follow-up queries -> retrieve again -> merge (dedup by id).
         `ask_followup(query, current_results) -> list[str]` is caller-supplied, so inspeximus stays model-agnostic
-        (inject any model/LLM). MEASURED ~3.3x multi-hop full-evidence recall vs one-shot top-k on LoCoMo
-        (0.057 -> 0.186, n=70 across 3 conversations) — the one mechanism that moved the multi-hop bottleneck
-        where static retrieval tricks (dense-neighbor, lexical bridges) did not. More expensive (a model call
-        in the loop), so it's an explicit mode, not the default."""
+        (inject any model/LLM) and NO LLM enters the library — the reasoning is the caller's, the retrieval is ours.
+        It is the one mechanism that moved the multi-hop bottleneck where static retrieval tricks
+        (dense-neighbour, lexical bridges, PRF/Rocchio, multi-query RRF, cross-encoder rerank) did not.
+        More expensive (a model call in the loop), so it's an explicit mode, not the default.
+
+        THE MEASURED NUMBERS, AND WHY THERE ARE TWO. This docstring used to report "~3.3x (0.057 -> 0.186,
+        n=70)" while our own benchmark notes reported "0.145 -> 0.297" for the same lever. They are two
+        different FIXTURES reported under one claim, not a disagreement, and the operating point is the whole
+        difference. Both are multi-hop FULL-EVIDENCE recall@50 on LoCoMo with a model reader in the loop
+        (reader sees the question + round-1 hits only, never the gold), equal retrieval budget B=50:
+
+            n=276, ALL 10 conversations (the full benchmark):  flat 0.145 -> iterative 0.297   = 2.05x
+            n=70,  the 3 HARDEST conversations (a subset):     flat 0.057 -> iterative 0.186   = 3.3x
+
+        The 3.3x is the harder subset and the flattering ratio; the full-benchmark 2.05x is the citable one,
+        and it is what this docstring now leads with. NEITHER is reproduced by this repository's test suite:
+        both need the LoCoMo corpus (not shipped) plus a model reader and local nomic-embed vectors. What IS
+        reproduced here, on every run, is the two-phase MCP/CLI surface built on this method — see
+        `recall_iterative_start` / `recall_iterative_followup` below and
+        `probes/recall_iterative_surface_multihop.py`."""
         seen: dict = {}
         for r in self.recall(query, k=k, **recall_kw):
             seen[r["id"]] = r
@@ -6974,6 +6990,95 @@ class Inspeximus:
                 for r in self.recall(fq, k=k, **recall_kw):
                     seen.setdefault(r["id"], r)
         return list(seen.values())
+
+    # ── the same lever, INVERTED for a surface that cannot take a callable ───────────────────────────────
+    # recall_iterative() needs `ask_followup`, a Python callable. Over MCP there is no callable to pass, and
+    # over a CLI there is no process to hold one -- which is why the one retrieval lever that measurably works
+    # was reachable from the library and from nowhere a user or an agent actually stands. The inversion: the
+    # MCP client IS a model, so hand the loop back to it as two stateless calls.
+    #   start()    -> round-1 hits + the follow-up instruction + `prior_ids` (the continuation token)
+    #   followup() -> the caller's model answers, we retrieve again and return only what is NEW
+    # NO SERVER-SIDE SESSION. `prior_ids` is the entire continuation state and it travels with the caller, so
+    # there is no session table to grow, expire, leak across tenants, or serve to the wrong client. It also
+    # keeps the second call's payload to the NEW records only: the caller already holds round-1.
+    MAX_FOLLOWUPS = 8          # hard ceiling on follow-ups honoured per call -- see the bound below
+
+    def recall_iterative_start(self, query: str, k: int = 6, max_followups: int = 3,
+                               **recall_kw) -> dict:
+        """PHASE 1 of the client-driven multi-hop loop: retrieve round-1 and ask the CALLER's model what is
+        missing. `ask` is the instruction to hand your model;
+        `prior_ids` is the continuation token to hand back.
+
+        Returns {k, max_followups, round, hits, prior_ids, ask, next_call, bounds}; the query is NOT echoed
+        back (see the comment in the body).
+
+        BOUND (asserted in tests/test_recall_iterative_surface.py): exactly ONE recall() call, and at most
+        `k` records in the response. Both are independent of store size -- the payload is a function of `k`
+        alone, never of n. That is the property the O(n^2)/150 MB surfaces in this codebase did not have."""
+        k = max(1, int(k))
+        mf = max(0, min(int(max_followups), Inspeximus.MAX_FOLLOWUPS))
+        hits = self.recall(query, k=k, **recall_kw) or []
+        # The QUERY IS NOT ECHOED BACK, here or in the follow-up result, and that is deliberate. The caller
+        # sent it and already has it, so echoing buys nothing -- while a memory server that reflects caller
+        # text into a model's context is an injection amplifier, and the tenant-isolation sweep (which fails
+        # any method whose OUTPUT contains a string it was asked about) rightly cannot tell a reflected
+        # argument from a retrieved record. It flagged both of these methods until the echo came out.
+        return {
+            "k": k, "max_followups": mf, "round": 1,
+            "hits": hits,
+            "prior_ids": [h.get("id") for h in hits],
+            "ask": (
+                f"Read these {len(hits)} memories against the question. If answering needs a fact that is NOT "
+                f"here but is REACHABLE from something they name -- a person, system, ticket, place or date "
+                f"that the memories mention and the question does not -- write up to {mf} short search "
+                f"queries that would retrieve it, naming that bridge entity explicitly. If the memories "
+                f"already contain everything needed, return NO follow-ups and do not make the second call."),
+            "next_call": ("recall_followup(query=<same query>, prior_ids=<prior_ids from this result>, "
+                          "followups=[<your queries>])"),
+            "bounds": {"recall_calls": 1, "max_records": k,
+                       "independent_of_store_size": True},
+        }
+
+    def recall_iterative_followup(self, query: str, followups: list | None = None,
+                                  prior_ids: list | None = None, k: int = 6,
+                                  max_followups: int = 3, **recall_kw) -> dict:
+        """PHASE 2: the caller's model has read round-1 and named the bridge; retrieve on its follow-up
+        queries and return ONLY the records the caller does not already hold. Returns {followups_used, followups_dropped,
+        new_hits, bridged, merged_ids, recall_calls, bounds}.
+
+        Call it again with the updated `merged_ids` as `prior_ids` for a further round -- rounds are the
+        caller's loop, not server state.
+
+        `prior_ids` is what makes `new_hits` mean "new". Omit it and every follow-up hit is reported as new,
+        including records round 1 already returned; that is a caller error the result cannot detect, so it is
+        stated here rather than papered over with a hidden extra round-1 recall (which would silently double
+        the work bound).
+
+        BOUND (asserted): at most min(len(followups), max_followups) recall() calls, with max_followups
+        itself capped at Inspeximus.MAX_FOLLOWUPS=8; at most k * max_followups records in `new_hits`. Both
+        depend only on (k, max_followups) -- never on store size."""
+        k = max(1, int(k))
+        mf = max(0, min(int(max_followups), Inspeximus.MAX_FOLLOWUPS))
+        fq_all = [f.strip() for f in (followups or []) if isinstance(f, str) and f.strip()]
+        used, dropped = fq_all[:mf], max(0, len(fq_all) - mf)
+        merged = [i for i in (prior_ids or []) if isinstance(i, str)]
+        seen = set(merged)
+        new: list[dict] = []
+        for fq in used:
+            for r in (self.recall(fq, k=k, **recall_kw) or []):
+                rid = r.get("id")
+                if rid in seen:
+                    continue
+                seen.add(rid)
+                merged.append(rid)
+                new.append(r)
+        return {
+            "followups_used": used, "followups_dropped": dropped,
+            "new_hits": new, "bridged": len(new), "merged_ids": merged,
+            "recall_calls": len(used),
+            "bounds": {"recall_calls": len(used), "max_recall_calls": mf,
+                       "max_new_records": k * mf, "independent_of_store_size": True},
+        }
 
     # ── clean memory: write-admission gate + inspector (1.3.0) ────────────────────────────────────
     def admit(self, text: str, tags=None, value: float = 1.0, meta: dict | None = None,
@@ -8033,6 +8138,11 @@ class _TenantView:
     def convergence_report(self, *a, **k):  return Inspeximus.convergence_report(self, *a, **k)
     def propagate_outcome(self, *a, **k):   return Inspeximus.propagate_outcome(self, *a, **k)
     def recall_iterative(self, *a, **k):    return Inspeximus.recall_iterative(self, *a, **k)
+    # The two-phase inversion of the same lever (the MCP/CLI surface). Bound here for the same reason
+    # recall_iterative is: reached through __getattr__ they would run PARENT-bound and the inner recall()
+    # would read the parent's tenant, i.e. every tenant's records.
+    def recall_iterative_start(self, *a, **k):    return Inspeximus.recall_iterative_start(self, *a, **k)
+    def recall_iterative_followup(self, *a, **k): return Inspeximus.recall_iterative_followup(self, *a, **k)
     def recall(self, *a, **k):          return Inspeximus.recall(self, *a, **k)
     def forget_subject(self, *a, **k):  return Inspeximus.forget_subject(self, *a, **k)
     def forget_pii(self, *a, **k):      return Inspeximus.forget_pii(self, *a, **k)

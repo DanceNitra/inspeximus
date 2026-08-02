@@ -77,6 +77,19 @@ def _positive_k(raw: str) -> int:
     return v
 
 
+def _nonnegative(raw: str) -> int:
+    """`--max-followups` must be >= 0. It was a bare `type=int`, so a negative was accepted, clamped to 0 by
+    the core, and then REPORTED back as though it were the cap in force -- an invalid request answered with a
+    coherent-looking message, which is the same shape as `-k 0` returning "nothing in memory"."""
+    try:
+        v = int(raw)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{raw!r} is not an integer")
+    if v < 0:
+        raise argparse.ArgumentTypeError(f"must be >= 0, got {v}")
+    return v
+
+
 def _warn_if_store_dir_missing(path) -> None:
     """A --path whose DIRECTORY does not exist is a typo, not an empty store.
 
@@ -164,6 +177,21 @@ def main(argv=None):
     # and lands on 0 or negative got an answer indistinguishable from an empty store. An invalid
     # request must not be reported as an empty result.
     q.add_argument("-k", type=_positive_k, default=6, help="how many to return (>= 1)")
+
+    ri = sub.add_parser("recall-iterative",
+                        help="MULTI-HOP recall: round-1 plus the follow-up queries YOUR model writes "
+                             "(the one retrieval lever measured to move multi-hop; no LLM here)")
+    ri.add_argument("query")
+    ri.add_argument("-k", type=_positive_k, default=6, help="how many per retrieval (>= 1)")
+    ri.add_argument("--followup", action="append", default=[],
+                    help="a follow-up query your model wrote after reading round-1 (repeatable). "
+                         "Omit to get round-1 plus the instruction to hand your model.")
+    ri.add_argument("--max-followups", dest="max_followups", type=_nonnegative, default=3,
+                    help="cap on follow-ups honoured (hard ceiling 8) - this IS the cost bound")
+    ri.add_argument("--prior-id", dest="prior_ids", action="append", default=[],
+                    help="an id you already hold (repeatable). Given, round 1 is SKIPPED and this runs "
+                         "phase 2 only - the stateless shape the MCP surface uses. Omitted with "
+                         "--followup, round 1 runs here and both phases happen in this one call.")
 
     v = sub.add_parser("revert", help="roll a key back to the value it superseded")
     v.add_argument("key")
@@ -437,6 +465,59 @@ def main(argv=None):
         else:
             for h in hits:
                 print(f"- {h.get('text','')}")
+
+    elif a.cmd == "recall-iterative":
+        # The two-phase loop, shaped for a shell. The library's recall_iterative() takes a CALLABLE, which a
+        # terminal cannot supply -- so the phases are split exactly as they are over MCP, and which of them
+        # runs is decided by the flags rather than by a mode switch:
+        #   no --followup                -> phase 1 only: round-1 hits + the instruction to hand your model.
+        #   --followup, no --prior-id    -> both phases here, one call. Equivalent to recall_iterative() with
+        #                                   a callable returning those queries. Costs 1 + f retrievals.
+        #   --followup with --prior-id   -> phase 2 only, stateless, the same shape the MCP client uses.
+        # ASCII-only output: this prints to a Windows console that is not UTF-8 (cp1250 here), where a
+        # non-ASCII character can raise UnicodeEncodeError and take down the command that produced it.
+        start = None
+        prior = list(a.prior_ids)
+        if not prior:
+            start = m.recall_iterative_start(a.query, k=a.k, max_followups=a.max_followups)
+            prior = list(start["prior_ids"])
+        if not a.followup:
+            if start is None:                     # --prior-id with no --followup asks for nothing at all
+                print("recall-iterative: --prior-id given with no --followup, so there is nothing to "
+                      "retrieve. Pass --followup, or drop --prior-id to get round 1.", file=sys.stderr)
+                return 2
+            if a.json:
+                _out({"mode": "phase1", "round_1": start, "followup": None}, True)
+            else:
+                if not start["hits"]:
+                    print("(nothing in memory for that query)")
+                for h in start["hits"]:
+                    print(f"- {h.get('text','')}")
+                print(f"\nask your model: {start['ask']}")
+                print(f"then: inspeximus recall-iterative {a.query!r} --followup '<query>'"
+                      + "".join(f" --prior-id {i}" for i in prior))
+            return _flush_or_fail(m, required=False)
+        res = m.recall_iterative_followup(a.query, followups=a.followup, prior_ids=prior,
+                                          k=a.k, max_followups=a.max_followups)
+        if a.json:
+            # ONE envelope for all three modes. It used to be a flat dict for phase 1 and a two-key wrapper
+            # otherwise, so a script consuming --json had to branch on which shape arrived and could not
+            # tell "phase 2 only" (round_1 null) from a malformed payload.
+            _out({"mode": "phase2" if start is None else "both", "round_1": start, "followup": res}, True)
+        else:
+            for h in (start or {}).get("hits", []):
+                print(f"- {h.get('text','')}")
+            if res["followups_dropped"]:
+                # the EFFECTIVE cap, not the requested one: core clamps to Inspeximus.MAX_FOLLOWUPS, so
+                # echoing the request would report a ceiling that was not the one applied.
+                print(f"  ({res['followups_dropped']} follow-up(s) dropped: the effective cap is "
+                      f"{res['bounds']['max_recall_calls']})", file=sys.stderr)
+            if not res["new_hits"]:
+                print("(the follow-up queries added nothing new)")
+            for h in res["new_hits"]:
+                print(f"+ {h.get('text','')}")
+            print(f"\n{res['bridged']} new record(s) from {res['recall_calls']} follow-up retrieval(s)",
+                  file=sys.stderr)
 
     elif a.cmd == "revert":
         res = m.revert(a.key)

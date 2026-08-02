@@ -350,6 +350,72 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
 
 
 @mcp.tool()
+def recall_iterative(query: str, k: int = 6, max_followups: int = 3, full: bool = False,
+                     snippet_chars: int = 0, trusted_only: bool = False,
+                     user_id: str | None = None, agent_id: str | None = None,
+                     session_id: str | None = None) -> dict:
+    """MULTI-HOP recall, PHASE 1 of 2 — use this instead of `recall` when the answer needs a fact that is
+    reachable only THROUGH another one ("who manages the person who signed off on X", "what did the vendor we
+    switched to in March charge us"). One-shot top-k systematically misses that second hop: the record holding
+    it is similar to the BRIDGE entity, not to your question, so no amount of ranking brings it back.
+
+    HOW THIS WORKS, AND WHY YOU ARE IN THE LOOP. The fix is to read round-1, name what is missing, and search
+    again — which needs a model. inspeximus does not have one and will not grow one: no LLM on the write path
+    and none inside the read path either. You ARE the model. So this returns round-1 hits plus `ask` (the
+    instruction) and `prior_ids` (the continuation token), you decide what the bridge is, and you hand it back
+    to `recall_followup`. Your model stays yours; the retrieval, dedup and merge stay deterministic and ours.
+
+    Returns {k, max_followups, round, hits, prior_ids, ask, next_call, bounds} — your query is not echoed
+    back (you sent it, and a memory server should not reflect caller text into a model's context). If `hits`
+    already answer the question, stop here — the second call is optional and costs a retrieval.
+
+    BOUND: exactly ONE recall() and at most `k` records back (`k` hard-capped at INSPEXIMUS_MAX_K). The
+    response size is a function of `k` alone and does NOT grow with the store — unlike this server's
+    `contradictions` surface, whose all-pairs output reached ~150 MB at n=2,000."""
+    k = max(1, min(int(k), _MAX_K))
+    res = _MEM.recall_iterative_start(query, k=k, max_followups=max_followups,
+                                      trusted_only=trusted_only, user_id=user_id,
+                                      agent_id=agent_id, session_id=session_id)
+    if not full:
+        n = snippet_chars if snippet_chars > 0 else _SNIPPET
+        res["hits"] = [_compact(h, n) for h in res["hits"]]
+    return res
+
+
+@mcp.tool()
+def recall_followup(query: str, followups: list[str] | None = None, prior_ids: list[str] | None = None,
+                    k: int = 6, max_followups: int = 3, full: bool = False, snippet_chars: int = 0,
+                    trusted_only: bool = False, user_id: str | None = None,
+                    agent_id: str | None = None, session_id: str | None = None) -> dict:
+    """MULTI-HOP recall, PHASE 2 of 2 — hand back the follow-up queries YOUR model wrote after reading
+    `recall_iterative`'s round-1 hits, together with the `prior_ids` it returned. Each follow-up is retrieved
+    and only the records you do NOT already hold come back, so the second round costs you the bridge evidence
+    and nothing else.
+
+    `prior_ids` is the whole continuation state — there is no session on the server, nothing to expire, and
+    nothing that can be served to the wrong caller. Pass it. Without it every follow-up hit is reported as new,
+    including the ones round 1 already gave you.
+
+    Want a further round? Call this again with `merged_ids` from this result as the new `prior_ids`. Rounds
+    are your loop; the server holds no state between them.
+
+    Returns {followups_used, followups_dropped, new_hits, bridged, merged_ids, recall_calls, bounds}.
+    `bridged` is how many records this hop added — 0 is a legitimate answer and means the bridge was not there.
+
+    BOUND: at most min(len(followups), max_followups) recall() calls, `max_followups` itself capped at 8, and
+    at most k * max_followups NEW records. Worst case with both at their ceilings: 8 retrievals, 400 records.
+    Nothing here scales with store size."""
+    k = max(1, min(int(k), _MAX_K))
+    res = _MEM.recall_iterative_followup(query, followups=followups, prior_ids=prior_ids, k=k,
+                                         max_followups=max_followups, trusted_only=trusted_only,
+                                         user_id=user_id, agent_id=agent_id, session_id=session_id)
+    if not full:
+        n = snippet_chars if snippet_chars > 0 else _SNIPPET
+        res["new_hits"] = [_compact(h, n) for h in res["new_hits"]]
+    return res
+
+
+@mcp.tool()
 def get(id: str) -> dict:
     """Fetch ONE memory's FULL record by id (complete untruncated text + all fields). The companion to recall's
     progressive-disclosure default: recall returns compact snippets + ids cheaply; call get(id) only for the few

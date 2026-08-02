@@ -1,0 +1,38 @@
+{
+ "synthetic": {
+  "fixture": "synthetic (shipped)",
+  "k": 6,
+  "max_followups": 3,
+  "questions": 20,
+  "too_easy": 0,
+  "eligible": 20,
+  "bridged": 20,
+  "bridge_rate_single": 0.0,
+  "bridge_rate_iterative": 1.0,
+  "single_hop_hits_plain": 20,
+  "single_hop_hits_iterative": 20,
+  "regressions": [],
+  "misses": [],
+  "controls_ok": true
+ },
+ "bounds": {
+  "n=330": {
+   "recall_calls_phase1": 1,
+   "recall_calls_phase2": 3,
+   "records_phase1": 6,
+   "records_phase2": 9,
+   "bytes_phase1": 2316,
+   "bytes_phase2": 2870,
+   "seconds_both_phases": 0.0021
+  },
+  "n=4080": {
+   "recall_calls_phase1": 1,
+   "recall_calls_phase2": 3,
+   "records_phase1": 6,
+   "records_phase2": 9,
+   "bytes_phase1": 2316,
+   "bytes_phase2": 2870,
+   "seconds_both_phases": 0.0296
+  }
+ }
+}
