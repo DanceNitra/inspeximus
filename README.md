@@ -4,15 +4,22 @@
 
 # inspeximus — a zero-dependency Python agent-memory library
 
-**Correct a fact once and it stays corrected. Delete it, and get a signed certificate that it is gone.** A delete that returns success is not a delete: we measured one that left the data recoverable in **five of six** places the application had put it (`python probes/forget_verification_bench.py` — soft delete scores 0.17 and names the five leaking stores; the wired hard delete scores 1.00).
+**Ask any memory where it came from — and check the answer.** `provenance(key)` returns the declared
+source, the lineage it inherited, the evidence grade, every value the fact has held and which policy
+retired each one, and whether the record still matches what its write receipt committed to. Delete the
+fact and `erasure_certificate()` is the same answer for the deletion — a receipt an auditor verifies
+offline, without the live store and without trusting us. Because a delete that returns success is not a
+delete: we measured one that left the data recoverable in **five of six** places the application had put it
+(`python probes/forget_verification_bench.py` — soft delete scores 0.17 and names the five leaking stores; the wired hard delete scores 1.00).
 
 *"We have inspected" — the medieval charter that recites an earlier one word for word and
 attests it unaltered. The self-correcting memory layer for AI agents.*
 
-*It serves the new value and refuses to let the old one creep back — deterministically, with no LLM on the
-write path. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault
-(our own deployment — you cannot re-run that one; every number you CAN re-run is listed in
-[docs/CLAIMS.md](docs/CLAIMS.md) with its command).*
+*Correct a fact once and it stays corrected: the store serves the new value and refuses to let the old
+one creep back — deterministically, with no LLM on the write path, from a single zero-dependency file.
+`revert(key)` puts a correction back on command, which is the cheapest proof that what sits underneath is
+a real state model and not a log. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault (our own deployment — you cannot re-run that one; every number you CAN re-run
+is listed in [docs/CLAIMS.md](docs/CLAIMS.md) with its command).*
 
 `pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.90.0
 
@@ -44,20 +51,26 @@ Prefer the manual route? `pip install "inspeximus[mcp]"` and point your client a
 extra matters, because the core library is deliberately zero-dependency and the MCP server is the one
 piece that needs a dependency.
 
-## What you install, and what it does that others don't
+## What you install, at a glance
 
 A **mem0 alternative** built the opposite way: deterministic, not an LLM extracting facts on every write — a
-memory that keeps a correction corrected and can show, with an offline-verifiable receipt, what it erased. At a glance:
+memory that can say where a fact came from, keep a correction corrected, and show with an offline-verifiable
+receipt what it erased. The right-hand column is what we found when we read the other libraries' current
+source and docs ([the scan](docs/AI_ACT.md)); it is a scan, not a proof of a universal negative, and we
+correct it when someone shows us better.
 
-| | **inspeximus** | mem0 / cognee / Zep&nbsp;·&nbsp;Graphiti |
+| | **inspeximus** | what we found in mem0 / cognee / Zep&nbsp;·&nbsp;Graphiti |
 |---|---|---|
-| **Write path** | deterministic — **no LLM** | LLM extraction on every `add()` |
-| **Correction (a fact changes)** | keyed supersession serves current truth; a restated stale value can't creep back (`echo_guard`); `revert()` | LLM re-extract / bitemporal invalidation |
-| **Verifiable erasure** | **signed, content-free tombstone + an offline-verifiable receipt** | `delete()` — unverified |
-| **Did the bytes actually go?** | **`inspeximus residue` — checks ANY store, exits non-zero on residue** | not offered |
-| **Tamper-evident record-keeping** | hash-linked receipts + a signed anchor + **content bound across time** | SOC 2 audit logs (not cryptographic) / none |
+| **Provenance — where did this fact come from?** | `provenance(key)`: declared source, inherited lineage, evidence grade, every value held + which policy retired it, and whether the record still matches its write receipt — **one call, no model** | bitemporal/graph provenance (Zep·Graphiti), a per-record history log (mem0); we found no single call that also checks the record against a receipt |
+| **Why did recall return *this*?** | `why_recalled(id, query)` — the ranking decomposed, deterministically | *not assessed — the scan did not look for this* |
+| **Correction — a fact changes, and you can audit what replaced what** | keyed supersession serves the current value and `history()` / `supersession_report()` show which value replaced which and under which policy; a restated stale value can't creep back (`echo_guard`) | LLM re-extract / bitemporal invalidation |
+| **Verifiable erasure** | signed, content-free tombstone + `erasure_certificate` an auditor verifies **offline** | `delete()` — we found no receipt to verify |
+| **Did the bytes actually go?** | **`inspeximus residue` — checks ANY store, exits non-zero on residue** | not offered in what we read |
+| **Tamper-evident record-keeping** | hash-linked receipts + a signed anchor + **content bound across time** | SOC 2 audit logs (Zep — organisational, not cryptographic) |
 | **EU AI Act / GDPR evidence** | **`inspeximus compliance` overlay + audit bundle** | not framed |
-| **Dependencies** | **zero required — pure-Python package** | server / DB / vector / graph stack |
+| **Revert — the proof the state model is real** | `revert(key)` rolls a corrected fact back to its predecessor: deterministic, no model call, no similarity guess | varies — see the note below |
+| **Write path** | deterministic — **no LLM** | LLM extraction on every `add()` |
+| **Dependencies** | **zero required — one pure-Python file's worth of core** | server / DB / vector / graph stack |
 | **MCP server** | yes (one-command install) | varies |
 
 On a scan of nine products, the only agent-memory library that ships verifiable erasure **and** tamper-evident
@@ -68,6 +81,81 @@ harness through every system's native config, published whichever way they fall 
 [`probes/INTEGRITY_BENCHMARK.md`](probes/INTEGRITY_BENCHMARK.md), including the cell where inspeximus does *not*
 win. (This sentence used to link to a section of this README that had been moved out; the link went nowhere and
 the number it advertised was no longer on the page.)
+
+**On the revert row specifically.** We used to write that no other agent-memory library
+exposed a revert; our own pre-publication gate falsified it. So the claim here is not that others lack a
+capability — it is that inspeximus does these **deterministically, with no model on the write path, from a
+zero-dependency package, and verifiably without trusting us**. Every one of those four is something you can
+check in a minute, which is the only reason to believe any of it. Where we describe another system we say
+what we *found* when we read it, on a dated scan, and we would rather be corrected than be right by default.
+
+## Where did this memory come from — and can you check?
+
+This is the question people actually bring to an agent-memory layer, so it is the first thing this page
+shows you how to answer. You rarely reach for provenance going forwards. You reach for it backwards — when
+someone says *"delete that"*, and the fact is back next session because a summary that three other episodes
+still support had absorbed it. `provenance()` answers that in one call, for one fact, in the order an
+auditor asks:
+
+```python
+m.provenance(key="billing-api::auth")     # or provenance(id="…") for one record
+```
+
+```
+fact      billing-api::auth
+  now       oauth2  [active]
+  source    adr-014  (not attested)
+  lineage   primary observation
+  trust     claimed
+  history   2 value(s), 1 retired
+              api-keys  ->  retired by keyed_lww
+              oauth2  ->  active
+  integrity content matches; attribution matches; chain ok; unsigned the write receipt
+```
+
+Same answer from the shell (`inspeximus provenance billing-api::auth`, `--json` for the full object) and over
+MCP (`provenance`). It assembles what the store already carries, rather than adding a new claim layer:
+
+| field | what it answers | built from |
+|---|---|---|
+| `origin` | the declared source; the taint it **inherited transitively** through summarization, so a derived note is never mistaken for a first-hand one; whether an **origin attestation** bound it to a verified key; the acting user/agent/session | `source` + `derived_from` + `attested_key` |
+| `trust` | the evidence grade — `claimed` → `corroborated` → `verified` → `settled`, earned from corroboration and external ratifications and **never settable by the writer** | `grade()` |
+| `timeline` | every value the fact has held, its validity interval, and **which policy retired each one** (`keyed_lww`, `echo_guard`, `state_toggle`, …) | `history()` |
+| `integrity` | whether the record still matches the content **and sources** its write receipt committed to — so an out-of-band edit that rewrites a record's source **without also rewriting the receipts sidecar** is caught — plus the current anchor to pin the answer against | `verify_attribution()` + `anchor()` |
+
+**What it does not prove**, returned in a `limits` field so a caller rendering this cannot quietly drop it:
+this is tamper-**evident**, not **correct** — a source that was already wrong when it was written is
+committed faithfully and nothing here can tell. And unsigned (the default), the receipt chain only catches
+an editor who cannot *also* rewrite the `.receipts` sidecar — which sits next to the store, so an attacker
+with that much file access simply recomputes it and passes. We ship that as a failing negative control, not
+as prose (`test_provenance.py::test_an_attacker_who_rewrites_the_sidecar_too_is_NOT_caught`). Pass
+`receipt_key=` with the key off the write path, or have `anchor()` witnessed externally, for the property to
+mean anything against someone who owns the store. Note too that `attribution_matches_receipt` is a *change*
+detector: a legitimate re-derivation upstream can flip it with no attacker present.
+
+None of the machinery here is new. Binding the actor and attribution into a tamper-evident provenance chain
+so retroactive relabeling is detectable is Hasan, Sion & Winslett, *The Case of the Fake Picasso: Preventing History
+Forgery with Secure Provenance* (USENIX FAST 2009; journal version ACM TOS 5(4), 2009); answering provenance facets from one call is standard in provenance-aware
+databases (Perm, ProvSQL, ProQL); signed, Merkle-logged lineage for LLM agent memory specifically is
+MemLineage ([arXiv:2605.14421](https://arxiv.org/abs/2605.14421)), which inspeximus's lineage auto-stamping
+already credits. What is ours is the packaging: all of it with zero third-party dependencies, on by default, with
+the limits attached to the answer.
+
+### The two neighbouring questions, same shape
+
+**"Why did recall return *this* record?"** — `why_recalled(id, query)` decomposes the ranking that produced a
+hit into its terms, deterministically, with no model in the loop. It is the retrieval-side twin of
+`provenance`: one asks where the content came from, the other asks why it surfaced.
+
+**"What replaced what, and under which rule?"** — this is the auditable half of correction, and it is a
+separate question from whether the correction was *right*. `history(key)` lists every value the fact has
+held, oldest to newest; `supersession_report()` does it across the store; each retirement names the policy
+that caused it (`keyed_lww`, `echo_guard`, `state_toggle`, …). `verify_attribution()` then asks whether the
+records still match what their write receipts committed to. None of the four calls a model.
+
+`revert(key)` sits at the end of that chain, and it is deliberately not the headline: it is the cheapest
+demonstration that the timeline above is a real state model — you can move along it in both directions —
+rather than an append-only log with a nice renderer.
 
 ## Don't take our word for it — three commands that answer about YOUR stack
 
@@ -135,9 +223,10 @@ subjects a right to erasure. **None of those articles say memory, provenance or 
 them onto agent memory is our reading, not the text, and this is not legal advice.
 
 Of the agent-memory libraries we read (mem0, Zep/Graphiti, Cognee, Letta, LangMem — source at `main`,
-24 Jul 2026), none ship verifiable erasure with a receipt or tamper-evident record-keeping; inspeximus does, as a
-drop-in overlay rather than a rebuild. We have not surveyed the whole field, and smaller projects exist that we
-have not read — tell us if we have missed one and we will correct this.
+24 Jul 2026), we did not find verifiable erasure with a receipt or tamper-evident record-keeping in any of
+them; inspeximus ships both, as a drop-in overlay rather than a rebuild. That is a statement about what our
+scan found, not about what exists: we have not surveyed the whole field, smaller projects exist that we have
+not read, and a library may well have added either since. Tell us if we missed one and we will correct this.
 
 ```bash
 inspeximus compliance --out report.html     # article-labelled evidence, live counts from your store
@@ -209,9 +298,9 @@ docstrings too, and they are the reason the word "certified" does not appear any
 own it catches a rewrite on **one** timeline (`verify_consistency`), but a compromised host can still show a
 **different** history to a different client (a split-view / fork). Independent **witnesses** that co-sign the
 head close that — an honest witness refuses to co-sign a fork, so a client requiring **k-of-n** cannot be shown
-a forked head that reaches threshold. This is the one operator-adversarial guarantee a free single-party
-receipt structurally cannot give — it needs an independent third party — and it needs no LLM, no GPU, no graph
-database.
+a forked head that reaches threshold. This is the operator-adversarial guarantee that a single-party receipt
+cannot give on its own, whoever ships it: the property needs a second party by construction. Here it needs no
+LLM, no GPU and no graph database.
 
 ```bash
 # each independent party runs one witness (stdlib http server, zero framework):
@@ -266,13 +355,16 @@ and their append-only integrity, never the content (a hash of PII is still PII).
 
 ## Why inspeximus — a deterministic, zero-LLM write path
 
+Everything above — a provenance answer you can check, a correction trail you can audit, an erasure receipt an
+auditor verifies offline — rests on one design choice, and it is the one you can verify fastest.
+
 Every mainstream agent-memory library we read puts an **LLM on the write path**: it calls a model to extract,
 summarize, or build a graph *every time you store something*. mem0 runs LLM fact-extraction on `add()` by default;
 Zep/Graphiti runs LLM entity/edge extraction on every `add_episode()`. That one choice is why their stored state is
 **non-deterministic**, costs a model call per write, and can silently drop a fact.
 
 **inspeximus has no LLM on the write path.** Storing a fact is a deterministic, zero-cost operation — and *that* is
-what makes three things possible that a re-extracting write path has to work around:
+what makes the three properties below cheap, checkable and repeatable here:
 
 > **What that costs, measured on someone else's benchmark.** On the [MemOps](https://github.com/MemTensor/MemOps)
 > long-context scenarios (24 scenarios, ~50 sessions each), ingesting one scenario through mem0's default
@@ -284,18 +376,14 @@ what makes three things possible that a re-extracting write path has to work aro
 > who also make a competing system. Harness, pre-registration and the full result:
 > [agora/agora_output/lab/memops](https://github.com/DanceNitra/agora/tree/main/agora_output/lab/memops).
 
-- **Corrections that stick.** Write a new value for a key and it *supersedes* the old one; `echo_guard` blocks a
-  later restatement of the retired value from resurfacing. No config, no model call. Honest scope: the guard
-  engages on **keyed or extractor-derived** assertions (the shipped extractors derive the key from raw text);
-  a free-text write that nothing keys is stored as an independent record and ranks on its own.
-- **Revert on command.** `m.revert(key)` rolls a corrected fact back to its predecessor. Of the leading systems
-  we checked — mem0, Zep/Graphiti, Letta, Cognee, Memobase, MemoryScope, LangMem, txtai — **none exposes
-  revert-to-predecessor as a first-class memory operation** (mem0's `history()` is a read-only log; Graphiti
-  invalidates but never un-invalidates). **Letta is the honest exception**: it has an engine-level
-  checkpoint-undo (`undo_checkpoint_block` over `BlockHistory`), undocumented and not surfaced as a
-  recall-integrity op — so the difference is that inspeximus exposes it deterministically as a named API, not
-  that reverting is unavailable elsewhere. (An earlier version of this line said "Letta has no undo". That was
-  wrong, and our own `claims_audit.py` already said so on the line below it.)
+- **Corrections that stick, and an audit trail of what replaced what.** Write a new value for a key and it
+  *supersedes* the old one; `echo_guard` blocks a later restatement of the retired value from resurfacing;
+  `history(key)` and `supersession_report()` then show you every value the fact has held and the policy that
+  retired each one. No config, no model call, and the same answer on every machine. Honest scope: this is
+  **auditability, not accuracy** — the store can show you what it did and let you check it; it cannot tell you
+  the new value is true. And the guard engages on **keyed or extractor-derived** assertions (the shipped
+  extractors derive the key from raw text); a free-text write that nothing keys is stored as an independent
+  record and ranks on its own.
 - **Deletes the value, not just the pointer.** `forget_subject` removes the value from inspeximus's records (subject
   + its `derived_from` lineage) and leaves a **content-free**, tamper-evident signed receipt — so what remains is
   a proof-of-deletion, not the data. Since **1.24.0 every deletion path leaves that receipt**, including plain
@@ -307,23 +395,37 @@ what makes three things possible that a re-extracting write path has to work aro
   `invalid_at` and keeps it. For **secure erasure at rest** (against raw-disk/backup forensics — which a plaintext
   store of ANY library, inspeximus included, does not give you) use an encrypted store + `shred()` (NIST SP 800-88
   crypto-erasure: destroy the key and every at-rest copy dies).
+- **Revert on command — the proof, not the pitch.** `m.revert(key)` rolls a corrected fact back to its
+  predecessor: a deterministic move along the same timeline `history()` prints, with no model call and no
+  similarity guess. Of the leading systems we checked — mem0, Zep/Graphiti, Letta, Cognee, Memobase,
+  MemoryScope, LangMem, txtai — none exposes revert-to-predecessor as a first-class memory operation (mem0's
+  `history()` is a read-only log; Graphiti invalidates but never un-invalidates). **Letta is the honest
+  exception**: it has an engine-level checkpoint-undo (`undo_checkpoint_block` over `BlockHistory`),
+  undocumented and not surfaced as a recall-integrity op — so the difference is that inspeximus exposes it
+  deterministically as a named API, not that reverting is unavailable elsewhere. (An earlier version of this
+  line said "Letta has no undo". That was wrong, and our own `claims_audit.py` already said so on the line
+  below it.) It is listed last on purpose: revert is the *proof* that the correction timeline above is a real
+  state model you can walk in both directions, not the headline reason to adopt this.
 
-| | LLM on write | corrections stick | revert to predecessor | deleted value retained? |
+| | LLM on write | correction trail you can audit | revert to predecessor | deleted value retained? |
 |---|---|---|---|---|
-| **inspeximus** | **no — deterministic** | ✅ supersession + echo_guard | ✅ `revert(key)` | ✅ no — value scrubbed, content-free receipt (+ `shred()` for at-rest) |
-| mem0 | yes (by default) | LLM decides ADD/UPDATE | ✗ history is read-only | ✗ kept in the history table by design |
-| Zep / Graphiti | yes | temporal invalidation | ✗ no un-invalidate | ✗ invalidated edge retained |
+| **inspeximus** | **no — deterministic** | supersession + echo_guard + `history` / `supersession_report` | `revert(key)`, deterministic | no — value scrubbed, content-free receipt (+ `shred()` for at-rest) |
+| mem0 | yes (by default) | LLM decides ADD/UPDATE; `history()` is a read-only log | ✗ history is read-only | ✗ kept in the history table by design |
+| Zep / Graphiti | yes | temporal invalidation, bitemporal query | ✗ no un-invalidate | ✗ invalidated edge retained |
 | Letta / MemGPT | yes | LLM rewrites the block | ~ engine-level `undo_checkpoint_block`, not a first-class memory op | ✗ |
 
-*(Every competitor cell was checked against that project's current source/docs — see [the integrity
-benchmark](probes/INTEGRITY_BENCHMARK.md), which also names each system that shares an individual property.
-Cryptographic deletion receipts do exist in purpose-built provenance systems like Engram and Heartwood; the claim
-here is scoped to mainstream agent-memory libraries.)*
+*(Every cell in the right-hand columns records what we found reading that project's current source/docs — see
+[the integrity benchmark](probes/INTEGRITY_BENCHMARK.md), which also names each system that shares an individual
+property. Cryptographic deletion receipts do exist in purpose-built provenance systems like Engram and Heartwood.
+"Not found in what we read" is a statement about our scan and its date, never about what a project can do.)*
 
 The mechanism underneath — **no LLM on the write path** — is what makes the state reproducible byte-for-byte, and
 it is not something you can bolt onto an extraction pipeline: a re-extracting write path would have to give up
 re-extraction to get it. Any of these systems could adopt it; the claim here is about the property, not about
-who is able to ship it.
+who is able to ship it. It is also the one claim on this page you can falsify in ten seconds, because it is the
+*absence* of a network call — `claims_audit.py` disables sockets for the duration and re-runs the write path
+against the published wheel, so a write that reached for a model would fail the check instead of passing it
+quietly.
 
 ## And it doesn't cost you recall
 
@@ -448,10 +550,13 @@ claude mcp add inspeximus -e INSPEXIMUS_PATH=~/.inspeximus_memory.json -- uvx --
 }
 ```
 
-Your agent now has `remember` / `recall` / `history` — and corrections that stick: when a fact is superseded,
-recall serves the current value, a restated stale value can't resurrect it (`echo_guard`), and `revert` /
-`route` undo a correction on an unmarked "go back". `recall` returns compact records by default (drops internal
-fields; `get(id)` / `neighbors(id)` for detail on demand). [Full tool list below](#use-it-as-an-mcp-server-any-claude--cursor--agent-client).
+Your agent now has `remember` / `recall`, and — the part that matters when someone asks it *"where did you get
+that?"* — `provenance`, `why_recalled`, `history` and `verify_attribution`, each answering in one call with no
+model in the loop. Corrections stick on top of that: when a fact is superseded, recall serves the current value,
+a restated stale value can't resurrect it (`echo_guard`), `supersession_report` shows what replaced what, and
+`revert` / `route` undo a correction on an unmarked "go back". `recall` returns compact records by default (drops
+internal fields; `get(id)` / `neighbors(id)` for detail on demand).
+[Full tool list below](#use-it-as-an-mcp-server-any-claude--cursor--agent-client).
 
 ### For coding agents: stop resurrecting an API a refactor already deleted
 
@@ -494,14 +599,23 @@ inspeximus check-code src/**/*.py                                            # e
 Commit the store (`.inspeximus/memory.json`) so every clone shares the refactor history; the guard is a
 deterministic token scan, so the same commit is a pass or a fail on every machine.
 
-**Jump to:** [Correction (measured)](probes/INTEGRITY_BENCHMARK.md) ·
+**Jump to:** [Where did this memory come from?](#where-did-this-memory-come-from--and-can-you-check) ·
+[Verify it yourself](#dont-take-our-word-for-it--three-commands-that-answer-about-your-stack) ·
 [Every published number + its command](docs/CLAIMS.md) ·
-[Governance & erasure](#delete-that--then-check-what-the-lineage-says-survived) ·
-[MCP server](#use-it-as-an-mcp-server-any-claude--cursor--agent-client) ·
+[Correction (measured)](probes/INTEGRITY_BENCHMARK.md) ·
+[Erasure & lineage](#delete-that--then-check-what-the-lineage-says-survived) ·
+[EU AI Act evidence](#new--the-eu-ai-act-compliance-evidence-layer-for-agent-memory) ·
+[Audit bundle](#portable-audit-bundle--hand-an-auditor-one-file-they-verify-offline) ·
+[Zero-LLM write path](#why-inspeximus--a-deterministic-zero-llm-write-path) ·
+[Quickstart](#quickstart-2-minutes) · [MCP server](#use-it-as-an-mcp-server-any-claude--cursor--agent-client) ·
 [Shell CLI + API reference](docs/API.md) ·
 [Framework integrations](#framework-integrations) ·
 [The four operations](#the-four-operations) · [Five rules](#five-rules-it-wont-break-each-one-cost-us-to-learn) ·
-[Provenance & receipts](#provenance--why-these-rules-with-receipts) · [Threat model](#threat-model--layered-defense-adversarial-memory-integrity)
+[Design receipts](#provenance--why-these-rules-with-receipts) ·
+[Threat model](#threat-model--layered-defense-adversarial-memory-integrity)
+
+Correction is measured across systems in
+[docs/API.md](docs/API.md#correction-is-a-first-class-operation-measured-across-systems).
 
 ## Use
 
@@ -533,9 +647,14 @@ passed in.)
 ## Use it as an MCP server (any Claude / Cursor / agent client)
 
 `inspeximus` ships an [MCP](https://modelcontextprotocol.io) stdio server so any MCP-compatible agent can
-use it as long-term memory — `remember` (with a per-type decay prior), value-ranked `recall`,
-`consolidate`, `consolidate_clusters`, `contradictions`, `value_by_cohort`, `forget` (verified erasure).
-Correction is first-class over MCP too: `revert` / `route` undo a correction on an unmarked "go back", and the
+use it as long-term memory. The provenance surface is first-class over MCP, not an afterthought:
+`provenance` (where a fact came from, in one call), `why_recalled` (why this hit ranked), `history` and
+`supersession_report` (what replaced what, under which policy), `verify_attribution` (does the record still
+match its write receipt), `audit_bundle` / `verify_audit_bundle` (hand an auditor one offline-verifiable
+file) and `erasure_certificate` / `erasure_residue` (proof of a deletion, and a check for what survived it).
+Around that sit the ordinary memory operations — `remember` (with a per-type decay prior), value-ranked
+`recall`, `consolidate`, `consolidate_clusters`, `contradictions`, `value_by_cohort`, `forget` (verified
+erasure). Correction is first-class too: `revert` / `route` undo a correction on an unmarked "go back", and the
 read-path review layer `observe` / `reopened` / `resolve_reopened` (1.9.2–1.9.5) reopens a settled record for
 steward review on a *corroborated* contradiction (a lone restatement stays an echo, never an auto-change).
 The MCP `remember` exposes `key` (deterministic supersession) plus `object` / `reaffirm`, and the server
@@ -677,56 +796,6 @@ proves neither presence (a paraphrase carries the fact without the string) nor a
 Not a new idea: this is DELF-style deletion-correctness auditing (Cohn-Gordon et al., *DELF: Safeguarding
 deletion correctness in Online Social Networks*, USENIX Security 2020) applied to an agent-memory store, with
 the orphan/dangling half being classical referential-integrity checking.
-
-## Where did this fact come from?
-
-You rarely reach for provenance going forwards. You reach for it backwards — when someone says *"delete
-that"*, and the fact is back next session because a summary that three other episodes still support had
-absorbed it. `provenance()` answers that in one call, for one fact, in the order an auditor asks:
-
-```python
-m.provenance(key="billing-api::auth")     # or provenance(id="…") for one record
-```
-
-```
-fact      billing-api::auth
-  now       oauth2  [active]
-  source    adr-014  (not attested)
-  lineage   primary observation
-  trust     claimed
-  history   2 value(s), 1 retired
-              api-keys  ->  retired by keyed_lww
-              oauth2  ->  active
-  integrity content matches; attribution matches; chain ok; unsigned the write receipt
-```
-
-Same answer from the shell (`inspeximus provenance billing-api::auth`, `--json` for the full object) and over
-MCP (`provenance`). It assembles what the store already carries, rather than adding a new claim layer:
-
-| field | what it answers | built from |
-|---|---|---|
-| `origin` | the declared source; the taint it **inherited transitively** through summarization, so a derived note is never mistaken for a first-hand one; whether an **origin attestation** bound it to a verified key; the acting user/agent/session | `source` + `derived_from` + `attested_key` |
-| `trust` | the evidence grade — `claimed` → `corroborated` → `verified` → `settled`, earned from corroboration and external ratifications and **never settable by the writer** | `grade()` |
-| `timeline` | every value the fact has held, its validity interval, and **which policy retired each one** (`keyed_lww`, `echo_guard`, `state_toggle`, …) | `history()` |
-| `integrity` | whether the record still matches the content **and sources** its write receipt committed to — so an out-of-band edit that rewrites a record's source **without also rewriting the receipts sidecar** is caught — plus the current anchor to pin the answer against | `verify_attribution()` + `anchor()` |
-
-**What it does not prove**, returned in a `limits` field so a caller rendering this cannot quietly drop it:
-this is tamper-**evident**, not **correct** — a source that was already wrong when it was written is
-committed faithfully and nothing here can tell. And unsigned (the default), the receipt chain only catches
-an editor who cannot *also* rewrite the `.receipts` sidecar — which sits next to the store, so an attacker
-with that much file access simply recomputes it and passes. We ship that as a failing negative control, not
-as prose (`test_provenance.py::test_an_attacker_who_rewrites_the_sidecar_too_is_NOT_caught`). Pass
-`receipt_key=` with the key off the write path, or have `anchor()` witnessed externally, for the property to
-mean anything against someone who owns the store. Note too that `attribution_matches_receipt` is a *change*
-detector: a legitimate re-derivation upstream can flip it with no attacker present.
-
-None of the machinery here is new. Binding the actor and attribution into a tamper-evident provenance chain
-so retroactive relabeling is detectable is Hasan, Sion & Winslett, *The Case of the Fake Picasso: Preventing History
-Forgery with Secure Provenance* (USENIX FAST 2009; journal version ACM TOS 5(4), 2009); answering provenance facets from one call is standard in provenance-aware
-databases (Perm, ProvSQL, ProQL); signed, Merkle-logged lineage for LLM agent memory specifically is
-MemLineage ([arXiv:2605.14421](https://arxiv.org/abs/2605.14421)), which inspeximus's lineage auto-stamping
-already credits. What is ours is the packaging: all of it with zero third-party dependencies, on by default, with
-the limits attached to the answer.
 
 ## Five rules it won't break (each one cost us to learn)
 
