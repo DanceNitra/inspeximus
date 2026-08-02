@@ -42,6 +42,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 import sys
 import math
 import os
@@ -143,13 +144,27 @@ _GENESIS = "0" * 64
 #:
 #: A new guard registers its prefix HERE. code_guard._PREFIX must appear in this tuple; the agreement is
 #: asserted in tests rather than imported, so the two modules stay decoupled and cannot drift silently.
-_GUARD_KEYSPACES = ("code::symbol::",)
+#: RESERVED CONTROL-PLANE KEYSPACE for agent-to-agent read grants (see Inspeximus.grant). A grant is an
+#: ordinary hash-chained record so it inherits the write receipts, the anchor, provenance() and history()
+#: rather than needing a second log -- but it is BOOKKEEPING, not a memory, so it is carved out of the
+#: content read path (recall, _tenant_rows) and out of housekeeping (eviction, the consolidate keep-budget).
+#: remember() REFUSES this prefix from an ordinary caller: if any writer could mint a key in this namespace,
+#: an agent could grant itself access through the normal write path and the ACL would be decorative.
+_ACL_PREFIX = "acl::grant::"
+_ACL_LOG = logging.getLogger("inspeximus.acl")
+
+_GUARD_KEYSPACES = ("code::symbol::", _ACL_PREFIX)
 
 
 def _is_guard_record(rec) -> bool:
     """True for bookkeeping a guard reads; see _GUARD_KEYSPACES."""
     k = rec.get("key") or ""
     return any(k.startswith(p) for p in _GUARD_KEYSPACES)
+
+
+def _is_acl_record(rec) -> bool:
+    """True for an access-control (grant/revoke) record. These are acts, not memories."""
+    return (rec.get("key") or "").startswith(_ACL_PREFIX)
 
 
 def _canon(obj) -> bytes:
@@ -803,7 +818,8 @@ class Inspeximus:
                  encrypt_key: bytes | None = None, encrypt_passphrase: str | None = None,
                  support_authorities: list | None = None, persist_vectors: bool = False,
                  embed_query=None, embed_id: str | None = None,
-                 infer_lineage: float = 0.0, echo_guard: bool | None = None):
+                 infer_lineage: float = 0.0, echo_guard: bool | None = None,
+                 agent: str | None = None):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -864,6 +880,22 @@ class Inspeximus:
         # in one store is a migration state, not a steady one. Reversible: tenant=None. Receipt:
         # inspeximus/probes/tenant_isolation_probe.py (measured cross-tenant leak 0/N).
         self.tenant = str(tenant) if tenant is not None else None
+        # AGENT-TO-AGENT READ GRANTS (OPT-IN, default None -> unbound -> byte-identical legacy). Binding a
+        # handle to an agent (Inspeximus(agent="scribe") / store.as_agent("scribe")) makes that handle read
+        # FAIL-CLOSED: it sees the records that agent OWNS (wrote through an agent-bound handle) plus the
+        # records an ACTIVE grant authorises it to read -- and nothing else. With no grants issued, an
+        # agent handle sees only its own writes; an UNBOUND handle (agent=None) is the operator view and is
+        # exactly what it was before this feature existed. See grant() for the selector rules and the
+        # honest scope. Reversible: agent=None.
+        # PREFER store.as_agent("x") TO Inspeximus(agent="x"), and the reason is data loss, not style.
+        # _save() serialises `self.items`, which this scoping filters, so a DIRECTLY BOUND handle persists
+        # only the rows it can see and drops everyone else's on its first flush -- measured, and the same
+        # for tenant= since 1.56.0. A view from as_agent() shares the parent's `_items` and forwards _save
+        # to the parent, so it does not reach that path. Both are pinned in tests/test_agent_grants.py.
+        self.agent = Inspeximus._check_agent_id(agent) if agent is not None else None
+        self._acl_rev = 0                 # bumped by grant()/revoke() so a cached scoped view cannot go stale
+        self._acl_writing = 0             # >0 only inside grant()/revoke(); the reserved-keyspace write gate
+        self._acl_problems: list = []     # bounded log of grants that could NOT be evaluated (each one denied)
         # PII AUTO-DETECTION (OPT-IN, default OFF -> zero behavior change). When True, remember() runs the
         # zero-dependency regex detector (detect_pii) over each write and stamps rec['pii'] = [types...] so PII
         # records can be masked in-use (recall(redact_pii=True)), swept (forget_pii), and audited (pii_report).
@@ -1419,6 +1451,14 @@ class Inspeximus:
             except (TypeError, ValueError) as e:
                 raise ValueError(f"remember(meta=...) must be JSON-serialisable, else the whole store stops "
                                  f"persisting: {e}") from None
+        # RESERVED KEYSPACE. Access-control acts are records, which is what makes them auditable -- and it
+        # is also what would make the ACL decorative if any caller could write one. An agent that can call
+        # remember(key="acl::grant::*::me::tag::secrets", object="granted") has granted itself access
+        # through the ordinary write path. Only grant()/revoke() may mint this prefix.
+        if key is not None and str(key).startswith(_ACL_PREFIX) and not getattr(self, "_acl_writing", 0):
+            raise ValueError(
+                f"{_ACL_PREFIX!r} is the reserved access-control keyspace: a grant may only be written by "
+                f"grant()/revoke(), never through remember(). Otherwise any writer could authorise itself.")
         mid = uuid.uuid4().hex[:10]
         now = time.time()
         rec = {"id": mid, "text": text, "tags": list(tags or []), "value": float(value),
@@ -1453,6 +1493,10 @@ class Inspeximus:
         # Unbound stores (tenant=None) leave no tag -> byte-identical legacy.
         if self.tenant is not None:
             rec["tenant"] = self.tenant
+        # OWNER STAMP: an agent-bound handle owns what it writes, which is what makes "grant a subset of MY
+        # records to another agent" meaningful. Unbound handles leave no tag -> byte-identical legacy.
+        if getattr(self, "agent", None) is not None:
+            rec["owner_agent"] = self.agent
         # PII TAG: record which PII types this write carries, for masking (recall(redact_pii=True)),
         # data-minimization sweeps (forget_pii), and audit (pii_report). `pii` overrides/forces detection:
         #   pii=True -> auto-detect types; pii=["email",...] -> use these types verbatim; pii=False -> tag none;
@@ -2115,9 +2159,28 @@ class Inspeximus:
             return
         vf_new = rec.get("valid_from", rec["ts"])
         tv = rec.get("tenant")                         # tenant isolation: only same-tenant records collide on a key
+        # WHICH ROWS THIS KEY CAN COLLIDE WITH. Normally the handle's own (tenant- and ACL-scoped) view, so a
+        # write can never retire a record the writer cannot see.
+        #
+        # THAT MATTERS MOST FOR AGENTS, and it is the write-side half of the read ACL. Supersession above is
+        # documented as UNAUTHENTICATED: anyone who can call remember() and knows the key string retires the
+        # current value. In a multi-agent store that would let agent B destroy agent A's current value by
+        # guessing "payout::wallet", with no read access to it at any point -- a read ACL alone does not
+        # close that, because the damage is done by writing. Resolving against the scoped view does.
+        # MEASURED CONSEQUENCE, stated rather than left to be discovered: two agent-bound handles keying the
+        # same string each keep their own active record, so from the OPERATOR view that key now has two
+        # active values. Scoped writes buy write-isolation and pay for it in operator-side ambiguity.
+        # Unscoped (operator) writes are untouched: keys stay global and last-write-wins.
+        #
+        # Access-control rows are the one exception:
+        # they are deliberately invisible THROUGH an agent handle, so resolving them against `items` would
+        # leave an agent unable to revoke its own grant -- the revoke would land beside the grant instead of
+        # retiring it, and _acl_grants_for() would then read two disagreeing acts and fail closed forever.
+        _pool = ([r for r in self._items if r.get("tenant") == tv] if k.startswith(_ACL_PREFIX)
+                 else self.items)
         if self.echo_guard and not reaffirm:
             new_sig = self._obj_sig(rec)
-            same_key = [r for r in self.items if r is not rec and r.get("key") == k and r.get("tenant") == tv]
+            same_key = [r for r in _pool if r is not rec and r.get("key") == k and r.get("tenant") == tv]
             active = [r for r in same_key if r.get("status") == "active"]
             # OBJECT-LESS CLOBBER GUARD: on a key managed with explicit objects (a value ledger), a keyed
             # write carrying NO object cannot displace an object-bearing value — measured hole: a value-free
@@ -2168,7 +2231,7 @@ class Inspeximus:
         if rec.get("meta", {}).get("asserts_change") is False:
             return
         new_sig_r = self._obj_sig(rec)
-        for r in self.items:
+        for r in _pool:
             if r is rec or r.get("status") != "active" or r.get("key") != k or r.get("tenant") != tv:
                 continue
             # A RESTATEMENT IS NOT A SUPERSESSION. Last-write-wins used to retire any active same-key
@@ -3402,17 +3465,28 @@ class Inspeximus:
 
         MIGRATION: records written before tenancy carry no `tenant` field, so a bound handle does not see
         them. Adopting tenancy on an existing store makes prior memories reachable only from the unbound
-        store -- stamp them first if you need them scoped."""
-        if self.tenant is None:
+        store -- stamp them first if you need them scoped.
+
+        AGENT GRANTS ride the SAME chokepoint, for the same reason. When the handle is bound to an agent
+        (`store.as_agent("scribe")`), this filter additionally keeps only the records that agent owns or has
+        an ACTIVE grant for, so a method added tomorrow is access-controlled by construction rather than by
+        review. It is a FAIL-CLOSED allow-list: a grant that cannot be evaluated authorises nothing."""
+        if self.tenant is None and getattr(self, "agent", None) is None:
             return self._items
         rev = (len(self._items), id(self._items))
-        if getattr(self, "_items_view_rev", None) != (self.tenant, rev):
+        ck = (self.tenant, getattr(self, "agent", None), rev, getattr(self, "_acl_rev", 0))
+        if getattr(self, "_items_view_rev", None) != ck:
+            rows = self._items
+            if self.tenant is not None:
+                rows = [r for r in rows if r.get("tenant") == self.tenant]
+            if getattr(self, "agent", None) is not None:
+                rows = self._acl_visible(rows)
             # A TUPLE, not a list. The first version cached a list and returned the object itself, so
             # `view.items.append(rec)` did not merely fail to persist -- it planted a PHANTOM record that
             # every later reader saw, including fresh handles, and that recall ranked first. It was never on
             # disk and vanished on the next write. Immutable means the mistake raises instead of haunting.
-            self._items_view = tuple(r for r in self._items if r.get("tenant") == self.tenant)
-            self._items_view_rev = (self.tenant, rev)
+            self._items_view = tuple(rows)
+            self._items_view_rev = ck
         return self._items_view
 
     @items.setter
@@ -3426,10 +3500,24 @@ class Inspeximus:
 
     def _tenant_rows(self) -> list:
         """The records THIS store is allowed to touch: all rows for an unbound (admin) store, else only the
-        bound tenant's rows. The one place tenant scoping is resolved for the whole-store audit/sweep methods."""
+        bound tenant's rows. The one place tenant scoping is resolved for the whole-store audit/sweep methods.
+
+        ACCESS-CONTROL rows stay IN. They are ordinary records, and keeping them here is what makes a grant
+        inspectable through the machinery that already exists -- history(), provenance() and
+        supersession_report() answer "who could read this, and when was it taken back" with no second log.
+        The first version of this filtered them out here, and the cost was immediate: history() on a grant
+        key returned an empty list, so the audit trail the feature exists to provide was unreachable from
+        the audit surface. Where a grant would be NOISE rather than evidence -- the memory counts, the
+        contradiction scan, recall -- it is filtered at that reader instead; see _content_rows()."""
         if self.tenant is None:
             return list(self.items)
         return [r for r in self.items if r.get("tenant") == self.tenant]
+
+    def _content_rows(self) -> list:
+        """_tenant_rows() minus the access-control bookkeeping: the rows that are MEMORIES. Readers that
+        describe or scan the content of a store use this, so issuing a grant cannot inflate an active-record
+        count or make the contradiction scan flag "granted" against "revoked" as an incompatible pair."""
+        return [r for r in self._tenant_rows() if not _is_acl_record(r)]
 
     def pii_report(self) -> dict:
         """Audit view of PII exposure across this store (tenant-scoped when bound): how many ACTIVE records
@@ -3513,7 +3601,345 @@ class Inspeximus:
             globex = store.for_tenant("globex")
             acme.recall("secret")     # -> only acme rows; globex.recall(...) never sees them
         """
-        return _TenantView(self, str(tenant))
+        return _TenantView(self, str(tenant), agent=getattr(self, "agent", None))
+
+    # ── agent-to-agent read grants (scoped, revocable, recorded in the same chain) ────────────────────
+    #
+    # WHY THESE SELECTORS. A grant names a subset of memories by `scope`, `tag`, `key` or explicit `ids` --
+    # never by QUERY. Membership in a scope/tag/key/id set is a STORED FACT, decidable in one pass with no
+    # embedder, no similarity threshold and no LLM, and it means the same thing tomorrow as today. A
+    # query-shaped selector would make the authorised set a function of a similarity score, so the same
+    # grant would cover different records after a re-embed, a corpus change, or a different k -- an ACL
+    # that silently widens is not an ACL. Deterministic membership is the property worth keeping.
+    #
+    # HONEST SCOPE. This is logical isolation INSIDE one store and one process, like tenancy: the shared
+    # `_items` list is still reachable from a private attribute, so it is the right model when many agents
+    # share a runtime, and it is NOT a substitute for separate stores/keys when the agents are mutually
+    # hostile and the process itself is the trust boundary. And the WRITE path is unchanged: grants gate
+    # READS. Finally, `by` (the granting agent) is an identity the caller asserts, not one this library
+    # authenticates -- exactly the limit already stated for supersession. Where an authenticated identity
+    # matters, the surface that holds it must supply it.
+
+    #: The selector kinds, in the order _acl_selector() accepts them. Read by that method rather than kept
+    #: beside it as documentation: a list nothing consults cannot hold anything in agreement.
+    _ACL_KINDS = ("scope", "tag", "key", "ids")
+
+    @staticmethod
+    def _check_agent_id(agent) -> str:
+        """An agent id must be a plain, non-empty string that cannot collide inside a grant key. Rejected
+        rather than sanitised: quietly rewriting an identifier is how two different agents end up sharing
+        one ACL entry."""
+        if not isinstance(agent, str):
+            raise ValueError(f"agent id must be a string, got {type(agent).__name__}")
+        a = agent.strip()
+        if not a:
+            raise ValueError("agent id must not be empty")
+        if "::" in a or a == "*":
+            raise ValueError(f"agent id must not contain '::' or be '*' (reserved in the grant keyspace): {agent!r}")
+        return a
+
+    @staticmethod
+    def _acl_selector(scope=None, tag=None, key=None, ids=None):
+        """Normalise EXACTLY ONE selector into (kind, value, token). Zero selectors is refused rather than
+        read as 'everything' -- fail closed is the whole posture, and 'grant() with no arguments means
+        total access' is the accident this refusal exists to prevent."""
+        given = [(k, v) for k, v in zip(Inspeximus._ACL_KINDS, (scope, tag, key, ids)) if v is not None]
+        if len(given) != 1:
+            raise ValueError(
+                f"a grant needs EXACTLY ONE selector - {'=, '.join(Inspeximus._ACL_KINDS)}=. Given "
+                f"{len(given)} ({[k for k, _ in given]}). No selector is not 'everything': it is ambiguous, "
+                "and an access-control decision that cannot be evaluated must deny.")
+        kind, value = given[0]
+        if kind == "ids":
+            if isinstance(value, str):
+                value = [value]
+            vals = sorted({str(x) for x in value if str(x).strip()})
+            if not vals:
+                raise ValueError("grant(ids=[...]) needs at least one record id")
+            return kind, vals, _sha256_hex(_canon(vals))[:16]
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"grant({kind}=...) needs a non-empty string")
+        return kind, value.strip(), value.strip()
+
+    def _acl_key(self, by: str, agent: str, kind: str, token: str) -> str:
+        """One grant key per (granter, grantee, selector). The granter is IN the key so revoking Alice's
+        grant to Bob cannot disturb Carol's independent grant to Bob -- they are different keys, and keyed
+        supersession only ever adjudicates within a key."""
+        return f"{_ACL_PREFIX}{by}::{agent}::{kind}::{token}"
+
+    def _acl_resolve_by(self, by) -> str:
+        """Who is issuing this act. An agent-bound handle can only ever act as ITSELF (fail closed: a handle
+        cannot mint a grant in another agent's name and thereby lend records it does not own). The unbound
+        operator handle may name a `by` explicitly -- that is how a CLI/MCP surface, which has no session
+        identity of its own, records the agent that actually asked."""
+        me = getattr(self, "agent", None)
+        if by is None:
+            return me if me is not None else "*"
+        b = Inspeximus._check_agent_id(by)
+        if me is not None and b != me:
+            raise PermissionError(
+                f"this handle is bound to agent {me!r} and cannot issue a grant as {b!r}. Use the operator "
+                f"(unbound) handle if you are administering another agent's grants.")
+        return b
+
+    def _acl_write(self, agent: str, by: str, kind, value, token: str, state: str, note) -> dict:
+        """Record one access-control ACT as an ordinary hash-chained record, so it inherits the write
+        receipt, the anchor, provenance() and history() instead of needing a second log."""
+        k = self._acl_key(by, agent, kind, token)
+        who = "the operator" if by == "*" else f"agent {by!r}"
+        what = (f"records with id in {value}" if kind == "ids" else f"records whose {kind} == {value!r}")
+        text = (f"ACL: {who} granted agent {agent!r} read access to {what}." if state == "granted"
+                else f"ACL: {who} revoked read access to {what} for agent {agent!r}.")
+        if note:
+            text += f" Note: {note}"
+        meta = {"acl": {"agent": agent, "by": by, "kind": kind, "value": value, "state": state}}
+        if note:
+            meta["acl"]["note"] = str(note)
+        self._acl_writing += 1
+        try:
+            # reaffirm=True on purpose: grant -> revoke -> grant is a LEGITIMATE reversal, and without it the
+            # echo guard would retire the re-grant on arrival as a restatement of a superseded value. Access
+            # genuinely comes back; that is the case reaffirm exists for.
+            mid = self.remember(text, key=k, object=state, mtype="procedural", value=0.0,
+                                meta=meta, reaffirm=True)
+        finally:
+            self._acl_writing -= 1
+        self._acl_rev += 1
+        return {"ok": True, "id": mid, "key": k, "agent": agent, "by": by,
+                "kind": kind, "value": value, "state": state}
+
+    def grant(self, agent: str, scope: str | None = None, tag: str | None = None,
+              key: str | None = None, ids=None, by: str | None = None, note: str | None = None) -> dict:
+        """Give `agent` READ access to a subset of this store's memories, and record the act.
+
+        Exactly one selector: `scope=` (meta['scope']), `tag=` (a tag), `key=` (a supersession key) or
+        `ids=` (explicit record ids). Membership is exact-match on a STORED field -- no embedder, no
+        threshold, no LLM -- so the authorised set is the same tomorrow as today (see the note above the
+        selector helper for why a query selector was refused).
+
+        WHOSE records. From the unbound operator handle the grant covers every record the selector matches.
+        From an agent-bound handle (`store.as_agent("alice").grant("bob", tag="billing")`) it covers only
+        records ALICE owns, so an agent can lend what it wrote and never more. `by=` records the granting
+        agent from a surface (CLI/MCP) that has no session identity; it is an asserted identity, not an
+        authenticated one.
+
+        Reading with it: `store.as_agent("bob").recall(...)`. Ending it: `revoke(...)` with the same
+        selector -- effective on the next read. Both acts land in the write-receipt chain and the anchor,
+        so `history(<grant key>)` and the audit bundle show who was allowed what, and when it was taken back.
+        """
+        a = Inspeximus._check_agent_id(agent)
+        b = self._acl_resolve_by(by)
+        kind, value, token = Inspeximus._acl_selector(scope, tag, key, ids)
+        return self._acl_write(a, b, kind, value, token, "granted", note)
+
+    def revoke(self, agent: str, scope: str | None = None, tag: str | None = None,
+               key: str | None = None, ids=None, by: str | None = None, note: str | None = None) -> dict:
+        """End a grant. Effective on the NEXT read.
+
+        It writes a REVOKED act over the same grant key, which retires the grant by ordinary keyed
+        supersession. It deletes nothing: the owner keeps the records, every other agent keeps its own
+        grants (a different granter or grantee is a different key), and the grant itself stays in the
+        history as evidence that access existed and was withdrawn. Revoking something that was never
+        granted is allowed and is recorded -- `was_granted` in the result says which case it was."""
+        a = Inspeximus._check_agent_id(agent)
+        b = self._acl_resolve_by(by)
+        kind, value, token = Inspeximus._acl_selector(scope, tag, key, ids)
+        k = self._acl_key(b, a, kind, token)
+        was = any(r.get("key") == k and r.get("status") == "active"
+                  and ((r.get("meta") or {}).get("acl") or {}).get("state") == "granted"
+                  for r in self._items)
+        out = self._acl_write(a, b, kind, value, token, "revoked", note)
+        out["was_granted"] = was
+        return out
+
+    def _acl_note_problem(self, reason: str, rec_id=None, agent=None) -> None:
+        """A grant that cannot be evaluated DENIES, and says so. Kept bounded (last 200) so a malformed
+        store cannot grow the process without limit, and mirrored to the `inspeximus.acl` logger."""
+        _ACL_LOG.warning("grant denied: %s (agent=%r, grant=%r)", reason, agent, rec_id)
+        probs = self._acl_problems
+        probs.append({"ts": time.time(), "agent": agent, "grant": rec_id, "reason": reason})
+        if len(probs) > 200:
+            del probs[:-200]
+
+    def _acl_grants_for(self, agent: str) -> list:
+        """The ACTIVE grants that apply to `agent` in THIS handle's tenant, read from the SHARED list.
+
+        It must read `_items`, not `items`: `items` is the very filter this feeds, and access-control rows
+        are invisible to an agent-bound handle by design (an agent does not get to read the ACL).
+
+        FAIL CLOSED on disagreement: a supersession leaves one active act per grant key, but a hand-edited
+        or partially-restored store can leave two that disagree. 'granted' and 'revoked' both active is not
+        a tie to break in the reader's favour -- the whole key is dropped and the ambiguity is logged."""
+        tv = self.tenant
+        by_key: dict = {}
+        for r in self._items:
+            if not _is_acl_record(r) or r.get("status") != "active":
+                continue
+            if r.get("tenant") != tv:
+                continue                                # the ACL is per-tenant, like everything else
+            acl = (r.get("meta") or {}).get("acl")
+            if not isinstance(acl, dict):
+                self._acl_note_problem("grant record carries no readable acl metadata", r.get("id"))
+                continue
+            if acl.get("agent") != agent:
+                continue
+            by_key.setdefault(r.get("key"), []).append(r)
+        out = []
+        for k, rows in by_key.items():
+            states = {((r.get("meta") or {}).get("acl") or {}).get("state") for r in rows}
+            if len(states) != 1 or not (states <= {"granted", "revoked"}):
+                self._acl_note_problem(
+                    f"grant key {k!r} has {len(rows)} active acts with disagreeing states {sorted(map(str, states))}; "
+                    f"an unresolvable grant authorises nothing", rows[0].get("id"), agent)
+                continue
+            if states == {"granted"}:
+                out.append(rows[0])
+        return out
+
+    def _acl_match(self, g: dict, rec: dict) -> bool:
+        """Does grant record `g` authorise reading `rec`? Every branch that cannot decide returns False.
+
+        THE SELECTOR IS VALIDATED HERE, not only where the grant was minted, and that is the load-bearing
+        part. `scope` and `key` are compared with `==` against a field that is ABSENT on most records, so a
+        grant whose stored value is missing or null degenerates to `None == None` and authorises every
+        record that has no scope (or no key) -- the widest possible grant, produced by the emptiest possible
+        input, on the read path. That is the shape a sibling unit just found in a signed certificate: a
+        check that holds VACUOUSLY once its scope is empty, and here it fails OPEN rather than merely
+        reporting a hollow pass. grant() cannot mint such a record, but a hand-edited store, a partial
+        restore or a future writer can, so the evaluator refuses it independently."""
+        acl = (g.get("meta") or {}).get("acl") or {}
+        if g.get("tenant") != rec.get("tenant"):
+            return False                       # a grant never reaches across a tenant boundary
+        by = acl.get("by")
+        if not isinstance(by, str) or not by:
+            self._acl_note_problem(f"grant names no granter (by={by!r}); it authorises nothing",
+                                   g.get("id"), acl.get("agent"))
+            return False
+        if by != "*" and rec.get("owner_agent") != by:
+            return False                       # an agent may lend only what it owns
+        kind, val = acl.get("kind"), acl.get("value")
+        if kind in ("scope", "tag", "key"):
+            if not isinstance(val, str) or not val:
+                self._acl_note_problem(
+                    f"grant selector {kind}={val!r} is empty or not a string; an unevaluable selector "
+                    f"authorises nothing (it would otherwise match every record that lacks the field)",
+                    g.get("id"), acl.get("agent"))
+                return False
+            if kind == "scope":
+                return (rec.get("meta") or {}).get("scope") == val
+            if kind == "tag":
+                return val in (rec.get("tags") or [])
+            return rec.get("key") == val
+        if kind == "ids":
+            if not isinstance(val, (list, tuple, set)) or not val:
+                self._acl_note_problem(f"grant selector ids={val!r} is empty or not a list; it authorises "
+                                       f"nothing", g.get("id"), acl.get("agent"))
+                return False
+            return rec.get("id") in set(val)
+        self._acl_note_problem(f"grant has an unknown selector kind {kind!r}", g.get("id"), acl.get("agent"))
+        return False
+
+    def _acl_visible(self, rows) -> list:
+        """The ALLOW-LIST for this handle's agent: records it owns, plus records an active grant covers.
+        Access-control rows themselves are never visible through an agent handle."""
+        me = self.agent
+        if not isinstance(me, str) or not me:
+            # An agent handle with no usable identity can own nothing and be granted nothing. Returning the
+            # rows unfiltered here would be the whole feature failing open on a falsy value.
+            self._acl_note_problem(f"agent handle has no usable identity ({me!r}); it reads nothing", None, me)
+            return []
+        grants = self._acl_grants_for(me)
+        out = []
+        for r in rows:
+            if _is_acl_record(r):
+                continue
+            if r.get("owner_agent") == me or any(self._acl_match(g, r) for g in grants):
+                out.append(r)
+        return out
+
+    def can_read(self, agent: str, id: str) -> dict:
+        """Explain one access decision: {allowed, reason, via}. `via` is the grant record's id when access
+        came from a grant, 'owner' when the agent wrote the record itself, and None on a denial. The
+        surface that makes an ACL inspectable one record at a time, without having to run a recall.
+
+        It also carries `problems`: the grants that could NOT be evaluated while answering THIS question,
+        each of which denied. That matters because a denial caused by a malformed grant and a denial caused
+        by no grant at all read identically from the outside -- "bob sees nothing" is the same sentence
+        either way, and only one of them is a store someone needs to go and fix."""
+        a = Inspeximus._check_agent_id(agent)
+        tv = self.tenant
+        seen = len(self._acl_problems)
+
+        def _out(allowed, reason, via):
+            # The problems recorded WHILE answering this call, not the whole history: an operator asking
+            # about bob should not be handed a defect that was logged during someone else's lookup.
+            return {"allowed": allowed, "reason": reason, "via": via,
+                    "problems": [p["reason"] for p in self._acl_problems[seen:]]}
+
+        rec = next((r for r in self._items if r.get("id") == id
+                    and (tv is None or r.get("tenant") == tv)), None)
+        if rec is None:
+            return _out(False, "no such record in this handle's scope", None)
+        if _is_acl_record(rec):
+            return _out(False, "access-control records are not readable through an agent handle", None)
+        if rec.get("owner_agent") == a:
+            return _out(True, "the agent owns this record", "owner")
+        for g in self._acl_grants_for(a):
+            if self._acl_match(g, rec):
+                acl = (g.get("meta") or {}).get("acl") or {}
+                return _out(True, f"granted by {acl.get('by')!r} on {acl.get('kind')}={acl.get('value')!r}",
+                            g.get("id"))
+        return _out(False, "no active grant covers this record for this agent", None)
+
+    def grants(self, agent: str | None = None) -> list:
+        """The grants that are in force right now (optionally for one agent), newest first. Read-only."""
+        want = Inspeximus._check_agent_id(agent) if agent is not None else None
+        rows = []
+        for r in self._items:
+            if not _is_acl_record(r) or r.get("status") != "active" or r.get("tenant") != self.tenant:
+                continue
+            acl = (r.get("meta") or {}).get("acl") or {}
+            if acl.get("state") != "granted":
+                continue
+            if want is not None and acl.get("agent") != want:
+                continue
+            rows.append({"id": r["id"], "key": r.get("key"), "agent": acl.get("agent"), "by": acl.get("by"),
+                         "kind": acl.get("kind"), "value": acl.get("value"), "ts": r.get("ts"),
+                         "note": acl.get("note")})
+        return sorted(rows, key=lambda x: x["ts"] or 0, reverse=True)
+
+    def grant_log(self, agent: str | None = None) -> list:
+        """EVERY access-control act -- grants, revocations and the ones a later act retired -- newest first.
+        The answer to 'who could read this, and when was it taken back'. Read-only.
+
+        Each entry also carries `problems`-free plain fields; grants that could not be EVALUATED are not
+        acts and are surfaced separately by the `inspeximus.acl` logger and by can_read()."""
+        want = Inspeximus._check_agent_id(agent) if agent is not None else None
+        rows = []
+        for r in self._items:
+            if not _is_acl_record(r) or r.get("tenant") != self.tenant:
+                continue
+            acl = (r.get("meta") or {}).get("acl") or {}
+            if want is not None and acl.get("agent") != want:
+                continue
+            rows.append({"id": r["id"], "key": r.get("key"), "agent": acl.get("agent"), "by": acl.get("by"),
+                         "kind": acl.get("kind"), "value": acl.get("value"), "state": acl.get("state"),
+                         "status": r.get("status"), "ts": r.get("ts"), "note": acl.get("note")})
+        return sorted(rows, key=lambda x: x["ts"] or 0, reverse=True)
+
+    def as_agent(self, agent: str):
+        """A READ HANDLE bound to `agent` over THIS store: same file, same records, same config, but every
+        read hard-filtered to what that agent owns or has been granted, and every write it makes stamped as
+        that agent's. Fail-closed -- with no grants issued it sees only its own writes.
+
+            store.remember("shared roadmap", tags=["roadmap"])          # operator-owned
+            store.grant("bob", tag="roadmap")
+            store.as_agent("bob").recall("roadmap")                     # -> the record
+            store.as_agent("eve").recall("roadmap")                     # -> nothing
+            store.revoke("bob", tag="roadmap")
+            store.as_agent("bob").recall("roadmap")                     # -> nothing, on the next read
+        """
+        return _TenantView(self, self.tenant, agent=Inspeximus._check_agent_id(agent))
 
     def erasure_report(self) -> dict:
         """Audit view of deliberate erasures: total tombstones + each {memory_id, ts, request_id}. Read-only;
@@ -5483,7 +5909,10 @@ class Inspeximus:
             if s == "hub":
                 return include_hubs
             return include_superseded            # superseded / other non-active
-        pool = [r for r in self.items if _eligible(r)]
+        # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
+        # either. Without this, issuing a grant would put "ACL: ... granted agent 'bob' read access ..."
+        # into the answer set of every loosely-related query.
+        pool = [r for r in self.items if _eligible(r) and not _is_acl_record(r)]
         # HARD TENANT ISOLATION (fail-closed, non-bypassable): a tenant-bound store sees ONLY its own tenant's
         # records, always — this is enforced here on the STORE, not via a caller argument, so no forgotten
         # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
@@ -7381,8 +7810,11 @@ class Inspeximus:
         making the nearest-neighbour search sublinear needs an inverted index, which is an architectural
         change rather than a local one. Call it out of band on a large store."""
         now = time.time()
-        act = [r for r in self._tenant_rows() if r.get("status") == "active"]
-        sup = [r for r in self._tenant_rows() if r.get("status") == "superseded"]
+        # _content_rows(), not _tenant_rows(): a grant is an ACT, and counting the access-control
+        # bookkeeping as memory would make "what is in memory, and is it clean" answer about the ACL.
+        _rows = self._content_rows()
+        act = [r for r in _rows if r.get("status") == "active"]
+        sup = [r for r in _rows if r.get("status") == "superseded"]
         from collections import Counter
         by_type = dict(Counter(r.get("mtype", "episodic") for r in act))
         linked = sum(1 for r in act if r.get("links"))
@@ -7408,7 +7840,7 @@ class Inspeximus:
         # detail is in supersession_report(); this is the pointer that tells them to go and read it.
         by_policy = self.supersession_report().get("by_policy") or {}
         retired = {p: n for p, n in by_policy.items() if p in ("echo_guard", "objectless_guard")}
-        return {"total": len(self._tenant_rows()), "active": len(act), "superseded": len(sup), "by_type": by_type,
+        return {"total": len(_rows), "active": len(act), "superseded": len(sup), "by_type": by_type,
                 "consolidated": linked, "decayed": decayed, "redundant_estimate": redundant,
                 "redundant_frac": round(redundant / max(1, len(sample)), 3), "sampled": len(sample),
                 "retired_on_arrival": sum(retired.values()), "retired_by_policy": retired}
@@ -8076,7 +8508,9 @@ class Inspeximus:
         """Flag mutually-incompatible memories among RELATED ones (similarity-gated) for human review.
         `incompatible(a_text, b_text)->bool` defaults to a negation/polarity heuristic."""
         inc = incompatible or _negation_clash
-        active = [r for r in self._tenant_rows() if r["status"] == "active"
+        # _content_rows(): "granted" vs "revoked" on one grant key is a negation clash by the default
+        # heuristic, so without this every revocation would be reported as a contradictory memory pair.
+        active = [r for r in self._content_rows() if r["status"] == "active"
                   and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant-scoped
         flags = []
         for i, a in enumerate(active):
@@ -8630,12 +9064,19 @@ class _TenantView:
     them is the VIEW's tenant), and their tenant-aware internal helpers (_supersede_by_key, _tenant_rows) are
     re-bound too; everything else (`items`, `_save`, `_qvec`, `embed`, config flags, ...) resolves to the parent
     via __getattr__, so reads/writes land on the shared store. Non-tenant methods (credit, verify_*, anchor, ...)
-    are used as-is on the parent through __getattr__ and are unaffected by tenancy."""
-    __slots__ = ("_parent", "tenant")
+    are used as-is on the parent through __getattr__ and are unaffected by tenancy.
 
-    def __init__(self, parent: "Inspeximus", tenant: str):
+    SINCE 1.90.0 the same view carries a second, independent scoping dimension: `agent` (see
+    Inspeximus.as_agent), the agent-to-agent read ACL. It is the same class deliberately -- the two
+    dimensions compose (tenant first, then the grant allow-list), and a second view class would have meant
+    a second copy of the classification below, which is the machinery that stops a newly added method from
+    leaking by default. Either dimension may be None."""
+    __slots__ = ("_parent", "tenant", "agent")
+
+    def __init__(self, parent: "Inspeximus", tenant: str | None, agent: str | None = None):
         object.__setattr__(self, "_parent", parent)
         object.__setattr__(self, "tenant", tenant)
+        object.__setattr__(self, "agent", agent)
 
     #: Methods that are genuinely STORE-LEVEL — they operate on the shared file, index, receipt chain or
     #: config, where "this tenant's slice" is not a meaningful scope. Passing these through is deliberate.
@@ -8647,7 +9088,9 @@ class _TenantView:
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
         "verify_attribution", "register_erasure_target", "explain_growth",
         "detect_split_view", "check_self_narration", "classify_reversion",
-        "restore_intent", "revert_intent", "revert_capability", "believed_at",
+        "restore_intent", "revert_intent", "revert_capability",
+        # `believed_at` is NOT store-level: it is a read surface that returns a record's plaintext as of a
+        # timestamp, so it is rebound on the view below and scoped like every other read.
         # A pure static scorer: it reads the record dict handed to it and touches no rows, so it has no
         # tenant to get wrong. (The methods that SELECT the records it scores -- close_session,
         # session_context, _session_entries -- are rebound on the view, not listed here.)
@@ -8666,8 +9109,8 @@ class _TenantView:
                 f"genuinely store-wide.")
         return getattr(self._parent, name)           # data attributes (items, config, caches) stay shared
 
-    def __setattr__(self, name, value):          # config writes go to the shared parent (tenant is slot-local)
-        if name == "tenant":
+    def __setattr__(self, name, value):     # config writes go to the shared parent (the scopes are slot-local)
+        if name in ("tenant", "agent"):
             object.__setattr__(self, name, value)
         else:
             setattr(self._parent, name, value)
@@ -8684,7 +9127,12 @@ class _TenantView:
         return self._parent._items              # the real, shared list (writes and audits go here)
 
     def for_tenant(self, tenant: str):           # re-scope from the same shared store
-        return _TenantView(self._parent, str(tenant))
+        # KEEP the agent binding. Re-scoping the tenant must never drop the ACL: `view.for_tenant(t)` that
+        # returned an operator handle would be a privilege ESCALATION reachable from inside the sandbox.
+        return _TenantView(self._parent, str(tenant), agent=self.agent)
+
+    def as_agent(self, agent: str):              # bind (or re-bind) the ACL dimension, keeping the tenant
+        return _TenantView(self._parent, self.tenant, agent=Inspeximus._check_agent_id(agent))
 
     # tenant-sensitive surface: rebound so `self` is the VIEW (its tenant), state stays the parent's
     def apply_retention(self, *a, **k):       return Inspeximus.apply_retention(self, *a, **k)
@@ -8742,6 +9190,32 @@ class _TenantView:
     def selection_integrity(self, *a, **k): return Inspeximus.selection_integrity(self, *a, **k)
     def _cluster_active(self, *a, **k): return Inspeximus._cluster_active(self, *a, **k)
     def _supersede_by_key(self, *a, **k): return Inspeximus._supersede_by_key(self, *a, **k)
+    # REBOUND, like _tenant_rows beside it. Private names fall through __getattr__ to the parent, whose
+    # tenant is None, so the un-rebound version handed a tenant view every tenant's rows -- and
+    # memory_report(), its first caller, reported 2 records to a tenant that owns 1. Caught by
+    # test_aggregate_reports_do_not_count_another_tenant, which is why that test exists.
+    def _content_rows(self, *a, **k):   return Inspeximus._content_rows(self, *a, **k)
+    # MOVED OUT of _STORE_LEVEL. It reads record TEXT off `self.items`, so passing it through ran it on the
+    # parent (tenant/agent None = operator) and returned another scope's plaintext. The tenant sweep did not
+    # catch it because its fixture puts the secret on a SUPERSEDED record while believed_at returns the
+    # latest-asserted value -- a check that never sees its target, reporting safe. Found by the agent-grant
+    # sweep, whose fixture holds one record; the fix closes it for tenants and agents alike.
+    def believed_at(self, *a, **k):     return Inspeximus.believed_at(self, *a, **k)
+    # ACL surface: rebound for the same reason as the tenant surface. Reaching these through __getattr__
+    # would run them on the PARENT, whose tenant/agent are None (operator) -- so `alice.grant(...)` would
+    # have been recorded as an operator grant over every tenant's records.
+    def grant(self, *a, **k):           return Inspeximus.grant(self, *a, **k)
+    def revoke(self, *a, **k):          return Inspeximus.revoke(self, *a, **k)
+    def grants(self, *a, **k):          return Inspeximus.grants(self, *a, **k)
+    def grant_log(self, *a, **k):       return Inspeximus.grant_log(self, *a, **k)
+    def can_read(self, *a, **k):        return Inspeximus.can_read(self, *a, **k)
+    def _acl_visible(self, *a, **k):    return Inspeximus._acl_visible(self, *a, **k)
+    def _acl_grants_for(self, *a, **k): return Inspeximus._acl_grants_for(self, *a, **k)
+    def _acl_match(self, *a, **k):      return Inspeximus._acl_match(self, *a, **k)
+    def _acl_key(self, *a, **k):        return Inspeximus._acl_key(self, *a, **k)
+    def _acl_resolve_by(self, *a, **k): return Inspeximus._acl_resolve_by(self, *a, **k)
+    def _acl_write(self, *a, **k):      return Inspeximus._acl_write(self, *a, **k)
+    def _acl_note_problem(self, *a, **k): return Inspeximus._acl_note_problem(self, *a, **k)
     def candidates(self, *a, **k):      return Inspeximus.candidates(self, *a, **k)
     def promote_candidate(self, *a, **k): return Inspeximus.promote_candidate(self, *a, **k)
     def discard_candidate(self, *a, **k): return Inspeximus.discard_candidate(self, *a, **k)

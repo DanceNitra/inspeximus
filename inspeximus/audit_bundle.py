@@ -12,10 +12,11 @@ against the file alone:
     python -m inspeximus.audit_bundle build  --path store.json --out bundle.json     # operator exports
     python -m inspeximus.audit_bundle verify bundle.json                             # auditor checks, offline
 
-The bundle is CONTENT-FREE: the write receipts commit to content/attribution HASHES (never text), and the
-tombstones carry surrogate memory ids + request ids -- so the artifact proves the ACTS (a write with this
-commitment happened at T; a record with this id was erased at T for request R) and their append-only integrity,
-never the content. That is exactly the honest boundary governance_report already states, now portable.
+The bundle is CONTENT-FREE: the write receipts commit to content/attribution HASHES (never text), the
+tombstones carry surrogate memory ids + request ids, and the access-control block carries the grant/revoke
+ACTS (which agent, which selector label, granted or revoked, when) -- so the artifact proves the ACTS (a
+write with this commitment happened at T; a record with this id was erased at T for request R; agent B could
+read the records tagged X from T1 until T2) and their append-only integrity, never the content. That is exactly the honest boundary governance_report already states, now portable.
 
 HONEST SCOPE (unchanged, restated in-band): this verifies THIS store's own integrity, not the app's vector
 index / prompt logs / backups; it is a tamper-evident record-keeping ARTIFACT, not a compliance certification.
@@ -68,6 +69,29 @@ def _content_free_tombstones(store) -> list:
     return out
 
 
+def _acl_acts(store) -> list:
+    """Every agent-to-agent read GRANT and REVOCATION, oldest first -- the access-control half of the
+    record-keeping question ("who was allowed to read what, and when was it taken back").
+
+    It needs no chain of its own: a grant is an ordinary store record, so it is already covered by the
+    write receipt chain exported above and by the anchor. What is added here is the READING of those
+    records, because a receipt commits to a hash and an auditor cannot recover "bob could read the billing
+    tag between T1 and T2" from a hash.
+
+    STILL NO MEMORY TEXT. The fields are the access-control act itself -- the agents, the selector label or
+    the surrogate record ids it names, and whether it granted or revoked. Nothing from any memory's content
+    crosses into the bundle here, which is the boundary the rest of this module keeps."""
+    # AttributeError ONLY, deliberately narrow. A store object from before the ACL simply has no
+    # grant_log(), and that is not a failure. A bare `except Exception` here would also swallow a real
+    # error and hand the auditor a bundle whose access-control section is empty because it BROKE -- an
+    # absent ACL block reads as "no grants were ever issued", which is a statement, not a silence.
+    if not hasattr(store, "grant_log"):
+        return []
+    acts = store.grant_log()
+    keep = ("id", "key", "agent", "by", "kind", "value", "state", "status", "ts")
+    return [{k: a.get(k) for k in keep} for a in sorted(acts, key=lambda x: x.get("ts") or 0)]
+
+
 def build_bundle(store, expected_pubkey: str | None = None, sign=None) -> dict:
     """Serialise a store's record-keeping state into one portable, self-verifying artifact. `expected_pubkey`
     pins the signature-authenticity check; `sign(bytes)->hex` (opt-in) lets an external witness co-sign the
@@ -85,6 +109,7 @@ def build_bundle(store, expected_pubkey: str | None = None, sign=None) -> dict:
         #                                        "empty store" from "store with data but receipts disabled"
         "write_chain": _content_free_writes(store),
         "tombstone_chain": _content_free_tombstones(store),
+        "grants": _acl_acts(store),
     }
     bundle["bundle_hash"] = _bundle_hash(bundle)
     return bundle
@@ -329,9 +354,32 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             bad("this bundle carries NO write or tombstone receipts -- nothing here to verify, which is "
                 "not the same as verified")
 
+    limits: list = []
+    # (7b) ACCESS CONTROL. Grants are ordinary records, so each one has a write receipt in the chain above --
+    # which means the bundle can be asked whether its ACL summary is backed by the evidence beside it. An
+    # act listed here with no receipt was appended to the bundle, not written to the store; that is the
+    # forgery this catches, and it is the same class as the governance/tombstone disagreement in (6b).
+    # It is only assertable when the chain covers the WHOLE store -- with receipts enabled part-way through,
+    # an uncovered grant is ordinary history, so it is reported as a limit instead of an accusation.
+    acl_acts = bundle.get("grants") or []
+    if acl_acts:
+        receipted_ids = {r.get("memory_id") for r in wc}
+        missing = [a.get("id") for a in acl_acts if a.get("id") not in receipted_ids]
+        full_coverage = bool(wc) and isinstance(n_records, int) and n_records <= len(wc)
+        live = sum(1 for a in acl_acts if a.get("status") == "active" and a.get("state") == "granted")
+        if missing and full_coverage:
+            bad(f"{len(missing)} access-control act(s) in this bundle are covered by NO write receipt "
+                f"({', '.join(map(str, missing[:5]))}{' ...' if len(missing) > 5 else ''}) -- the ACL "
+                f"summary claims a grant the store's own write chain never recorded")
+        elif missing:
+            limits.append(f"{len(missing)} access-control act(s) predate this store's write receipts, so "
+                          f"the ACL summary is not backed by the chain for those -- not an accusation")
+        else:
+            ok(f"access control: {len(acl_acts)} grant/revocation act(s), all covered by the write chain; "
+               f"{live} grant(s) in force at export")
+
     # (8) CONTENT -- the one thing checks 1-7 structurally cannot see. Folded in only when the caller hands
     # over the store; otherwise the omission is stated rather than left to be inferred from an absent line.
-    limits = []
     content_checked = store_items is not None
     if content_checked:
         b = bind_content(bundle, store_items)
@@ -379,6 +427,9 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             "erasures": anchor.get("n_tombstones"),
             "erasure_requests": len(gov.get("by_request") or {}),
             "superseded_total": (bundle.get("supersession") or {}).get("superseded_total", 0),
+            "acl_acts": len(acl_acts),
+            "grants_in_force": sum(1 for a in acl_acts
+                                   if a.get("status") == "active" and a.get("state") == "granted"),
             "operator_adversarial": bool(witnesses and cosigs),
             "inspeximus_version": bundle.get("inspeximus_version"),
         },

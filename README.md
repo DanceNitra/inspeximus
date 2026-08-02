@@ -392,6 +392,55 @@ certification** — it proves the *acts* (a write with this commitment at T; a r
 and their append-only integrity, never the content (a hash of PII is still PII). Full demo:
 `examples/09_audit_bundle.py`.
 
+### Agent-to-agent memory grants — scoped, revocable, and in the same audit trail
+
+Multi-agent is the ordinary deployment shape now, and the moment two agents share a store the questions are
+immediate: **which agent may read which memories, who granted it, and how is it taken back.** Surveying the
+agent-memory field we found no comparable scoped/revocable sharing primitive — that is an observation about
+our search, not a claim about anyone's product. inspeximus does it **deterministically, zero-LLM, in the
+single-file core**, and every grant and revocation lands in the write-receipt chain you already have.
+
+```bash
+inspeximus remember "the payout rotation runbook" --tags billing
+inspeximus grant bob --tag billing            # scoped: --scope / --tag / --key / --ids
+inspeximus recall runbook --as-agent bob      # -> the record
+inspeximus recall runbook --as-agent eve      # -> nothing (fail-closed, no grant)
+inspeximus revoke bob --tag billing           # effective on the next read; deletes nothing
+inspeximus grants --log                       # every grant and revocation, newest first
+```
+
+```python
+store.grant("bob", tag="billing")             # or scope= / key= / ids=
+store.as_agent("bob").recall("runbook")       # only what bob owns or has been granted
+store.revoke("bob", tag="billing")
+store.can_read("bob", record_id)              # {"allowed": False, "reason": ..., "via": None, "problems": []}
+```
+
+Over MCP: `grant`, `revoke`, `grants`, `grant_log`, `can_read`, `recall_as`, `get_as`. Note that the MCP
+server holds an **operator** handle — its other read tools see the whole store, and `recall_as`/`get_as` are
+the scoped reads. To genuinely confine an agent, hand it a scoped store (`store.as_agent(...)`) rather than
+relying on it to pick the scoped tool.
+
+**A selector is `scope`, `tag`, `key` or `ids` — never a query.** Membership is exact-match on a stored
+field, decidable in one pass with no embedder, so the set a grant authorises is the same tomorrow as today.
+A query-shaped selector would make membership a function of a similarity score, and an ACL that silently
+widens after a re-embed is not an ACL.
+
+**It fails closed, and that is tested rather than asserted.** No grants means an agent reads only its own
+writes; a grant that cannot be evaluated — unknown selector kind, missing granter, two active acts
+disagreeing, or an *empty* selector value — authorises nothing. That last one is the sharp edge: `scope` and
+`key` are compared with `==` against a field most records do not carry, so a grant whose value went missing
+would otherwise degenerate to `None == None` and match every record *lacking* the field. The scoping lives in
+the same `items` chokepoint as tenant isolation, so a method added tomorrow is access-controlled by
+construction, and `tests/test_agent_grants.py` sweeps **every public method** from an ungranted handle rather
+than checking `recall` alone.
+
+**Honest scope.** This is logical isolation inside one store and one process, like tenancy — not a substitute
+for separate stores/keys when the agents are mutually hostile and the process is the trust boundary. `by`
+(the granting agent) is an identity the caller asserts, not one this library authenticates; that is the same
+limit already stated for supersession. Revocation deletes nothing: the owner keeps the record, other agents
+keep their own grants, and the withdrawn grant stays in `grant_log()` as evidence.
+
 ## Why inspeximus — a deterministic, zero-LLM write path
 
 Everything above — a provenance answer you can check, a correction trail you can audit, an erasure receipt an

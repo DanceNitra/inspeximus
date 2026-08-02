@@ -304,6 +304,58 @@ parametrised over all four committed fields, beside an honest anchor that must s
 `examples/12_split_view_detection.py` runs the whole story. Prior art credited rather than reinvented:
 RFC 6962 (Certificate Transparency), Sigstore/Rekor.
 
+## Unreleased - agent-to-agent memory grants: scoped, revocable, and in the chain that already exists
+
+**New: `grant()` / `revoke()` / `as_agent()`.** Multi-agent is the normal deployment shape, and two agents
+sharing a store immediately raises which agent may read which memories, who granted it, and how it is taken
+back. A grant names a subset by `scope`, `tag`, `key` or `ids` — exact-match on a stored field, so the
+authorised set is decidable with no embedder and means the same tomorrow as today. A query selector was
+deliberately refused: its membership is a similarity score, so the same grant would cover a different set
+after a re-embed, and an ACL that silently widens is not an ACL. Reads go through `store.as_agent("bob")`;
+`revoke()` takes effect on the next read. Exposed over MCP (`grant`, `revoke`, `grants`, `grant_log`,
+`can_read`, `recall_as`, `get_as`) and the CLI (`grant`, `revoke`, `grants [--log]`,
+`recall --as-agent`). **Backwards compatible: with no grants configured, an unbound handle behaves exactly
+as before** — no owner stamp on writes, byte-identical recall.
+
+**A grant is a record, not a second log.** Each act is an ordinary hash-chained write, so it inherits the
+write receipts, the anchor, `history()`, `provenance()` and `supersession_report()` — revocation *is* keyed
+supersession. The audit bundle gains a `grants` block (the acts, never memory text) plus a check that every
+act it lists is covered by the write chain, so a grant appended to a bundle but never written to the store
+fails verification. Access-control rows are carved out of the content readers (`recall`, `memory_report`,
+`contradictions`, eviction, the consolidate keep-budget) so issuing a grant cannot inflate a memory count or
+surface as a recall hit.
+
+**Fail-closed, including the empty cases.** No grants means an agent reads only its own writes. A grant that
+cannot be evaluated authorises nothing: unknown selector kind, missing/empty granter, two active acts
+disagreeing on a key — and, the sharp one, an *empty selector value*. `scope` and `key` are compared with
+`==` against a field most records do not carry, so a grant whose value went missing degenerates to
+`None == None` and matches every record *lacking* the field: the widest grant in the store from the emptiest
+input, on the read path. The evaluator refuses it independently of the minting path. `remember()` also now
+refuses the reserved `acl::grant::` keyspace, because a writer who can mint a grant key can authorise itself
+and the ACL would be decorative.
+
+**Two isolation defects found by the new sweep, both fixed.** (1) `believed_at()` was on the tenant view's
+store-level passthrough while reading record text off `self.items`, so it returned another tenant's
+plaintext; the existing tenant sweep missed it because its fixture puts the secret on a *superseded* record
+and `believed_at` returns the latest-asserted value — a check that never sees its target. (2) The new
+`_content_rows()` helper was not rebound on the view, so `memory_report()` reported 2 records to a tenant
+that owned 1.
+
+**Composition with the persist path, measured.** `_save()` serialises `self.items` — the scoped view — so
+any *directly bound* handle (`Inspeximus(tenant=...)`, and now `Inspeximus(agent=...)`) writes only its own
+rows and silently drops the rest; `StoreChangedOnDisk` cannot see it, because a sequential handoff is not a
+concurrent write. The ACL's documented entry point does **not** reach that path: `as_agent()` returns a view
+that shares the parent's `_items` and forwards `_save` to the parent, so a scoped write persists the whole
+store. Both halves are asserted — the safe one as a passing test over every route to a write (remember,
+grant, revoke, flush, reopen), the unsafe one as `xfail(strict=True)` so this feature records the
+interaction instead of quietly depending on it. The fix belongs to the persist path, not here.
+
+**Write-side consequence, stated rather than discovered.** Supersession is unauthenticated, so in a
+multi-agent store agent B could retire agent A's current value by guessing the key, with no read access at
+any point — a read ACL does not close a write hole. `_supersede_by_key` now resolves against the handle's own
+scoped view: a write can only retire what its writer can see. The cost is real and asserted in the tests —
+two agent-bound handles keying the same string each keep an active record, so the operator view sees both.
+Unscoped (operator) writes are untouched: keys stay global, last-write-wins.
 ## 1.89.0 - UPGRADE IF YOU USE `slash()`/`restore()`: a retraction could be lost, and it walked a stale graph
 
 Two defects on the accountability path, both found by adversarially reviewing a claim we were about to

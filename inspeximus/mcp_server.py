@@ -1188,6 +1188,103 @@ def memory_report(dup_threshold: float = 0.9) -> dict:
     return _MEM.memory_report(dup_threshold=dup_threshold)
 
 
+# ── AGENT-TO-AGENT READ GRANTS (scoped, revocable ACL) ────────────────────────────────────────────────
+# Multi-agent is the ordinary deployment shape now, and the moment two agents share a store the questions
+# are which agent may read which memories, who granted it, and how it is taken back. These five tools are
+# the deterministic, zero-LLM answer: an exact-match selector, an act recorded in the same hash-chained
+# write receipt trail as every other write, and a read handle that fails closed.
+#
+# IDENTITY IS ASSERTED HERE, NOT AUTHENTICATED. MCP gives this server no verified caller identity, so
+# `agent` and `by` are strings the client supplies -- the same honest limit inspeximus already states for
+# supersession. Anything stronger has to come from the surface that actually holds the identity.
+#
+# AND THIS SERVER HOLDS AN OPERATOR HANDLE. Every other tool here (`recall`, `get`, `neighbors`, ...) reads
+# the whole store, because that is what an MCP memory server is for; `recall_as`/`get_as` are the SCOPED
+# reads, opt-in per call. So the ACL is enforced on the STORE, not by which tool a client happens to pick:
+# a host that must genuinely confine an agent gives it a scoped store (`store.as_agent(...)`) rather than
+# trusting it to choose the scoped tool. Said plainly because the opposite reading -- "the grant tools make
+# this server multi-tenant" -- is the one a reader would arrive at on their own, and it is false.
+
+@mcp.tool()
+def grant(agent: str, scope: str = "", tag: str = "", key: str = "", ids: list[str] | None = None,
+          by: str = "", note: str = "") -> dict:
+    """Give another agent READ access to a SUBSET of this store's memories, and record the act.
+
+    Pass EXACTLY ONE selector: `scope` (a memory's meta scope), `tag`, `key` (a supersession key), or `ids`
+    (explicit record ids). Membership is exact-match on a stored field -- no embedder, no similarity
+    threshold, no LLM -- so the set a grant authorises is the same tomorrow as it is today. There is no
+    query selector on purpose: a grant whose membership came from a similarity score would silently widen
+    after a re-embed or a corpus change.
+
+    `by` names the granting agent (a grant issued by an agent covers only records THAT agent owns; omit it
+    for an operator-wide grant). Read with `recall_as(agent, ...)`, end it with `revoke(...)`. Both acts
+    land in the write-receipt chain, so `grant_log()` and the audit bundle show who could read what, and
+    when it was withdrawn. Passing no selector is refused rather than read as "everything"."""
+    return _MEM.grant(agent, scope=scope or None, tag=tag or None, key=key or None,
+                      ids=ids or None, by=by or None, note=note or None)
+
+
+@mcp.tool()
+def revoke(agent: str, scope: str = "", tag: str = "", key: str = "", ids: list[str] | None = None,
+           by: str = "", note: str = "") -> dict:
+    """End a grant -- same arguments as `grant`. Effective on the NEXT read.
+
+    It DELETES NOTHING: the owner keeps every record, any other agent's independent grant is untouched (a
+    different granter or grantee is a different grant), and the withdrawn grant stays in `grant_log()` as
+    evidence that the access existed and ended. `was_granted` in the result says whether a live grant was
+    actually retired or you revoked something that had never been given."""
+    return _MEM.revoke(agent, scope=scope or None, tag=tag or None, key=key or None,
+                       ids=ids or None, by=by or None, note=note or None)
+
+
+@mcp.tool()
+def grants(agent: str = "") -> list[dict]:
+    """The grants in force right now (optionally for one agent), newest first. Read-only."""
+    return _MEM.grants(agent or None)
+
+
+@mcp.tool()
+def grant_log(agent: str = "") -> list[dict]:
+    """EVERY access-control act -- grants, revocations, and the ones a later act retired -- newest first.
+    The auditable answer to "who could read this, and when was it taken back". Read-only."""
+    return _MEM.grant_log(agent or None)
+
+
+@mcp.tool()
+def can_read(agent: str, id: str) -> dict:
+    """Explain ONE access decision: {allowed, reason, via}. `via` is the grant record's id when access came
+    from a grant, "owner" when the agent wrote the record itself, and None on a denial. Use it to inspect an
+    ACL a record at a time instead of inferring it from what a recall did or did not return."""
+    return _MEM.can_read(agent, id)
+
+
+@mcp.tool()
+def recall_as(agent: str, query: str, k: int = 6, full: bool = False, snippet_chars: int = 0) -> list[dict]:
+    """Recall AS a named agent: the same ranking as `recall`, hard-filtered to what that agent owns or has
+    an active grant for. FAIL-CLOSED -- an agent with no grants sees only what it wrote itself, and a grant
+    that cannot be evaluated authorises nothing.
+
+    This is a SEPARATE tool rather than an `as_agent=` argument on `recall` on purpose: an access-control
+    scope that is an optional parameter is one a caller can forget, and forgetting it would read the whole
+    store. Here the scoped read is the only thing this tool can do."""
+    k = max(1, min(int(k), _MAX_K))
+    hits = _MEM.as_agent(agent).recall(query, k=k) or []
+    if full:
+        return hits
+    n = snippet_chars if snippet_chars > 0 else _SNIPPET
+    return [_compact(h, n) for h in hits]
+
+
+@mcp.tool()
+def get_as(agent: str, id: str) -> dict:
+    """Fetch ONE memory's full record AS a named agent -- the scoped companion to `get`, so an agent that
+    found a hit through `recall_as` can read it in full without the unscoped `get` handing it back the whole
+    store's records by id. Returns {} when the id is unknown OR the agent has no access; those two cases are
+    deliberately indistinguishable, so this cannot be used to probe for the existence of a record."""
+    rec = next((r for r in _MEM.as_agent(agent).items if r.get("id") == id), None)
+    return rec or {}
+
+
 # ── RESOURCES (read-only URIs — the second MCP primitive; lets a client browse memory as addressable context) ──
 @mcp.resource("inspeximus://digest")
 def digest_resource() -> str:

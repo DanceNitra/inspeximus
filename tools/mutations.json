@@ -705,7 +705,7 @@
   {
     "name": "the guard keyspace registry goes empty, so nothing is carved out",
     "file": "inspeximus/core.py",
-    "old": "_GUARD_KEYSPACES = (\"code::symbol::\",)",
+    "old": "_GUARD_KEYSPACES = (\"code::symbol::\", _ACL_PREFIX)",
     "new": "_GUARD_KEYSPACES = ()",
     "tests": [
       "tests/test_guard_keyspace_survives_housekeeping.py"
