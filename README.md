@@ -12,7 +12,7 @@ attests it unaltered. The self-correcting memory layer for AI agents.*
 *It serves the new value and refuses to let the old one creep back — deterministically, with no LLM on the
 write path. Extracted from an autonomous research OS that has run it daily over 10,000 notes.*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.89.0
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.90.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -377,17 +377,36 @@ opt-in) that can derive a key from text without an explicit one, and a first-cla
 integration (`from inspeximus.integrations.langchain import InspeximusRetriever` — a retriever that never hands a
 superseded fact back to your chain). `pip install "inspeximus[langchain]"`.
 
-**Honest scope of `regex_extractor` (measured 2026-07-20, corrected from an earlier overclaim).** It keys
-clean declarative statements — "My ZIP code is 94107", "Alice's email is …", "The API rate limit is 500 rps".
-It does **not** reliably key natural conversational prose: measured on an external dialogue corpus (the
-MemOps dataset, arXiv 2607.12893) it derived a key for 5.2% of sentences (1,037 of 19,851 across six transcripts — *no probe in this repository produces these two figures; they come from the MemOps harness, which lives outside it*), and — the part that matters —
-it does not hold a *stable* key across a real correction chain, because "my official title … **was** Junior
-Data Analyst" and "**so my current title is** Data Analyst" yield different keys that never meet. On raw
-chat transcripts, supersession therefore mostly does not fire and inspeximus behaves as a verbatim store.
-**If you control the write, pass `key=` explicitly** — that is the path where corrections-stick, `revert`
-and the erasure guarantees actually hold. (This README previously said the extractors exist "so supersession
-engages over free text"; that was too strong. See CHANGELOG 1.23.1, which also fixes a real data-loss bug
-found in the same measurement.)
+**Honest scope of `regex_extractor` (re-measured 1.90.0).** It keys clean declarative statements — "My ZIP
+code is 94107", "Alice's email is …", "The API rate limit is 500 rps" — and, as of 1.90.0, it holds one key
+across a **conversational correction chain**: leading discourse markers ("actually", "correction:", "so"),
+trailing time adverbials ("… now", "… last week"), `I'm` contractions, current-marking modifiers ("my
+*current* title" == "my title"), a leading clause ("Dana left, so my manager is Priya now"), and
+first-person rephrasing ("my employer is X" / "I work at X") all normalise to the same key. It does this
+**deterministically, zero-LLM, in a single file** — closed-list surface normalisation, nothing on the write
+path but regexes.
+
+Measured on `benchmarks/chain_binding/` (run it: `python benchmarks/chain_binding/probe.py`) — 15 chains,
+18 unrelated pairs, 60 prose sentences:
+
+| | before 1.90.0 | 1.90.0 |
+|---|---|---|
+| correction chains that collapse to one record holding the final value | 2/15 | **9/15** |
+| false binds on unrelated pairs (the control — a keyer that binds everything is worthless) | 1/18 | **0/18** |
+| non-declarative prose keyed (conservative is the goal) | 8/60 | **4/60** |
+
+**Where it stops, and why that is not a bug.** A key is derived only when the sentence NAMES the relation.
+When a later turn names only the *value* and leaves the relation to world knowledge — "actually I'm a
+Principal Engineer now" (that a Principal Engineer is a *title*), "I'm vegan now", "Dan is now an
+engineering manager" — it returns None and the write is a plain append. No deterministic keyer crosses that
+without an ontology or a model. Two surface shapes also remain unsolved: an English noun compound ("the
+Project Atlas deadline") cannot be split into head and modifier without a lexicon, so it does not meet
+"Project Atlas's deadline"; and the bare-copula path keys on the subject alone, so two attributes of one
+entity share a key. **If you control the write, pass `key=` explicitly** — that is still the path where
+corrections-stick, `revert` and the erasure guarantees hold unconditionally. `derive_key(text)` is exported
+if you want the same canonical key elsewhere.
+
+**Upgrading a live store:** first-person keys changed (`my title` → `self::title`). See CHANGELOG 1.90.0.
 
 ## Give your agent this memory in 60 seconds (MCP)
 
@@ -450,7 +469,7 @@ inspeximus check-code src/**/*.py                                            # e
 ```yaml
 # .pre-commit-config.yaml  (point INSPEXIMUS_PATH at a store committed to the repo, e.g. .inspeximus/memory.json)
 - repo: https://github.com/<owner>/inspeximus
-  rev: v1.89.0
+  rev: v1.90.0
   hooks: [{ id: inspeximus-check-code }]
 ```
 

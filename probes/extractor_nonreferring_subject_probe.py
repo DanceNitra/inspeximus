@@ -49,9 +49,15 @@ def main():
         check(f"no key when subject ends non-referring: {t[:40]!r}", regex_extractor(t) is None)
 
     # 3. legitimate keys are untouched
-    for t, want in [("My ZIP code is 94107", "my zip code"),
-                    ("My manager is Diane Kowalski", "my manager"),
-                    ("Correction: my current title is Data Analyst", "my current title"),
+    # KEY SCHEME CHANGED in 1.90.0 for the first-person forms, deliberately, and this is the record of it:
+    # `my X` now canonicalises to `self::X`, and a current-marking modifier folds away, so "my title",
+    # "my current title" and "I work at ..." can land on one key across a correction chain instead of three
+    # keys that never meet. Third-person and bare-copula keys below are byte-identical to before.
+    # MIGRATION: a store written by an older regex_extractor holds the old keys, and a new write will not
+    # supersede them. Re-key or accept that supersession applies from the upgrade forward.
+    for t, want in [("My ZIP code is 94107", "self::zip code"),
+                    ("My manager is Diane Kowalski", "self::manager"),
+                    ("Correction: my current title is Data Analyst", "self::title"),
                     ("Alice's email is alice@example.com", "alice::email"),
                     ("The capital of France is Paris", "france::capital"),
                     ("The API rate limit is 500 rps", "api rate limit")]:

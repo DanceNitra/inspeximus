@@ -30,6 +30,58 @@ script and two test modules had shipped for months with no declared install path
 what the round trip is verified against and it passes, so there is no observed breakage to cap on.
 
 Nothing in the library changed. `import inspeximus` still has zero required dependencies.
+## 1.90.0 - UPGRADE IF YOU SET `m.extractor = regex_extractor` AND HAVE AN EXISTING STORE: first-person keys changed, and old records will no longer be superseded
+
+**What you will see if that is you.** Facts you wrote as "my title is X" are keyed `my title` in your
+store. From 1.90.0 the same sentence keys `self::title`, so a later correction lands on a NEW key and the
+old record stays ACTIVE beside it. Both values are then live and recall can serve either. Re-key the
+affected records, or accept that supersession applies only to writes made from this version forward.
+Nobody who passes `key=` explicitly, and nobody who does not set `extractor`, is affected.
+
+The product's promise is that corrections stick, and supersession is keyed, so the promise is only as good
+as the key. On conversational input the deterministic keyer could not hold one key across a correction
+chain, so nothing bound and the store degenerated toward keep-everything — the advertised behaviour was
+not firing at all on the input the product is sold for. Measured on the new `benchmarks/chain_binding/`
+harness (15 chains, 18 unrelated pairs, 60 prose sentences), before → after:
+
+| measurement | before | after |
+|---|---|---|
+| correction chains that collapse to one record holding the final value | 2/15 | **9/15** |
+| correction turns landing on their chain's key | 6/22 | **15/22** |
+| **false binds on unrelated pairs** (the control; lower is better) | 1/18 | **0/18** |
+| non-declarative prose keyed (lower is more conservative) | 8/60 | **4/60** |
+| records retired by ingesting 60 unrelated prose sentences | 0 | **0** |
+
+Still zero dependencies and **no model on the write path**: everything added is closed-list surface
+normalisation. Leading discourse markers (`actually`, `correction:`, `so`) are stripped from the subject
+side as they already were from the object side; trailing time adverbials (`... now`, `... last week`) are
+tried-then-fallen-back-on so `the meeting is today` keeps its value; `I'm`/`you're` expand (`'s` does not —
+it is the possessive as often as the copula); a leading clause no longer blocks the match (`Dana left, so
+my manager is Priya now` used to yield no key at all); the head noun of a complement can carry the relation
+(`I'm on the Payments team` → `self::team`); and two relational verb frames (`lives in`, `works at`) are
+recognised.
+
+**A data-loss path is closed.** The non-referring guard read `i` but not `i'm`, so `I'm now in the PST
+timezone` and `I'm now the on-call engineer` both keyed on `i'm` and retired each other. Contractions now
+expand before the guard runs, and quantifier/demonstrative subjects (`both approaches`, `some of the
+tests`) are rejected as well.
+
+**BREAKING for first-person keys — read this before upgrading a live store.** `my X is Y` now keys
+`self::X` instead of `my X`, and a *current-marking* modifier folds away, so `my title`, `my current title`
+and `I work at ...` can meet. A store written by an older `regex_extractor` holds the old keys and a new
+write will **not** supersede them; re-key, or accept that supersession applies from the upgrade forward.
+Third-person (`Alice's email` → `alice::email`) and bare-copula (`The API rate limit is 500 rps` → `api
+rate limit`) keys are byte-identical to before.
+
+`former`/`old`/`previous` are pointedly **not** folded away: they name a different, historical fact, and
+folding them in would let `my employer is Globex` destroy `my former employer is Acme`.
+
+**Where it stops, on purpose.** A key is derived only when the sentence NAMES the relation. When a later
+turn names only the value and leaves the relation to world knowledge — `I'm a Principal Engineer now` (that
+a Principal Engineer is a *title*), `I'm vegan now`, `Dan is now an engineering manager` — it returns None
+and the write is a plain append. That is not a gap awaiting a bigger regex: no deterministic keyer crosses
+it without an ontology or a model. Pass `key=` explicitly, or plug `make_llm_extractor`, for those.
+`derive_key(text)` is exported as the reusable keying core so nothing has to re-derive what a key is.
 
 ### benchmarks/locomo - the LOCOMO number is reproducible, and it was understated
 
