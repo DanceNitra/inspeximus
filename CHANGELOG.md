@@ -31,7 +31,7 @@ what the round trip is verified against and it passes, so there is no observed b
 
 Nothing in the library changed. `import inspeximus` still has zero required dependencies.
 
-## Unreleased - the LOCOMO number is reproducible, and it was understated
+### benchmarks/locomo - the LOCOMO number is reproducible, and it was understated
 
 No library change: `inspeximus/` is untouched, and nothing here adds an install requirement. What changed is
 that a claim this README has carried for a year can now be re-run by anyone who has the dataset.
