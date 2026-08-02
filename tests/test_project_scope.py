@@ -167,10 +167,32 @@ def test_supersession_keys_are_NOT_namespaced_by_project(tmp_path):
 
 # ── the MCP surface: flag, env var, precedence, and the escape hatch ───────────────────────────────────────
 
-mcp_server = pytest.importorskip("inspeximus.mcp_server", reason="needs the MCP SDK")
+def _mcp():
+    """The MCP server module, or SKIP -- it needs the OPTIONAL MCP SDK.
+
+    Guarded on the SDK package (`mcp`), whose absence is a ModuleNotFoundError that importorskip turns
+    into a clean skip -- NOT on `inspeximus.mcp_server`, whose module body raises a plain ImportError with
+    install advice. pytest re-raises that one, and an ImportError at import time ABORTS COLLECTION for the
+    whole file, taking every unrelated test in it down with it. Measured on the zero-dependency CI leg:
+    `1 error during collection`, suite interrupted.
+
+    Deliberately a FUNCTION, not a module-level guard. The library-scope and path-resolution tests in this
+    file need no SDK and must actually RUN on that leg -- a file that skipped wholesale there would report
+    green having measured nothing, and the zero-required-dependency leg is precisely where the
+    backwards-compatibility and three-CWD measurements matter most. Measured with `mcp` blocked: 13 of the
+    20 tests here RUN (including the isolation measurement, both backwards-compatibility controls and the
+    three-CWD invariant); only the 7 that drive the MCP surface itself skip.
+    """
+    pytest.importorskip("mcp", reason="the inspeximus MCP server needs the optional MCP SDK")
+    try:
+        import inspeximus.mcp_server as m
+    except ImportError as e:                    # SDK present but unusable (e.g. mcp 2.x reorganised fastmcp)
+        pytest.skip(f"MCP server unavailable: {e}")
+    return m
 
 
 def test_resolve_project_precedence_flag_beats_env():
+    mcp_server = _mcp()
     assert mcp_server.resolve_project("flagname", env={"INSPEXIMUS_PROJECT": "envname"}) == "flagname"
     assert mcp_server.resolve_project(None, env={"INSPEXIMUS_PROJECT": "envname"}) == "envname"
     assert mcp_server.resolve_project(None, env={}) is None, "no flag and no env must mean UNSCOPED"
@@ -183,12 +205,14 @@ def test_resolve_project_empty_env_is_unset_but_an_empty_flag_is_refused():
     `--project ''` raises, because it can only be a mistake and the quiet outcome would be a server that
     shares every project while the user believes it is isolated.
     """
+    mcp_server = _mcp()
     assert mcp_server.resolve_project(None, env={"INSPEXIMUS_PROJECT": "   "}) is None
     with pytest.raises(mcp_server.ProjectScopeError):
         mcp_server.resolve_project("   ", env={})
 
 
 def test_resolve_project_auto_derives_from_the_working_directory(tmp_path):
+    mcp_server = _mcp()
     d = tmp_path / "my-repo"
     d.mkdir()
     assert mcp_server.resolve_project("auto", env={}, cwd=str(d)) == "my-repo"
@@ -196,6 +220,7 @@ def test_resolve_project_auto_derives_from_the_working_directory(tmp_path):
 
 def test_the_project_flag_appears_in_help_and_an_unknown_flag_is_refused():
     """The flag must be DISCOVERABLE, and a typo must not start an unscoped server that looks scoped."""
+    _mcp()
     out = subprocess.run([sys.executable, "-m", "inspeximus.mcp_server", "--help"],
                          capture_output=True, text=True)
     assert out.returncode == 0, out.stderr
@@ -212,6 +237,7 @@ def test_mcp_tools_isolate_write_and_recall_and_the_escape_hatch_crosses(tmp_pat
     The tools read the module-global scope at call time, so flipping it is exactly what `--project` does at
     launch -- this drives the shipped code path rather than a re-implementation of it.
     """
+    _mcp()
     import importlib
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "mcp.json"))
     monkeypatch.delenv("INSPEXIMUS_PROJECT", raising=False)
@@ -257,6 +283,7 @@ def test_mcp_tools_isolate_write_and_recall_and_the_escape_hatch_crosses(tmp_pat
 
 def test_neighbors_does_not_leak_across_projects(tmp_path, monkeypatch):
     """Expansion around a hit must not be a side door into another project."""
+    _mcp()
     import importlib
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "nb.json"))
     monkeypatch.delenv("INSPEXIMUS_PROJECT", raising=False)
@@ -346,4 +373,11 @@ def test_an_explicit_path_outranks_the_scope_and_says_so(tmp_path):
     (repo / ".git").mkdir(parents=True)
     env = {"INSPEXIMUS_SCOPE": "project", "INSPEXIMUS_PATH": str(tmp_path / "explicit.json")}
     assert _surface.resolve_path(None, env=env, cwd=str(repo)) == str(tmp_path / "explicit.json")
+
+
+def test_the_mcp_surface_names_the_rule_that_won(tmp_path):
+    """The reporting half of the precedence rule. Split from the assertion above so that one keeps running
+    on the zero-dependency leg -- the resolution rule is library behaviour and needs no MCP SDK to check."""
+    mcp_server = _mcp()
+    env = {"INSPEXIMUS_SCOPE": "project", "INSPEXIMUS_PATH": str(tmp_path / "explicit.json")}
     assert "OUTRANKS" in mcp_server._path_source(env)
