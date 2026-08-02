@@ -98,6 +98,28 @@ def main(argv: list[str]) -> int:
             p.write_text(new, encoding="utf-8")
         print(f"core.py __version__ pinned to {version}")
 
+    # THE FOURTH INSTANCE, found by building the pre-release checklist (`tools/release_check.py`).
+    # `CITATION.cff` carries a version and NOTHING pinned it and NO test asserted it, so it read
+    # `1.1.0` while the package went from 1.2.0 to 1.88.1 -- measured over the git history, **111
+    # distinct released versions disagreed with it**. It is not a private manifest: Zenodo mints the
+    # DOI record from this file, so every citation of the software for those 111 releases named a
+    # version that had not existed since the second week. It was hand-corrected at 1.88.1, which fixed
+    # the instance and left the class exactly where it was. Pin it.
+    # Same shape as core.py: a PRESENT file whose version key has gone missing is a refusal, not a
+    # shrug, because silently covering nothing is the failure this whole file is about.
+    p = ROOT / "CITATION.cff"
+    if not p.exists():
+        print("CITATION.cff not present under this ROOT; nothing pinned there")
+    else:
+        text = p.read_text(encoding="utf-8")
+        new, n = re.subn(r'^version:.*$', f"version: {version}", text, count=1, flags=re.M)
+        if n != 1:
+            raise SystemExit("::error::CITATION.cff has no `version:` key to pin; refusing to guess "
+                             "where the version lives")
+        if new != text:
+            p.write_text(new, encoding="utf-8")
+        print(f"CITATION.cff pinned to {version}")
+
     # The README badge is the first version a reader sees, and it is prose, so it gets a NARROW
     # pattern: only the standalone `v<semver>` token, never a bare number that might be a citation,
     # a DOI fragment or a dependency bound. If the token is absent the pinner says so and moves on

@@ -228,6 +228,57 @@ def test_the_pinner_refuses_a_core_that_lost_its_version_line(tmp_path):
         _pinner(root).main(["_", "99.98.97"])
 
 
+# ── the FOURTH instance: CITATION.cff, stale across 111 released versions ──────────────────────────
+def test_the_citation_file_matches_the_package():
+    """The file Zenodo mints the DOI record from, and it was never pinned or asserted.
+
+    Measured over the git history: `CITATION.cff` read `1.1.0` while pyproject went from 1.2.0 to
+    1.88.1 -- **111 distinct released versions disagreed with it**, so every citation of this software
+    in that window named a version that had not existed since the second week. It was hand-corrected
+    at 1.88.1, which repaired the instance and left the class untouched. This is the assertion; the
+    pinner below is the fix.
+    """
+    text = open(os.path.join(ROOT, "CITATION.cff"), encoding="utf-8").read()
+    m = re.search(r'^version:\s*["\']?([^"\'\s]+)["\']?\s*$', text, re.M)
+    assert m, "CITATION.cff has no version: key; the DOI record would carry whatever it last said"
+    assert m.group(1) == _pyproject_version(), \
+        "CITATION.cff says %s, the package is %s" % (m.group(1), _pyproject_version())
+
+
+def test_the_pinner_pins_the_citation_file(tmp_path):
+    """OUTCOME, on a copy: set it to the stale value it actually carried, pin, require the new one."""
+    import shutil
+    root = _seed(tmp_path)
+    shutil.copy(os.path.join(ROOT, "CITATION.cff"), root / "CITATION.cff")
+    p = root / "CITATION.cff"
+    p.write_text(re.sub(r'^version:.*$', "version: 1.1.0", p.read_text(encoding="utf-8"),
+                        count=1, flags=re.M), encoding="utf-8")
+    assert _pinner(root).main(["_", "99.98.97"]) == 0
+    assert re.search(r'^version: 99\.98\.97$', p.read_text(encoding="utf-8"), re.M), \
+        "CITATION.cff was not pinned"
+    # ... and the stale value is GONE, not merely joined by a second version line. RELEASING.md
+    # forbids anchoring to a line number, so this asserts on the key, wherever it sits in the file.
+    assert not re.search(r'^version:\s*1\.1\.0\s*$', p.read_text(encoding="utf-8"), re.M)
+
+
+def test_the_pinner_refuses_a_citation_file_that_lost_its_version_key(tmp_path):
+    """THE FALSIFICATION CONTROL for that pin. Rename the key and the pinner must FAIL rather than
+    quietly pin nothing -- the same shape as the core.py control above, for the same reason."""
+    import shutil
+    root = _seed(tmp_path)
+    shutil.copy(os.path.join(ROOT, "CITATION.cff"), root / "CITATION.cff")
+    p = root / "CITATION.cff"
+    p.write_text(re.sub(r'^version:', "release:", p.read_text(encoding="utf-8"), count=1, flags=re.M),
+                 encoding="utf-8")
+    with pytest.raises(SystemExit):
+        _pinner(root).main(["_", "99.98.97"])
+
+
+def test_a_missing_citation_file_is_skipped_rather_than_fatal(tmp_path):
+    """A partial ROOT (a harness) is not a defect. Kept distinct from the case above on purpose."""
+    assert _pinner(_seed(tmp_path)).main(["_", "99.98.97"]) == 0   # _seed copies no CITATION.cff
+
+
 def test_a_missing_core_is_skipped_rather_than_fatal(tmp_path):
     """The sibling case, kept distinct on purpose: a partial ROOT (a harness) is not a defect, so the
     pinner reports and continues. Without this the pre-existing idempotence test, which copies no
