@@ -17,8 +17,35 @@ zero-dependency, and the framework is imported lazily only when you use its adap
 | [Google ADK](#persistent-memory-for-google-adk-inspeximusmemoryservice-074) | `InspeximusMemoryService` | `pip install "inspeximus[google-adk]"` |
 | [Pydantic AI](#memory-as-tools-for-pydantic-ai-inspeximus_toolset-078) | `inspeximus_toolset` | `pip install "inspeximus[pydantic-ai]"` |
 | [CrewAI](#current-truth-storage-for-crewai-inspeximusstorage-1120) | `InspeximusStorage` | `pip install "inspeximus[crewai]"` |
+| Haystack | `InspeximusDocumentStore` | `pip install "inspeximus[haystack]"` |
+| MemoryAgentBench | `InspeximusMABMemory` | no install — matches mem0's `Memory` shape structurally |
 
 Details for each below.
+
+### Which of these is verified, against which upstream version
+
+`docs/integration_conformance.json` is the ledger, and `tools/integration_conformance.py` is what writes
+it. Every adapter has a round trip that goes IN through the framework's own interface and comes back OUT
+through it — a compiled LangGraph, a Haystack `Pipeline`, a Pydantic AI `Agent`, ADK's
+`BaseMemoryService` — and the ledger records the upstream version each was last checked against, so a
+breakage can be dated rather than guessed at.
+
+```bash
+python tools/integration_conformance.py                # VERIFIED / SKIPPED / BROKEN, three counts
+python tools/integration_conformance.py --require-all   # a skip is a failure (CI, extras installed)
+python tools/integration_conformance.py --falsify all   # the control: every round trip MUST break
+```
+
+**A skip is not a pass.** The runner reports the three counts separately and refuses to exit 0 having
+verified nothing, because "every optional dependency is absent, so nothing failed, so we are green" is
+the failure this file exists to prevent. `--falsify` neuters `Inspeximus.remember`, which every adapter
+writes through, and any round trip that still passes is reported as CONTROL FAILED rather than as a pass.
+
+`tests/test_integration_conformance.py` compares every adapter against the ledger on each CI run, so
+drift in either direction is red: an adapter that stops conforming, and one recorded broken that starts
+conforming (which has to be recorded, not absorbed). The deeper per-adapter parity scripts —
+`store_audit.py`, `adk_audit.py`, `haystack_audit.py`, `session_audit.py`,
+`checkpointer_conformance.py` — are indexed from the same registry and run with `--deep`.
 
 ### Every adapter is compliance-aware: `ComplianceMixin` (1.44.0 → all adapters in 1.47.0)
 

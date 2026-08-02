@@ -59,6 +59,15 @@ google-adk = ["google-adk>=2"]
 openai-agents = ["openai-agents"]
 pydantic-ai = ["pydantic-ai"]
 crewai = ["crewai"]
+# `haystack-ai` had NO extra at all, though the adapter, its parity script (haystack_audit.py) and two
+# test modules have shipped for months: `pip install "inspeximus[haystack]"` failed, and CI installed the
+# package by hand in one job so nothing surfaced it. A documented adapter with no supported install path
+# is a broken adapter for anyone who did not read the CI file.
+# `>=2` is a FLOOR and it is the API GENERATION the adapter targets: the 2.x reorganisation is where
+# `haystack.document_stores.types.DocumentStore` / `DuplicatePolicy` live, and 1.x has neither. No upper
+# bound -- 3.0.0 is what the conformance round trip is verified against (docs/integration_conformance.json)
+# and it passes, so there is no observed breakage to cap on.
+haystack = ["haystack-ai>=2"]
 
 [project.scripts]
 inspeximus = "inspeximus.cli:main"
