@@ -1,0 +1,1299 @@
+{
+ "benchmark": "LongMemEval_S end-to-end QA",
+ "generated_utc": "2026-08-01T22:29:56Z",
+ "headline": {
+  "oracle": 0.5,
+  "inspeximus": 0.45,
+  "recency": 0.05,
+  "shuffled": 0.1,
+  "empty": 0.0,
+  "full_context": null
+ },
+ "band_check": {
+  "passed": false,
+  "checks": {
+   "above_floor": true,
+   "below_ceiling": true,
+   "shuffled_at_or_below_floor": false,
+   "empty_at_or_below_floor": true
+  },
+  "reasons": [
+   "control arm shuffled (0.1) scores above the floor (0.05) — the harness is rewarding something other than memory"
+  ]
+ },
+ "operating_point": {
+  "dataset": "longmemeval_s",
+  "dataset_path": "C:\\Users\\Danculus\\.cache\\longmemeval\\longmemeval_s.json",
+  "dataset_sha256": "08d8dad4be43ee2049a22ff5674eb86725d0ce5ff434cde2627e5e8e7e117894",
+  "dataset_sha256_pinned": "08d8dad4be43ee2049a22ff5674eb86725d0ce5ff434cde2627e5e8e7e117894",
+  "dataset_matches_pin": true,
+  "dataset_n": 500,
+  "dataset_source": "https://huggingface.co/datasets/xiaowu0162/longmemeval/resolve/main/longmemeval_s",
+  "subset": "small",
+  "subset_n": 20,
+  "subset_rule": "stratified proportional by question_type (largest remainder), ordered by sha256(question_id) within type, abstention (_abs) excluded, no RNG",
+  "question_ids": [
+   "720133ac",
+   "gpt4_d31cdae3",
+   "07741c45",
+   "gpt4_4edbafa2",
+   "c4f10528",
+   "bcbe585f",
+   "gpt4_7fce9456",
+   "1d4da289",
+   "gpt4_6ed717ea",
+   "09ba9854",
+   "gpt4_e414231f",
+   "54026fce",
+   "b6019101",
+   "gpt4_93f6379c",
+   "00ca467f",
+   "a08a253f",
+   "58bf7951",
+   "c8c3f81d",
+   "6071bd76",
+   "ad7109d1"
+  ],
+  "k": 25,
+  "recall_mode": "hybrid",
+  "reinforce": false,
+  "context_char_budget": 24000,
+  "embedder": "nomic-embed-text",
+  "answerer": "llama3.1:8b",
+  "judge": "qwen2.5:7b",
+  "num_ctx": 8192,
+  "temperature": 0.0,
+  "seed": 0,
+  "answer_max_tokens": 256,
+  "judge_max_tokens": 96,
+  "llm_on_write_path": false,
+  "inspeximus_version": "1.89.0",
+  "answer_prompt_sha256": "364ce93c65e163e937e01b0c53015345de20b84cbd43e25baae9a1df98c414a2",
+  "judge_prompt_sha256": "9f86b20ae2517e17daeae3174c3e51909f51d30ea223358d144d9e63c0fac17b",
+  "judge_prompt_preference_sha256": "3753305f8a37ecf8f25753a3d8dad4664a289906b5c83d2ec7886bc0d6997911"
+ },
+ "gpu_preflight": {
+  "nvidia_smi": true,
+  "free_mb": 11396,
+  "total_mb": 24576,
+  "util_pct": 0,
+  "foreign_processes": [
+   "llama-server",
+   "llama-server.exe"
+  ],
+  "error": null,
+  "passed": false,
+  "reasons": [
+   "only 11396 MiB VRAM free, need >= 20480 MiB",
+   "another model runner is resident: llama-server, llama-server.exe"
+  ],
+  "override": true
+ },
+ "contended": true,
+ "model_preflight": {
+  "llama3.1:8b": {
+   "latency_s": 15.25,
+   "reply": "LME-372153-716",
+   "expected": "LME-372153-716",
+   "answered": true
+  },
+  "qwen2.5:7b": {
+   "latency_s": 21.23,
+   "reply": "LME-372153-716",
+   "expected": "LME-372153-716",
+   "answered": true
+  },
+  "nomic-embed-text": {
+   "latency_s": 2.08,
+   "dim": 768,
+   "answered": true
+  },
+  "all_answered": true
+ },
+ "arms": {
+  "oracle": {
+   "n": 20,
+   "n_scored": 20,
+   "llm_errors": 0,
+   "unparsed_judgements": 0,
+   "accuracy": 0.5,
+   "mean_context_chars": 18441,
+   "truncated": 9,
+   "by_question_type": {
+    "knowledge-update": {
+     "accuracy": 0.667,
+     "n": 3
+    },
+    "multi-session": {
+     "accuracy": 0.2,
+     "n": 5
+    },
+    "single-session-assistant": {
+     "accuracy": 1.0,
+     "n": 2
+    },
+    "single-session-preference": {
+     "accuracy": 1.0,
+     "n": 1
+    },
+    "single-session-user": {
+     "accuracy": 1.0,
+     "n": 3
+    },
+    "temporal-reasoning": {
+     "accuracy": 0.167,
+     "n": 6
+    }
+   }
+  },
+  "inspeximus": {
+   "n": 20,
+   "n_scored": 20,
+   "llm_errors": 0,
+   "unparsed_judgements": 0,
+   "accuracy": 0.45,
+   "mean_context_chars": 21383,
+   "truncated": 13,
+   "by_question_type": {
+    "knowledge-update": {
+     "accuracy": 0.333,
+     "n": 3
+    },
+    "multi-session": {
+     "accuracy": 0.0,
+     "n": 5
+    },
+    "single-session-assistant": {
+     "accuracy": 1.0,
+     "n": 2
+    },
+    "single-session-preference": {
+     "accuracy": 1.0,
+     "n": 1
+    },
+    "single-session-user": {
+     "accuracy": 0.667,
+     "n": 3
+    },
+    "temporal-reasoning": {
+     "accuracy": 0.5,
+     "n": 6
+    }
+   }
+  },
+  "recency": {
+   "n": 20,
+   "n_scored": 20,
+   "llm_errors": 0,
+   "unparsed_judgements": 0,
+   "accuracy": 0.05,
+   "mean_context_chars": 23096,
+   "truncated": 20,
+   "by_question_type": {
+    "knowledge-update": {
+     "accuracy": 0.0,
+     "n": 3
+    },
+    "multi-session": {
+     "accuracy": 0.0,
+     "n": 5
+    },
+    "single-session-assistant": {
+     "accuracy": 0.0,
+     "n": 2
+    },
+    "single-session-preference": {
+     "accuracy": 0.0,
+     "n": 1
+    },
+    "single-session-user": {
+     "accuracy": 0.0,
+     "n": 3
+    },
+    "temporal-reasoning": {
+     "accuracy": 0.167,
+     "n": 6
+    }
+   }
+  },
+  "shuffled": {
+   "n": 20,
+   "n_scored": 20,
+   "llm_errors": 0,
+   "unparsed_judgements": 0,
+   "accuracy": 0.1,
+   "mean_context_chars": 22014,
+   "truncated": 14,
+   "by_question_type": {
+    "knowledge-update": {
+     "accuracy": 0.0,
+     "n": 3
+    },
+    "multi-session": {
+     "accuracy": 0.0,
+     "n": 5
+    },
+    "single-session-assistant": {
+     "accuracy": 0.0,
+     "n": 2
+    },
+    "single-session-preference": {
+     "accuracy": 0.0,
+     "n": 1
+    },
+    "single-session-user": {
+     "accuracy": 0.333,
+     "n": 3
+    },
+    "temporal-reasoning": {
+     "accuracy": 0.167,
+     "n": 6
+    }
+   }
+  },
+  "empty": {
+   "n": 20,
+   "n_scored": 20,
+   "llm_errors": 0,
+   "unparsed_judgements": 0,
+   "accuracy": 0.0,
+   "mean_context_chars": 0,
+   "truncated": 0,
+   "by_question_type": {
+    "knowledge-update": {
+     "accuracy": 0.0,
+     "n": 3
+    },
+    "multi-session": {
+     "accuracy": 0.0,
+     "n": 5
+    },
+    "single-session-assistant": {
+     "accuracy": 0.0,
+     "n": 2
+    },
+    "single-session-preference": {
+     "accuracy": 0.0,
+     "n": 1
+    },
+    "single-session-user": {
+     "accuracy": 0.0,
+     "n": 3
+    },
+    "temporal-reasoning": {
+     "accuracy": 0.0,
+     "n": 6
+    }
+   }
+  },
+  "full_context": {
+   "n": 20,
+   "n_scored": 0,
+   "llm_errors": 0,
+   "unparsed_judgements": 0,
+   "accuracy": null,
+   "mean_context_chars": null,
+   "truncated": 0,
+   "not_computable": "haystack is 516048 characters; the answerer's window at num_ctx=8192 holds about 24000. Not computable at this operating point.",
+   "by_question_type": {}
+  }
+ },
+ "timing_s": {
+  "ingest": 388.9,
+  "answer": 545.8,
+  "judge": 1008.4,
+  "total": 2026.0
+ },
+ "latency": {
+  "preflight": {
+   "n": 2,
+   "median_s": 18.237,
+   "p95_s": 15.245,
+   "max_s": 21.23,
+   "zero_s_calls": 0
+  },
+  "embed_batch": {
+   "n": 135,
+   "median_s": 3.197,
+   "p95_s": 4.195,
+   "max_s": 5.542,
+   "zero_s_calls": 0
+  },
+  "answer": {
+   "n": 100,
+   "median_s": 4.695,
+   "p95_s": 16.925,
+   "max_s": 20.989,
+   "zero_s_calls": 0
+  },
+  "judge": {
+   "n": 100,
+   "median_s": 9.069,
+   "p95_s": 34.43,
+   "max_s": 41.628,
+   "zero_s_calls": 0
+  }
+ },
+ "per_item": [
+  {
+   "qid": "720133ac",
+   "arm": "oracle",
+   "type": "multi-session",
+   "context_chars": 20477,
+   "correct": 1,
+   "answer": "The total cost of Lola's vet visit and flea medication is $75 ($50 for the discounted consultation fee + $25 for the 3-month supply of flea and tick prevention medication)."
+  },
+  {
+   "qid": "720133ac",
+   "arm": "inspeximus",
+   "type": "multi-session",
+   "context_chars": 22851,
+   "correct": 0,
+   "answer": "The user mentioned that the consultation fee was $50 as a regular customer, but there is no mention of the total cost of Lola's vet visit or flea medication. However, it is mentioned that the flea and tick prevention medication was $25 for a 3-month supply. I don't know the total cost of the vet vis"
+  },
+  {
+   "qid": "720133ac",
+   "arm": "recency",
+   "type": "multi-session",
+   "context_chars": 23785,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "720133ac",
+   "arm": "shuffled",
+   "type": "multi-session",
+   "context_chars": 23573,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "720133ac",
+   "arm": "empty",
+   "type": "multi-session",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "720133ac",
+   "arm": "full_context",
+   "type": "multi-session",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "gpt4_d31cdae3",
+   "arm": "oracle",
+   "type": "temporal-reasoning",
+   "context_chars": 23135,
+   "correct": 0,
+   "answer": "The narrator took the solo trip to Europe first, as mentioned in the conversation on 2023/05/22 (Mon) 00:37."
+  },
+  {
+   "qid": "gpt4_d31cdae3",
+   "arm": "inspeximus",
+   "type": "temporal-reasoning",
+   "context_chars": 23921,
+   "correct": 0,
+   "answer": "The narrator took the family road trip across the American Southwest first, as mentioned in their conversation with the assistant on May 22 (Mon) at 00:37."
+  },
+  {
+   "qid": "gpt4_d31cdae3",
+   "arm": "recency",
+   "type": "temporal-reasoning",
+   "context_chars": 23343,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_d31cdae3",
+   "arm": "shuffled",
+   "type": "temporal-reasoning",
+   "context_chars": 21909,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_d31cdae3",
+   "arm": "empty",
+   "type": "temporal-reasoning",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_d31cdae3",
+   "arm": "full_context",
+   "type": "temporal-reasoning",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "07741c45",
+   "arm": "oracle",
+   "type": "knowledge-update",
+   "context_chars": 23510,
+   "correct": 0,
+   "answer": "Under your bed for storage."
+  },
+  {
+   "qid": "07741c45",
+   "arm": "inspeximus",
+   "type": "knowledge-update",
+   "context_chars": 21167,
+   "correct": 0,
+   "answer": "Under your bed."
+  },
+  {
+   "qid": "07741c45",
+   "arm": "recency",
+   "type": "knowledge-update",
+   "context_chars": 21496,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "07741c45",
+   "arm": "shuffled",
+   "type": "knowledge-update",
+   "context_chars": 21234,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "07741c45",
+   "arm": "empty",
+   "type": "knowledge-update",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "07741c45",
+   "arm": "full_context",
+   "type": "knowledge-update",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "gpt4_4edbafa2",
+   "arm": "oracle",
+   "type": "temporal-reasoning",
+   "context_chars": 22375,
+   "correct": 1,
+   "answer": "The date you attended the first BBQ event in June was the 3rd of June."
+  },
+  {
+   "qid": "gpt4_4edbafa2",
+   "arm": "inspeximus",
+   "type": "temporal-reasoning",
+   "context_chars": 23080,
+   "correct": 1,
+   "answer": "The 3rd of June."
+  },
+  {
+   "qid": "gpt4_4edbafa2",
+   "arm": "recency",
+   "type": "temporal-reasoning",
+   "context_chars": 23137,
+   "correct": 1,
+   "answer": "The 3rd of June."
+  },
+  {
+   "qid": "gpt4_4edbafa2",
+   "arm": "shuffled",
+   "type": "temporal-reasoning",
+   "context_chars": 21018,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_4edbafa2",
+   "arm": "empty",
+   "type": "temporal-reasoning",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_4edbafa2",
+   "arm": "full_context",
+   "type": "temporal-reasoning",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "c4f10528",
+   "arm": "oracle",
+   "type": "single-session-assistant",
+   "context_chars": 7817,
+   "correct": 1,
+   "answer": "Miss Bee Providore."
+  },
+  {
+   "qid": "c4f10528",
+   "arm": "inspeximus",
+   "type": "single-session-assistant",
+   "context_chars": 23291,
+   "correct": 1,
+   "answer": "Miss Bee Providore."
+  },
+  {
+   "qid": "c4f10528",
+   "arm": "recency",
+   "type": "single-session-assistant",
+   "context_chars": 23842,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "c4f10528",
+   "arm": "shuffled",
+   "type": "single-session-assistant",
+   "context_chars": 21833,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "c4f10528",
+   "arm": "empty",
+   "type": "single-session-assistant",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "c4f10528",
+   "arm": "full_context",
+   "type": "single-session-assistant",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "bcbe585f",
+   "arm": "oracle",
+   "type": "temporal-reasoning",
+   "context_chars": 10495,
+   "correct": 0,
+   "answer": "I don't know.\n\nHowever, I can tell you that according to your conversation on 2023/04/01 (Sat) 19:22, you mentioned that you had just returned from a bird watching workshop at the local Audubon society \"today\", which implies it was the same day as the conversation."
+  },
+  {
+   "qid": "bcbe585f",
+   "arm": "inspeximus",
+   "type": "temporal-reasoning",
+   "context_chars": 21906,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "bcbe585f",
+   "arm": "recency",
+   "type": "temporal-reasoning",
+   "context_chars": 23571,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "bcbe585f",
+   "arm": "shuffled",
+   "type": "temporal-reasoning",
+   "context_chars": 23982,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "bcbe585f",
+   "arm": "empty",
+   "type": "temporal-reasoning",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "bcbe585f",
+   "arm": "full_context",
+   "type": "temporal-reasoning",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "gpt4_7fce9456",
+   "arm": "oracle",
+   "type": "multi-session",
+   "context_chars": 23755,
+   "correct": 0,
+   "answer": "You viewed one property, a 2-bedroom condo on February 15th, before making an offer on the townhouse in the Brookside neighborhood."
+  },
+  {
+   "qid": "gpt4_7fce9456",
+   "arm": "inspeximus",
+   "type": "multi-session",
+   "context_chars": 22066,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_7fce9456",
+   "arm": "recency",
+   "type": "multi-session",
+   "context_chars": 23221,
+   "correct": 0,
+   "answer": "I don't know. The conversation does not mention viewing properties or making an offer on a townhouse in the Brookside neighborhood. It only discusses hotels and conferences related to the Sands Expo in Las Vegas."
+  },
+  {
+   "qid": "gpt4_7fce9456",
+   "arm": "shuffled",
+   "type": "multi-session",
+   "context_chars": 23547,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_7fce9456",
+   "arm": "empty",
+   "type": "multi-session",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_7fce9456",
+   "arm": "full_context",
+   "type": "multi-session",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "1d4da289",
+   "arm": "oracle",
+   "type": "single-session-assistant",
+   "context_chars": 3784,
+   "correct": 1,
+   "answer": "Biometric authentication or one-time passwords (OTP)."
+  },
+  {
+   "qid": "1d4da289",
+   "arm": "inspeximus",
+   "type": "single-session-assistant",
+   "context_chars": 23160,
+   "correct": 1,
+   "answer": "Two-factor authentication methods include biometric authentication (e.g., fingerprint, facial recognition) and one-time passwords (OTP)."
+  },
+  {
+   "qid": "1d4da289",
+   "arm": "recency",
+   "type": "single-session-assistant",
+   "context_chars": 22671,
+   "correct": 0,
+   "answer": "I mentioned that enabling two-factor authentication provides an extra layer of security by requiring a second form of authentication, such as a code sent to a mobile device, in addition to a password."
+  },
+  {
+   "qid": "1d4da289",
+   "arm": "shuffled",
+   "type": "single-session-assistant",
+   "context_chars": 23694,
+   "correct": 0,
+   "answer": "I don't have any previous conversation about data privacy and security that mentions two-factor authentication methods."
+  },
+  {
+   "qid": "1d4da289",
+   "arm": "empty",
+   "type": "single-session-assistant",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "1d4da289",
+   "arm": "full_context",
+   "type": "single-session-assistant",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "gpt4_6ed717ea",
+   "arm": "oracle",
+   "type": "temporal-reasoning",
+   "context_chars": 21712,
+   "correct": 0,
+   "answer": "You purchased the Orthopedic Memory Foam dog bed for Max first, about three weeks ago from Petco."
+  },
+  {
+   "qid": "gpt4_6ed717ea",
+   "arm": "inspeximus",
+   "type": "temporal-reasoning",
+   "context_chars": 23554,
+   "correct": 1,
+   "answer": "You purchased the training pads for Luna first, about a month ago from Chewy.com."
+  },
+  {
+   "qid": "gpt4_6ed717ea",
+   "arm": "recency",
+   "type": "temporal-reasoning",
+   "context_chars": 22921,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_6ed717ea",
+   "arm": "shuffled",
+   "type": "temporal-reasoning",
+   "context_chars": 23945,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_6ed717ea",
+   "arm": "empty",
+   "type": "temporal-reasoning",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_6ed717ea",
+   "arm": "full_context",
+   "type": "temporal-reasoning",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "09ba9854",
+   "arm": "oracle",
+   "type": "multi-session",
+   "context_chars": 21956,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "09ba9854",
+   "arm": "inspeximus",
+   "type": "multi-session",
+   "context_chars": 22925,
+   "correct": 0,
+   "answer": "I don't know.\n\nThe retrieved memory does not provide any information about the cost of taking a taxi versus the train from the airport to your hotel. It only discusses various transportation options and their estimated costs, but it does not compare the costs of taxis and trains specifically."
+  },
+  {
+   "qid": "09ba9854",
+   "arm": "recency",
+   "type": "multi-session",
+   "context_chars": 22766,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "09ba9854",
+   "arm": "shuffled",
+   "type": "multi-session",
+   "context_chars": 23665,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "09ba9854",
+   "arm": "empty",
+   "type": "multi-session",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "09ba9854",
+   "arm": "full_context",
+   "type": "multi-session",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "arm": "oracle",
+   "type": "temporal-reasoning",
+   "context_chars": 22963,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "arm": "inspeximus",
+   "type": "temporal-reasoning",
+   "context_chars": 21865,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "arm": "recency",
+   "type": "temporal-reasoning",
+   "context_chars": 22453,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "arm": "shuffled",
+   "type": "temporal-reasoning",
+   "context_chars": 22779,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "arm": "empty",
+   "type": "temporal-reasoning",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "arm": "full_context",
+   "type": "temporal-reasoning",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "54026fce",
+   "arm": "oracle",
+   "type": "single-session-preference",
+   "context_chars": 14896,
+   "correct": 1,
+   "answer": "You can consider implementing virtual coffee breaks, as we discussed earlier. This can be a regular video call where team members can catch up and chat about non-work-related topics. You can also set ground rules for these calls to ensure they remain light and casual. Additionally, you could create "
+  },
+  {
+   "qid": "54026fce",
+   "arm": "inspeximus",
+   "type": "single-session-preference",
+   "context_chars": 22265,
+   "correct": 1,
+   "answer": "You can consider virtual coffee breaks as a way to socialize with your colleagues while working from home. This involves scheduling regular informal video calls for casual chats, similar to in-person watercooler conversations. You can also organize online team activities, such as virtual games or te"
+  },
+  {
+   "qid": "54026fce",
+   "arm": "recency",
+   "type": "single-session-preference",
+   "context_chars": 22405,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "54026fce",
+   "arm": "shuffled",
+   "type": "single-session-preference",
+   "context_chars": 19243,
+   "correct": 0,
+   "answer": "You previously asked for tips on how to tidy up your WhatsApp contacts and groups, which might help you stay connected with your colleagues. You also mentioned organizing a monthly game night at your place, but that was in the context of socializing with friends and acquaintances. I don't know if th"
+  },
+  {
+   "qid": "54026fce",
+   "arm": "empty",
+   "type": "single-session-preference",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "54026fce",
+   "arm": "full_context",
+   "type": "single-session-preference",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "b6019101",
+   "arm": "oracle",
+   "type": "knowledge-update",
+   "context_chars": 23756,
+   "correct": 1,
+   "answer": "5"
+  },
+  {
+   "qid": "b6019101",
+   "arm": "inspeximus",
+   "type": "knowledge-update",
+   "context_chars": 12628,
+   "correct": 0,
+   "answer": "You watched 4 MCU films in the last 3 months."
+  },
+  {
+   "qid": "b6019101",
+   "arm": "recency",
+   "type": "knowledge-update",
+   "context_chars": 22976,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "b6019101",
+   "arm": "shuffled",
+   "type": "knowledge-update",
+   "context_chars": 12811,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "b6019101",
+   "arm": "empty",
+   "type": "knowledge-update",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "b6019101",
+   "arm": "full_context",
+   "type": "knowledge-update",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "gpt4_93f6379c",
+   "arm": "oracle",
+   "type": "temporal-reasoning",
+   "context_chars": 22048,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_93f6379c",
+   "arm": "inspeximus",
+   "type": "temporal-reasoning",
+   "context_chars": 22864,
+   "correct": 1,
+   "answer": "You joined \"Page Turners\" first, as indicated by the conversation on 2023/05/25 (Thu) 01:50 where you mentioned joining a new book club group called \"Page Turners\"."
+  },
+  {
+   "qid": "gpt4_93f6379c",
+   "arm": "recency",
+   "type": "temporal-reasoning",
+   "context_chars": 22935,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_93f6379c",
+   "arm": "shuffled",
+   "type": "temporal-reasoning",
+   "context_chars": 23750,
+   "correct": 1,
+   "answer": "You joined \"Page Turners\" first."
+  },
+  {
+   "qid": "gpt4_93f6379c",
+   "arm": "empty",
+   "type": "temporal-reasoning",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "gpt4_93f6379c",
+   "arm": "full_context",
+   "type": "temporal-reasoning",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "00ca467f",
+   "arm": "oracle",
+   "type": "multi-session",
+   "context_chars": 23123,
+   "correct": 0,
+   "answer": "You had an appointment with your primary care physician (mentioned on 2023/03/27) and another one scheduled with Dr. Johnson, a neurologist, for April 1st. \n\nAdditionally, you mentioned having a follow-up appointment with Dr. Thompson, an orthopedic surgeon, on March 20th.\n\nSo, in total, you had at "
+  },
+  {
+   "qid": "00ca467f",
+   "arm": "inspeximus",
+   "type": "multi-session",
+   "context_chars": 15171,
+   "correct": 0,
+   "answer": "You went to 4 doctor's appointments in March:\n\n1. Dr. Smith on March 3rd for bronchitis diagnosis\n2. Dr. Thompson on March 20th for follow-up knee appointment\n3. Dr. Johnson (neurologist) is scheduled for April 1st, but you mentioned having an EMG test with them, implying a visit in March\n4. You als"
+  },
+  {
+   "qid": "00ca467f",
+   "arm": "recency",
+   "type": "multi-session",
+   "context_chars": 22390,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "00ca467f",
+   "arm": "shuffled",
+   "type": "multi-session",
+   "context_chars": 21040,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "00ca467f",
+   "arm": "empty",
+   "type": "multi-session",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "00ca467f",
+   "arm": "full_context",
+   "type": "multi-session",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "a08a253f",
+   "arm": "oracle",
+   "type": "multi-session",
+   "context_chars": 23289,
+   "correct": 0,
+   "answer": "You attend Zumba classes on Tuesdays and Thursdays, and a weightlifting class on Saturdays, which is 3 days a week."
+  },
+  {
+   "qid": "a08a253f",
+   "arm": "inspeximus",
+   "type": "multi-session",
+   "context_chars": 23977,
+   "correct": 0,
+   "answer": "You attend Zumba classes on Tuesdays and Thursdays at 6:30 pm, and a weightlifting class on Saturdays at 10 am. That's three days a week."
+  },
+  {
+   "qid": "a08a253f",
+   "arm": "recency",
+   "type": "multi-session",
+   "context_chars": 23800,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "a08a253f",
+   "arm": "shuffled",
+   "type": "multi-session",
+   "context_chars": 18288,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "a08a253f",
+   "arm": "empty",
+   "type": "multi-session",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "a08a253f",
+   "arm": "full_context",
+   "type": "multi-session",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "58bf7951",
+   "arm": "oracle",
+   "type": "single-session-user",
+   "context_chars": 10613,
+   "correct": 1,
+   "answer": "The Glass Menagerie."
+  },
+  {
+   "qid": "58bf7951",
+   "arm": "inspeximus",
+   "type": "single-session-user",
+   "context_chars": 10726,
+   "correct": 1,
+   "answer": "The Glass Menagerie."
+  },
+  {
+   "qid": "58bf7951",
+   "arm": "recency",
+   "type": "single-session-user",
+   "context_chars": 23965,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "58bf7951",
+   "arm": "shuffled",
+   "type": "single-session-user",
+   "context_chars": 23345,
+   "correct": 0,
+   "answer": "The Mousetrap."
+  },
+  {
+   "qid": "58bf7951",
+   "arm": "empty",
+   "type": "single-session-user",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "58bf7951",
+   "arm": "full_context",
+   "type": "single-session-user",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "c8c3f81d",
+   "arm": "oracle",
+   "type": "single-session-user",
+   "context_chars": 11313,
+   "correct": 1,
+   "answer": "Nike."
+  },
+  {
+   "qid": "c8c3f81d",
+   "arm": "inspeximus",
+   "type": "single-session-user",
+   "context_chars": 23896,
+   "correct": 1,
+   "answer": "Nike."
+  },
+  {
+   "qid": "c8c3f81d",
+   "arm": "recency",
+   "type": "single-session-user",
+   "context_chars": 22526,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "c8c3f81d",
+   "arm": "shuffled",
+   "type": "single-session-user",
+   "context_chars": 23856,
+   "correct": 1,
+   "answer": "Nike"
+  },
+  {
+   "qid": "c8c3f81d",
+   "arm": "empty",
+   "type": "single-session-user",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "c8c3f81d",
+   "arm": "full_context",
+   "type": "single-session-user",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "6071bd76",
+   "arm": "oracle",
+   "type": "knowledge-update",
+   "context_chars": 22432,
+   "correct": 1,
+   "answer": "You switched to less water per tablespoon of coffee, from 6 ounces to 5 ounces."
+  },
+  {
+   "qid": "6071bd76",
+   "arm": "inspeximus",
+   "type": "knowledge-update",
+   "context_chars": 22417,
+   "correct": 1,
+   "answer": "You switched to less water per tablespoon of coffee. Initially, you mentioned 1 tablespoon of coffee for every 6 ounces of water, but later you said 1 tablespoon of coffee for every 5 ounces of water."
+  },
+  {
+   "qid": "6071bd76",
+   "arm": "recency",
+   "type": "knowledge-update",
+   "context_chars": 23873,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "6071bd76",
+   "arm": "shuffled",
+   "type": "knowledge-update",
+   "context_chars": 22866,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "6071bd76",
+   "arm": "empty",
+   "type": "knowledge-update",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "6071bd76",
+   "arm": "full_context",
+   "type": "knowledge-update",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  },
+  {
+   "qid": "ad7109d1",
+   "arm": "oracle",
+   "type": "single-session-user",
+   "context_chars": 15373,
+   "correct": 1,
+   "answer": "Your new internet plan is 500 Mbps."
+  },
+  {
+   "qid": "ad7109d1",
+   "arm": "inspeximus",
+   "type": "single-session-user",
+   "context_chars": 23921,
+   "correct": 0,
+   "answer": "Your internet speed is 1 Gbps."
+  },
+  {
+   "qid": "ad7109d1",
+   "arm": "recency",
+   "type": "single-session-user",
+   "context_chars": 23842,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "ad7109d1",
+   "arm": "shuffled",
+   "type": "single-session-user",
+   "context_chars": 23892,
+   "correct": 0,
+   "answer": "I don't have any information about your previous conversations regarding internet plans or speeds."
+  },
+  {
+   "qid": "ad7109d1",
+   "arm": "empty",
+   "type": "single-session-user",
+   "context_chars": 0,
+   "correct": 0,
+   "answer": "I don't know."
+  },
+  {
+   "qid": "ad7109d1",
+   "arm": "full_context",
+   "type": "single-session-user",
+   "context_chars": null,
+   "correct": null,
+   "answer": ""
+  }
+ ]
+}
