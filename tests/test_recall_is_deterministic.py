@@ -337,9 +337,36 @@ TARGET_TEXT = "the quarterly revenue target is 4.2 million"
 NOISE = "user {} says the quarterly revenue target is important"
 
 
+# A BAG-OF-WORDS embedder over a FIXED sorted vocabulary, used wherever a test asserts WHICH record
+# ranks first under an embedder. The sha256 hashing embedder above is fine for "is the answer stable",
+# but it must never decide a ranking assertion: which words collide in 64 buckets is arbitrary, so the
+# ordering it produces is a property of the toy, not of inspeximus.
+#
+# It also pins `center_embeddings=False`, and that is not cosmetic. Anisotropy centering is applied ONLY
+# on the vectorized numpy path (`_vec_matrix`); the `_cosine` fallback does not center. So the semantic
+# ranking of the SAME store differs depending on whether numpy happens to be installed -- measured here
+# by forcing `core._np = None`: with numpy the crowded-store target ranks first in semantic and hybrid,
+# without numpy it does not. CI installs no numpy, which is why these assertions passed locally and
+# failed on the thin test leg. Centering off makes both paths plain cosine and the test portable.
+_CROWD_VOCAB = sorted({w for t in [TARGET_TEXT, CROWD_QUERY] + [NOISE.format(i) for i in range(60)]
+                       for w in t.lower().split()})
+_CROWD_INDEX = {w: i for i, w in enumerate(_CROWD_VOCAB)}
+
+
+def _bow_embed(text):
+    v = [0.0] * len(_CROWD_VOCAB)
+    for w in (text or "").lower().split():
+        if w in _CROWD_INDEX:
+            v[_CROWD_INDEX[w]] += 1.0
+    n = sum(x * x for x in v) ** 0.5 or 1.0
+    return [x / n for x in v]
+
+
 def _crowded(target_first=False, embed=None):
     """adk_audit.py::sc_crowded_store, as a store: 60 other users' memories plus the one you asked for."""
     m = Inspeximus(path=None, embed=embed)
+    if embed is not None:
+        m.center_embeddings = False
     if target_first:
         m.remember(TARGET_TEXT, key="target")
     for i in range(60):
@@ -352,8 +379,25 @@ def _crowded(target_first=False, embed=None):
 @pytest.mark.parametrize("mode", ["auto", "lexical", "semantic", "hybrid"])
 def test_a_crowded_store_still_returns_the_memory_you_asked_for(mode):
     """60 other users' memories all matching the query, plus the one that answers it. The target must come
-    back FIRST -- not merely be present."""
-    hits = _crowded(embed=_embed).recall(CROWD_QUERY, k=5, mode=mode)
+    back FIRST -- not merely be present.
+
+    NO EMBEDDER, because that is what adk_audit.py actually runs and what the ADK integration ships as:
+    zero-dependency. All four modes therefore reach the lexical channel, which is asserted below rather
+    than assumed -- this test covers one path four times BY DESIGN, and says so.
+    """
+    m = _crowded()
+    hits = m.recall(CROWD_QUERY, k=5, mode=mode)
+    assert m._last_mode == "lexical", f"mode={mode} reached {m._last_mode}; no embedder is configured"
+    texts = [h["text"] for h in hits]
+    assert texts and texts[0] == TARGET_TEXT, f"mode={mode}: target not first, got {texts}"
+
+
+@pytest.mark.parametrize("mode", ["semantic", "hybrid"])
+def test_a_crowded_store_returns_it_through_the_embedder_channels_too(mode):
+    """The same scenario with an embedder configured, so `semantic` and `hybrid` are genuinely reached."""
+    m = _crowded(embed=_bow_embed)
+    hits = m.recall(CROWD_QUERY, k=5, mode=mode)
+    assert m._last_mode == mode, f"mode={mode} reached {m._last_mode}"
     texts = [h["text"] for h in hits]
     assert texts and texts[0] == TARGET_TEXT, f"mode={mode}: target not first, got {texts}"
 
@@ -404,20 +448,161 @@ def test_the_overlap_coefficient_cannot_separate_a_crowded_store():
 
     # ...while the BM25-bearing channel finds it from either end, which is what makes the limit tolerable.
     for first in (False, True):
-        hits = _crowded(target_first=first, embed=_embed).recall(CROWD_QUERY, k=5, mode="hybrid")
+        hits = _crowded(target_first=first, embed=_bow_embed).recall(CROWD_QUERY, k=5, mode="hybrid")
         assert hits[0]["text"] == TARGET_TEXT, f"hybrid, target_first={first}: {[h['text'] for h in hits]}"
 
 
 # ── the same defect, three levers this file never covered ──────────────────────────────────────────
-# `ts` is not a total order: the wall clock here has ~15 ms granularity, so 32 records written in a loop
-# carry only 4 distinct timestamps spanning 2.3 ms, and WHICH records share a tick changes between runs.
-# The main sort learned that and ranks ties by write position. Three opt-in levers had not, and each was
-# reordering its pool on the bare timestamp. Measured on unmodified main, 60 identical runs in ONE process
-# at a fixed PYTHONHASHSEED (so this is clock jitter, not hash randomisation):
-#   rerank_by='recency'   31 distinct orders
-#   resolve_conflicts     5 distinct orders, in every mode
-#   tie_recent            3 distinct orders
+# `valid_from or ts` is not a total order, and three opt-in levers sorted their pool on it alone. Each
+# pool arrives in SCORE order, so whenever two records shared an event time the sort left them in score
+# order, and whenever they did not it moved them -- and WHICH records shared changed between runs.
+#
+# Two ways to reach that state, and this file now tests BOTH, because they fail differently:
+#
+#   1. AN EXPLICIT TIE (portable). Records written with the same `valid_from` share an event time on
+#      every platform. The bug here is not instability -- with an explicit tie the unfixed code is
+#      perfectly repeatable -- it is that the DECLARED order is wrong: ties come back in score order
+#      instead of newest-first. So these tests assert the ORDER, not its stability. Stability is not the
+#      property we want; this file already learned that in test_tied_records_come_back_NEWEST_first.
+#
+#   2. A COARSE WALL CLOCK (platform-dependent). On a machine whose clock cannot separate a write loop
+#      the tie STRUCTURE itself moves between runs, and the answer changes with it. Measured on Windows,
+#      60 identical runs in ONE process at a fixed PYTHONHASHSEED (so: clock jitter, not hash
+#      randomisation): rerank_by='recency' 31 distinct orders, resolve_conflicts 5 in every mode,
+#      tie_recent 3. On the CI runners the clock gives all 32 records distinct timestamps, so the defect
+#      cannot arise there at all and that test is SKIPPED rather than reported as a pass.
 LEVER_RUNS = 60
+TIED_EVENT_TIME = 1700000000.0
+TIED_QUERY = "alpha bravo charlie delta"
+_TIED_TEXTS = [f"alpha bravo charlie delta item {i} " + "echo " * i for i in range(8)]
+_TIED_VOCAB = sorted({w for t in _TIED_TEXTS + [TIED_QUERY] for w in t.lower().split()})
+_TIED_INDEX = {w: i for i, w in enumerate(_TIED_VOCAB)}
+
+
+def _bow_tied(text):
+    """Fixed-vocabulary bag-of-words, same reasoning as _bow_embed: a ranking assertion must not be
+    decided by which words a 64-bucket hash happens to collide."""
+    v = [0.0] * len(_TIED_VOCAB)
+    for w in (text or "").lower().split():
+        if w in _TIED_INDEX:
+            v[_TIED_INDEX[w]] += 1.0
+    n = sum(x * x for x in v) ** 0.5 or 1.0
+    return [x / n for x in v]
+
+
+def _tied_store(embed=None):
+    """Eight records that all match the query and all carry the SAME `valid_from`, plus enough padding
+    that they do NOT tie on score.
+
+    The tie is DECLARED, not borrowed from clock granularity, so it holds identically on every platform.
+
+    Scores are deliberately NOT equal, and they run OPPOSITE to write order: `value` descends from 8 to 1
+    as the records are written, so relevance order is 0..7 while newest-first is 7..0. Two earlier
+    fixtures were wrong here and both are worth the line. Equal scores make the fixed and unfixed code
+    agree, so no mutation can tell them apart. Scores that AGREE with write order are just as useless --
+    a lever that ignored recency completely would still pass. Only opposition tests the override.
+
+    (The first attempt varied the text length instead. It tied anyway at 1.693 across all eight, because
+    the overlap coefficient is |q & t| / min(|q|, |t|) and every record contains all four query tokens --
+    the same saturation this file documents in the crowded store. The fixture control caught it.)
+    """
+    m = Inspeximus(path=None, embed=embed)
+    if embed is not None:
+        m.center_embeddings = False
+    for i, t in enumerate(_TIED_TEXTS):
+        m.remember(t, key=f"t{i}", valid_from=TIED_EVENT_TIME, value=float(8 - i))
+    return m
+
+
+def _item_order(hits):
+    return [h["text"].split("item ")[1].split()[0] for h in hits]
+
+
+def test_the_tied_fixture_really_does_share_one_event_time():
+    """Otherwise every assertion below passes over a case that could never have shown the bug: with one
+    event time per record the key is already total and the fix is unobservable."""
+    vf = [r["valid_from"] for r in _tied_store()._items]
+    assert len(vf) == 8 and len(set(vf)) == 1, f"the fixture no longer declares one shared event time: {vf}"
+
+    # ...and relevance order must be the exact OPPOSITE of write order, or a lever that ignores recency
+    # altogether would pass the assertions below.
+    plain = _item_order(_tied_store().recall(TIED_QUERY, k=8))
+    assert plain == [str(i) for i in range(8)], f"score order is not the opposite of write order: {plain}"
+
+
+@pytest.mark.parametrize("mode", ["lexical", "hybrid"])
+def test_rerank_by_recency_orders_an_explicit_tie_newest_first(mode):
+    """`rerank_by='recency'` over a pool that arrives in SCORE order. Every record shares one event time,
+    so a bare-timestamp sort is a no-op and the pool keeps score order; the total key puts the tied group
+    in write order, newest first, which is what 'recency' means."""
+    m = _tied_store(embed=_bow_tied)
+    hits = m.recall(TIED_QUERY, k=8, mode=mode, rerank_by="recency")
+    assert m._last_mode == mode, f"mode={mode} reached {m._last_mode}"
+    assert _item_order(hits) == [str(i) for i in range(7, -1, -1)], \
+        f"mode={mode}: not newest-first: {_item_order(hits)}"
+
+
+@pytest.mark.parametrize("mode", ["lexical", "hybrid"])
+def test_tie_recent_orders_an_explicit_tie_newest_first(mode):
+    """The `tie_recent` band, same shape and the same non-total key. eps=1.0 puts the whole result in
+    the band, so the band's own ordering is what is being read."""
+    m = _tied_store(embed=_bow_tied)
+    hits = m.recall(TIED_QUERY, k=8, mode=mode, tie_recent=1.0)
+    assert _item_order(hits) == [str(i) for i in range(7, -1, -1)], \
+        f"mode={mode}: not newest-first: {_item_order(hits)}"
+
+
+CONFLICT_QUERY = "primary deployment region billing service"
+_OLD_VALUE = "the primary deployment region for the billing service is useast"
+_NEW_VALUE = "the primary deployment region for the billing service is euwest"
+
+
+def _conflict_store():
+    """Two competing values for one subject, asserted with the SAME event time, where the OLDER one
+    outranks on relevance. Both halves are load-bearing:
+
+      * the texts share enough tokens to clear the resolver's token-Jaccard >= 0.6 clustering threshold.
+        A shorter pair ("the deployment region is useast"/"...euwest") scores 0.5 and never clusters, so
+        the resolver silently no-ops and the test passes without ever running the code it names. That
+        version of this test SURVIVED the mutation, which is how the hole was found.
+      * `value` puts the OLDER assertion first in the pool. With the newer one already on top, a broken
+        birth key still yields the right answer by luck.
+    """
+    m = Inspeximus(path=None)
+    m.remember(_OLD_VALUE, key="a", valid_from=TIED_EVENT_TIME, value=3.0)
+    m.remember(_NEW_VALUE, key="b", valid_from=TIED_EVENT_TIME, value=1.0)
+    return m
+
+
+def test_resolve_conflicts_picks_the_later_assertion_when_births_tie():
+    """The value-birth key in `_resolve_read_conflicts`. 'Newest birth wins' cannot decide when both
+    values carry the same event time, and the old code fell through to the signature STRING, which is
+    arbitrary. The total key resolves it by write position -- the value asserted later is the newer one.
+    """
+    # Control: with the resolver OFF, relevance wins and the OLD value is on top. So the assertion below
+    # is reading the resolver's decision, not the ranking's.
+    off = _conflict_store().recall(CONFLICT_QUERY, k=2, resolve_conflicts=False)
+    assert off[0]["text"] == _OLD_VALUE, [h["text"] for h in off]
+
+    on = _conflict_store().recall(CONFLICT_QUERY, k=2, resolve_conflicts=True)
+    assert on[0]["text"] == _NEW_VALUE, [h["text"] for h in on]
+
+
+def _clock_separates_a_write_loop():
+    """True when this platform's clock gives every record in a 32-record write loop its own timestamp."""
+    m = Inspeximus(path=None)
+    for i in range(32):
+        m.remember(f"probe record {i}", key=f"p{i}")
+    ts = [r["ts"] for r in m._items]
+    return len(set(ts)) == len(ts)
+
+
+_FINE_CLOCK = _clock_separates_a_write_loop()
+_COARSE_ONLY = pytest.mark.skipif(
+    _FINE_CLOCK,
+    reason="this platform's clock gives every record in a 32-record write loop its own timestamp, so no "
+           "two records share a tick and the jitter defect cannot arise here at all; the declared-tie "
+           "tests above carry the same assertion on every platform")
 
 
 def _lever_store():
@@ -430,16 +615,16 @@ def _lever_store():
     return m
 
 
+@_COARSE_ONLY
 @pytest.mark.parametrize("lever", [
     {"rerank_by": "recency"},
     {"tie_recent": 0.01},
     {"resolve_conflicts": True},
 ])
 @pytest.mark.parametrize("mode", ["lexical", "hybrid"])
-def test_the_opt_in_recency_levers_are_deterministic_too(lever, mode):
-    """Each of these ordered its pool by `valid_from or ts` alone. The pool arrives in SCORE order, so
-    when the clock happened to separate two records the sort moved them and when it did not the score
-    order stood -- a different answer per run, with no set and no hash seed involved."""
+def test_the_opt_in_recency_levers_survive_a_coarse_clock(lever, mode):
+    """The jitter reproduction, on the platforms that HAVE a coarse clock. Where the clock is fine this
+    is skipped, and a skip is not a pass -- the declared-tie tests above are what hold everywhere."""
     orders = collections.Counter()
     for _ in range(LEVER_RUNS):
         m = _lever_store()
@@ -449,8 +634,8 @@ def test_the_opt_in_recency_levers_are_deterministic_too(lever, mode):
         f"one process (counts {sorted(orders.values(), reverse=True)})")
 
 
+@_COARSE_ONLY
 def test_the_lever_fixture_really_does_share_clock_ticks():
-    """Otherwise the test above passes over a case that could never have shown the bug: with one record
-    per tick, `ts` is already a total order and the fix is unobservable."""
+    """The control for the test above, on the platforms where it runs."""
     ts = [r["ts"] for r in _lever_store()._items]
     assert len(set(ts)) < len(ts), f"every record got its own timestamp ({len(ts)} records, no tie)"
