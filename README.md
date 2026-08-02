@@ -141,6 +141,10 @@ inspeximus audit-build --out bundle.json    # hand an auditor the bundle; they v
 Evidence, not certification; the memory slice only, and the obligations bind the provider/deployer, not the library.
 → **[docs/AI_ACT.md](docs/AI_ACT.md)**
 
+A delete that returns success tells you the call ran, not that the data left. Three commands from a
+deletion obligation to a receipt you can re-verify without trusting us — with the honest scope of what a
+residue scan can and cannot see: → **[docs/ERASURE.md](docs/ERASURE.md)**
+
 ## Every claim below is checked by a script you can run
 
 ```bash
