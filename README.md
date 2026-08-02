@@ -309,24 +309,42 @@ its extraction design. That is the moat.
 
 Integrity would be hollow if inspeximus retrieved worse. It doesn't. On the standard **LOCOMO** benchmark (full set,
 n=1536), with the built-in tuned recipe (a semantic embedder + hybrid recall + a soft speaker prefilter),
-inspeximus's **retrieval-recall@25 is 0.78** (a supporting turn is retrieved) / **0.65** (all supporting turns) —
+inspeximus's **retrieval-recall@25 is 0.83** (a supporting turn is retrieved) / **0.70** (all supporting turns) —
 top-tier, and measured the honest way: **LLM-free**, with no LLM judge to inflate it.
 
-> **Reproducibility caveat (2026-07-25, found by our own codebase audit).** The harness this pair of numbers
-> came from is **not currently in this repository** — the file previously named here does not exist, so you
-> cannot re-run it from a clean checkout today. The LOCOMO retrieval work that IS runnable lives in
-> [`probes/`](probes/) (`locomo_retrieval_map.py`, `locomo_soft_prefer_filter.py`,
-> `locomo_composed_soft_filters.py`). Until the exact harness is restored, treat 0.78 / 0.65 as **reported,
-> not independently reproducible from this repo**.
+```bash
+python benchmarks/locomo/run.py --subset full --retrieval-only   # ~0.83 / 0.70, no model calls
+```
+
+> **The caveat this line carried for a year is now discharged (2026-08-01).** From 2026-07-25 this section said
+> the harness behind its numbers was *"not currently in this repository"* and asked you to treat the pair as
+> **reported, not independently reproducible**. It is now [`benchmarks/locomo/`](benchmarks/locomo/) — one
+> command, a pinned operating point, a committed result, and a test that fails when a re-run drifts.
+>
+> Two things changed in the numbers, and both are corrections in your favour rather than ours.
+> **The old pair was 0.78 / 0.65, and it reproduces exactly** — at *its* operating point the harness measures
+> 0.7839 / 0.6484 against the published 0.783 / 0.648, on the identical 1536-question denominator.
+> **The pair above is higher because the benchmark now pins `reinforce=False`.** `recall()` defaults to
+> reinforcing what it returns, so during a benchmark each query is answered by a store the previous queries
+> modified and the score depends on the order the questions were asked in. Turning that off makes the run
+> deterministic and, it turns out, scores 4-5 points better. The old number was not optimistic; it was
+> measuring a memory that was learning from the benchmark while being measured by it.
+>
+> The two arms, the controls, the judge gate and the exact reason the original probe could not run are all in
+> [`benchmarks/locomo/README.md`](benchmarks/locomo/README.md).
 
 *(We deliberately don't headline an LLM-judged end-to-end QA score. Those are judge-dependent and not comparable
 across harnesses — mem0 reports 66.9% and Zep 71.2% under their own judges — so a cross-system "we win" claim
-would need running them through this harness, which we haven't done. What we publish is our own reproducible
-number.)*
+would need running them through this harness, which we haven't done. We now **run** end-to-end QA — the same
+harness scores it with one judge across six arms, including a naive-recency floor and a full-context ceiling,
+and commits the result — but what we put in this README is the LLM-free number.)*
 
 **Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The exceptions are
 flagged in place, rather than left for you to discover: the MemOps key-derivation figures and the LoCoMo
-recall_any@1 below both come from work that lives outside this repository.
+recall_any@1 below both come from work that lives outside this repository. Numbers can also trace to a
+committed result under [`benchmarks/`](benchmarks/); one of the three exceptions has now been discharged
+rather than re-worded, because the LOCOMO retrieval-recall@25 pair has a harness, a pinned config and a
+committed result in [`benchmarks/locomo/`](benchmarks/locomo/).
 
 *(This line has now been corrected twice. It first said* every *number, without exception; an audit found
 one, and the line was narrowed to "one exception". A second audit — 2026-07-27 — searched `probes/`,

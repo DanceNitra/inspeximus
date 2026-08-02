@@ -1,0 +1,465 @@
+{
+ "judge_model": "qwen2.5:7b",
+ "min_rate": 0.9,
+ "dataset": {
+  "path": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\batch2\\b2-locomo-e2e\\benchmarks\\locomo\\data\\locomo10.json",
+  "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "expected_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "matches_pin": true,
+  "drift_allowed": false
+ },
+ "liveness_probe": {
+  "model": "qwen2.5:7b",
+  "prompt_nonce": 7688353458,
+  "expected_substring": "blue",
+  "answer": "Blue",
+  "answer_correct": true,
+  "alive": true,
+  "mean_latency_s": 5.063
+ },
+ "prompts": {
+  "answer_prompt_sha256": "f388cf292efc6b6c254217d9763797073e5289b46b1ce4f4b3131a3e37ce2fdf",
+  "judge_prompt_sha256": "88117ba53b032b46a998434aa47b8d3f7bbf5f83cf91d2a62c135b568c52fecb"
+ },
+ "arms": {
+  "GOLD": {
+   "n": 12,
+   "correct": 11,
+   "wrong": 1,
+   "parse_fail": 0,
+   "rate": 0.917,
+   "rows": [
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "When did Caroline go to the LGBTQ support group?",
+     "gold": "7 May 2023",
+     "pred": "7 May 2023",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "When Jon has lost his job as a banker?",
+     "gold": "19 January, 2023",
+     "pred": "19 January, 2023",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "Who did Maria have dinner with on May 3, 2023?",
+     "gold": "her mother",
+     "pred": "her mother",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 3,
+     "question": "Is it likely that Nate has friends besides Joanna?",
+     "gold": "Yesteammates on hisvideo game team.",
+     "pred": "Yesteammates on hisvideo game team.",
+     "want": true,
+     "verdict": false,
+     "raw": "NO",
+     "correct": false
+    },
+    {
+     "arm": "GOLD",
+     "category": 1,
+     "question": "what are John's goals with regards to his basketball career?",
+     "gold": "improve shooting percentage, win a championship",
+     "pred": "improve shooting percentage, win a championship",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "Which year did Audrey adopt the first three of her dogs?",
+     "gold": "2020",
+     "pred": "2020",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 3,
+     "question": "What are John's suspected health problems?",
+     "gold": "Obesity",
+     "pred": "Obesity",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "What kind of project was Jolene working on in the beginning of January 2023?",
+     "gold": "electricity engineering project",
+     "pred": "electricity engineering project",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 1,
+     "question": "What kind of car does Evan drive?",
+     "gold": "Prius",
+     "pred": "Prius",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "When did Calvin first travel to Tokyo?",
+     "gold": "between 26 March and 20 April 2023",
+     "pred": "between 26 March and 20 April 2023",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "When did Melanie paint a sunrise?",
+     "gold": "2022",
+     "pred": "2022",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    },
+    {
+     "arm": "GOLD",
+     "category": 2,
+     "question": "When Gina has lost her job at Door Dash?",
+     "gold": "January, 2023",
+     "pred": "January, 2023",
+     "want": true,
+     "verdict": true,
+     "raw": "YES",
+     "correct": true
+    }
+   ]
+  },
+  "WRONG": {
+   "n": 12,
+   "correct": 12,
+   "wrong": 0,
+   "parse_fail": 0,
+   "rate": 1.0,
+   "rows": [
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "When did Caroline go to the LGBTQ support group?",
+     "gold": "7 May 2023",
+     "pred": "He was scared but reassured by his family",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "When Jon has lost his job as a banker?",
+     "gold": "19 January, 2023",
+     "pred": "a dance studio",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "Who did Maria have dinner with on May 3, 2023?",
+     "gold": "her mother",
+     "pred": "Join a local church, buy a cross necklace",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 3,
+     "question": "Is it likely that Nate has friends besides Joanna?",
+     "gold": "Yesteammates on hisvideo game team.",
+     "pred": "takes them onwalks, holds them,feeds themstrawberries, gives",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 1,
+     "question": "what are John's goals with regards to his basketball career?",
+     "gold": "improve shooting percentage, win a championship",
+     "pred": "play the piano",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "Which year did Audrey adopt the first three of her dogs?",
+     "gold": "2020",
+     "pred": "about an hour",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 3,
+     "question": "What are John's suspected health problems?",
+     "gold": "Obesity",
+     "pred": "August 9, 2022",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "What kind of project was Jolene working on in the beginning of January 2023?",
+     "gold": "electricity engineering project",
+     "pred": "on 5 June, 2023",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 1,
+     "question": "What kind of car does Evan drive?",
+     "gold": "Prius",
+     "pred": "put a GPS sensor on them",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "When did Calvin first travel to Tokyo?",
+     "gold": "between 26 March and 20 April 2023",
+     "pred": "September 2023",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "When did Melanie paint a sunrise?",
+     "gold": "2022",
+     "pred": "sunset",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "WRONG",
+     "category": 2,
+     "question": "When Gina has lost her job at Door Dash?",
+     "gold": "January, 2023",
+     "pred": "Winning first place at a regionals dance competition",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    }
+   ]
+  },
+  "REFUSAL": {
+   "n": 12,
+   "correct": 12,
+   "wrong": 0,
+   "parse_fail": 0,
+   "rate": 1.0,
+   "rows": [
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "When did Caroline go to the LGBTQ support group?",
+     "gold": "7 May 2023",
+     "pred": "There is nothing in the conversation about that.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "When Jon has lost his job as a banker?",
+     "gold": "19 January, 2023",
+     "pred": "The memory does not contain that information.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "Who did Maria have dinner with on May 3, 2023?",
+     "gold": "her mother",
+     "pred": "The memory does not contain that information.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 3,
+     "question": "Is it likely that Nate has friends besides Joanna?",
+     "gold": "Yesteammates on hisvideo game team.",
+     "pred": "The memory does not contain that information.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 1,
+     "question": "what are John's goals with regards to his basketball career?",
+     "gold": "improve shooting percentage, win a championship",
+     "pred": "I don't know.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "Which year did Audrey adopt the first three of her dogs?",
+     "gold": "2020",
+     "pred": "I don't know.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 3,
+     "question": "What are John's suspected health problems?",
+     "gold": "Obesity",
+     "pred": "I could not find an answer in the provided memory.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "What kind of project was Jolene working on in the beginning of January 2023?",
+     "gold": "electricity engineering project",
+     "pred": "There is nothing in the conversation about that.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 1,
+     "question": "What kind of car does Evan drive?",
+     "gold": "Prius",
+     "pred": "There is nothing in the conversation about that.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "When did Calvin first travel to Tokyo?",
+     "gold": "between 26 March and 20 April 2023",
+     "pred": "The memory does not contain that information.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "When did Melanie paint a sunrise?",
+     "gold": "2022",
+     "pred": "I don't know.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    },
+    {
+     "arm": "REFUSAL",
+     "category": 2,
+     "question": "When Gina has lost her job at Door Dash?",
+     "gold": "January, 2023",
+     "pred": "The memory does not contain that information.",
+     "want": false,
+     "verdict": false,
+     "raw": "NO",
+     "correct": true
+    }
+   ]
+  }
+ },
+ "gate_passed": true,
+ "llm": {
+  "llm_calls": 37,
+  "llm_errors": 0,
+  "llm_p50_s": 2.367,
+  "llm_p95_s": 2.573,
+  "llm_max_s": 5.063,
+  "suspected_cache_hits": 0,
+  "cache_hit_threshold_s": 0.05,
+  "by_model": {
+   "qwen2.5:7b": {
+    "calls": 37,
+    "mean_s": 2.482
+   }
+  }
+ }
+}
