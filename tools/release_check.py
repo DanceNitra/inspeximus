@@ -243,20 +243,40 @@ def check_changelog(rep, root=ROOT):
 
 # --------------------------------------------------------------------------- zero dependencies
 
+# Blocks by WHERE a module lives, not by an allowlist of stdlib names.
+#
+# The first version used `sys.stdlib_module_names`, which arrived in 3.10 -- and `pyproject.toml`
+# declares `requires-python = ">=3.8"` with CI running 3.9. So on the OLDEST SUPPORTED PYTHON the
+# blocker could not be built at all, the runtime leg degraded to a SKIP, and the guard covering the
+# claim on the first line of the README was silently absent exactly where the package is most fragile.
+# CI on 3.9 is what caught it; every local run here is 3.12.
+#
+# "Third-party" is really a question about location, and `site-packages` / `dist-packages` / `.egg`
+# answers it on every version with no table to keep current. A stdlib module resolves inside the
+# stdlib directory and passes; anything pip installed does not.
 _BLOCKER = r'''
-import sys
-STDLIB = getattr(sys, "stdlib_module_names", None)
-if STDLIB is None:
-    print("NO_STDLIB_NAMES"); raise SystemExit(3)
-ALLOW = set(STDLIB) | {"inspeximus", "__main__", "sitecustomize"}
+import sys, importlib.machinery
+ALLOW = {"inspeximus", "__main__"}
+MARKERS = ("site-packages", "dist-packages", ".egg")
 
 class Blocker:
     def find_module(self, name, path=None):      # py<3.12 compatibility shim, harmless on 3.12+
         return self.find_spec(name, path)
     def find_spec(self, name, path=None, target=None):
-        top = name.split(".")[0]
-        if top not in ALLOW:
-            raise ImportError("THIRD_PARTY_BLOCKED:" + top)
+        if "." in name:                          # a submodule of a package already vetted below
+            return None
+        if name in ALLOW:
+            return None
+        try:
+            spec = importlib.machinery.PathFinder.find_spec(name)
+        except Exception:
+            return None
+        if spec is None:                         # builtin/frozen, or genuinely absent
+            return None
+        where = (getattr(spec, "origin", "") or "") + "|" + \
+                "|".join(list(getattr(spec, "submodule_search_locations", None) or []))
+        if any(m in where for m in MARKERS):
+            raise ImportError("THIRD_PARTY_BLOCKED:" + name)
         return None
 
 sys.meta_path.insert(0, Blocker())
@@ -272,8 +292,9 @@ def check_zero_dependencies(rep, root=ROOT):
     """Three legs, because any one alone can pass while the claim is false.
 
     1. DECLARED: `[project] dependencies` in pyproject must be empty. This is what an installer obeys.
-    2. RUNTIME: `import inspeximus` and use it with every non-stdlib import blocked. A declaration can
-       be empty while the code imports something that happens to be installed in the dev environment.
+    2. RUNTIME: `import inspeximus` and use it with every installed-package import blocked. A
+       declaration can be empty while the code imports something that happens to be present in the dev
+       environment.
     3. THE CONTROL: the blocker must actually block. It is aimed at an importable third-party module
        that is verified to import NORMALLY first -- otherwise "nothing was blocked" and "nothing was
        importable" produce the same green.
@@ -290,10 +311,6 @@ def check_zero_dependencies(rep, root=ROOT):
                               'm = Inspeximus()\n'
                               'm.remember("the release checklist is a script")\n'
                               'print("OK", len(m.recall("release checklist", k=1)))\n')
-    if "NO_STDLIB_NAMES" in proc.stdout:
-        rep.add("zero dependencies", SKIP,
-                "this Python has no sys.stdlib_module_names; the runtime leg cannot be built here")
-        return
     if proc.returncode != 0 or not proc.stdout.startswith("OK"):
         last = (proc.stderr.strip().splitlines() or ["<no stderr>"])[-1]
         rep.add("zero dependencies", FAIL,

@@ -208,6 +208,24 @@ def test_the_import_blocker_really_blocks(tmp_path):
     assert blocked.returncode != 0 and "THIRD_PARTY_BLOCKED" in blocked.stderr
 
 
+def test_the_blocker_lets_the_stdlib_through_on_whatever_python_is_running():
+    """It must PASS the stdlib as surely as it blocks site-packages, or the runtime leg fails for the
+    wrong reason and reads as a dependency that is not there.
+
+    This is the pair to the CI failure that produced the current implementation. The first version
+    keyed on `sys.stdlib_module_names`, which is 3.10+, while `pyproject.toml` declares `>=3.8` and CI
+    runs 3.9 -- so on the OLDEST supported Python the blocker could not be built, the leg degraded to a
+    SKIP, and the guard on the README's first-line claim was absent exactly where it matters most.
+    Every local run here is 3.12, so only the 3.9 leg could see it. Deciding by LOCATION
+    (site-packages / dist-packages / .egg) needs no version table at all.
+    """
+    proc = release_check._blocked_run(
+        ROOT, "import json, re, sqlite3, hashlib, dataclasses; print('STDLIB OK')")
+    assert proc.returncode == 0 and "STDLIB OK" in proc.stdout, proc.stderr[-400:]
+    assert "stdlib_module_names" not in release_check._BLOCKER, \
+        "the blocker must not depend on a 3.10+ API; this package supports 3.8+"
+
+
 # ── the audits leg: it CALLS the existing audits, so the test is that the call is honest ────────────
 def test_the_audits_leg_passes_against_the_real_audits():
     """THE CONTROL for the two below."""
