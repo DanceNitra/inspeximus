@@ -3,6 +3,34 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## Unreleased - integration conformance: three adapters were broken against current upstream
+
+`tools/integration_conformance.py` runs every adapter in `inspeximus.integrations` through a real round
+trip -- write IN through the framework's own interface, read back OUT through it -- and reports
+**VERIFIED / SKIPPED / BROKEN** as three separate counts against a recorded ledger
+(`docs/integration_conformance.json`) that says which upstream version each was last checked against.
+First full run, every optional dependency installed: **9 verified, 0 skipped, 3 broken.**
+
+- **`InspeximusStorage` (CrewAI) does not work with crewai 1.x.** 1.x deleted `crewai.memory.external`,
+  dropped `external_memory` from `Crew`, and replaced the three-method `Storage` protocol our adapter
+  implements with an eleven-method `StorageBackend`. Every existing test passed throughout, because none
+  of them touched a CrewAI type.
+- **`InspeximusSession` no longer satisfies `agents.memory.Session`** (openai-agents 0.18.3 added
+  `session_settings`). The turn log still round-trips -- the SDK reads the attribute with a `getattr`
+  default -- but the object fails a type check and any SDK behaviour keyed on that attribute is inert.
+- **`InspeximusSaver` raises `StoreChangedOnDisk` in ~30% of ordinary LangGraph runs.** Reproduced away
+  from LangGraph: one `Inspeximus` handle written from four threads raised it in 20 of 20 trials. The
+  single-writer guard compares the file signature before `os.replace` and refreshes it after, unlocked,
+  so a second thread reads its own peer's write as a competing process. Correct across processes,
+  misfiring within one -- and LangGraph calls a checkpointer from its executor.
+
+Also: **`haystack` is an extra now** (`pip install "inspeximus[haystack]"`). The adapter, its parity
+script and two test modules had shipped for months with no declared install path; CI installed
+`haystack-ai` by hand in one job, which is why nothing surfaced it. Floor `>=2`, no cap -- 3.0.0 is
+what the round trip is verified against and it passes, so there is no observed breakage to cap on.
+
+Nothing in the library changed. `import inspeximus` still has zero required dependencies.
+
 ## 1.89.0 - UPGRADE IF YOU USE `slash()`/`restore()`: a retraction could be lost, and it walked a stale graph
 
 Two defects on the accountability path, both found by adversarially reviewing a claim we were about to

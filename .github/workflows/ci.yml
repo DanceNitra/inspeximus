@@ -60,10 +60,21 @@ jobs:
           pip install pytest cryptography numpy pyyaml
           # The google-adk floor that keeps this resolvable lives in pyproject.toml, not here: a second
           # copy in each pip line is how release.yml kept the bug after this file was fixed.
-          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]"
-          pip install haystack-ai
+          # haystack is an extra now (it was installed by hand here, and only here, while
+          # `pip install "inspeximus[haystack]"` failed for everyone else).
+          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents,haystack]"
       - name: Run tests
         run: python -m pytest tests/ -q -rs
+      # --require-all is the point of running it HERE: this job installs every framework, so a SKIP is
+      # an install failure, not an acceptable outcome. Without it a botched pip line would leave the
+      # adapters unchecked and the job green. `continue-on-error` because the suite currently records
+      # three adapters as BROKEN against current upstream (docs/integration_conformance.json); the
+      # pytest step above is what gates, by comparing every adapter against that recorded ledger, so a
+      # NEW breakage still turns the job red while a known one does not hide behind an exit code.
+      - name: Integration conformance (verified / skipped / broken)
+        if: always()
+        continue-on-error: true
+        run: python tools/integration_conformance.py --require-all
       - name: How much is still not running here
         if: always()
         run: python tools/skip_census.py
