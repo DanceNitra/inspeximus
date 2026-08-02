@@ -16,6 +16,9 @@ snippet).
 
 Config (environment):
     INSPEXIMUS_PATH        where to persist memory (JSON). Default: ./inspeximus_memory.json
+    INSPEXIMUS_PROJECT     project/workspace scope for ONE store shared across several repos. Writes are
+                           stamped with it and recalls are filtered to it; unset = today's behaviour exactly
+                           (no stamp, no filter). `--project <name>` on the command line wins over this.
     INSPEXIMUS_EMBED_URL   optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall
     INSPEXIMUS_EMBED_MODEL embedding model id (default: text-embedding-3-small)
     INSPEXIMUS_EMBED_KEY   bearer key for that endpoint
@@ -41,7 +44,7 @@ from pathlib import Path
 # died with "'mcp' is not a package". The module is also named mcp_server.py rather than mcp.py so
 # it cannot collide with the SDK even if something else puts this directory on the path.
 from inspeximus import Inspeximus  # noqa: E402
-from inspeximus._surface import open_store  # noqa: E402   one surface posture; see _surface.py
+from inspeximus._surface import open_store, resolve_path  # noqa: E402   one surface posture; see _surface.py
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -96,7 +99,29 @@ def _make_embedders():
     return _embed, None, model
 
 
-_PATH = os.environ.get("INSPEXIMUS_PATH", "inspeximus_memory.json")
+def _path_source(env: dict | None = None) -> str:
+    """WHICH rule decided the store path — reported by `where_am_i`, never inferred by the user.
+
+    A scope that is silently outranked by an explicit INSPEXIMUS_PATH looks exactly like a scope that did
+    not work, so the precedence is made visible rather than left to be guessed.
+    """
+    env = os.environ if env is None else env
+    if env.get("INSPEXIMUS_PATH"):
+        scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
+        if scope == "project":
+            return "INSPEXIMUS_PATH (explicit path OUTRANKS INSPEXIMUS_SCOPE=project)"
+        return "INSPEXIMUS_PATH"
+    scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
+    if scope == "project":
+        return "INSPEXIMUS_SCOPE=project (git root)"
+    return "default filename, relative to this server's working directory"
+
+
+# ONE resolution site (inspeximus/_surface.py), not two. This module used to re-derive the same fallback
+# itself -- `os.environ.get("INSPEXIMUS_PATH", "inspeximus_memory.json")` -- and then hand the result to
+# open_store(), which resolves it AGAIN. A default re-declared at each entry point is a default that drifts,
+# which is the whole reason _surface.py exists (see its module docstring).
+_PATH = resolve_path()
 # INSPEXIMUS_RECEIPTS (opt-in, default off): keep the tamper-evident write/erasure chain that the compliance_*
 # / audit_bundle MCP tools evidence (EU AI Act Art. 12/19). Off by default so an existing MCP store gains no
 # sidecar file unexpectedly; set INSPEXIMUS_RECEIPTS=1 to enable it.
@@ -109,6 +134,54 @@ _RECEIPTS = os.environ.get("INSPEXIMUS_RECEIPTS", "").strip().lower() in ("1", "
 # an unexpected key" on every receipt. This is the same defect already fixed one surface over in
 # verify_erasure_certificate (see core.py: swapping `pubkey` for zeros used to change nothing).
 _RECEIPT_PUBKEY = os.environ.get("INSPEXIMUS_RECEIPT_PUBKEY", "").strip() or None
+
+
+# ── PROJECT / WORKSPACE SCOPE ────────────────────────────────────────────────────────────────────────────
+# One store, several repos. Without a scope an agent working in repo A recalls what it wrote in repo B --
+# noise at best. A named project stamps every write and filters every recall to {this project} + {unstamped}.
+#
+# WHY THE FLAG IS THE PRIMARY MECHANISM, and cwd-derivation is opt-in:
+#   an MCP stdio server does not choose its own working directory -- the HOST launches it, and nothing in the
+#   protocol guarantees that directory is the project root. Deriving the scope from cwd therefore makes the
+#   scope a property of the host's launch behaviour rather than of the user's intent, and a scope that moves
+#   silently is worse than no scope at all: the writes still succeed, into a bucket the next session does not
+#   look in. So the scope is DECLARED (`--project <name>`, or INSPEXIMUS_PROJECT for hosts whose config only
+#   exposes `env`), and `--project auto` is available for launches where cwd genuinely is the project root.
+# Precedence: --project  >  INSPEXIMUS_PROJECT  >  unscoped.
+class ProjectScopeError(ValueError):
+    """A project scope was asked for and could not be resolved to a usable name."""
+
+
+def resolve_project(cli_value: str | None = None, env: dict | None = None, cwd: str | None = None) -> str | None:
+    """Resolve the active project scope, or None for the unscoped (legacy) posture.
+
+    An EXPLICIT but empty `--project ''` RAISES rather than silently falling back to unscoped: asking for
+    isolation and getting none is the failure mode this whole feature exists to prevent, and a scope that
+    quietly evaporates reports safe while isolating nothing. An empty ENV var is treated as unset, because
+    exporting a variable to "" is the ordinary way tooling says "not set".
+    """
+    env = os.environ if env is None else env
+    if cli_value is not None:
+        raw = cli_value.strip()
+        if not raw:
+            raise ProjectScopeError("--project was given an empty name; pass a real project name, or omit "
+                                    "the flag entirely for the unscoped (shared) store")
+    else:
+        raw = (env.get("INSPEXIMUS_PROJECT") or "").strip()
+        if not raw:
+            return None
+    if raw == "auto":
+        # Derive from the working directory's basename. Refuse a root/blank directory rather than stamping
+        # every record with "" -- that would look scoped and isolate nothing.
+        name = Path(cwd or os.getcwd()).resolve().name
+        if not name:
+            raise ProjectScopeError("--project auto could not derive a name: the working directory "
+                                    f"({cwd or os.getcwd()!r}) has no basename. Pass --project <name>.")
+        return name
+    return raw
+
+
+_PROJECT = resolve_project()          # module-level default; main() overrides it from the command line
 _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
 # Opened through the SHARED SURFACE opener (inspeximus/_surface.py), which holds two rules this server used to
 # hold only half of:
@@ -201,16 +274,21 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
     reports `unaudited` -- never a pass -- when nothing declares them, because a store with no edges to
     walk has not been checked, it has been left uninspected.
 
+    If this server was started with a PROJECT scope (`--project <name>` / INSPEXIMUS_PROJECT), the memory is
+    stamped with it and later recalls in OTHER projects will not return it. The active scope is echoed back
+    as `project` in the result (null = unscoped, shared by every project).
+
     Returns the new id."""
     mid = _MEM.remember(text, tags=tags or [], value=value, mtype=mtype, key=key,
                         object=object, reaffirm=reaffirm,
                         source={"doc": source} if source else None,
                         derived_from=derived_from or None,
-                        user_id=user_id, agent_id=agent_id, session_id=session_id)
+                        user_id=user_id, agent_id=agent_id, session_id=session_id,
+                        project=_PROJECT)
     rec = next((r for r in _MEM.items if r["id"] == mid), {})
     return {"id": mid, "stored": text[:120], "tags": tags or [], "value": value,
             "mtype": rec.get("mtype"), "source": source or None,
-            "derived_from": list(derived_from or []),
+            "derived_from": list(derived_from or []), "project": _PROJECT,
             # Say it in the RESULT, not only in the docs. A record with no source cannot be reached by
             # forget_subject/erasure_audit/slash, and the caller is the only one who can still fix that
             # -- at the moment of the write, while they still know where the text came from.
@@ -237,12 +315,17 @@ def remember_decision(decision: str, because: str = "", context: str = "", topic
     person. Measured: a decision written with no source answered would_erase=0 to every phrasing of the
     subject.
 
+    If this server was started with a PROJECT scope, the decision is stamped with it — so "we're going with
+    Postgres here" recorded in one repo does not surface while you work in another. NOTE that the
+    supersession key stays `decision::<topic>` and is NOT namespaced by project: the same topic in two
+    projects still supersedes across them. Use a project-qualified topic when you want them independent.
+
     Returns the new memory id."""
     mid = _MEM.remember_decision(decision, because=because or None, context=context or None,
-                                 topic=topic or None, source=source or None,
+                                 topic=topic or None, source=source or None, project=_PROJECT,
                                  derived_from=derived_from or None)
     return {"id": mid, "decision": decision[:120], "topic": topic or None,
-            "supersedes_by_key": bool(topic),
+            "supersedes_by_key": bool(topic), "project": _PROJECT,
             "attributable": bool(source) or bool(derived_from)}
 
 
@@ -319,7 +402,8 @@ def resolve_reopened(id: str, decision: str, capability: str = "") -> dict:
 def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
            mmr: float | None = None, trusted_only: bool = False,
            user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
-           rerank_by: str | None = None, resolve_conflicts: bool | None = None) -> list[dict]:
+           rerank_by: str | None = None, resolve_conflicts: bool | None = None,
+           all_projects: bool = False) -> list[dict]:
     """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
     knowledge before reasoning.
 
@@ -336,13 +420,30 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     INSPEXIMUS_READ_RESOLVER=1) resolves near-duplicate same-subject candidates at read time by value BIRTH — an
     un-keyed restatement of a superseded value is demoted below the correction instead of out-ranking it; the
     surviving hit carries `resolved_over` ids. Deterministic, zero-LLM.
-    (Standard progressive-disclosure / small-to-big retrieval practice, not a inspeximus-specific technique.)"""
+    (Standard progressive-disclosure / small-to-big retrieval practice, not a inspeximus-specific technique.)
+
+    PROJECT SCOPE: when this server runs with `--project <name>`, recall returns only that project's memories
+    plus any memory carrying no project stamp (memories written before you adopted a scope stay reachable —
+    adopting one narrows what you see without hiding what you already had). `all_projects=True` is the escape
+    hatch for "I know I wrote this somewhere": it searches EVERY project in the store. Each hit then carries
+    the `project` it belongs to, so a cross-project answer says where it came from. Call `where_am_i()` to see
+    which store and scope you are on, and `projects()` to list the scopes present."""
     k = max(1, min(int(k), _MAX_K))
     if resolve_conflicts is None:                     # env default: INSPEXIMUS_READ_RESOLVER=1 turns it on server-wide
         resolve_conflicts = os.environ.get("INSPEXIMUS_READ_RESOLVER", "0").strip() == "1"
     hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
                        user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by,
-                       resolve_conflicts=resolve_conflicts) or []
+                       resolve_conflicts=resolve_conflicts,
+                       project=None if all_projects else _PROJECT) or []
+    if all_projects:
+        # Say WHERE each cross-project hit came from. A search that deliberately crosses scopes and then
+        # hands back scope-less results makes the caller guess the one thing they crossed scopes to learn.
+        # The project is read from the STORE RECORD, not from the hit: a recall hit is a projection and
+        # carries no `meta` on either the compact or the full path, so reading it off the hit yielded None
+        # for every result -- the label was present and always empty, which is worse than absent.
+        _proj = {r.get("id"): (r.get("meta") or {}).get("project") for r in _MEM.items}
+        return [{**(h if full else _compact(h, snippet_chars if snippet_chars > 0 else _SNIPPET)),
+                 "project": _proj.get(h.get("id"))} for h in hits]
     if full:
         return hits
     n = snippet_chars if snippet_chars > 0 else _SNIPPET
@@ -353,7 +454,7 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
 def recall_iterative(query: str, k: int = 6, max_followups: int = 3, full: bool = False,
                      snippet_chars: int = 0, trusted_only: bool = False,
                      user_id: str | None = None, agent_id: str | None = None,
-                     session_id: str | None = None) -> dict:
+                     session_id: str | None = None, all_projects: bool = False) -> dict:
     """MULTI-HOP recall, PHASE 1 of 2 — use this instead of `recall` when the answer needs a fact that is
     reachable only THROUGH another one ("who manages the person who signed off on X", "what did the vendor we
     switched to in March charge us"). One-shot top-k systematically misses that second hop: the record holding
@@ -371,11 +472,15 @@ def recall_iterative(query: str, k: int = 6, max_followups: int = 3, full: bool 
 
     BOUND: exactly ONE recall() and at most `k` records back (`k` hard-capped at INSPEXIMUS_MAX_K). The
     response size is a function of `k` alone and does NOT grow with the store — unlike this server's
-    `contradictions` surface, whose all-pairs output reached ~150 MB at n=2,000."""
+    `contradictions` surface, whose all-pairs output reached ~150 MB at n=2,000.
+
+    Honours the active project scope, like `recall`; `all_projects=True` searches every project. A multi-hop
+    walk must not be a side door out of the scope its first hop respected."""
     k = max(1, min(int(k), _MAX_K))
     res = _MEM.recall_iterative_start(query, k=k, max_followups=max_followups,
                                       trusted_only=trusted_only, user_id=user_id,
-                                      agent_id=agent_id, session_id=session_id)
+                                      agent_id=agent_id, session_id=session_id,
+                                      project=None if all_projects else _PROJECT)
     if not full:
         n = snippet_chars if snippet_chars > 0 else _SNIPPET
         res["hits"] = [_compact(h, n) for h in res["hits"]]
@@ -386,7 +491,8 @@ def recall_iterative(query: str, k: int = 6, max_followups: int = 3, full: bool 
 def recall_followup(query: str, followups: list[str] | None = None, prior_ids: list[str] | None = None,
                     k: int = 6, max_followups: int = 3, full: bool = False, snippet_chars: int = 0,
                     trusted_only: bool = False, user_id: str | None = None,
-                    agent_id: str | None = None, session_id: str | None = None) -> dict:
+                    agent_id: str | None = None, session_id: str | None = None,
+                    all_projects: bool = False) -> dict:
     """MULTI-HOP recall, PHASE 2 of 2 — hand back the follow-up queries YOUR model wrote after reading
     `recall_iterative`'s round-1 hits, together with the `prior_ids` it returned. Each follow-up is retrieved
     and only the records you do NOT already hold come back, so the second round costs you the bridge evidence
@@ -404,15 +510,69 @@ def recall_followup(query: str, followups: list[str] | None = None, prior_ids: l
 
     BOUND: at most min(len(followups), max_followups) recall() calls, `max_followups` itself capped at 8, and
     at most k * max_followups NEW records. Worst case with both at their ceilings: 8 retrievals, 400 records.
-    Nothing here scales with store size."""
+    Nothing here scales with store size. Honours the active project scope; `all_projects=True` crosses it,
+    and must match what you passed to `recall_iterative` or round 2 searches a different pool than round 1."""
     k = max(1, min(int(k), _MAX_K))
     res = _MEM.recall_iterative_followup(query, followups=followups, prior_ids=prior_ids, k=k,
                                          max_followups=max_followups, trusted_only=trusted_only,
-                                         user_id=user_id, agent_id=agent_id, session_id=session_id)
+                                         user_id=user_id, agent_id=agent_id, session_id=session_id,
+                                         project=None if all_projects else _PROJECT)
     if not full:
         n = snippet_chars if snippet_chars > 0 else _SNIPPET
         res["new_hits"] = [_compact(h, n) for h in res["new_hits"]]
     return res
+
+
+@mcp.tool()
+def where_am_i() -> dict:
+    """WHICH STORE AND SCOPE AM I TALKING TO? Call it first in a session, or whenever a recall comes back
+    emptier than expected. Returns the ABSOLUTE store path, which rule chose it (`path_source`), whether that
+    file exists yet and how many memories it holds, the active project scope, and the embedder/receipt posture.
+
+    This answers the failure it was built for. The default store path is a RELATIVE filename and an MCP stdio
+    server does not choose its own working directory — the host does — so the same config could reach a
+    different store depending on where the client was started, with nothing on any surface saying so: the
+    writes succeeded, the recalls came back empty, and the memories were one directory away. Set
+    INSPEXIMUS_SCOPE=project to anchor the store to the git root instead (identical from every directory in
+    the repo); `path_source` says which rule actually applied, including when an explicit INSPEXIMUS_PATH
+    outranked the scope. Read-only."""
+    p = Path(_PATH)
+    return {"store_path": str(p.resolve() if p.exists() else p.absolute()),
+            "store_exists": p.exists(),
+            "path_source": _path_source(),
+            "store_scope": (os.environ.get("INSPEXIMUS_SCOPE") or "user").strip().lower() or "user",
+            "project": _PROJECT,
+            "project_source": ("--project / INSPEXIMUS_PROJECT" if _PROJECT else
+                               "unscoped — this server sees every project in the store"),
+            "cwd": os.getcwd(),
+            "memories": len(getattr(_MEM, "items", [])),
+            "receipts": bool(_RECEIPTS),
+            "embedder": _EMB_ID,
+            "version": _INSPEXIMUS_VERSION}
+
+
+@mcp.tool()
+def projects() -> dict:
+    """List the project scopes present in this store, with a memory count each — the map for `all_projects`
+    search and the check that your writes are landing where you think.
+
+    `unscoped` counts memories carrying no project stamp: they are GLOBAL (visible from every project), which
+    is what a store written before project scoping was adopted looks like, and why adopting a scope does not
+    hide anything you already had. `active` is this server's own scope (null = it sees everything).
+    Read-only, deterministic, no LLM."""
+    counts: dict[str, int] = {}
+    unscoped = 0
+    for r in getattr(_MEM, "items", []):
+        name = (r.get("meta") or {}).get("project")
+        if name is None:
+            unscoped += 1
+        else:
+            counts[str(name)] = counts.get(str(name), 0) + 1
+    return {"active": _PROJECT,
+            "projects": dict(sorted(counts.items())),
+            "unscoped": unscoped,
+            "total": len(getattr(_MEM, "items", [])),
+            "note": "recall(all_projects=True) searches every project; an unscoped memory is visible from all."}
 
 
 @mcp.tool()
@@ -429,12 +589,15 @@ def get(id: str) -> dict:
 def neighbors(id: str, k: int = 5) -> list[dict]:
     """Expand context AROUND a memory: the k memories most related to the one with `id` (compact snippets), by
     recalling on that memory's own text and excluding itself. Use it for on-demand local context after recall
-    surfaces a relevant hit — a bounded expansion, not a whole-store dump. Returns [] if the id is unknown."""
+    surfaces a relevant hit — a bounded expansion, not a whole-store dump. Returns [] if the id is unknown.
+
+    Honours the active project scope, like recall: expanding around a hit must not be a side door back into
+    another project's memories."""
     rec = next((r for r in _MEM.items if r.get("id") == id), None)
     if not rec:
         return []
     k = max(1, min(int(k), _MAX_K))
-    hits = _MEM.recall(rec.get("text", ""), k=k + 1) or []
+    hits = _MEM.recall(rec.get("text", ""), k=k + 1, project=_PROJECT) or []
     return [_compact(h, _SNIPPET) for h in hits if h.get("id") != id][:k]
 
 
@@ -1106,7 +1269,45 @@ def review_contradictions() -> str:
             "Never silently overwrite — keep the correction auditable.")
 
 
-def main():
+def _build_parser():
+    import argparse
+    p = argparse.ArgumentParser(
+        prog="inspeximus-mcp",
+        # ASCII ONLY in every string argparse prints. --help goes to a console whose encoding we do not
+        # choose (cp1250 on the Windows box this is developed on), and a UnicodeEncodeError there turns
+        # "show me the flags" into a traceback.
+        description="inspeximus MCP server - deterministic, zero-LLM agent memory over stdio.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Environment: INSPEXIMUS_PATH (store file); INSPEXIMUS_SCOPE=user|project (where the store "
+               "lives; 'project' = <git-root>/.inspeximus/memory.json); INSPEXIMUS_PROJECT (scope inside "
+               "the store); INSPEXIMUS_RECEIPTS=1; INSPEXIMUS_EMBED_URL/_MODEL/_KEY.\n"
+               "With no flags and no environment, behaviour is unchanged: one shared store, no filtering.")
+    p.add_argument("--project", metavar="NAME", default=None,
+                   help="tag writes with this project/workspace and filter recalls to it (plus memories "
+                        "carrying no project). Use 'auto' to derive the name from the working directory's "
+                        "basename. Overrides INSPEXIMUS_PROJECT. Omit for the unscoped, shared store. "
+                        "recall(all_projects=True) still searches across every project.")
+    p.add_argument("--version", action="version", version=f"inspeximus {_INSPEXIMUS_VERSION}")
+    return p
+
+
+def main(argv=None):
+    global _PROJECT
+    # STRICT parsing, deliberately: an unrecognised argument is an ERROR, not something to ignore. A
+    # mistyped `--porject web` would otherwise start a server that silently shares every project's memories
+    # while the user believes they are isolated — asking for a scope and quietly getting none is precisely
+    # the failure this flag exists to prevent, so it fails at launch instead.
+    args = _build_parser().parse_args(sys.argv[1:] if argv is None else argv)
+    try:
+        _PROJECT = resolve_project(args.project)
+    except ProjectScopeError as e:
+        sys.stderr.write(f"inspeximus-mcp: {e}\n")
+        raise SystemExit(2)
+    # WHICH STORE, said out loud at startup. stderr, never stdout — stdout is the JSON-RPC channel, and a
+    # stray line there corrupts the protocol. Until now nothing on any surface told the user which file the
+    # server had opened, and with a cwd-relative default that is half of "my memories disappeared".
+    sys.stderr.write(f"inspeximus {_INSPEXIMUS_VERSION}: store={Path(_PATH).absolute()} "
+                     f"[{_path_source()}] project={_PROJECT or '(unscoped)'}\n")
     # once-a-day, opt-out "newer version exists" courtesy. MUST go to stderr — stdout is the JSON-RPC channel.
     try:
         from inspeximus import __version__
