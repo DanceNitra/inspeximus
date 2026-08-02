@@ -1,0 +1,3 @@
+# The LongMemEval dataset is CC-BY-NC 4.0 and 278 MB; this repository does not redistribute it.
+# `run.py --download` puts it here or in ~/.cache/longmemeval/.
+data/

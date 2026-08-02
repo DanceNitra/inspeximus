@@ -1,0 +1,366 @@
+{
+ "judge": "qwen2.5:7b",
+ "gate": 0.9,
+ "n_per_arm": 12,
+ "generated_utc": "2026-08-01T21:49:09Z",
+ "contended": true,
+ "gpu_preflight": {
+  "nvidia_smi": true,
+  "free_mb": 4820,
+  "total_mb": 24576,
+  "util_pct": 9,
+  "foreign_processes": [
+   "llama-server",
+   "llama-server.exe"
+  ],
+  "error": null,
+  "passed": false,
+  "reasons": [
+   "only 4820 MiB VRAM free, need >= 20480 MiB",
+   "another model runner is resident: llama-server, llama-server.exe"
+  ],
+  "override": true
+ },
+ "answer_prompt_sha256": "364ce93c65e163e937e01b0c53015345de20b84cbd43e25baae9a1df98c414a2",
+ "judge_prompt_sha256": "9f86b20ae2517e17daeae3174c3e51909f51d30ea223358d144d9e63c0fac17b",
+ "judge_prompt_preference_sha256": "3753305f8a37ecf8f25753a3d8dad4664a289906b5c83d2ec7886bc0d6997911",
+ "GOLD": {
+  "n": 12,
+  "correct": 12,
+  "wrong": 0,
+  "unparsed": 0,
+  "rate": 1.0,
+  "rows": [
+   {
+    "qid": "720133ac",
+    "type": "multi-session",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "gpt4_d31cdae3",
+    "type": "temporal-reasoning",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "07741c45",
+    "type": "knowledge-update",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "gpt4_4edbafa2",
+    "type": "temporal-reasoning",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "c4f10528",
+    "type": "single-session-assistant",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "bcbe585f",
+    "type": "temporal-reasoning",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "gpt4_7fce9456",
+    "type": "multi-session",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "1d4da289",
+    "type": "single-session-assistant",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "gpt4_6ed717ea",
+    "type": "temporal-reasoning",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "70b3e69b",
+    "type": "single-session-assistant",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "09ba9854",
+    "type": "multi-session",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "gpt4_e414231f",
+    "type": "temporal-reasoning",
+    "verdict": 1,
+    "want": 1,
+    "correct": true,
+    "raw": "{\"correct\": 1}"
+   }
+  ]
+ },
+ "WRONG": {
+  "n": 12,
+  "correct": 11,
+  "wrong": 1,
+  "unparsed": 0,
+  "rate": 0.917,
+  "rows": [
+   {
+    "qid": "720133ac",
+    "type": "multi-session",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_d31cdae3",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "07741c45",
+    "type": "knowledge-update",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_4edbafa2",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "c4f10528",
+    "type": "single-session-assistant",
+    "verdict": 1,
+    "want": 0,
+    "correct": false,
+    "raw": "{\"correct\": 1}"
+   },
+   {
+    "qid": "bcbe585f",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_7fce9456",
+    "type": "multi-session",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "1d4da289",
+    "type": "single-session-assistant",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_6ed717ea",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "70b3e69b",
+    "type": "single-session-assistant",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "09ba9854",
+    "type": "multi-session",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_e414231f",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   }
+  ]
+ },
+ "HEDGE": {
+  "n": 12,
+  "correct": 12,
+  "wrong": 0,
+  "unparsed": 0,
+  "rate": 1.0,
+  "rows": [
+   {
+    "qid": "720133ac",
+    "type": "multi-session",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_d31cdae3",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "07741c45",
+    "type": "knowledge-update",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_4edbafa2",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "c4f10528",
+    "type": "single-session-assistant",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "bcbe585f",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_7fce9456",
+    "type": "multi-session",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "1d4da289",
+    "type": "single-session-assistant",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_6ed717ea",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "70b3e69b",
+    "type": "single-session-assistant",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "09ba9854",
+    "type": "multi-session",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   },
+   {
+    "qid": "gpt4_e414231f",
+    "type": "temporal-reasoning",
+    "verdict": 0,
+    "want": 0,
+    "correct": true,
+    "raw": "{\"correct\": 0}"
+   }
+  ]
+ },
+ "GATE_PASSED": true,
+ "latency": {
+  "preflight": {
+   "n": 1,
+   "median_s": 12.126,
+   "p95_s": 12.126,
+   "max_s": 12.126,
+   "zero_s_calls": 0
+  },
+  "embed_batch": {
+   "n": 1,
+   "median_s": 2.098,
+   "p95_s": 2.098,
+   "max_s": 2.098,
+   "zero_s_calls": 0
+  },
+  "judge": {
+   "n": 36,
+   "median_s": 10.631,
+   "p95_s": 15.93,
+   "max_s": 53.887,
+   "zero_s_calls": 0
+  }
+ }
+}
