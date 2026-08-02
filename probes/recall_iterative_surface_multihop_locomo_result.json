@@ -1,0 +1,12 @@
+{
+ "fixture": "LoCoMo (locomo10.json)",
+ "k": 6,
+ "max_followups": 3,
+ "multi_hop_definition": ">=2 gold evidence turns, category != 5",
+ "questions": 409,
+ "too_easy_excluded": 15,
+ "eligible": 394,
+ "bridged": 19,
+ "bridge_rate_iterative": 0.048,
+ "reader": "mechanical, gold-blind \u2014 a LOWER BOUND, not the lever's ceiling"
+}

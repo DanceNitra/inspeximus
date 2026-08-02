@@ -19,6 +19,67 @@ It shares one store with the MCP server (`--path`, else `$INSPEXIMUS_PATH`, else
 lexical by default; set `$INSPEXIMUS_EMBED_URL` (+ `$INSPEXIMUS_EMBED_MODEL`) to any OpenAI-compatible `/embeddings`
 endpoint (e.g. local Ollama) for semantic recall. Zero dependencies.
 
+## Multi-hop recall, reachable from MCP and the shell: `recall_iterative` / `recall_followup` (1.90.0)
+
+One-shot top-k systematically misses the SECOND hop. When the answer needs a fact that is reachable only
+*through* another one ("which city does the person who signed off on the marketing review work from"), the
+record holding it is similar to the **bridge entity**, not to your question — so no amount of ranking brings
+it back. Every static retrieval trick we measured against this failed or regressed: dense-neighbour
+expansion, lexical bridges, PRF/Rocchio, multi-query RRF, and cross-encoder reranking (which *hurts* here by
+construction — hop-2 evidence is not directly relevant to the question, so a relevance reranker demotes it).
+
+The one thing that works is putting a **reading model** in the loop. `Inspeximus.recall_iterative()` has done
+that since 0.x via an `ask_followup` callable — and a callable is unreachable from an MCP client or a shell,
+which is where users and agents actually stand. So the same lever is now a **two-phase, client-driven loop**:
+
+```bash
+# phase 1 — round-1 hits plus the instruction to hand your model, and a continuation token
+inspeximus recall-iterative "which city does the person who signed off on the marketing review work from"
+
+# phase 2 — your model read round-1, named the bridge, and hands its queries back
+inspeximus recall-iterative "...work from" --followup "Priya Raman"        # both phases, one call
+```
+
+Over MCP it is the pair `recall_iterative(query, k, max_followups)` → `recall_followup(query, followups,
+prior_ids)`. **No LLM enters inspeximus.** The MCP client already *is* a model, so the reasoning stays the
+caller's and the retrieval, dedup and merge stay ours: deterministic, zero-LLM, single file. `prior_ids` is
+the entire continuation state and travels with the caller — there is no server-side session to grow, expire,
+or serve to the wrong client, and phase 2 returns only the records you do not already hold.
+
+**Bound (asserted, `tests/test_recall_iterative_surface.py`).** Phase 1: exactly **1** retrieval, at most `k`
+records. Phase 2: at most `min(len(followups), max_followups)` retrievals with `max_followups` hard-capped at
+**8**, and at most `k × max_followups` new records — worst case 8 retrievals / 400 records. Cost is a
+function of `(k, max_followups)` and **not** of store size: measured at **n=330 and n=4,080 records**
+(the probe's `--filler` is 250/4,000 on top of the fixture's own 80), the payload is byte-identical --
+2,410 bytes for phase 1 and 2,964 for phase 2 at k=6, max_followups=3, at both sizes. Surplus follow-ups are dropped and *reported*
+in `followups_dropped`, never silently truncated.
+
+**What is measured, and at which operating point.** Two numbers circulate for this lever and they are two
+different fixtures, not a disagreement. Both are multi-hop **full-evidence recall@50** on LoCoMo with a
+**model** reader (which sees the question and round-1 only, never the gold) and local nomic-embed vectors, at
+an equal retrieval budget of B=50:
+
+| fixture | flat top-50 | iterative | ratio |
+|---|---|---|---|
+| **n=276, all 10 conversations (the full benchmark)** | 0.145 | **0.297** | **2.05×** |
+| n=70, the 3 hardest conversations (a subset) | 0.057 | 0.186 | 3.3× |
+
+The 3.3× is the harder subset and the flattering ratio; **2.05× on the full benchmark is the citable one.**
+Neither is reproduced by this repository's test suite — both need the LoCoMo corpus (not shipped) plus a
+model reader. What this repo *does* reproduce on every run is
+`probes/recall_iterative_surface_multihop.py`, which measures the surface itself with a **mechanical,
+gold-blind reader** (proper nouns in round-1 that are absent from the question) at lexical recall, k=6:
+
+- **shipped synthetic bridge fixture: 20/20** questions where a single `recall(k=6)` misses the bridge record
+  and the two-call sequence retrieves it. Control: **0** of the 20 were reachable by the single call (if any
+  were, the fixture would be too easy to detect the lever and the probe fails). Single-hop control: no
+  regression, and the caller's final record set is a superset of plain recall's.
+- **LoCoMo, 409 multi-hop questions (≥2 gold evidence turns, category ≠ 5): 19/394 = 0.048.** This is a
+  *weak* result and it is the expected one: a mechanical reader is exactly the zero-LLM bridging our lab
+  already measured as null on this corpus. It is the honest floor for the surface, and it is the argument for
+  the design — the gain lives in the reader, which is why the loop is handed to the caller's model rather
+  than faked inside the library.
+
 ## Claude Code: deterministic auto-capture memory (1.10.0)
 
 One command turns inspeximus into persistent memory for Claude Code, the same auto-capture the popular coding-memory
