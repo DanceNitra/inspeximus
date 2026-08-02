@@ -231,11 +231,31 @@ ok = Inspeximus.verify_cosigned_anchor(anchor, out["cosignatures"],
 # Inspeximus.detect_split_view(...) turns two co-signed inconsistent heads into a cryptographic fork proof.
 ```
 
-See `examples/07_witness_pool.py` for the full end-to-end (honest k-of-n, honest extension, a refused fork).
-Of the nine agent-memory libraries we scanned ([docs/AI_ACT.md](docs/AI_ACT.md)) none shipped external
-witnessing at the time of the scan — that is a statement about what we read, not about what is possible;
-inspeximus does it with stdlib-only witnesses that persist their per-store last-signed head, so the refusal
-survives a restart.
+**[docs/TRANSPARENCY.md](docs/TRANSPARENCY.md) is the quickstart**: an empty directory to a verified
+co-signed anchor in five shell commands, plus the worked split-view proof. Every command on that page is
+executed by `tests/test_witness_quickstart.py` on every CI run, so it cannot rot. From the shell:
+
+```bash
+inspeximus --receipts remember "invoice 7 total is 100 EUR" --key inv7::total --object 100
+inspeximus anchor --out head.json                     # the signed tree head, safe to publish
+inspeximus witness keygen --out witnessA.key --allowlist witnesses.txt
+inspeximus witness cosign head.json --store-id acme --key witnessA.key --out cosigA.json
+inspeximus witness verify head.json --cosig cosigA.json --witnesses-file witnesses.txt --threshold 1
+```
+
+Add witnesses B and C, require `--threshold 2`, and a rewritten history can no longer reach the bar —
+honest witnesses refuse to co-sign a fork of a head they already signed (exit `2`). When one is tricked or
+colludes into signing both, `inspeximus witness split-view` turns the two co-signed heads into a fork
+proof naming the key. The page below walks that through with real output.
+
+`examples/12_split_view_detection.py` runs the whole story with its controls; `examples/07_witness_pool.py`
+is the shorter pool-only version. Witnesses persist their per-store last-signed head, so the refusal
+survives a restart. The design is Certificate Transparency's ([RFC 6962](https://www.rfc-editor.org/rfc/rfc6962));
+[Sigstore](https://www.sigstore.dev/)/Rekor and the CT log ecosystem run it in production at a far larger
+scale, with real multi-operator witness networks. Of the nine agent-memory libraries we scanned
+([docs/AI_ACT.md](docs/AI_ACT.md)) none shipped external witnessing at the time of the scan — that is a
+statement about what we read, not about what is possible. What we did not find elsewhere is a co-signed,
+split-view-detecting anchor **inside a zero-dependency single-file memory store**.
 
 ### Portable audit bundle — hand an auditor one file they verify offline
 

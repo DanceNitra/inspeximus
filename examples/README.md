@@ -10,6 +10,7 @@ Runnable, copy-paste examples. Each is self-contained and needs only `pip instal
 | [`04_encryption.py`](04_encryption.py) | AES-256-GCM **encryption-at-rest** + **crypto-shredding** erasure (needs `cryptography`) |
 | [`06_gdpr_erasure_receipt.py`](06_gdpr_erasure_receipt.py) | **signed erasure receipt** (GDPR Art. 17 / EU AI Act Art. 12): Ed25519-signed, hash-chained, content-free tombstones grouped by DSAR request id, provable end-to-end via `verify_writes()` + `governance_report()` |
 | [`11_verifiable_erasure.py`](11_verifiable_erasure.py) | the **three-command path** of [docs/ERASURE.md](../docs/ERASURE.md) end to end — delete, signed certificate, independent residue scan — with the control that makes it mean anything: the deleted record is gone **and** a different one is still there, and a tampered certificate FAILS |
+| [`12_split_view_detection.py`](12_split_view_detection.py) | **split-view detection**: a co-signed RFC-6962 tree head, three witnesses refusing a fork, the proof when one is tricked into signing both — with the controls (tampered anchor must FAIL, identical heads must stay SILENT). Quickstart: [`docs/TRANSPARENCY.md`](../docs/TRANSPARENCY.md) |
 
 ```bash
 pip install inspeximus

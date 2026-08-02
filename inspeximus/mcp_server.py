@@ -845,13 +845,14 @@ def verify_writes(expected_pubkey: str = "") -> dict:
 
 @mcp.tool()
 def anchor() -> dict:
-    """OPERATOR-ADVERSARIAL commitment: emit a Certificate-Transparency-style SIGNED TREE HEAD — a compact,
+    """TAMPER-EVIDENT MEMORY / transparency log: emit a Certificate-Transparency-style SIGNED TREE HEAD — a compact,
     externally-publishable snapshot {n_writes, writes_tip, n_tombstones, tombstones_tip, ts} that hash-commits to
     the ENTIRE write + erasure history at this instant. Publish it somewhere the store operator cannot retroactively
     alter (a public log, a third-party witness, the auditor's own records). This closes the one hole verify_writes()
     cannot: an operator who HOLDS the receipt key can rewrite AND re-sign the whole history so it still verifies
     internally — but they cannot make the rewritten tip equal an anchor an outsider already witnessed. Record this
-    now; check later with verify_consistency(). (RFC 6962 model; the external witnessing is the auditor's job.)"""
+    now; check later with verify_consistency(). (RFC 6962 model; the external witnessing is the auditor's job.)
+    Quickstart, install to a verified co-signed anchor: docs/TRANSPARENCY.md, or `inspeximus anchor` in the shell."""
     return _MEM.anchor()
 
 
@@ -868,12 +869,20 @@ def verify_consistency(prior_anchor: dict) -> dict:
 
 @mcp.tool()
 def verify_cosigned_anchor(anchor: dict, cosignatures: list, witnesses: list, threshold: int = 1) -> dict:
-    """CLIENT-side k-of-n trust: how many DISTINCT allowlisted WITNESSES validly co-signed this anchor's signed
-    tree head? This is the gossip layer that upgrades tamper-evidence (which catches a rewrite on ONE timeline)
-    into SPLIT-VIEW detection: a compromised operator cannot show divergent histories to different clients
-    without getting `threshold` independent witnesses to co-sign the fork — and honest witnesses refuse. Pass
-    `cosignatures` as [[pubkey_hex, sig_hex], ...] and `witnesses` as the allowlist [pubkey_hex, ...]. Returns
-    {ok, count, threshold, signers}; ok = count >= threshold. Read-only; needs no access to the log."""
+    """CLIENT-side k-of-n trust on a TAMPER-EVIDENT MEMORY head: how many DISTINCT allowlisted WITNESSES validly
+    co-signed this anchor's signed tree head? This is the gossip layer that upgrades tamper-evidence (which catches
+    a rewrite on ONE timeline) into SPLIT-VIEW detection: a compromised operator cannot show divergent histories to
+    different clients without getting `threshold` independent witnesses to co-sign the fork — and honest witnesses
+    refuse. Pass `cosignatures` as [[pubkey_hex, sig_hex], ...] and `witnesses` as the allowlist [pubkey_hex, ...].
+    Returns {ok, count, threshold, signers, covers_history[, limits, error]}; ok = count >= threshold.
+    Read-only; needs no access to the log.
+
+    Three things it refuses to report as success. The anchor's `sth_hash` is re-derived from the head's own
+    fields before any signature is counted, so genuine signatures over a SUBSTITUTED n_writes/writes_tip come
+    back with `error` rather than as co-signed. `threshold` below 1 is rejected — a quorum of zero is met by an
+    anchor no witness ever signed. And a head over a store with no receipt chain reports covers_history=false
+    plus `limits`, because a valid co-signature over an empty history is evidence about no stored data at all.
+    Verify-yourself quickstart: docs/TRANSPARENCY.md."""
     from .core import Inspeximus
     return Inspeximus.verify_cosigned_anchor(anchor, cosignatures, witnesses, threshold=threshold)
 
@@ -883,9 +892,12 @@ def detect_split_view(anchor_a: dict, cosigs_a: list, anchor_b: dict, cosigs_b: 
     """AUDITOR-side FORK PROOF: given two co-signed anchors (e.g. the head shown to client A vs client B), is
     there a witness that validly co-signed BOTH over an INCONSISTENT pair of heads (same log size, different
     tip)? One such witness is cryptographic proof of a split-view — an honest witness refuses the second
-    signature, so a valid double-sign means the operator presented divergent histories. Returns {fork,
-    inconsistent, at, evidence, both_cosigned}. Honest limit: decidable from tree heads alone only at a shared
-    size; different-size logs need verify_consistency (reported inconsistent=False = undetermined)."""
+    signature, so a valid double-sign means the operator presented divergent histories. This is the check behind
+    "prove my agent's memory store showed one history to one reader and a different one to another". Returns
+    {fork, inconsistent, at, evidence, both_cosigned, malformed}. Honest limit: decidable from tree heads alone only
+    at a shared size; different-size logs need verify_consistency (reported inconsistent=False = undetermined).
+    `malformed` names any side whose sth_hash does not bind its own fields — that is a head no witness could have
+    signed, not merely an unproven fork. Worked example: docs/TRANSPARENCY.md."""
     from .core import Inspeximus
     return Inspeximus.detect_split_view(anchor_a, cosigs_a, anchor_b, cosigs_b, witnesses)
 

@@ -140,6 +140,56 @@ def _warn_if_store_dir_missing(path) -> None:
                   file=sys.stderr)
     except Exception:
         pass          # diagnostics must never break a command
+
+
+def _need_ed25519() -> int:
+    """0 if Ed25519 is available, else print how to get it and return the exit code.
+
+    inspeximus itself stays zero-dependency; only the SIGNING half of the witness surface needs
+    `cryptography`. It names the package directly rather than an extra, because no `[witness]` extra is
+    declared in pyproject -- pointing a stuck user at one that does not exist is worse than the raw
+    ImportError this replaces."""
+    from .core import _HAVE_ED
+    if _HAVE_ED:
+        return 0
+    print("  FAIL this command needs Ed25519 signatures: pip install cryptography\n"
+          "       (inspeximus has no required dependencies; only witness signing/verifying uses this one)",
+          file=sys.stderr)
+    return 4
+
+
+def _read_json_file(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _witness_allowlist(csv_value, file_value) -> list:
+    """The client's allowlist of witness pubkeys, from --witnesses and/or --witnesses-file (one per line).
+    De-duplicated, order preserved. Blank lines and `#` comments are ignored so the file can be annotated
+    with which party each key belongs to -- the allowlist is a trust decision and deserves notes."""
+    out = []
+    if csv_value:
+        out += [w.strip() for w in csv_value.split(",") if w.strip()]
+    if file_value:
+        with open(file_value, encoding="utf-8") as f:
+            out += [ln.strip() for ln in f if ln.strip() and not ln.lstrip().startswith("#")]
+    return list(dict.fromkeys(out))
+
+
+def _load_cosigs(paths) -> list:
+    """Load (pubkey, sig) pairs from `witness cosign` output files. Each file is one {pubkey,sig} object or
+    a list of them."""
+    pairs = []
+    for p in paths or []:
+        d = _read_json_file(p)
+        for item in (d if isinstance(d, list) else [d]):
+            if isinstance(item, dict) and item.get("pubkey") and item.get("sig"):
+                pairs.append((item["pubkey"], item["sig"]))
+            elif isinstance(item, (list, tuple)) and len(item) == 2:
+                pairs.append((item[0], item[1]))
+    return pairs
+
+
 def _resolve_store_path(path):
     """The file the CLI will actually use, resolved the same way open_store() resolves it."""
     from ._surface import resolve_path
@@ -172,6 +222,149 @@ def _flush_or_fail(m, required: bool = True) -> int:
             return 3
         print(f"warning: could not update access bookkeeping ({e})", file=sys.stderr)
         return 0
+
+
+def _witness_cmd(a) -> int:
+    """`inspeximus witness ...` — the transparency/witness surface. Touches only files, never a store.
+
+    Exit codes are the contract a CI job or a cron auditor reads:
+      0 = the check passed (co-signed, or verified at threshold, or no split view)
+      1 = the check FAILED (below threshold, or a split view was proven)
+      2 = the witness REFUSED to co-sign (a fork/rollback — the defence firing, not an error), or usage
+      3 = undetermined (heads of different sizes: not decidable from tree heads alone)
+      4 = Ed25519 unavailable
+    """
+    rc = _need_ed25519()
+    if rc:
+        return rc
+    from .core import Inspeximus
+
+    if a.witness_cmd == "keygen":
+        from .core import new_ed25519_keypair
+        if os.path.exists(a.out):
+            print(f"  FAIL {a.out} already exists - refusing to overwrite a witness secret. Replacing the "
+                  f"key silently invalidates every co-signature it ever made, and the old ones would then "
+                  f"read as forgeries rather than as history.", file=sys.stderr)
+            return 2
+        sk, pk = new_ed25519_keypair()
+        fd = os.open(a.out, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(sk + "\n")
+        if a.allowlist:
+            with open(a.allowlist, "a", encoding="utf-8") as f:
+                f.write(pk + "\n")
+        if a.json:
+            _out({"secret_file": a.out, "pubkey": pk, "allowlist": a.allowlist}, True)
+            return 0
+        print(f"witness secret -> {a.out}   (never share or commit this file)")
+        print(f"witness pubkey: {pk}")
+        if a.allowlist:
+            print(f"pubkey appended -> {a.allowlist}")
+        return 0
+
+    if a.witness_cmd == "cosign":
+        from .witness_pool import Witness
+        anchor = _read_json_file(a.anchor)
+        with open(a.key, encoding="utf-8") as f:
+            sk = f.read().strip()
+        state = a.state or (a.key + ".state.json")
+        w = Witness(secret_hex=sk, state_path=state)
+        try:
+            pk, sig = w.cosign(a.store_id, anchor)
+        except ValueError as e:
+            # Do not restate a cause here: witness_cosign refuses for TWO reasons -- a fork/rollback of a
+            # head this witness already signed, and a head whose sth_hash does not commit to its own
+            # fields. Naming only the first would mislabel the second every time it fired.
+            print(f"  REFUSED {e}", file=sys.stderr)
+            print("VERDICT: REFUSED TO CO-SIGN - the reason is above. A refusal is this layer working, "
+                  "not an error: an honest witness declines rather than signing something it cannot "
+                  "stand behind.", file=sys.stderr)
+            return 2
+        rec = {"store_id": a.store_id, "pubkey": pk, "sig": sig, "sth_hash": anchor.get("sth_hash")}
+        if a.out:
+            with open(a.out, "w", encoding="utf-8") as f:
+                json.dump(rec, f, ensure_ascii=False, indent=2)
+        if a.json:
+            _out(rec, True)
+            return 0
+        print(f"co-signed head sth={str(anchor.get('sth_hash'))[:16]}... for store {a.store_id!r}")
+        print(f"  pubkey: {pk}")
+        print(f"  state:  {state}")
+        if a.out:
+            print(f"  -> {a.out}")
+        return 0
+
+    if a.witness_cmd == "serve":
+        from .witness_server import serve
+        sk = None
+        if a.key:
+            with open(a.key, encoding="utf-8") as f:
+                sk = f.read().strip()
+        serve(a.port, a.host, a.state, sk)
+        return 0
+
+    # verify / split-view only: both are CLIENT-side trust decisions and both need the allowlist.
+    allow = _witness_allowlist(getattr(a, "witnesses", None), getattr(a, "witnesses_file", None))
+    if not allow:
+        # An empty allowlist verifies every head, honest or forged, at count 0. Reporting that as a result
+        # would make "no witnesses configured" indistinguishable from "the signatures are bad".
+        print("  FAIL no witness allowlist given (--witnesses / --witnesses-file). Every head, honest or "
+              "forged, scores 0 against an empty allowlist - refusing to report that as a verdict.",
+              file=sys.stderr)
+        return 2
+
+    if a.witness_cmd == "verify":
+        if a.threshold < 1:
+            print(f"  FAIL --threshold must be >= 1 (got {a.threshold}); a threshold of 0 passes for any "
+                  f"anchor with no signatures at all.", file=sys.stderr)
+            return 2
+        res = Inspeximus.verify_cosigned_anchor(_read_json_file(a.anchor), _load_cosigs(a.cosig),
+                                                allow, threshold=a.threshold)
+        if a.json:
+            _out(res, True)
+            return 0 if res["ok"] else 1
+        if res.get("error"):
+            print(f"  FAIL {res['error']}")
+        print(f"  {'OK  ' if res['ok'] else 'FAIL'} {res['count']} of {len(allow)} allowlisted witnesses "
+              f"co-signed this exact head (threshold {a.threshold})")
+        for s in res["signers"]:
+            print(f"    signer: {s}")
+        for lim in res.get("limits") or []:
+            # A PASS over an empty history is the one way this report can be true and still mislead, so it
+            # is printed on the verdict itself rather than left in a field nobody reads.
+            print(f"  NOTE {lim}")
+        print(f"VERDICT: {'PASS' if res['ok'] else 'FAIL'}")
+        return 0 if res["ok"] else 1
+
+    if a.witness_cmd == "split-view":
+        A, B = _read_json_file(a.anchor_a), _read_json_file(a.anchor_b)
+        res = Inspeximus.detect_split_view(A, _load_cosigs(a.cosig_a), B, _load_cosigs(a.cosig_b), allow)
+        code = 1 if (res["fork"] or res["inconsistent"]) else (3 if res["undetermined"] else 0)
+        if a.json:
+            _out(res, True)
+            return code
+        print(f"  head A: n_writes={A.get('n_writes')} tip={str(A.get('writes_tip'))[:16]}...")
+        print(f"  head B: n_writes={B.get('n_writes')} tip={str(B.get('writes_tip'))[:16]}...")
+        if res.get("malformed"):
+            print(f"  MALFORMED anchor(s) {'/'.join(res['malformed'])}: {res['note']}")
+        if res["inconsistent"]:
+            print(f"  INCONSISTENT at {', '.join(res['at'])}: the same log size carries a different tip, "
+                  f"so these two heads cannot both be the history of one store")
+        if res["fork"]:
+            for w in res["evidence"]:
+                print(f"  EVIDENCE witness {w} validly co-signed BOTH heads")
+            print("VERDICT: SPLIT VIEW PROVEN")
+        elif res["inconsistent"]:
+            print("VERDICT: HEADS INCONSISTENT - no witness co-signed both, so the divergence is shown "
+                  "but not cryptographically attributable to a named witness")
+        elif res["undetermined"]:
+            print(f"  UNDETERMINED {res['note']}")
+            print("VERDICT: UNDETERMINED")
+        else:
+            print("  no inconsistency: the heads agree at every shared log size")
+            print("VERDICT: NO SPLIT VIEW")
+        return code
+    return 2
 
 
 def main(argv=None):
@@ -365,6 +558,57 @@ def main(argv=None):
                     help="the store file the bundle came from; binds the receipts to the CONTENT it "
                          "serves today. Without it a clean chain over substituted text still reads PASS.")
 
+    # ── tamper-evident / transparency-log surface: anchor + the witness network ──────────────────────────
+    # These existed as Python + an HTTP server since 1.34.0 and were reachable from no shell command at all,
+    # so the strongest operator-adversarial property in the package was invisible to anyone who did not read
+    # the source. See docs/TRANSPARENCY.md.
+    an = sub.add_parser("anchor", help="emit the SIGNED TREE HEAD (RFC-6962 style) committing to the whole "
+                                       "write+erasure history - publish it where the operator cannot alter it")
+    an.add_argument("--out", default=None, help="write the anchor json here (default: stdout)")
+
+    wt = sub.add_parser("witness", help="witness network: independent co-signers that make a SPLIT VIEW "
+                                        "(one history shown to one reader, another to another) detectable")
+    wsub = wt.add_subparsers(dest="witness_cmd", required=True)
+
+    wkg = wsub.add_parser("keygen", help="mint an Ed25519 witness keypair (the independent co-signer)")
+    wkg.add_argument("--out", required=True, help="file for the SECRET key hex - keep it on the witness host")
+    wkg.add_argument("--allowlist", default=None,
+                     help="append the PUBLIC key to this allowlist file (what `witness verify` reads)")
+
+    wcs = wsub.add_parser("cosign", help="WITNESS side: co-sign a store's anchor. REFUSES (exit 2) a fork or "
+                                         "rollback of the last head this witness signed for that store")
+    wcs.add_argument("anchor", help="the anchor json to co-sign")
+    wcs.add_argument("--store-id", required=True, help="which store this head belongs to (one memory per store)")
+    wcs.add_argument("--key", required=True, help="the witness SECRET key file (from `witness keygen`)")
+    wcs.add_argument("--state", default=None,
+                     help="json file persisting the last head signed per store. Defaults to <key>.state.json "
+                          "and is never optional: each CLI call is a fresh process, so a witness with no "
+                          "state file has no memory and can never refuse anything")
+    wcs.add_argument("--out", default=None, help="write {pubkey,sig} here (default: stdout)")
+
+    wvf = wsub.add_parser("verify", help="CLIENT side: k-of-n check that allowlisted INDEPENDENT witnesses "
+                                         "co-signed this exact head (exit 1 below threshold)")
+    wvf.add_argument("anchor")
+    wvf.add_argument("--cosig", action="append", default=[],
+                     help="a {pubkey,sig} json from `witness cosign` (repeatable)")
+    wvf.add_argument("--witnesses", default=None, help="comma-separated allowlisted witness pubkeys (hex)")
+    wvf.add_argument("--witnesses-file", default=None,
+                     help="allowlist file, one pubkey hex per line (`witness keygen --allowlist` writes it)")
+    wvf.add_argument("--threshold", type=int, default=1, help="how many DISTINCT witnesses must have signed")
+
+    wsv = wsub.add_parser("split-view", help="AUDITOR side: given the two heads a store showed two readers, "
+                                             "prove a FORK - a witness that validly co-signed both "
+                                             "inconsistent heads (exit 1 = split view)")
+    wsv.add_argument("--anchor-a", required=True); wsv.add_argument("--cosig-a", action="append", default=[])
+    wsv.add_argument("--anchor-b", required=True); wsv.add_argument("--cosig-b", action="append", default=[])
+    wsv.add_argument("--witnesses", default=None, help="comma-separated allowlisted witness pubkeys (hex)")
+    wsv.add_argument("--witnesses-file", default=None, help="allowlist file, one pubkey hex per line")
+
+    wsr = wsub.add_parser("serve", help="run the reference witness HTTP server (stdlib only) on this host")
+    wsr.add_argument("--port", type=int, default=9700); wsr.add_argument("--host", default="127.0.0.1")
+    wsr.add_argument("--state", default=None, help="json file persisting the per-store last-signed head")
+    wsr.add_argument("--key", default=None, help="witness SECRET key file (omit to mint an ephemeral key)")
+
     ins = sub.add_parser("install", help="register the MCP server in an editor's own config file")
     ins.add_argument("--ide", required=True,
                      help="host to configure: " + ", ".join(sorted(_install.HOSTS)))
@@ -463,6 +707,12 @@ def main(argv=None):
                   f"{'checked' if res['checks'].get('store_absent') is not None else 'NOT checked'})")
         return 0 if res["valid"] else 1
 
+    # The witness commands operate on FILES (anchors, keys, signatures) and must never open a store —
+    # opening one CREATES it, and an auditor who mistyped a path would be handed a verdict about a store
+    # the verification itself had just made. Same rule as `audit-verify` and `erasure-verify` above.
+    if a.cmd == "witness":
+        return _witness_cmd(a)
+
     # audit-build/compliance/retention must have the receipt+tombstone chains, so force receipts on.
     # `provenance` REPORTS on the receipt chain, so it must load it — otherwise a receipted store would be
     # described as "receipts off at write time", which is not merely unhelpful but wrong.
@@ -478,9 +728,30 @@ def main(argv=None):
         # nobody can attribute, discovered only when the auditor pins a key months later.
         print(f"cannot read the receipt key: {e}", file=sys.stderr)
         return 2
+    # `anchor` joins the forced-receipts list: the signed tree head IS the receipt+tombstone chain's
+    # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
-                                                        "provenance", "erasure-certificate"),
+                                                        "provenance", "erasure-certificate", "anchor"),
                receipt_key=_rk)
+
+    if a.cmd == "anchor":
+        anc = m.anchor()
+        if a.out:
+            with open(a.out, "w", encoding="utf-8") as f:
+                json.dump(anc, f, ensure_ascii=False, indent=2)
+        if a.json:
+            _out(anc, True)
+        else:
+            print(f"anchor{' -> ' + a.out if a.out else ''}")
+            print(f"  n_writes={anc['n_writes']} n_tombstones={anc['n_tombstones']} "
+                  f"sth={anc['sth_hash'][:16]}...")
+            if anc["n_writes"] == 0 and anc["n_tombstones"] == 0:
+                # An anchor over an empty chain is a valid signed head of NOTHING. It co-signs and verifies
+                # perfectly, so without this line the user gets every green tick in the quickstart while
+                # committing to no history at all.
+                print("  note: 0 writes and 0 erasures - this store has no receipt chain, so this head "
+                      "commits to nothing. Write with `inspeximus --receipts remember ...` first.")
+        return 0
 
     if a.cmd == "retention":
         from inspeximus.compliance import retention_sweep
