@@ -15,19 +15,19 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **253** numeric tokens are published across the three enforced files.
-- **106** of those are quantitative claims, in **57** registry rows below.
-- **32** rows (32/57) are reproducible by a command committed to this repository
+- **260** numeric tokens are published across the three enforced files.
+- **111** of those are quantitative claims, in **61** registry rows below.
+- **36** rows (36/61) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 25 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 147 tokens are declared non-claims — citation years,
+- The other 149 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 
 Counts by status:
 
-- `REPRODUCIBLE` — 12
+- `REPRODUCIBLE` — 16
 - `REPRODUCIBLE-WITH-DEPS` — 20
 - `PENDING-HARNESS` — 2
 - `EXTERNAL` — 21
@@ -76,24 +76,28 @@ Counts by status:
 | 37 | `README.md` | `3` `2.2` `7` | ~3x more value kept, persisting at ~2.2x even at a 7% budget | **EXTERNAL** | — |
 | 38 | `README.md` | `20` `100` `64` | ...20% of total value, vs 100% and 64% for the value-aware blend | **EXTERNAL** | — |
 | 39 | `README.md` | `0.65` `2.6` | Semantic recall@5 holds ~0.65 at full scale, ~2.6x lexical | **EXTERNAL** | — |
-| 40 | `README.md` | `0` `8` | WITHDRAWN: 'severe-test 8/8' -- the probe reports 0/24 and nothing here produces an 8/8 | **WITHDRAWN** | `python probes/supersession_replication.py` |
-| 41 | `README.md` | `0.61` | A cosine classifier separating a contradiction from a rephrase scores AUROC ~0.61 | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 42 | `README.md` | `0.613` `41.7` `0.0` | The 2026-08-01 re-run of that probe, quoted with its date | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 43 | `README.md` | `42` | A similarity-based store serves the stale value ~42% of the time | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 44 | `README.md` | `0` | The deterministic SRO key drives the stale-value rate to 0% | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 45 | `README.md` | `0.9` `10` | Content-declared corroboration falls to a sybil at ~0.9 attack-success across 10 models | **REPRODUCIBLE-WITH-DEPS** | `python probes/memory_defense_layer_probe.py` |
-| 46 | `README.md` | `10,000` | Contradiction detection runs in production over the ~10,000-note vault | **EXTERNAL** | — |
-| 47 | `README.md` | `10,000` | inspeximus has run daily over a ~10,000-note vault | **EXTERNAL** | — |
-| 48 | `index.html` | `9` `0` | Homepage counter: 9 framework adapters | **REPRODUCIBLE** | `python -c "import pathlib;print(sorted(p.stem for p in pathlib.Path('inspeximus/integrations').glob('*.py')))"` |
-| 49 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
-| 50 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 51 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
-| 52 | `index.html` | `9` `12` `3` | 9 of 12 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
-| 53 | `index.html` | `60` `0` | Homepage counter: 60 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 54 | `index.html` | `60` | Homepage heading: 60 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 55 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 56 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 57 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
+| 40 | `README.md` | `0.2213` | NEGATIVE CONTROL: with the salience bar removed, rejection collapses to 0.2213 | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 41 | `README.md` | `7` | close_session costs 7 ms on the 2,606-record fixture | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 42 | `README.md` | `2,606` `1.000` | SessionEnd digest -> SessionStart injection, 8-session / 2,606-record fixture: injection recall 1.000 of a session's conclusions reach the next session | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 43 | `README.md` | `1.0000` | Below-threshold rejection 1.0000 on the same fixture | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 44 | `README.md` | `0` `8` | WITHDRAWN: 'severe-test 8/8' -- the probe reports 0/24 and nothing here produces an 8/8 | **WITHDRAWN** | `python probes/supersession_replication.py` |
+| 45 | `README.md` | `0.61` | A cosine classifier separating a contradiction from a rephrase scores AUROC ~0.61 | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 46 | `README.md` | `0.613` `41.7` `0.0` | The 2026-08-01 re-run of that probe, quoted with its date | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 47 | `README.md` | `42` | A similarity-based store serves the stale value ~42% of the time | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 48 | `README.md` | `0` | The deterministic SRO key drives the stale-value rate to 0% | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 49 | `README.md` | `0.9` `10` | Content-declared corroboration falls to a sybil at ~0.9 attack-success across 10 models | **REPRODUCIBLE-WITH-DEPS** | `python probes/memory_defense_layer_probe.py` |
+| 50 | `README.md` | `10,000` | Contradiction detection runs in production over the ~10,000-note vault | **EXTERNAL** | — |
+| 51 | `README.md` | `10,000` | inspeximus has run daily over a ~10,000-note vault | **EXTERNAL** | — |
+| 52 | `index.html` | `9` `0` | Homepage counter: 9 framework adapters | **REPRODUCIBLE** | `python -c "import pathlib;print(sorted(p.stem for p in pathlib.Path('inspeximus/integrations').glob('*.py')))"` |
+| 53 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
+| 54 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 55 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
+| 56 | `index.html` | `9` `12` `3` | 9 of 12 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
+| 57 | `index.html` | `60` `0` | Homepage counter: 60 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 58 | `index.html` | `60` | Homepage heading: 60 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 59 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 60 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 61 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
 
 ## Notes
 
@@ -117,6 +121,7 @@ Counts by status:
 - **readme-recall-any1** — Same dataset blocker as the headline pair; already flagged in place as not reproducible here.
 - **readme-retention-cold** — Agora Lab 19d802.
 - **readme-semantic-hold** — Agora Lab b4c260.
+- **readme-session-digest-control** — Registered deliberately rather than dropped: without it a rejection of 1.0000 cannot be told apart from a fixture that contained nothing to reject.
 - **readme-supersession-auroc** — Re-run 2026-08-01: AUROC 0.613. Needs a local nomic-embed-text (Ollama) and numpy.
 - **readme-supersession-stale** — Re-run 2026-08-01: 41.7%.
 - **readme-sybil-attack** — The harness is committed; reproducing the number needs ten models and a judge, which no checkout can ship.
