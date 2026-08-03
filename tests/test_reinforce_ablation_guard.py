@@ -156,10 +156,27 @@ def test_the_oracle_warm_actually_moves_the_records_it_names():
 
 def test_the_probe_does_not_change_the_reinforce_default():
     """This unit measures; it does not ship a behaviour change. If the default ever moves, it must not
-    move from here."""
+    move from here.
+
+    The default DID move -- to False in 2.0.0 -- and that is why this test is written the way it is
+    rather than deleted. It was asserting `is True`, and it went red the moment the release flipped it,
+    which is the guard working: a behaviour change had to be argued for in a changelog instead of
+    arriving as a quiet diff. What it guards is unchanged: the default is a RELEASE decision, and the
+    ablation probe is not allowed to be what moves it.
+
+    So the assertion now pins the current default, and the second half matters more than before: with
+    `reinforce` defaulting to False, a probe arm that forgot to pass it explicitly would silently
+    measure the control against itself and report a flawless null. Both arms must name their value."""
     import inspect
 
     from inspeximus import Inspeximus
-    assert inspect.signature(Inspeximus.recall).parameters["reinforce"].default is True
+    assert inspect.signature(Inspeximus.recall).parameters["reinforce"].default is False, (
+        "recall(reinforce=…) no longer defaults to False. That is a breaking change and belongs in a "
+        "major release with a CHANGELOG entry -- see 2.0.0 -- not in a diff to this probe's unit")
     src = open(os.path.join(ROOT, "probes", "reinforce_accuracy_ablation.py"), encoding="utf-8").read()
     assert "reinforce: bool = True" not in src, "the probe must not redefine the recall signature"
+    # Both arms named explicitly. A probe that relied on the default would have measured True-vs-True
+    # before 2.0.0 and False-vs-False after it, and reported a clean 0.0000 either way.
+    assert "reinforce=reinforce" in src, "the probe must pass reinforce through, not inherit the default"
+    for arm in ("reinforce=True", "reinforce=False"):
+        assert arm in src, f"the ablation names no {arm} arm, so it is not an ablation"

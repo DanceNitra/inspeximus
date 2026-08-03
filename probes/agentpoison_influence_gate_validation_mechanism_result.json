@@ -16,7 +16,7 @@
  "scale_sweep": [
   {
    "corpus_size": 60,
-   "raw_hijack": 1.0,
+   "raw_hijack": 0.938,
    "influence_hijack": 0.0
   },
   {

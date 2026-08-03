@@ -3,7 +3,122 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased - every published number now has a command, and a test that fails when one does not
+## 2.0.0 - BREAKING, UPGRADE IF YOU CALL `recall()` OR SET `m.extractor = regex_extractor`: a read no longer writes, so the order your questions arrive in no longer changes the answers
+
+**If you are upgrading from PyPI, you are upgrading from 1.89.0.** 1.90.0 and 1.91.0 were tagged and
+merged but never published, so everything in those entries arrives with this one. That is also why this
+is a major: two behaviours change under you, and shipping either as a minor would be the quiet kind of
+break we complain about in other people's libraries.
+
+### Breaking 1 - `recall()` no longer reinforces what it returns
+
+`reinforce` now defaults to **False**. Before this release a read was also a write: every returned record
+had its `value` bumped and its `last_access` clock reset, and `value` multiplies the rank. The
+consequences were measured, not suspected, and they are in `tests/test_determinism_conformance.py`:
+
+| | 1.89.0 default | 2.0.0 default |
+|---|---|---|
+| records mutated by one `recall(k=5)`, hybrid | 5 of 11 | **0 of 11** |
+| answers that change when the same 8 questions are asked in a different order, hybrid | **64 of 64** | **0 of 64** |
+| answers that change under reordering, lexical / semantic | 5/64 / 10/64 | 0/64 / 0/64 |
+| `admit()` rejecting a duplicate | promoted the record it collided with, value 1.00 -> 1.25 | writes nothing |
+| `mcp_server.token_report()`, documented DETERMINISTIC | mutated 4 of 11 records per call | 0 of 11 |
+
+Read the second row twice. On the shipped default path -- `mode="auto"`, which routes to hybrid on any
+store past `semantic_threshold` -- **no answer survived a reordering of the same question set**. Asking
+your questions in a different order gave you a different memory.
+
+Eleven strict-xfail markers in the conformance suite became xpasses when the default flipped, which is
+that suite doing the job it was written for. They are ordinary assertions now, and each block carries a
+control pinned to `reinforce=True` that must still reproduce the old number -- because "the defect is
+gone" and "the harness stopped looking" are the same colour of green.
+
+Accuracy did not pay for this. It improved. Reinforcement was measured against an oracle on our own
+recall benchmark and lost 20 comparisons out of 20 (oracle +0.394, reinforce -0.090), and the LOCOMO
+retrieval pair scores 4-5 points HIGHER with it off -- 0.83/0.70 against the old 0.783/0.648, on the same
+1536-question denominator. The old pair was not optimistic; it was measuring a memory that was learning
+from the benchmark while being measured by it.
+
+One measured side effect, at its honest size. Re-running `probes/minja_influence_gate.py` under the
+new default moves two numbers in its cold-start arm: raw ASR 0.8 -> 0.7 and raw utility 0.8 -> 0.9,
+both in the favourable direction. `n_victims` is 10, so each is a single victim changing side, and the
+probe is seeded (two consecutive runs are byte-identical), which is how we know it is the default flip
+and not noise. It is one case, reported because the receipt moved, not because it establishes anything.
+The headline number that arm exists to produce, `E_adaptive_FORGED_warrant_asr = 0.7`, is unchanged.
+
+The behaviour is not gone, only un-defaulted. `recall(..., reinforce=True)` restores it exactly, and the
+`credit()` path -- earned, outcome-driven value, which is the one we actually argue for -- is untouched.
+
+**Migration.** If you relied on reads warming the store, pass `reinforce=True` at the call sites where you
+want it. If you did not know reads were writing, you needed this release. Stores written by older versions
+load unchanged; nothing on disk is migrated.
+
+### Breaking 2 - first-person keys changed (`my title` -> `self::title`)
+
+Shipped in 1.90.0, never published, so it lands here. `regex_extractor` now emits `self::title` for
+first-person statements. A live store written by 1.89.0 keeps its old keys, and a new write under 2.0.0
+will not supersede them -- the key is the supersession identity, so the two forms sit side by side.
+See the 1.90.0 entry below for the re-measured scope of the extractor, and re-key with `revert`/`remember`
+against `self::…` if you need a chain to bind across the upgrade.
+
+### Also in 2.0.0
+
+Everything from the 1.90.0 and 1.91.0 entries below, plus the docs and tooling work described next.
+
+### Agent-to-agent memory grants - scoped, revocable, and in the chain that already exists
+
+**New: `grant()` / `revoke()` / `as_agent()`.** Multi-agent is the normal deployment shape, and two agents
+sharing a store immediately raises which agent may read which memories, who granted it, and how it is taken
+back. A grant names a subset by `scope`, `tag`, `key` or `ids` — exact-match on a stored field, so the
+authorised set is decidable with no embedder and means the same tomorrow as today. A query selector was
+deliberately refused: its membership is a similarity score, so the same grant would cover a different set
+after a re-embed, and an ACL that silently widens is not an ACL. Reads go through `store.as_agent("bob")`;
+`revoke()` takes effect on the next read. Exposed over MCP (`grant`, `revoke`, `grants`, `grant_log`,
+`can_read`, `recall_as`, `get_as`) and the CLI (`grant`, `revoke`, `grants [--log]`,
+`recall --as-agent`). **Backwards compatible: with no grants configured, an unbound handle behaves exactly
+as before** — no owner stamp on writes, byte-identical recall.
+
+**A grant is a record, not a second log.** Each act is an ordinary hash-chained write, so it inherits the
+write receipts, the anchor, `history()`, `provenance()` and `supersession_report()` — revocation *is* keyed
+supersession. The audit bundle gains a `grants` block (the acts, never memory text) plus a check that every
+act it lists is covered by the write chain, so a grant appended to a bundle but never written to the store
+fails verification. Access-control rows are carved out of the content readers (`recall`, `memory_report`,
+`contradictions`, eviction, the consolidate keep-budget) so issuing a grant cannot inflate a memory count or
+surface as a recall hit.
+
+**Fail-closed, including the empty cases.** No grants means an agent reads only its own writes. A grant that
+cannot be evaluated authorises nothing: unknown selector kind, missing/empty granter, two active acts
+disagreeing on a key — and, the sharp one, an *empty selector value*. `scope` and `key` are compared with
+`==` against a field most records do not carry, so a grant whose value went missing degenerates to
+`None == None` and matches every record *lacking* the field: the widest grant in the store from the emptiest
+input, on the read path. The evaluator refuses it independently of the minting path. `remember()` also now
+refuses the reserved `acl::grant::` keyspace, because a writer who can mint a grant key can authorise itself
+and the ACL would be decorative.
+
+**Two isolation defects found by the new sweep, both fixed.** (1) `believed_at()` was on the tenant view's
+store-level passthrough while reading record text off `self.items`, so it returned another tenant's
+plaintext; the existing tenant sweep missed it because its fixture puts the secret on a *superseded* record
+and `believed_at` returns the latest-asserted value — a check that never sees its target. (2) The new
+`_content_rows()` helper was not rebound on the view, so `memory_report()` reported 2 records to a tenant
+that owned 1.
+
+**Composition with the persist path, measured.** `_save()` serialises `self.items` — the scoped view — so
+any *directly bound* handle (`Inspeximus(tenant=...)`, and now `Inspeximus(agent=...)`) writes only its own
+rows and silently drops the rest; `StoreChangedOnDisk` cannot see it, because a sequential handoff is not a
+concurrent write. The ACL's documented entry point does **not** reach that path: `as_agent()` returns a view
+that shares the parent's `_items` and forwards `_save` to the parent, so a scoped write persists the whole
+store. Both halves are asserted — the safe one as a passing test over every route to a write (remember,
+grant, revoke, flush, reopen), the unsafe one as `xfail(strict=True)` so this feature records the
+interaction instead of quietly depending on it. The fix belongs to the persist path, not here.
+
+**Write-side consequence, stated rather than discovered.** Supersession is unauthenticated, so in a
+multi-agent store agent B could retire agent A's current value by guessing the key, with no read access at
+any point — a read ACL does not close a write hole. `_supersede_by_key` now resolves against the handle's own
+scoped view: a write can only retire what its writer can see. The cost is real and asserted in the tests —
+two agent-bound handles keying the same string each keep an active record, so the operator view sees both.
+Unscoped (operator) writes are untouched: keys stay global, last-write-wins.
+
+### Docs and tooling - every published number now has a command, and a test that fails when one does not
 
 Docs and tooling only; no library behaviour changed.
 
@@ -48,7 +163,7 @@ itself — a unit-glued number (`--object 90d`) and a negative number (`z=-4.79`
 registry's counts agreed with a checker that shared its blind spot — plus a control that ran the CLI
 against the real repo instead of its own sandbox and passed forever while testing nothing.
 
-## Unreleased - integration conformance: three adapters were broken against current upstream
+### Integration conformance - three adapters were broken against current upstream
 
 `tools/integration_conformance.py` runs every adapter in `inspeximus.integrations` through a real round
 trip -- write IN through the framework's own interface, read back OUT through it -- and reports
@@ -304,58 +419,6 @@ parametrised over all four committed fields, beside an honest anchor that must s
 `examples/12_split_view_detection.py` runs the whole story. Prior art credited rather than reinvented:
 RFC 6962 (Certificate Transparency), Sigstore/Rekor.
 
-## Unreleased - agent-to-agent memory grants: scoped, revocable, and in the chain that already exists
-
-**New: `grant()` / `revoke()` / `as_agent()`.** Multi-agent is the normal deployment shape, and two agents
-sharing a store immediately raises which agent may read which memories, who granted it, and how it is taken
-back. A grant names a subset by `scope`, `tag`, `key` or `ids` — exact-match on a stored field, so the
-authorised set is decidable with no embedder and means the same tomorrow as today. A query selector was
-deliberately refused: its membership is a similarity score, so the same grant would cover a different set
-after a re-embed, and an ACL that silently widens is not an ACL. Reads go through `store.as_agent("bob")`;
-`revoke()` takes effect on the next read. Exposed over MCP (`grant`, `revoke`, `grants`, `grant_log`,
-`can_read`, `recall_as`, `get_as`) and the CLI (`grant`, `revoke`, `grants [--log]`,
-`recall --as-agent`). **Backwards compatible: with no grants configured, an unbound handle behaves exactly
-as before** — no owner stamp on writes, byte-identical recall.
-
-**A grant is a record, not a second log.** Each act is an ordinary hash-chained write, so it inherits the
-write receipts, the anchor, `history()`, `provenance()` and `supersession_report()` — revocation *is* keyed
-supersession. The audit bundle gains a `grants` block (the acts, never memory text) plus a check that every
-act it lists is covered by the write chain, so a grant appended to a bundle but never written to the store
-fails verification. Access-control rows are carved out of the content readers (`recall`, `memory_report`,
-`contradictions`, eviction, the consolidate keep-budget) so issuing a grant cannot inflate a memory count or
-surface as a recall hit.
-
-**Fail-closed, including the empty cases.** No grants means an agent reads only its own writes. A grant that
-cannot be evaluated authorises nothing: unknown selector kind, missing/empty granter, two active acts
-disagreeing on a key — and, the sharp one, an *empty selector value*. `scope` and `key` are compared with
-`==` against a field most records do not carry, so a grant whose value went missing degenerates to
-`None == None` and matches every record *lacking* the field: the widest grant in the store from the emptiest
-input, on the read path. The evaluator refuses it independently of the minting path. `remember()` also now
-refuses the reserved `acl::grant::` keyspace, because a writer who can mint a grant key can authorise itself
-and the ACL would be decorative.
-
-**Two isolation defects found by the new sweep, both fixed.** (1) `believed_at()` was on the tenant view's
-store-level passthrough while reading record text off `self.items`, so it returned another tenant's
-plaintext; the existing tenant sweep missed it because its fixture puts the secret on a *superseded* record
-and `believed_at` returns the latest-asserted value — a check that never sees its target. (2) The new
-`_content_rows()` helper was not rebound on the view, so `memory_report()` reported 2 records to a tenant
-that owned 1.
-
-**Composition with the persist path, measured.** `_save()` serialises `self.items` — the scoped view — so
-any *directly bound* handle (`Inspeximus(tenant=...)`, and now `Inspeximus(agent=...)`) writes only its own
-rows and silently drops the rest; `StoreChangedOnDisk` cannot see it, because a sequential handoff is not a
-concurrent write. The ACL's documented entry point does **not** reach that path: `as_agent()` returns a view
-that shares the parent's `_items` and forwards `_save` to the parent, so a scoped write persists the whole
-store. Both halves are asserted — the safe one as a passing test over every route to a write (remember,
-grant, revoke, flush, reopen), the unsafe one as `xfail(strict=True)` so this feature records the
-interaction instead of quietly depending on it. The fix belongs to the persist path, not here.
-
-**Write-side consequence, stated rather than discovered.** Supersession is unauthenticated, so in a
-multi-agent store agent B could retire agent A's current value by guessing the key, with no read access at
-any point — a read ACL does not close a write hole. `_supersede_by_key` now resolves against the handle's own
-scoped view: a write can only retire what its writer can see. The cost is real and asserted in the tests —
-two agent-bound handles keying the same string each keep an active record, so the operator view sees both.
-Unscoped (operator) writes are untouched: keys stay global, last-write-wins.
 ## 1.89.0 - UPGRADE IF YOU USE `slash()`/`restore()`: a retraction could be lost, and it walked a stale graph
 
 Two defects on the accountability path, both found by adversarially reviewing a claim we were about to
