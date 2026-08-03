@@ -111,7 +111,7 @@ never imported. **Honest scope:** a `Session` is a verbatim turn log, so inspexi
 `remember(key=…)`/`recall()` alongside. What it adds *for free* over a plain SQLite session: **right-to-erasure**
 of a user's turns with a signed, content-free deletion tombstone (`session.forget_subject()`), and
 **tamper-evident** history (`store.verify_writes()` with receipts enabled). Receipt:
-`inspeximus/probes/inspeximus_session_adapter_probe.py` (11/11). Adapters live under `inspeximus.integrations` (opt-in extras).
+`probes/inspeximus_session_adapter_probe.py` (11/11). Adapters live under `inspeximus.integrations` (opt-in extras).
 
 ### Current-truth memory for AutoGen: `InspeximusMemory` (0.7.0+)
 `inspeximus.integrations.autogen.InspeximusMemory` implements AutoGen's [`Memory`](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memory.html)
@@ -129,7 +129,7 @@ agent = AssistantAgent("assistant", model_client=..., memory=[mem])
 
 Pass a stable `key` (+ `object`) in a memory's `metadata` to drive deterministic supersession — a later
 `key="user::timezone", object="PST"` retires an earlier `UTC`, and `update_context` then injects only `PST`.
-Verified end-to-end against the real `autogen-core` (`inspeximus/probes/inspeximus_autogen_adapter_probe.py`, 7/7,
+Verified end-to-end against the real `autogen-core` (`probes/inspeximus_autogen_adapter_probe.py`, 7/7,
 including "superseded value is not injected"). Zero-dependency core: AutoGen is imported lazily inside the
 adapter, never by `import inspeximus`.
 
@@ -149,7 +149,7 @@ store.get(("user","42"), "timezone").value    # {"tz": "PST"}   (like InMemorySt
 store.history(("user","42"), "timezone")       # [{"tz":"UTC"}, {"tz":"PST"}]   (inspeximus-only)
 ```
 
-Verified end-to-end against real `langgraph` (`inspeximus/probes/inspeximus_langgraph_adapter_probe.py`, 9/9, incl. the
+Verified end-to-end against real `langgraph` (`probes/inspeximus_langgraph_adapter_probe.py`, 9/9, incl. the
 "InMemoryStore has no history" contrast). Subclasses BaseStore, so importing this module imports LangGraph
 (opt-in extra); `import inspeximus` stays zero-dependency.
 
@@ -172,7 +172,7 @@ is often *more* embedding-similar to the original than a rephrase (AUROC ~0.59 a
 an LLM judge) to also catch a purely semantic contradiction with no numeric/negation marker. The mechanism is
 textbook (a DB CHECK-constraint validate-on-write; TMS contradiction-on-assert, Doyle 1979) — here it's a
 native, zero-dependency primitive. Also exposed as the `check_conflict` MCP tool. Receipt:
-`inspeximus/probes/check_conflict_probe.py` (8/8).
+`probes/check_conflict_probe.py` (8/8).
 
 ### Current-truth long-term memory for LlamaIndex: `InspeximusMemoryBlock` (0.7.3+)
 `inspeximus.integrations.llamaindex.InspeximusMemoryBlock` is a LlamaIndex long-term [`BaseMemoryBlock`](https://developers.llamaindex.ai/python/framework/module_guides/deploying/agents/memory/)
@@ -188,7 +188,7 @@ memory = Memory.from_defaults(session_id="s1", token_limit=40000,
 Same differentiator as the AutoGen block: `_aget` retrieves through inspeximus's `recall()`, which hides superseded
 values, so once a fact is corrected (via a keyed write) the block never injects the stale value back into the
 prompt. Verified end-to-end against real `llama-index-core`
-(`inspeximus/probes/inspeximus_llamaindex_adapter_probe.py`, 4/4, incl. "corrected value not re-injected"). Subclasses
+(`probes/inspeximus_llamaindex_adapter_probe.py`, 4/4, incl. "corrected value not re-injected"). Subclasses
 BaseMemoryBlock so importing it imports LlamaIndex (opt-in extra); `import inspeximus` stays zero-dependency.
 
 ### Persistent memory for Google ADK: `InspeximusMemoryService` (0.7.4+)
@@ -244,7 +244,7 @@ supersession-filtered (a corrected value stops surfacing, so the agent reads cur
 it. Pass `extractor=` so the tools auto-key free text (so both supersession and conflict-detection fire
 without the model supplying a key). Verified end-to-end against real `pydantic-ai` 2.8.0 with `TestModel` (no
 API key): the agent invokes all four tools, and current-truth / conflict / erasure all hold
-(`inspeximus/probes/inspeximus_pydantic_ai_adapter_probe.py`). Importing this module imports Pydantic AI (opt-in
+(`probes/inspeximus_pydantic_ai_adapter_probe.py`). Importing this module imports Pydantic AI (opt-in
 extra); `import inspeximus` stays zero-dependency.
 
 ### Current-truth storage for CrewAI: `InspeximusStorage` (1.12.0+)
@@ -266,7 +266,7 @@ hides **superseded** values — once a fact is corrected the stale value never r
 For that to bite, carry a supersession key in the metadata (`storage.save(value, {"key": "user::tz"})`) or set
 an `extractor=` so plain `save()` calls auto-key. Duck-typed: CrewAI is matched structurally and never
 imported, so the zero-dependency core is untouched (`import inspeximus` pulls nothing). Receipt:
-`inspeximus/probes/inspeximus_crewai_adapter_probe.py` (6/6, incl. "corrected value not returned").
+`probes/inspeximus_crewai_adapter_probe.py` (6/6, incl. "corrected value not returned").
 
 ### Make the governance layer key itself over free text: the `extractor` hook (0.7.5+)
 inspeximus's supersession, `echo_guard`, `check_conflict`, and `forget_subject` all key on the `(key, object)` of a
@@ -287,7 +287,7 @@ Your extractor can be a regex or an LLM you call and cache; it returns `(key, ob
 Honest limit: supersession is only as sound as your extractor, so a mis-derived key mis-supersedes (the same
 risk as a wrong manual `key=`) — keep it deterministic and reviewable. This is a before-save hook (DB trigger
 / ORM before_save; textbook) packaged so the integrity primitives compose without threading keys everywhere.
-Receipt: `inspeximus/probes/extractor_hook_probe.py` (7/7).
+Receipt: `probes/extractor_hook_probe.py` (7/7).
 
 The free-text framework adapters (OpenAI Agents `Session`, AutoGen `Memory`, LlamaIndex `BaseMemoryBlock`,
 Google ADK `MemoryService`, Pydantic AI `inspeximus_toolset`) accept `extractor=` and wire it into their store, so
@@ -297,7 +297,7 @@ plugging it once makes their current-truth recall fire automatically over conver
 mem = InspeximusMemory(path="mem.json", extractor=my_extractor)   # AutoGen; same for the others
 ```
 
-Verified against real `autogen-core` (`inspeximus/probes/extractor_adapter_wireup_probe.py`): without the extractor
+Verified against real `autogen-core` (`probes/extractor_adapter_wireup_probe.py`): without the extractor
 a corrected fact still leaks; with it, only the current value is recalled.
 
 ### Data minimization: `apply_retention(max_age_days)` (0.7.7+)
@@ -313,7 +313,7 @@ m.apply_retention(max_age_days=90)     # or: m.sleep(retention_days=90)
 ```
 
 Textbook (DB TTL / log retention), packaged as a native zero-dependency retention primitive. Receipt:
-`inspeximus/probes/retention_probe.py` (7/7, incl. "current keyed value and semantic facts are never expired").
+`probes/retention_probe.py` (7/7, incl. "current keyed value and semantic facts are never expired").
 
 ### One-call write router with revert resolution: `route()` (0.7.9+)
 "Go back to what we had before" names no value, so a value-keyed store has nothing to match and cosine has
@@ -329,7 +329,7 @@ m.route("correction: the cache region is now malmo", key="cache region", object=
 m.route("go back to what we had for the cache region")   # no value named -> restores osaka from the ledger
 ```
 
-Measured (`inspeximus/probes/route_probe.py`, 148 rows): every *marked* class — corrections, value-obscuring
+Measured (`probes/route_probe.py`, 148 rows): every *marked* class — corrections, value-obscuring
 reverts, named reverts, original-restores, innocent temporal chatter — routes at 1.00 end-to-end under every
 policy, with zero LLM (LLM taggers measured on the same rows add nothing: 1.00 on marked classes too). The
 honest limit is measured rather than hidden: an UNMARKED restatement of a superseded value is ambiguous by
@@ -367,6 +367,6 @@ bypass it. The capability binds to the key and the current record (`revert_chall
 be replayed after the value moves or retargeted to another key. Textbook capability security (Dennis & Van Horn
 1966) / confused-deputy fix (Hardy 1988), packaged onto the memory store's revert path. Honest boundary: this
 closes the content→restore path (and, in asymmetric mode, the on-box-harness→restore path); it does not stop a
-stolen private key or authenticate a human. Adversarial receipt: `inspeximus/probes/authorized_revert_probe.py`
+stolen private key or authenticate a human. Adversarial receipt: `probes/authorized_revert_probe.py`
 (11/11: content blocked, harness-can't-mint, replay/retarget/forgery refused, principal path works).
 

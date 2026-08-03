@@ -1,7 +1,11 @@
 # inspeximus MCP — registry listing pack
 
-`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 30 tools). Registry manifest:
+`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 60 tools). Registry manifest:
 [`server.json`](server.json). Zero code — pure distribution.
+
+*(The tool count is checked, not typed: `python claims_audit.py --numbers` counts `@mcp.tool()` in
+`inspeximus/mcp_server.py` and fails if this file disagrees. It said 30 until 2026-08-01, when it was
+26 short.)*
 
 **One-liner:** Zero-dependency memory layer for AI agents with a first-class correction channel — recall,
 consolidation, revert, echo-guard, lineage-aware retract + re-derive, and tamper-evident erasure proof.
@@ -23,11 +27,17 @@ inspeximus-mcp            # stdio; persists to ./inspeximus_memory.json (set INS
 
 Or let the CLI write it: `inspeximus install --ide claude` (also cursor, windsurf, codex, cline).
 
-**Tools (30):** remember · remember_decision · revert · route · observe · reopened · resolve_reopened ·
-recall · get · neighbors · token_report · consolidate · sleep · consolidate_clusters · contradictions ·
-check_conflict · value_by_cohort · credit · forget · forget_subject · governance_report · verify_writes ·
-witness · verify_witness · index_coherence · pii_report · forget_pii · influence_gate_report ·
-why_recalled · supersession_report
+**Tools (60):** remember · remember_decision · revert · route · observe · reopened · resolve_reopened · recall ·
+recall_iterative · recall_followup · where_am_i · projects · get · neighbors · token_report ·
+consolidate · sleep · consolidate_clusters · contradictions · check_conflict · verify_claim ·
+check_self_narration · selection_integrity · value_by_cohort · credit · forget · forget_subject ·
+governance_report · verify_writes · anchor · verify_consistency · verify_cosigned_anchor ·
+detect_split_view · witness · verify_witness · index_coherence · pii_report · forget_pii ·
+influence_gate_report · why_recalled · supersession_report · compliance_report ·
+compliance_check · retention · audit_bundle · verify_audit_bundle · erasure_residue ·
+deprecate_symbol · symbol_status · check_code · state_digest · erasure_report ·
+erasure_certificate · history · erasure_audit · provenance · as_of · verify_attribution ·
+irreversible_budget_report · memory_report
 
 **Links:** repo https://github.com/DanceNitra/inspeximus · PyPI https://pypi.org/project/inspeximus/ ·
 category: memory / knowledge-management.

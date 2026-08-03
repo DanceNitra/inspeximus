@@ -4,13 +4,15 @@
 
 # inspeximus — a zero-dependency Python agent-memory library
 
-**Correct a fact once and it stays corrected. Delete it, and get a signed certificate that it is gone.** A delete that returns success is not a delete: we measured one that left the data recoverable in **five of six** places the application had put it.
+**Correct a fact once and it stays corrected. Delete it, and get a signed certificate that it is gone.** A delete that returns success is not a delete: we measured one that left the data recoverable in **five of six** places the application had put it (`python probes/forget_verification_bench.py` — soft delete scores 0.17 and names the five leaking stores; the wired hard delete scores 1.00).
 
 *"We have inspected" — the medieval charter that recites an earlier one word for word and
 attests it unaltered. The self-correcting memory layer for AI agents.*
 
 *It serves the new value and refuses to let the old one creep back — deterministically, with no LLM on the
-write path. Extracted from an autonomous research OS that has run it daily over 10,000 notes.*
+write path. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault
+(our own deployment — you cannot re-run that one; every number you CAN re-run is listed in
+[docs/CLAIMS.md](docs/CLAIMS.md) with its command).*
 
 `pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.89.0
 
@@ -58,10 +60,14 @@ memory that keeps a correction corrected and can show, with an offline-verifiabl
 | **Dependencies** | **zero required — pure-Python package** | server / DB / vector / graph stack |
 | **MCP server** | yes (one-command install) | varies |
 
-To our knowledge the only agent-memory library that ships verifiable erasure **and** tamper-evident
-record-keeping (a scan of nine products — [details](docs/AI_ACT.md); honest: Zep has a real SOC 2/HIPAA surface,
-just not verifiable erasure or AI-Act framing). And it doesn't cost you recall — the [measured integrity
-number](#correction-is-a-first-class-operation-measured-across-systems) below is a number no competitor we scanned publishes.
+On a scan of nine products, the only agent-memory library that ships verifiable erasure **and** tamper-evident
+record-keeping **with zero required dependencies** — every qualifier load-bearing, and the scan is what we read
+on those dates, not a proof about the field ([details](docs/AI_ACT.md); honest: Zep has a real SOC 2/HIPAA surface,
+just not verifiable erasure or AI-Act framing). The cross-system integrity numbers behind that — run by the same
+harness through every system's native config, published whichever way they fall — are in
+[`probes/INTEGRITY_BENCHMARK.md`](probes/INTEGRITY_BENCHMARK.md), including the cell where inspeximus does *not*
+win. (This sentence used to link to a section of this README that had been moved out; the link went nowhere and
+the number it advertised was no longer on the page.)
 
 ## Don't take our word for it — three commands that answer about YOUR stack
 
@@ -149,6 +155,7 @@ residue scan can and cannot see: → **[docs/ERASURE.md](docs/ERASURE.md)**
 
 ```bash
 python claims_audit.py          # downloads the published wheel from PyPI and audits THAT
+python claims_audit.py --numbers  # audits every NUMBER on the reader-facing surface (offline)
 ```
 
 It fetches the released artifact, prints its sha256, and runs each claim on it — never on the working
@@ -158,9 +165,14 @@ systems are listed separately and marked untestable here; verifying those means 
 so they are never counted as passing.
 
 ```
-auditing : inspeximus-1.24.1-py3-none-any.whl
 13 passed · 0 FAILED · 0 skipped · 5 not testable here
 ```
+
+The second mode audits the *numbers*. Every figure printed on this page, in `MCP_LISTINGS.md` and on the
+homepage is registered in **[docs/CLAIMS.md](docs/CLAIMS.md)** against the exact command that reproduces it
+and a status — REPRODUCIBLE, REPRODUCIBLE-WITH-DEPS, PENDING-HARNESS, EXTERNAL or WITHDRAWN. A number that
+appears here without an entry fails the audit and fails CI (`tests/test_claims_coverage.py`), which is the
+part that stops the drift from coming back.
 
 This exists because the exercise pays for itself: the first time we ran a README sentence against the
 published wheel, it failed. Erasure did delete the record and scrub the bytes, but plain `forget()` left
@@ -220,7 +232,9 @@ ok = Inspeximus.verify_cosigned_anchor(anchor, out["cosignatures"],
 ```
 
 See `examples/07_witness_pool.py` for the full end-to-end (honest k-of-n, honest extension, a refused fork).
-No competitor ships external witnessing; witnesses persist their per-store last-signed head so the refusal
+Of the nine agent-memory libraries we scanned ([docs/AI_ACT.md](docs/AI_ACT.md)) none shipped external
+witnessing at the time of the scan — that is a statement about what we read, not about what is possible;
+inspeximus does it with stdlib-only witnesses that persist their per-store last-signed head, so the refusal
 survives a restart.
 
 ### Portable audit bundle — hand an auditor one file they verify offline
@@ -250,15 +264,15 @@ certification** — it proves the *acts* (a write with this commitment at T; a r
 and their append-only integrity, never the content (a hash of PII is still PII). Full demo:
 `examples/09_audit_bundle.py`.
 
-## Why inspeximus — the one thing no other agent memory does
+## Why inspeximus — a deterministic, zero-LLM write path
 
-Every mainstream agent-memory library puts an **LLM on the write path**: it calls a model to extract, summarize,
-or build a graph *every time you store something*. mem0 runs LLM fact-extraction on `add()` by default; Zep/Graphiti
-runs LLM entity/edge extraction on every `add_episode()`. That one choice is why their stored state is
+Every mainstream agent-memory library we read puts an **LLM on the write path**: it calls a model to extract,
+summarize, or build a graph *every time you store something*. mem0 runs LLM fact-extraction on `add()` by default;
+Zep/Graphiti runs LLM entity/edge extraction on every `add_episode()`. That one choice is why their stored state is
 **non-deterministic**, costs a model call per write, and can silently drop a fact.
 
 **inspeximus has no LLM on the write path.** Storing a fact is a deterministic, zero-cost operation — and *that* is
-what makes three things possible the mainstream libraries don't offer:
+what makes three things possible that a re-extracting write path has to work around:
 
 > **What that costs, measured on someone else's benchmark.** On the [MemOps](https://github.com/MemTensor/MemOps)
 > long-context scenarios (24 scenarios, ~50 sessions each), ingesting one scenario through mem0's default
@@ -275,9 +289,13 @@ what makes three things possible the mainstream libraries don't offer:
   engages on **keyed or extractor-derived** assertions (the shipped extractors derive the key from raw text);
   a free-text write that nothing keys is stored as an independent record and ranks on its own.
 - **Revert on command.** `m.revert(key)` rolls a corrected fact back to its predecessor. Of the leading systems
-  we checked — mem0, Zep/Graphiti, Letta, Cognee, Memobase, MemoryScope, LangMem, txtai — **none exposes a
-  revert-to-predecessor command** (mem0's `history()` is a read-only log; Graphiti invalidates but never
-  un-invalidates; Letta has no undo).
+  we checked — mem0, Zep/Graphiti, Letta, Cognee, Memobase, MemoryScope, LangMem, txtai — **none exposes
+  revert-to-predecessor as a first-class memory operation** (mem0's `history()` is a read-only log; Graphiti
+  invalidates but never un-invalidates). **Letta is the honest exception**: it has an engine-level
+  checkpoint-undo (`undo_checkpoint_block` over `BlockHistory`), undocumented and not surfaced as a
+  recall-integrity op — so the difference is that inspeximus exposes it deterministically as a named API, not
+  that reverting is unavailable elsewhere. (An earlier version of this line said "Letta has no undo". That was
+  wrong, and our own `claims_audit.py` already said so on the line below it.)
 - **Deletes the value, not just the pointer.** `forget_subject` removes the value from inspeximus's records (subject
   + its `derived_from` lineage) and leaves a **content-free**, tamper-evident signed receipt — so what remains is
   a proof-of-deletion, not the data. Since **1.24.0 every deletion path leaves that receipt**, including plain
@@ -295,22 +313,25 @@ what makes three things possible the mainstream libraries don't offer:
 | **inspeximus** | **no — deterministic** | ✅ supersession + echo_guard | ✅ `revert(key)` | ✅ no — value scrubbed, content-free receipt (+ `shred()` for at-rest) |
 | mem0 | yes (by default) | LLM decides ADD/UPDATE | ✗ history is read-only | ✗ kept in the history table by design |
 | Zep / Graphiti | yes | temporal invalidation | ✗ no un-invalidate | ✗ invalidated edge retained |
-| Letta / MemGPT | yes | LLM rewrites the block | ✗ no undo | ✗ |
+| Letta / MemGPT | yes | LLM rewrites the block | ~ engine-level `undo_checkpoint_block`, not a first-class memory op | ✗ |
 
 *(Every competitor cell was checked against that project's current source/docs — see [the integrity
 benchmark](probes/INTEGRITY_BENCHMARK.md), which also names each system that shares an individual property.
 Cryptographic deletion receipts do exist in purpose-built provenance systems like Engram and Heartwood; the claim
 here is scoped to mainstream agent-memory libraries.)*
 
-The mechanism underneath — **no LLM on the write path** — is the part a competitor can't copy without abandoning
-its extraction design. That is the moat.
+The mechanism underneath — **no LLM on the write path** — is what makes the state reproducible byte-for-byte, and
+it is not something you can bolt onto an extraction pipeline: a re-extracting write path would have to give up
+re-extraction to get it. Any of these systems could adopt it; the claim here is about the property, not about
+who is able to ship it.
 
 ## And it doesn't cost you recall
 
 Integrity would be hollow if inspeximus retrieved worse. It doesn't. On the standard **LOCOMO** benchmark (full set,
 n=1536), with the built-in tuned recipe (a semantic embedder + hybrid recall + a soft speaker prefilter),
-inspeximus's **retrieval-recall@25 is 0.83** (a supporting turn is retrieved) / **0.70** (all supporting turns) —
-top-tier, and measured the honest way: **LLM-free**, with no LLM judge to inflate it.
+inspeximus's **retrieval-recall@25 is 0.83** (a supporting turn is retrieved) / **0.70** (all supporting turns),
+measured the honest way: **LLM-free**, with no LLM judge to inflate it. We have published no cross-system
+retrieval comparison, so this page makes no claim about where that sits against anyone else.
 
 ```bash
 python benchmarks/locomo/run.py --subset full --retrieval-only   # ~0.83 / 0.70, no model calls
@@ -339,18 +360,15 @@ would need running them through this harness, which we haven't done. We now **ru
 harness scores it with one judge across six arms, including a naive-recency floor and a full-context ceiling,
 and commits the result — but what we put in this README is the LLM-free number.)*
 
-**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The exceptions are
-flagged in place, rather than left for you to discover: the MemOps key-derivation figures and the LoCoMo
-recall_any@1 below both come from work that lives outside this repository. Numbers can also trace to a
-committed result under [`benchmarks/`](benchmarks/); one of the three exceptions has now been discharged
-rather than re-worded, because the LOCOMO retrieval-recall@25 pair has a harness, a pinned config and a
-committed result in [`benchmarks/locomo/`](benchmarks/locomo/).
+**Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)** with the exact command that
+reproduces it and one of five statuses, and the reproducible-vs-published ratio is printed there rather than
+asserted here. `python claims_audit.py --numbers` fails on any figure that is not registered — including this
+one, whose row moved from PENDING-HARNESS to a committed command the day `benchmarks/locomo/` landed.
 
-*(This line has now been corrected twice. It first said* every *number, without exception; an audit found
-one, and the line was narrowed to "one exception". A second audit — 2026-07-27 — searched `probes/`,
-`tests/` and `tools/` for each number in this file and found **three** with no producing script, not one.
-The standard did not change either time; the sentence did. If you find a fourth, that is a defect in this
-paragraph, not a footnote.)*
+*(This paragraph replaces a line that had been corrected twice and was still wrong. It first said* every *number
+traces to a runnable probe; an audit narrowed that to "one exception"; a second audit found three. A third — this
+one — found that the honest count is not three either, and that a prose sentence is the wrong instrument for it.
+The count now comes from a script, so the next drift fails a test instead of needing a fourth apology.)*
 
 ## Quickstart (2 minutes)
 
@@ -457,10 +475,11 @@ inspeximus check-code src/**/*.py                                            # e
 Commit the store (`.inspeximus/memory.json`) so every clone shares the refactor history; the guard is a
 deterministic token scan, so the same commit is a pass or a fail on every machine.
 
-**Jump to:** [Correction (measured)](#correction-is-a-first-class-operation-measured-across-systems) ·
-[Governance & erasure](#governance-erasure--audit) · [Org-wide erasure receipt](#org-wide-erasure-receipt-one-signed-manifest-across-every-store-you-register) · [Install](#install) ·
+**Jump to:** [Correction (measured)](probes/INTEGRITY_BENCHMARK.md) ·
+[Every published number + its command](docs/CLAIMS.md) ·
+[Governance & erasure](#delete-that--then-check-what-the-lineage-says-survived) ·
 [MCP server](#use-it-as-an-mcp-server-any-claude--cursor--agent-client) ·
-[Shell CLI](#use-it-from-the-shell-the-inspeximus-cli-1124) ·
+[Shell CLI + API reference](docs/API.md) ·
 [Framework integrations](#framework-integrations) ·
 [The four operations](#the-four-operations) · [Five rules](#five-rules-it-wont-break-each-one-cost-us-to-learn) ·
 [Provenance & receipts](#provenance--why-these-rules-with-receipts) · [Threat model](#threat-model--layered-defense-adversarial-memory-integrity)
@@ -474,6 +493,13 @@ page; everything else is there when you need it.
 
 Adapters for LangGraph, CrewAI, LangChain, LlamaIndex, AutoGen and the rest,
 with copy-paste snippets: **[docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)**.
+
+**Three of the twelve are currently BROKEN against current upstream**, and the ledger says so rather than
+this page implying otherwise: `crewai` (1.15.6 — missing the async `StorageBackend` methods),
+`openai-agents` (0.18.3 — the round trip works but the object no longer satisfies `agents.memory.Session`)
+and `langgraph-checkpointer` (1.2.9). Run `python tools/integration_conformance.py` for the live three
+counts; the ledger is `docs/integration_conformance.json`, and a test fails on drift in *either*
+direction — an adapter that stops conforming, and one recorded broken that starts.
 
 **Compliance-aware out of the box.** Every class-based adapter — LangGraph `InspeximusStore`, CrewAI
 `InspeximusStorage`, LangChain `InspeximusRetriever` / `InspeximusChatMessageHistory`, LlamaIndex
@@ -495,8 +521,12 @@ read-path review layer `observe` / `reopened` / `resolve_reopened` (1.9.2–1.9.
 steward review on a *corroborated* contradiction (a lone restatement stays an echo, never an auto-change).
 The MCP `remember` exposes `key` (deterministic supersession) plus `object` / `reaffirm`, and the server
 runs with **`echo_guard` ON by default** (0.6.11) so a corrected fact stays corrected even if the old value
-is re-stated later — the failure mode a plain keyed/add-based store shows on RAMR's ECHO-RESISTANCE
-(keyed-without-guard 0.00, a real add-based system 0.57, guard 1.00). Set `INSPEXIMUS_ECHO_GUARD=0` to disable.
+is re-stated later — the failure mode a plain keyed store shows on the ECHO-RESISTANCE cell of
+[RAMR](https://github.com/DanceNitra/ramr) (keyed-without-guard 0.00, an add-based system 0.57, guard 1.00).
+Those three figures come from RAMR, a **separate** repository; no script here produces them. This repo's own
+cross-system cell measures a different quantity — *resurrection rate* — and finds no system systematically
+resurrects the stale value ([`probes/INTEGRITY_BENCHMARK.md`](probes/INTEGRITY_BENCHMARK.md), Cell 2: inspeximus
+0.00, mem0 0.05, Graphiti 0.00). Read both before quoting either. Set `INSPEXIMUS_ECHO_GUARD=0` to disable.
 Since **1.86.0 every SURFACE shares that posture** — the CLI, the MCP server, the Claude Code hook and all
 nine framework adapters — because until then the adapters inherited the library default (OFF), and one
 restatement through an adapter undid a correction and then wedged the store against being put right. The
@@ -571,7 +601,7 @@ context-economy practice (progressive disclosure / small-to-big retrieval); insp
 | `consolidate(keep)` | the **dream pass**: flag universal-matcher *hubs*, link near-duplicates, apply the **state-toggle guard** (a polarity clash supersedes, doesn't merge), supersede the low-value surplus — only *adds* a derived layer |
 | `consolidate_clusters(threshold)` | **cluster-triggered** consolidation: consolidate a semantic cluster only once it's grown past `threshold` — sparse topics keep their raw episodes, dense ones don't grow unbounded |
 | `contradictions()` | flag mutually-incompatible **related** memories (similarity-gated) for human review |
-| `forget(ids, where)` | the one op that **truly deletes** (the rest is append-only): hard-removes the matched records *and* scrubs their ids from every survivor's links + toggle pointers + the vec/token caches, so a forgotten memory can't resurface via recall, a consolidation link, or the dream pass. For erasure / right-to-be-forgotten, poison removal, or a hard correction — measured 15/15 on a verified-forgetting severe-test |
+| `forget(ids, where)` | the one op that **truly deletes** (the rest is append-only): hard-removes the matched records *and* scrubs their ids from every survivor's links + toggle pointers + the vec/token caches, so a forgotten memory can't resurface via recall, a consolidation link, or the dream pass. For erasure / right-to-be-forgotten, poison removal, or a hard correction. Measured across a six-store fan-out by `python probes/forget_verification_bench.py`: a wired hard delete scores **1.00** with a verifying signed receipt, the common soft delete scores **0.17** and names the five stores that still hold the value |
 
 ## "Delete that" — then check what the lineage says survived
 
@@ -727,8 +757,11 @@ the limits attached to the answer.
   (near chance) — a contradiction is often *more* embedding-similar to the original than a true
   rephrase is. A similarity-based store therefore serves the **stale value ~42% of the time**; the
   deterministic `(subject, relation, object)` supersession key (`remember(..., key=...)`) drives that
-  to **0%** (Agora Lab `exp_supersession_replication`, severe-test 8/8). This is *why* supersession is
-  a key, not a threshold.
+  to **0%**. Re-run it: `python probes/supersession_replication.py` (needs a local `nomic-embed-text`)
+  reproduced AUROC 0.613, stale-fact-error 41.7% under pure cosine and 0.0% under the SRO key on
+  2026-08-01. (The earlier version of this line also claimed a "severe-test 8/8"; the probe reports
+  0/24, no artifact here produces an 8/8, and that figure has been withdrawn.) This is *why*
+  supersession is a key, not a threshold.
 - **No single recall mechanism survives all operating points — only the layered store does** —
   head-to-head on a synthetic *evolving + contaminated* stream (stable / superseded / poisoned facts,
   local `nomic`): a naive **cosine top-1** store scores **42%** (fine on stable, but blind to
@@ -755,7 +788,7 @@ the limits attached to the answer.
 An untrusted-ingestion memory store cannot decide whether a written claim is *true*. inspeximus doesn't try to;
 it makes the attacker **pay**, and the honest map of what each layer buys — worked to bedrock across a public
 practitioner thread with adversarial review — is below. Every claim here has a runnable receipt in
-[`inspeximus/probes/`](probes/); this is textbook mechanism with a receipt, **not** a new theory.
+[`probes/`](probes/); this is textbook mechanism with a receipt, **not** a new theory.
 
 **A defense the attacker can also write is a suggestion, not a defense.** Content-declared provenance is
 theater: `Source: X` and `corroborated by N` are strings a writer controls, so default (distinct source
@@ -808,31 +841,18 @@ the shilling / Sybil-detection line (Mobasher-Burke 2007, Mehta-Nejdl 2009, Sybi
 ## The `second_brain` thinking layer
 
 An optional layer on top of the store — dialectic, contradiction
-surfacing, question generation: **[docs/SECOND_BRAIN.md](docs/SECOND_BRAIN.md)**.
+surfacing, question generation: **[docs/SECOND_BRAIN.md](docs/SECOND_BRAIN.md)**. Note the scope honestly:
+`second_brain_mcp.py` and `maintain.py` are **not shipped in this package or repository** — that document
+describes a companion the audit could not find here, and every number in it is unverifiable from this
+checkout until the files land.
+
 ## Status
 
-`v0.2` — the core, honest and runnable, **now with two MCP servers** (`mcp` for memory,
-`second_brain_mcp` for the thinking layer over your notes) **and a deterministic supersession key**
-(`remember(..., key=...)`) that closes the embedding *supersession blind spot*. Roadmap: pluggable
-vector stores, a hosted tier. Open-core; the core stays free.
+`v1.89.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 60 tools) and a
+deterministic supersession key (`remember(..., key=...)`) that closes the embedding *supersession blind
+spot*. Roadmap: pluggable vector stores, a hosted tier. Open-core; the core stays free.
 
 MIT-licensed · part of [Agora](https://github.com/DanceNitra/agora).
-
-## Self-maintaining (maintain.py)
-The #1 second-brain frustration is **maintenance**, not capture. `maintain.py` runs the chore people
-stop doing — over a folder of Markdown notes it finds **dead `[[wikilinks]]`, orphan notes, stale
-notes, near-duplicate clusters**, and a **vault health score** (`self_legibility` = % of notes in the
-link graph's giant component — knowledge debt is a *percolation* collapse, so it warns *before* the
-cliff). Crucially it turns findings into **actions**: for each orphan it **suggests which existing
-note to link it to** (re-connecting it to the graph), and flags **archive candidates** (old +
-isolated). It resolves links by filename *or* frontmatter alias, and dates notes by frontmatter
-(not git-reset mtime) — both learned from dogfooding it on a real ~7,700-note vault (it rescued ~300
-falsely-flagged orphans). Advisory + safe: it returns a plan and an action list; it never edits,
-moves, or deletes a note. And it can **apply** the fix when you ask: `apply_suggestions` appends a
-marked `## Related (auto-suggested)` block of `[[links]]` to each orphan — additive only, idempotent
-(re-running replaces its own block), **dry-run by default**. `python maintain.py` runs a verified
-round-trip on a synthetic vault (diagnose → suggest → apply); `maintenance_report` and `apply_links`
-in `second_brain_mcp.py` expose it to any MCP agent.
 
 <!-- MCP registry ownership proof -->
 mcp-name: io.github.DanceNitra/inspeximus

@@ -576,12 +576,12 @@
     ]
   },
   {
-    "name": "the README claims a single unbacked number again",
+    "name": "the README stops pointing at the claims registry",
     "file": "README.md",
-    "old": "**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The exceptions are",
-    "new": "**Almost every number in this README traces to a runnable probe in [`probes/`](probes/).** The one exception is",
+    "old": "**Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**",
+    "new": "**Every number on this page traces to a runnable probe.**",
     "tests": [
-      "tests/test_docs_examples_are_runnable.py"
+      "tests/test_claims_coverage.py"
     ]
   },
   {

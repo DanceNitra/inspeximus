@@ -61,10 +61,10 @@ The benchmark also improved inspeximus: it surfaced that `route()` missed "roll 
 ## Run it / add your system
 
     # free, local only:
-    python inspeximus/probes/integrity_bench_revert.py --systems inspeximus
+    python probes/integrity_bench_revert.py --systems inspeximus
 
     # includes paid backends (needs OPENAI_API_KEY in server/.env; Graphiti needs a neo4j at bolt://localhost:7687):
-    python inspeximus/probes/integrity_bench_revert.py --systems inspeximus,mem0,graphiti --n 20
+    python probes/integrity_bench_revert.py --systems inspeximus,mem0,graphiti --n 20
 
 Adding a system = one adapter function with the interface `(reset, add(text), revert(text), full memory state
 for the judge)`. PRs welcome; we publish whatever it shows.

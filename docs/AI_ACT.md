@@ -5,12 +5,15 @@ When the EU AI Act's high-risk obligations start to apply — **2 Dec 2027** for
 [Digital Omnibus on AI](https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng), published 24 Jul 2026, in force
 27 Jul 2026) — a provider has to *produce* three things about what its AI agent **remembers**: a tamper-evident record of what was logged
 (Art. 12 / 19), evidence that the memory is kept accurate and resists tampering (Art. 15), and provable erasure
-on request (GDPR Art. 17). Agent-memory libraries ship none of it.
+on request (GDPR Art. 17). Of the nine agent-memory libraries we scanned (table below, 2026-07), none shipped any
+of it — a statement about what we read on those dates, not a proof that nothing else does.
 
-**inspeximus is, to our knowledge, the only open agent-memory library that ships verifiable erasure (with a
-receipt) and tamper-evident record-keeping as reusable evidence for the agent-memory slice of the EU AI Act** —
-a gap absent from every agent-memory product we scanned. It is a single zero-dependency file plus an MCP server;
-the compliance surface is a drop-in overlay, not a rebuild.
+**inspeximus is, on that scan, the only agent-memory library that ships verifiable erasure (with a receipt) and
+tamper-evident record-keeping with zero required dependencies**, as reusable evidence for the agent-memory slice
+of the EU AI Act. Every qualifier there is load-bearing: *on that scan* (nine libraries, not the field), *with a
+receipt* (a `delete()` that returns success is not the same claim), and *zero required dependencies* (the
+property we can hold, rather than a bet that nobody else will implement erasure). The compliance surface is a
+drop-in overlay, not a rebuild.
 
 ## The gap (scanned competitor docs, 2026-07)
 
