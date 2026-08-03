@@ -181,7 +181,18 @@ jobs:
   # after the package is published and refuses to advertise a version PyPI is not serving yet.
   mcp-registry:
     name: publish the listing to the MCP registry
-    if: ${{ inputs.mcp_registry || (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) }}
+    # `needs: publish`, and the reason is measured rather than stylistic. This job carries a guard that
+    # refuses to advertise a version PyPI is not serving, and it waits 30 x 20s for that to become true.
+    # With no `needs` it started alongside `audit`/`tests` and began polling immediately, while `publish`
+    # sat behind `build` behind `audit`+`tests` -- about 17 minutes. Its 10-minute window therefore
+    # expired BEFORE the package was uploaded, every time, and the guard reported "PyPI never served
+    # 2.0.0" about a version that had not been published yet. The guard was right and the ordering was
+    # wrong. `always()` plus the result check keeps the workflow_dispatch path working, where `publish`
+    # is skipped rather than run.
+    needs: publish
+    if: ${{ always()
+      && (inputs.mcp_registry || (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')))
+      && (needs.publish.result == 'success' || needs.publish.result == 'skipped') }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
