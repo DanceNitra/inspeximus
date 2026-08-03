@@ -606,11 +606,16 @@ def test_p5_control_the_purity_harness_still_sees_a_mutating_read(mode, measured
     reaching top-k -- would make every P5 test above pass while measuring nothing at all."""
     moved, total, _ = _purity_delta(
         lambda s: s.recall(PURITY_QUERY, k=5, mode=mode, reinforce=True), mode=mode)
-    assert moved == measured, (
-        f"mode={mode}: the harness saw {moved}/{total} records move on a reinforce=True read, but the "
-        f"measured baseline for this channel is {measured}/11. Either the harness has stopped observing "
-        f"the ranking state, or reinforcement itself has changed -- in both cases the purity assertions "
-        f"above are no longer evidence of anything")
+    # A FLOOR, not the exact count, for the same reason the P5b control uses one: the number is
+    # environment-dependent. `measured` is Windows/3.12 with numpy; the base CI leg has no numpy and the
+    # semantic channel moves 5 there, not 4. Pinning equality made this fail on 3.11 for the wrong
+    # reason -- the harness was working perfectly. 3 is below every environment we have measured and
+    # far above the 0 a blind harness reports, which is the only thing this control has to separate.
+    assert moved >= 3, (
+        f"mode={mode}: the harness saw {moved}/{total} records move on a reinforce=True read "
+        f"(baseline {measured}/11 on Windows+numpy, 5/11 on the no-numpy leg). Below 3 means either the "
+        f"harness has stopped observing the ranking state or reinforcement itself has changed -- in both "
+        f"cases the purity assertions above are no longer evidence of anything")
 
 
 @pytest.mark.parametrize("route,threshold", ROUTES)

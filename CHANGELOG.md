@@ -46,6 +46,20 @@ probe is seeded (two consecutive runs are byte-identical), which is how we know 
 and not noise. It is one case, reported because the receipt moved, not because it establishes anything.
 The headline number that arm exists to produce, `E_adaptive_FORGED_warrant_asr = 0.7`, is unchanged.
 
+A second measured side effect, and this one has a mechanism. The ungated retrieval-hijack rate in
+`probes/agentpoison_influence_gate.py` DROPS under read purity, because a poisoned record no longer
+gets promoted by the act of being retrieved. One run per process, 8 of 8 runs identical in each cell:
+
+| environment | 1.89.0 (reinforce=True) | 2.0.0 (reinforce=False) |
+|---|---|---|
+| no numpy (the base CI leg) | 0.812 | 0.625 |
+| with numpy | 1.000 | 0.938 |
+
+The gated arm stays at 0.0 in all four. This lowered the base CI leg below the positive control's 0.8
+floor, which was calibrated under the old default; the floor is now 0.6, still far above the gated 0.0
+that the control exists to make meaningful. Read purity is a partial mitigation for retrieval
+hijacking, which we did not set out to buy and are not going to advertise as a security feature.
+
 The behaviour is not gone, only un-defaulted. `recall(..., reinforce=True)` restores it exactly, and the
 `credit()` path -- earned, outcome-driven value, which is the one we actually argue for -- is untouched.
 

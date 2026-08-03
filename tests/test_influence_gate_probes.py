@@ -71,7 +71,23 @@ def test_retrieval_is_hijacked_and_influence_is_not(gate):
     """The claim itself. raw_hijack high, influence_hijack zero -- if the gate ever stopped filtering, the
     second number moves and this fails."""
     res = gate.run("test", None, None, embed_fn=gate.deterministic_embed)
-    assert res["raw_hijack"] >= 0.8, f"the attack must actually work, else the defense proves nothing: {res}"
+    # The floor was 0.8, calibrated when `recall()` reinforced by default. 2.0.0 flipped that, and the
+    # ungated attack got measurably weaker: with a fresh process per run, 8/8 runs identical,
+    #
+    #     environment      reinforce=True (1.89.0)   reinforce=False (2.0.0)
+    #     no numpy (CI)              0.812                    0.625
+    #     with numpy                 1.000                    0.938
+    #
+    # which makes sense: the poison no longer gets promoted by the act of being retrieved. That is a
+    # real and favourable side effect of read purity, not a regression, but it drops the base CI leg
+    # below 0.8 and this control has to keep meaning what it says. 0.6 is below both 2.0.0 rows and
+    # still far above the influence_hijack of 0.0 asserted on the next line, which is the gap this
+    # control exists to guarantee: at 0.625 the attack still lands on 5 victims in 8.
+    #
+    # Measure the two arms rather than trusting this comment: probes/agentpoison_influence_gate.py,
+    # one run per PROCESS. It carries state between calls, so two runs in one interpreter disagree
+    # (0.625 then 0.688) and that variance is the harness, not the library.
+    assert res["raw_hijack"] >= 0.6, f"the attack must actually work, else the defense proves nothing: {res}"
     assert res["influence_hijack"] == 0.0, res
     assert res["poison_is_corroborated"] is False, "a single injection must not count as corroborated"
     assert res["measurement_class"] == "mechanism"
