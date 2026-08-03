@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5742,6 +5742,43 @@ class Inspeximus:
             return 0.0
         return len(q & t) / min(len(q), len(t))     # overlap coefficient — forgiving without an embedder
 
+    def _corroboration_facts(self, r, _by_id):
+        """(good, bad, good_earned, distinct) for one record -- the raw inputs behind BOTH the
+        graduation bar and the `warrant` tier reported by recall(with_warrant=True).
+
+        One function because they were two copies of the same four lines, and when the graduation
+        copy moved out of recall() in 2.0.1 the warrant copy was left referring to locals that no
+        longer existed. Two tests caught the NameError; a third copy would not have been caught."""
+        _good = float(r.get("good", 0) or 0)
+        _bad = float(r.get("bad", 0) or 0)
+        _good_earned = (float(r.get("good_warranted", 0) or 0)
+                        if getattr(self, "credit_requires_warrant", False) else _good)
+        _links = (self._gated_links(r, _by_id)
+                  if (self.coherence_gate is not None or self.temporal_gate is not None) else r.get("links"))
+        _distinct = (self._distinct_verified_keys(_links, _by_id) if self.strict_corroboration
+                     else self._distinct_sources(_links, _by_id))
+        return _good, _bad, _good_earned, _distinct
+
+    def _graduation_corroborated(self, r, _by_id) -> bool:
+        """The corroboration bar an episodic memory must clear to become semantic.
+
+        Shared by the read path and by `consolidate()` so the two cannot drift apart. Carries the
+        influence-gate rule including the exogenous-warrant one: when `credit_requires_warrant` is on,
+        only WARRANTED good graduates, else a MINJA-style self-graded bridge would graduate itself and
+        then pass the gate unconditionally on its "semantic" mtype (the graduation bypass this closes).
+        A landed retraction (`slashed`) or a record with no lineage (`orphan`) blocks it either way."""
+        _good, _bad, _good_earned, _distinct = self._corroboration_facts(r, _by_id)
+        return (((_good_earned > 0 and _good >= _bad) or _distinct >= 2)
+                and not (r.get("meta") or {}).get("slashed")
+                and not r.get("orphan"))
+
+    def _may_graduate(self, r, _by_id) -> bool:
+        """Every condition for episodic -> semantic maturation, in one place."""
+        return (r.get("mtype") == "episodic"
+                and float(r.get("value", 0) or 0) >= _GRADUATE_VALUE
+                and self._graduation_corroborated(r, _by_id))
+
+
     def recall(self, query: str, k: int = 6, include_superseded: bool = False,
                include_hubs: bool = False, mode: str = "auto", min_relevance: float = 0.0,
                scope: str | None = None, as_of: float | None = None,
@@ -6367,21 +6404,8 @@ class Inspeximus:
             # one origin many ways ("Wikipedia" / "wikipedia.org" / a full URL → 3 links, 1 real source).
             # Canonicalizing source identifiers before counting collapses those to one; a link whose record
             # has no source counts as its own id, so genuinely source-less corroboration is unchanged.
-            _good = float(r.get("good", 0) or 0); _bad = float(r.get("bad", 0) or 0)
-            # graduation shares the influence-gate bar, incl. the exogenous-warrant rule: when
-            # credit_requires_warrant is on, only warranted good can graduate an episodic memory to the
-            # durable semantic tier — else a MINJA self-graded bridge would graduate and then pass the gate
-            # unconditionally via its 'semantic' mtype (the graduation bypass this closes).
-            _good_earned = (float(r.get("good_warranted", 0) or 0)
-                            if getattr(self, "credit_requires_warrant", False) else _good)
-            _links = (self._gated_links(r, _by_id)
-                      if (self.coherence_gate is not None or self.temporal_gate is not None) else r.get("links"))
-            _distinct = (self._distinct_verified_keys(_links, _by_id) if self.strict_corroboration
-                         else self._distinct_sources(_links, _by_id))
-            corroborated = ((_good_earned > 0 and _good >= _bad) or _distinct >= 2) \
-                and not (r.get("meta") or {}).get("slashed") \
-                and not r.get("orphan")   # landed retraction OR orphan (no lineage) blocks (re-)graduation too
-            if reinforce and r.get("mtype") == "episodic" and r["value"] >= _GRADUATE_VALUE and corroborated:
+            corroborated = self._graduation_corroborated(r, _by_id)
+            if reinforce and self._may_graduate(r, _by_id):
                 r["mtype"] = "semantic"
                 r.setdefault("meta", {})["graduated_from_episodic"] = True
             _o = {"id": r["id"], "text": r["text"], "tags": r["tags"], "iso": r["iso"],
@@ -6413,6 +6437,7 @@ class Inspeximus:
                 #   'corroborated' -- >=2 distinct sources/verified-keys, but not yet outcome-earned (weaker)
                 #   'unwarranted'  -- single self-asserted, orphan (no lineage), or slashed -> DO NOT treat as a
                 #                     confirmation; weight it ~0 and, critically, mark it so downstream sees the abstention.
+                _good, _bad, _good_earned, _distinct = self._corroboration_facts(r, _by_id)
                 if (r.get("meta") or {}).get("slashed") or r.get("orphan"):
                     _o["warrant"] = "unwarranted"
                 elif (_good > 0 and _good >= _bad) or r.get("mtype") == "semantic":
@@ -7868,6 +7893,27 @@ class Inspeximus:
         active = [r for r in self.items if r["status"] == "active"
                   and (self.tenant is None or r.get("tenant") == self.tenant)
                   and not Inspeximus._is_session_bookkeeping(r)]
+
+        # ── MATURATION PASS: episodic -> semantic ───────────────────────────────────────────────
+        # This lives here, and not on the read path, because of a regression we shipped in 2.0.0.
+        # Graduation used to be a side effect of `recall()` and was written as `if reinforce and ...`.
+        # When 2.0.0 made `reinforce` default to False to give callers a pure read, graduation went
+        # with it: measured 5 of 6 records graduating with reinforcement on and 0 of 6 on the new
+        # default, with no other route in the package (credit + sleep + consolidate all left it at 0).
+        # Nothing failed. 2422 tests passed, because every one of them was written for a store whose
+        # reads reinforced, so none could tell "graduation is correct" from "graduation never ran".
+        # Maturation is a consolidation concern, so it belongs in the dream pass, where it happens at
+        # a moment the caller chooses instead of as a side effect of asking a question.
+        _by_id = {r["id"]: r for r in self.items}
+        graduated = 0
+        for r in active:
+            if self._may_graduate(r, _by_id):
+                r["mtype"] = "semantic"
+                r.setdefault("meta", {})["graduated_from_episodic"] = True
+                graduated += 1
+        if graduated:
+            self._dirty = True     # a tier change must survive the process, like the rest of this pass
+
         hubs = 0
         if hub_coverage and len(active) >= 50:
             toks, common = self._common_vocab(active)
@@ -7990,7 +8036,7 @@ class Inspeximus:
         # other in one line. It is the surviving population now, and the request is reported separately
         # so a caller can still see what was asked for.
         _live = len([r for r in self.items if r["status"] == "active"])
-        return {"active": _live, "hubs_flagged": hubs, "linked_pairs": linked, "toggled": toggled,
+        return {"active": _live, "graduated": graduated, "hubs_flagged": hubs, "linked_pairs": linked, "toggled": toggled,
                 "staled": staled, "kept": _live, "keep_requested": keep, "total": len(self.items)}
 
     # ── cluster-triggered consolidation ───────────────────────────────────────
