@@ -674,7 +674,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "1.89.0"
+__version__ = "1.90.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -8264,21 +8264,97 @@ class _TenantView:
 #     This PUTS AN LLM ON THE WRITE PATH — you trade determinism/zero-cost for auto-capture of unstructured text.
 # Both are fail-open (Inspeximus.remember swallows extractor exceptions and appends the raw text).
 
-_EX_REL = re.compile(
-    r"^\s*(?:correction|update|note|fyi)?\s*[:,-]?\s*"          # optional correction marker, stripped
-    r"(?:the\s+)?(?P<subject>[A-Za-z0-9 ._/@'-]{2,60}?)"        # subject
-    r"(?:'s|s')\s+(?P<rel>[A-Za-z0-9 ._-]{2,40}?)"              # possessive relation:  "X's Y"
-    r"\s+(?:is|was|are|were|=|:|now|became|changed to)\s+"
-    r"(?P<obj>.+?)\s*\.?\s*$", re.I)
-_EX_OF = re.compile(
-    r"^\s*(?:correction|update|note|fyi)?\s*[:,-]?\s*"
-    r"the\s+(?P<rel>[A-Za-z0-9 ._-]{2,40}?)\s+of\s+(?P<subject>[A-Za-z0-9 ._/@'-]{2,60}?)"   # "the Y of X"
-    r"\s+(?:is|was|are|were|=|:|now)\s+(?P<obj>.+?)\s*\.?\s*$", re.I)
-_EX_IS = re.compile(
-    r"^\s*(?:correction|update|note|fyi)?\s*[:,-]?\s*"
-    r"(?:the\s+)?(?P<subject>[A-Za-z0-9 ._/@'-]{2,60}?)"        # "X is Y"
-    r"\s+(?:is|was|are|were|=|:|now|became|changed to)\s+"
-    r"(?P<obj>.+?)\s*\.?\s*$", re.I)
+# CONVERSATIONAL SURFACE FORMS (1.90.0). The shipped patterns keyed a clean declarative sentence and
+# nothing else, which is what README's "honest scope" paragraph admits. Measured on a 15-chain
+# conversational fixture (benchmarks/chain_binding/) BEFORE any change: 2 of 15 correction chains bound,
+# and the store therefore degenerated to keep-everything on exactly the input the product is sold for.
+# Four surface facts caused it, none of them about meaning:
+#   1. every pattern was anchored at ^ against the WHOLE string, so any leading clause killed the match
+#      ("Dana left, so my manager is Priya now" -> no key at all; the subject class has no comma).
+#   2. the OBJECT side already got a leading-adverb strip and the SUBJECT side got none, so "actually my
+#      title" / "so my current title" / "my title" are three keys that can never meet.
+#   3. first person was not canonical: "my title is X" keyed on 'my title' while "I work at Y" keyed on
+#      nothing, so no first-person chain could survive a change of phrasing.
+#   4. the non-referring guard read `i` but not `i'm`, so "I'm now in the PST timezone" and "I'm now the
+#      on-call engineer" BOTH keyed on "i'm" and retired each other -- a live data-loss path, not a miss.
+# Everything below is closed-list surface normalisation: no lexicon of world knowledge, no model, no
+# dependency. Where a chain needs world knowledge to bind ("I'm a Principal Engineer now" is a *title*),
+# it deliberately still returns None -- see regex_extractor's docstring for that boundary.
+
+# A subject: no comma, so a clause can never be swallowed. The lower bound is ONE character, not two --
+# at two, the single most common conversational subject in English, "I", could not match any pattern, and
+# the bare-copula fallback then consumed the verb instead and produced the key "i am".
+_EX_S = r"[A-Za-z0-9 ._/@'-]{1,60}?"
+_EX_R = r"[A-Za-z0-9 ._-]{2,40}?"             # a relation noun phrase
+_EX_BE = r"(?:is|am|are|was|were)"
+# The copula, plus the change verbs that occupy the same slot. "changed to"/"moved to"/"switched to" are
+# grammatically copular here ("my email changed to X" == "my email is now X"), which is why they belong in
+# the link and not in a separate pattern.
+_EX_LINK = (r"(?:is|am|are|was|were|=|:|now|became|changed\s+to|moved\s+to|switched\s+to|"
+            r"updated\s+to|set\s+to|went\s+to)")
+
+# Discourse markers that can only ever be lead-ins, never the subject of the fact. Split in two because
+# `correction`/`update`/`note` are also ordinary nouns ("note taking is my hobby"), so those are stripped
+# ONLY when punctuation follows; the pure adverbs and interjections need no such proof.
+_EX_MARK_ADV = ("actually", "so", "well", "anyway", "anyhow", "oh", "wait", "hmm", "um", "uh", "btw",
+                "honestly", "basically", "sorry", "right", "yeah", "yep", "ok", "okay", "also", "then",
+                "and", "but", "plus", "fyi", "by the way", "just so you know", "to be clear",
+                "to clarify", "for the record", "heads up")
+_EX_MARK_NOUN = ("correction", "update", "note", "edit", "ps", "quick update")
+_EX_LEAD = re.compile(
+    r"^\s*(?:(?:" + "|".join(_EX_MARK_ADV) + r")\b[\s]*[:,;.!-]*\s*"
+    r"|(?:" + "|".join(_EX_MARK_NOUN) + r")\b\s*[:,;-]+\s*)+", re.I)
+
+# Trailing time adverbials. "my manager is Priya now" and "my manager is Priya" are one fact; the trailing
+# word is tense, not value. Stripping is TRIED, never forced: "the meeting is today" would otherwise lose
+# its whole object, so a stripped candidate that fails to parse falls back to the unstripped one.
+_EX_TRAIL = re.compile(
+    r"[\s,;-]+(?:now|today|currently|already|again|these\s+days|nowadays|going\s+forward|"
+    r"from\s+now\s+on|at\s+the\s+moment|right\s+now|yesterday|"
+    r"last\s+(?:week|month|year|night)|this\s+(?:week|month|year|morning|afternoon)|"
+    r"as\s+of\s+\S+|since\s+\S+)\s*[.!]?\s*$", re.I)
+
+# `'m` and `'re` expand unambiguously. `'s` deliberately does NOT: it is the possessive as often as it is
+# the copula, and guessing wrong rewrites the subject.
+_EX_CONTRACT = ((re.compile(r"\bI'm\b", re.I), "I am"),
+                (re.compile(r"\b(\w+)'re\b", re.I), r"\1 are"))
+
+# Modifiers that mark the CURRENT statement of a relation, so "my current title" / "my new email" name the
+# same relation as "my title" / "my email". `former`, `old`, `previous`, `original`, `ex-` are POINTEDLY
+# absent: they name a DIFFERENT, historical fact, and folding them in would let "my former employer is
+# Acme" retire "my employer is Globex". That asymmetry is the whole reason this is a closed list.
+_EX_CURRENT_MOD = re.compile(r"^(?:new|newest|updated|current|latest|official|present|existing)\s+", re.I)
+
+# Relational verbs that lexicalise a stable relation. Deliberately tiny and explicit: two frames, the two
+# that every personal-fact schema starts from. An unlisted verb falls through to None rather than guessing.
+_EX_VERB_LEMMA = {"live": "live", "lives": "live", "lived": "live",
+                  "work": "work", "works": "work", "worked": "work"}
+_EX_VERB_FRAMES = {("live", "in"): "residence", ("live", "at"): "residence",
+                   ("work", "at"): "employer", ("work", "for"): "employer"}
+
+_EX_REL = re.compile(r"^(?P<subject>" + _EX_S + r")(?:'s|s')\s+(?P<rel>" + _EX_R + r")\s+"
+                     + _EX_LINK + r"\s+(?P<obj>.+?)\s*\.?\s*$", re.I)          # "X's Y is Z"
+_EX_OF = re.compile(r"^the\s+(?P<rel>" + _EX_R + r")\s+(?:of|for)\s+(?P<subject>" + _EX_S + r")\s+"
+                    + _EX_LINK + r"\s+(?P<obj>.+?)\s*\.?\s*$", re.I)           # "the Y of/for X is Z"
+# "I'm on the Payments team" / "I'm in the CET timezone" / "I moved to the Platform team": the relation is
+# the head noun of the complement and the value is its modifier. Runs BEFORE the first-person possessive
+# pattern, or "my sister is in the Berlin office" would key on 'self::sister' and retire "my sister is Anna".
+_EX_HEAD = re.compile(
+    r"^(?P<subject>" + _EX_S + r")\s+(?:" + _EX_BE + r"\s+(?:now\s+)?(?:in|on|at|with)"
+    r"|moved\s+to|switched\s+to|transferred\s+to|joined)\s+the\s+"
+    r"(?P<obj>[A-Za-z0-9 ._/@'-]{1,40}?)\s+(?P<rel>[A-Za-z][A-Za-z-]{1,30})\s*\.?\s*$", re.I)
+_EX_MINE = re.compile(r"^(?:my|our)\s+(?P<rel>" + _EX_R + r")\s+" + _EX_LINK +
+                      r"\s+(?P<obj>.+?)\s*\.?\s*$", re.I)                      # "my Y is Z"
+# "we switched the analytics store to ClickHouse": the thing being changed is the NP, not the agent, so the
+# key comes from the NP. The NP must be DEFINITE (my/our/the/possessive) -- a bare one is not a reference.
+_EX_CHANGE = re.compile(
+    r"^" + _EX_S + r"\s+(?:changed|switched|moved|updated|set|renamed)\s+"
+    r"(?P<np>(?:my|our|the)\s+[A-Za-z0-9 ._-]{2,40}?"
+    r"|[A-Za-z0-9 ._-]{2,40}?(?:'s|s')\s+[A-Za-z0-9 ._-]{2,40}?)\s+to\s+(?P<obj>.+?)\s*\.?\s*$", re.I)
+_EX_VERB = re.compile(r"^(?P<subject>" + _EX_S + r")\s+(?P<verb>lives?|lived|works?|worked)\s+"
+                      r"(?P<prep>in|at|for)\s+(?P<obj>.+?)\s*\.?\s*$", re.I)
+_EX_IS = re.compile(r"^(?:the\s+)?(?P<subject>" + _EX_S + r")\s+" + _EX_LINK +
+                    r"\s+(?P<obj>.+?)\s*\.?\s*$", re.I)                        # "X is Z" (bare copula)
 
 
 # NON-REFERRING SUBJECTS (2026-07-20). A key is only meaningful if its subject IDENTIFIES something. On
@@ -8294,38 +8370,210 @@ _EX_NONREFERRING = frozenset("""
 it he she they them we us you i this that these those there here one ones someone somebody anyone anybody
 everyone everybody something anything nothing everything what who whom whose where when why which how
 each both all some any none other others another such
+his her hers its their theirs mine ours yours
+i'm im it's that's there's he's she's here's what's who's we're they're you're
+""".split())
+
+# A subject whose FIRST word is a quantifier, demonstrative or interrogative determiner does not identify
+# an entity either -- "both approaches", "some of the tests", "one thing I noticed", "this kind of thing",
+# "whose responsibility". The shipped guard only inspected the first and last token AS A WHOLE WORD, so
+# every one of those keyed, and any two of them sharing a determiner phrase would have collided.
+_EX_NONREF_LEAD = frozenset("""
+this that these those it there here some all both each any none another other others such one ones
+what which who whom whose someone somebody anyone anybody everyone everybody something anything nothing
+everything
+""".split())
+
+_EX_FIRST_PERSON = frozenset("i me myself we us ourselves".split())
+
+# Evaluative / relative adjectives cannot IDENTIFY a value, only comment on one. They matter in exactly one
+# place: the head-noun frame, where the value is a bare pre-modifier and "I'm in the PST timezone" and "I'm
+# in the wrong timezone" are the same shape. Without this, a complaint keys as a correction and retires the
+# fact it complains about -- measured, it was the last false bind on the negative control. Closed list, so
+# an evaluative adjective outside it ("the janky timezone") still binds; that residual is real and stated.
+_EX_NON_VALUE = frozenset("""
+wrong right correct incorrect same different other another best worst better worse good bad
+only main real actual usual normal proper true false whole entire
 """.split())
 
 
-def regex_extractor(text):
-    """text -> (key, object) | None. Deterministic, no LLM. Recognizes 'X's Y is Z', 'the Y of X is Z', and
-    'X is Z' (with optional leading correction/update/now markers). key is a canonical 'subject::relation' (or
-    just 'subject' for the plain copula) so a reworded restatement maps to the SAME key. A subject that does
-    not REFER to anything (pronoun / expletive / interrogative — "it", "there", "these", "what") is rejected,
-    because such keys collide across unrelated sentences and would make supersession retire live records.
-    Returns None (=> plain
-    append) when nothing matches confidently."""
-    if not text:
+def _ex_canon_subject(raw):
+    """Surface subject -> canonical subject. First person collapses to a single referent, because in a
+    per-user store 'I', 'me' and 'my ...' all point at the same person and keeping them apart is precisely
+    what stops a chain binding. A possessed subject becomes a NESTED referent ('my wife' -> 'self.wife'),
+    never a relation on the user, so 'my wife works at Acme' cannot retire 'my wife is Sarah'."""
+    s = " ".join((raw or "").lower().split()).strip(" .,-")
+    s = re.sub(r"^(?:the|a|an)\s+", "", s)
+    s = _EX_CURRENT_MOD.sub("", s)
+    if s in _EX_FIRST_PERSON:
+        return "self"
+    mt = re.match(r"^(?:my|our)\s+(.+)$", s)
+    if mt:
+        return "self." + mt.group(1).strip()
+    return s
+
+
+def _ex_canon_relation(raw):
+    r = " ".join((raw or "").lower().split()).strip(" .,-")
+    r = re.sub(r"^(?:the|a|an|my|our)\s+", "", r)
+    return _EX_CURRENT_MOD.sub("", r).strip()
+
+
+def _ex_clean_object(raw):
+    obj = (raw or "").strip().strip(".").strip()
+    obj = re.sub(r"^(?:now|actually|currently|really|already|just|officially|apparently)\s+", "",
+                 obj, flags=re.I).strip()
+    return obj
+
+
+def _ex_key(subject, relation, obj):
+    """(subject, relation|None, object) -> (key, object) | None. The single place the non-referring rules
+    are enforced, so every pattern is guarded identically."""
+    subj = _ex_canon_subject(subject)
+    rel = _ex_canon_relation(relation) if relation else None
+    obj = _ex_clean_object(obj)
+    if not subj or not obj or len(obj) > 200:
         return None
-    for rx, keyed in ((_EX_REL, True), (_EX_OF, True), (_EX_IS, False)):
-        mt = rx.match(text)
-        if mt:
-            subj = " ".join(mt.group("subject").lower().split())
-            # Reject when the subject IS a non-referring word, or merely ENDS in one: the patterns greedily
-            # swallow conversational lead-ins, so "Do you think there is ..." yields the subject
-            # "do you think there", which is not an entity either and collided just as badly (measured).
-            _st = subj.split()
-            if subj in _EX_NONREFERRING or (_st and _st[-1] in _EX_NONREFERRING):
-                return None
-            obj = mt.group("obj").strip().strip(".").strip()
-            obj = re.sub(r"^(?:now|actually|currently|really)\s+", "", obj, flags=re.I).strip()   # copula adverb
-            if not subj or not obj or len(obj) > 200:
-                return None
-            if keyed:
-                rel = " ".join(mt.group("rel").lower().split())
-                return (f"{subj}::{rel}", obj)
-            return (subj, obj)
+    selfish = subj == "self" or subj.startswith("self.")
+    if not selfish:
+        toks = subj.split()
+        if subj in _EX_NONREFERRING or not toks:
+            return None
+        if toks[-1] in _EX_NONREFERRING or toks[0] in _EX_NONREF_LEAD:
+            return None
+    elif rel is None:
+        # A bare self-predication names no relation: "I'm vegetarian" and "I'm exhausted" would share the
+        # key `self` and retire each other. Whether "vegan" supersedes "vegetarian" is a question about the
+        # WORLD, not about the sentence, so the deterministic keyer declines it. This is the boundary.
+        return None
+    if rel is not None and (not rel or rel in _EX_NONREFERRING):
+        return None
+    return (f"{subj}::{rel}", obj) if rel else (subj, obj)
+
+
+def _ex_parse_clause(clause):
+    """One clause -> (key, object) | None, markers already the caller's problem to leave attached."""
+    s = _EX_LEAD.sub("", clause or "").strip()
+    if not s:
+        return None
+    mt = _EX_REL.match(s)
+    if mt:
+        return _ex_key(mt.group("subject"), mt.group("rel"), mt.group("obj"))
+    mt = _EX_OF.match(s)
+    if mt:
+        return _ex_key(mt.group("subject"), mt.group("rel"), mt.group("obj"))
+    mt = _EX_HEAD.match(s)
+    if mt:
+        # The value here is a bare pre-modifier, so an evaluative adjective in that slot means the sentence
+        # comments on the fact rather than stating it ("I'm in the WRONG timezone"). Declining is a miss;
+        # keying it would retire the very record it complains about.
+        head_obj = _ex_clean_object(mt.group("obj")).lower().split()
+        if not head_obj or head_obj[0] in _EX_NON_VALUE:
+            return None
+        return _ex_key(mt.group("subject"), mt.group("rel"), mt.group("obj"))
+    mt = _EX_MINE.match(s)
+    if mt:
+        return _ex_key("I", mt.group("rel"), mt.group("obj"))
+    mt = _EX_CHANGE.match(s)
+    if mt:
+        np = mt.group("np").strip()
+        sub = re.match(r"^(?:my|our)\s+(.+)$", np, re.I)
+        if sub:
+            return _ex_key("I", sub.group(1), mt.group("obj"))
+        sub = re.match(r"^(?P<s>.+?)(?:'s|s')\s+(?P<r>.+)$", np)
+        if sub:
+            return _ex_key(sub.group("s"), sub.group("r"), mt.group("obj"))
+        return _ex_key(np, None, mt.group("obj"))
+    mt = _EX_VERB.match(s)
+    if mt:
+        frame = _EX_VERB_FRAMES.get((_EX_VERB_LEMMA.get(mt.group("verb").lower(), ""),
+                                     mt.group("prep").lower()))
+        if frame:
+            return _ex_key(mt.group("subject"), frame, mt.group("obj"))
+    mt = _EX_IS.match(s)
+    if mt:
+        return _ex_key(mt.group("subject"), None, mt.group("obj"))
     return None
+
+
+def derive_key(text):
+    """text -> (key, object) | None. The reusable keying core: `regex_extractor` is a thin alias, and any
+    other caller that needs the same canonical key (a bind/route helper, a migration) should call this
+    rather than re-deriving one, so there is exactly one definition of what a key IS.
+
+    Reading order, and why it is this one:
+      1. contractions that expand unambiguously are expanded, so 'I'm' is a pronoun again;
+      2. the WHOLE sentence is tried first (most faithful reading), with and without a trailing time
+         adverbial;
+      3. only if that fails is the sentence split on commas/semicolons and each clause tried, because the
+         subject class excludes commas and a leading clause otherwise blocks every pattern. If two clauses
+         yield DIFFERENT keys the sentence is ambiguous and None is returned -- a mis-derived key
+         mis-supersedes, and declining is the cheap half of that trade.
+    """
+    if not text or not isinstance(text, str):
+        return None
+    # COLLAPSE WHITESPACE FIRST. The subject class contains a literal space, so a run of spaces is a run of
+    # equally valid split points and the non-greedy quantifiers explore them quadratically: measured 0.7 ms
+    # at 100 spaces, 2.8 at 200, 11.5 at 400, 46.9 at 800, against 10 us for an ordinary sentence. This is
+    # the WRITE path, so that is a denial-of-service on `remember()`, not a slow benchmark. Collapsing is
+    # free of meaning (whitespace never distinguishes two facts) and makes the cost flat.
+    t = re.sub(r"\s+", " ", text).strip()
+    if not t:
+        return None
+    for rx, rep in _EX_CONTRACT:
+        t = rx.sub(rep, t)
+
+    def _variants(s):
+        stripped = _EX_TRAIL.sub("", s).strip()
+        # stripped first: it is the normalised form. Unstripped is the fallback, so "the meeting is today"
+        # keeps its object instead of being normalised into nothing.
+        return [stripped, s.strip()] if stripped and stripped != s.strip() else [s.strip()]
+
+    for cand in _variants(t):
+        got = _ex_parse_clause(cand)
+        if got:
+            return got
+    parts = [p for p in re.split(r"[,;]|\s+--\s+|\s+—\s+", t) if p and p.strip()]
+    if len(parts) < 2:
+        return None
+    found = {}
+    for p in parts:
+        for cand in _variants(p):
+            got = _ex_parse_clause(cand)
+            if got:
+                found[got[0]] = got[1]          # later clause wins the object for the same key
+                break
+    if len(found) != 1:
+        return None
+    k, v = next(iter(found.items()))
+    return (k, v)
+
+
+def regex_extractor(text):
+    """text -> (key, object) | None. DETERMINISTIC: no LLM, no dependency, no network — this is the
+    zero-LLM-on-write path, and it stays that way.
+
+    Recognises, in this order: "X's Y is Z", "the Y of/for X is Z", "X is/moved to the Z Y" (the relation
+    is the head noun of the complement), "my Y is Z", "<agent> changed <NP> to Z", "X lives in / works at
+    Z", and the bare copula "X is Z". Conversational packaging is normalised first — leading discourse
+    markers ("actually", "correction:", "so"), trailing time adverbials ("... now", "... last week"),
+    `I'm`/`you're` contractions, current-marking modifiers ("my CURRENT title" == "my title"), and a
+    leading clause ("Dana left, so my manager is Priya now") — so a chain of corrections lands on ONE key.
+
+    First person is canonical: `I`, `me`, `my X` all resolve to the single referent `self`, and a possessed
+    third party nests ("my wife" -> `self.wife`) instead of becoming a relation on the user.
+
+    WHERE IT STOPS, on purpose. A key is only derived when the sentence NAMES the relation. When the later
+    turn names only the VALUE and leaves the relation to world knowledge — "I'm a Principal Engineer now"
+    (that a Principal Engineer is a *title*), "I'm vegan now" (that vegan is a *diet*), "Dan is now an
+    engineering manager" — this returns None and the write is a plain append. That is not a gap waiting to
+    be patched with a bigger regex: no deterministic keyer can cross it without an ontology or a model.
+    Pass `key=` explicitly, or plug `make_llm_extractor`, when you need those bound.
+
+    A subject that does not REFER — pronoun, expletive, interrogative, quantifier ("it", "there", "these",
+    "what", "both approaches") — is rejected, because such keys collide across unrelated sentences and
+    would make supersession retire live records."""
+    return derive_key(text)
 
 
 def make_llm_extractor(call_fn, prompt_prefix=None):
