@@ -281,6 +281,39 @@ def test_mcp_tools_isolate_write_and_recall_and_the_escape_hatch_crosses(tmp_pat
     mod._PROJECT = None
 
 
+def test_multi_hop_recall_honours_the_project_scope(tmp_path, monkeypatch):
+    """`recall_iterative` (the multi-hop surface) must not be a side door out of the scope.
+
+    It arrived from a sibling PR while this branch was in flight, so the two features first met at a rebase --
+    exactly where a scope hole gets introduced silently. A walk whose FIRST hop respects the project and whose
+    later hops do not would leak a peer project's records under a name that reads as ordinary retrieval.
+    """
+    _mcp()
+    import importlib
+    monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "hop.json"))
+    monkeypatch.delenv("INSPEXIMUS_PROJECT", raising=False)
+    monkeypatch.delenv("INSPEXIMUS_SCOPE", raising=False)
+    mod = importlib.reload(importlib.import_module("inspeximus.mcp_server"))
+
+    mod._PROJECT = "alpha"
+    mod.remember("the alpha release manager is Priya Raman")
+    mod._PROJECT = "beta"
+    mod.remember("the beta release manager is Tomas Neubauer")
+
+    res = mod.recall_iterative("who is the release manager", k=10)
+    texts = [h["text"] for h in res["hits"]]
+    assert "the alpha release manager is Priya Raman" not in texts, f"multi-hop leaked across projects: {texts}"
+    # CONTROL -- the surface is alive and returns beta's own record, so this is scoping, not an empty result.
+    assert "the beta release manager is Tomas Neubauer" in texts, f"multi-hop returned nothing at all: {texts}"
+
+    # the escape hatch reaches across, here too
+    crossed = [h["text"] for h in mod.recall_iterative("who is the release manager", k=10,
+                                                       all_projects=True)["hits"]]
+    assert "the alpha release manager is Priya Raman" in crossed, crossed
+
+    mod._PROJECT = None
+
+
 def test_neighbors_does_not_leak_across_projects(tmp_path, monkeypatch):
     """Expansion around a hit must not be a side door into another project."""
     _mcp()
