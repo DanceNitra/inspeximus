@@ -1,0 +1,546 @@
+{
+ "benchmark": "locomo-e2e",
+ "config_version": "1",
+ "subset": "small",
+ "retrieval": {
+  "pinned": {
+   "k": 25,
+   "mode": "hybrid",
+   "reinforce": false,
+   "prefer": "speaker",
+   "denominator": "published",
+   "n": 150,
+   "n_conversations": 1,
+   "recall_any": 0.8,
+   "recall_all": 0.6667,
+   "n_resolvable": 149,
+   "recall_any_resolvable": 0.8054,
+   "recall_all_resolvable": 0.6711,
+   "n_unresolvable_evidence": 1,
+   "by_category_any": {
+    "1": 0.8125,
+    "2": 0.9459,
+    "3": 0.6364,
+    "4": 0.7429
+   },
+   "by_category_all": {
+    "1": 0.25,
+    "2": 0.9459,
+    "3": 0.5455,
+    "4": 0.7286
+   },
+   "by_category_n": {
+    "1": 32,
+    "2": 37,
+    "3": 11,
+    "4": 70
+   }
+  },
+  "published_config": {
+   "k": 25,
+   "mode": "hybrid",
+   "reinforce": true,
+   "prefer": "speaker",
+   "denominator": "published",
+   "n": 150,
+   "n_conversations": 1,
+   "recall_any": 0.72,
+   "recall_all": 0.5933,
+   "n_resolvable": 149,
+   "recall_any_resolvable": 0.7248,
+   "recall_all_resolvable": 0.5973,
+   "n_unresolvable_evidence": 1,
+   "by_category_any": {
+    "1": 0.6875,
+    "2": 0.9459,
+    "3": 0.6364,
+    "4": 0.6286
+   },
+   "by_category_all": {
+    "1": 0.1875,
+    "2": 0.9459,
+    "3": 0.3636,
+    "4": 0.6286
+   },
+   "by_category_n": {
+    "1": 32,
+    "2": 37,
+    "3": 11,
+    "4": 70
+   }
+  },
+  "published_comparison": {
+   "reference": {
+    "probe": "probes/retrieval_recall_locomo.py",
+    "cited_in": "README.md 'And it doesn't cost you recall'; CHANGELOG.md 1.11.0 (0.783/0.648), flagged in 1.54.0 as 'reported, not independently reproducible from this repo'",
+    "subset": "full",
+    "k": 25,
+    "recall_any": 0.783,
+    "recall_all": 0.648,
+    "n": 1536,
+    "match_tolerance": 0.02
+   },
+   "arms": {
+    "pinned": {
+     "n": 150,
+     "k": 25,
+     "reinforce": false,
+     "same_denominator_as_published": false,
+     "recall_any": 0.8,
+     "recall_any_delta": 0.017,
+     "recall_any_within_0.02": true,
+     "recall_all": 0.6667,
+     "recall_all_delta": 0.0187,
+     "recall_all_within_0.02": true,
+     "matches_published": true
+    },
+    "published_config": {
+     "n": 150,
+     "k": 25,
+     "reinforce": true,
+     "same_denominator_as_published": false,
+     "recall_any": 0.72,
+     "recall_any_delta": -0.063,
+     "recall_any_within_0.02": false,
+     "recall_all": 0.5933,
+     "recall_all_delta": -0.0547,
+     "recall_all_within_0.02": false,
+     "matches_published": false
+    }
+   },
+   "any_arm_matches_published": true
+  }
+ },
+ "qa": {
+  "n": 20,
+  "n_conversations": 1,
+  "arms": {
+   "naive_recency": {
+    "arm": "naive_recency",
+    "n": 20,
+    "correct": 1,
+    "parse_fail": 0,
+    "accuracy": 0.05,
+    "mean_context_chars": 4364,
+    "by_category": {
+     "1": 0.125,
+     "2": 0.0,
+     "3": 0.0
+    },
+    "by_category_n": {
+     "1": 8,
+     "2": 10,
+     "3": 2
+    }
+   },
+   "inspeximus": {
+    "arm": "inspeximus",
+    "n": 20,
+    "correct": 2,
+    "parse_fail": 0,
+    "accuracy": 0.1,
+    "mean_context_chars": 3760,
+    "by_category": {
+     "1": 0.0,
+     "2": 0.2,
+     "3": 0.0
+    },
+    "by_category_n": {
+     "1": 8,
+     "2": 10,
+     "3": 2
+    }
+   },
+   "fullcontext": {
+    "arm": "fullcontext",
+    "n": 20,
+    "correct": 4,
+    "parse_fail": 0,
+    "accuracy": 0.2,
+    "mean_context_chars": 48000,
+    "by_category": {
+     "1": 0.25,
+     "2": 0.2,
+     "3": 0.0
+    },
+    "by_category_n": {
+     "1": 8,
+     "2": 10,
+     "3": 2
+    }
+   },
+   "floor_empty": {
+    "arm": "floor_empty",
+    "n": 20,
+    "correct": 1,
+    "parse_fail": 0,
+    "accuracy": 0.05,
+    "mean_context_chars": 0,
+    "by_category": {
+     "1": 0.125,
+     "2": 0.0,
+     "3": 0.0
+    },
+    "by_category_n": {
+     "1": 8,
+     "2": 10,
+     "3": 2
+    }
+   },
+   "floor_shuffled": {
+    "arm": "floor_shuffled",
+    "n": 20,
+    "correct": 2,
+    "parse_fail": 0,
+    "accuracy": 0.1,
+    "mean_context_chars": 3760,
+    "by_category": {
+     "1": 0.25,
+     "2": 0.0,
+     "3": 0.0
+    },
+    "by_category_n": {
+     "1": 8,
+     "2": 10,
+     "3": 2
+    }
+   },
+   "ceiling_verbatim": {
+    "arm": "ceiling_verbatim",
+    "n": 20,
+    "correct": 18,
+    "parse_fail": 0,
+    "accuracy": 0.9,
+    "mean_context_chars": 3651,
+    "by_category": {
+     "1": 0.875,
+     "2": 0.9,
+     "3": 1.0
+    },
+    "by_category_n": {
+     "1": 8,
+     "2": 10,
+     "3": 2
+    }
+   }
+  },
+  "ceiling_retrieved_rate": 0.95,
+  "ceiling_records_written": 20,
+  "ceiling_records_forgotten": 20,
+  "ceiling_cleanup_complete": true,
+  "ceiling_forget_errors": [],
+  "fullcontext_truncated": true,
+  "longest_conversation_chars": 73892
+ },
+ "controls": {
+  "floor_empty": {
+   "accuracy": 0.05,
+   "bound": 0.2,
+   "kind": "max",
+   "passed": true,
+   "why": "ok"
+  },
+  "floor_shuffled": {
+   "accuracy": 0.1,
+   "bound": 0.35,
+   "kind": "max",
+   "passed": true,
+   "why": "ok"
+  },
+  "ceiling_verbatim": {
+   "accuracy": 0.9,
+   "bound": 0.8,
+   "kind": "min",
+   "passed": true,
+   "why": "ok"
+  },
+  "all_passed": true
+ },
+ "band": {
+  "arms": {
+   "floor_arm": "naive_recency",
+   "subject_arm": "inspeximus",
+   "ceiling_arm": "fullcontext"
+  },
+  "accuracy": {
+   "floor": 0.05,
+   "subject": 0.1,
+   "ceiling": 0.2
+  },
+  "above_floor": true,
+  "below_ceiling": true,
+  "passed": true,
+  "why": "ok"
+ },
+ "latency": {
+  "llm_calls": 242,
+  "llm_errors": 0,
+  "llm_p50_s": 2.528,
+  "llm_p95_s": 2.969,
+  "llm_max_s": 5.828,
+  "suspected_cache_hits": 0,
+  "cache_hit_threshold_s": 0.05,
+  "by_model": {
+   "llama3.1:8b": {
+    "calls": 121,
+    "mean_s": 2.766
+   },
+   "qwen2.5:7b": {
+    "calls": 121,
+    "mean_s": 2.382
+   }
+  },
+  "embed_http_calls": 0,
+  "embed_misses": 0,
+  "embed_cached_records": 7427,
+  "embed_p50_s": null,
+  "embed_max_s": null
+ },
+ "run": {
+  "duration_s": 625.8,
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "retrieval_only": false,
+  "subset_spec": {
+   "conversations": [
+    0
+   ],
+   "qa_max_questions": 20,
+   "_note": "conversation 0 only. Retrieval recall runs on ALL of its answerable questions (LLM-free); end-to-end QA runs on the first qa_max_questions in dataset order. Sized to survive on a GPU shared with other processes."
+  },
+  "liveness": {
+   "answerer_model": {
+    "model": "llama3.1:8b",
+    "prompt_nonce": 4281795262,
+    "expected_substring": "blue",
+    "answer": "Blue.",
+    "answer_correct": true,
+    "alive": true,
+    "mean_latency_s": 5.828
+   },
+   "judge_model": {
+    "model": "qwen2.5:7b",
+    "prompt_nonce": 7586822438,
+    "expected_substring": "blue",
+    "answer": "Blue",
+    "answer_correct": true,
+    "alive": true,
+    "mean_latency_s": 2.301
+   }
+  }
+ },
+ "operating_point": {
+  "benchmark": "locomo-e2e",
+  "config_version": "1",
+  "dataset": {
+   "name": "locomo10",
+   "source": "https://github.com/snap-research/locomo",
+   "file": "locomo10.json",
+   "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+   "n_conversations": 10,
+   "n_turns": 5882,
+   "_redistribution": "NOT redistributed here (LOCOMO is not ours to ship). Download locomo10.json, then either put it in benchmarks/locomo/data/ or point --data / $INSPEXIMUS_LOCOMO_PATH at it. When it is absent run.py SKIPS with a reason and exit code 3; it never scores on a substitute. A file whose sha256 differs from the pin is refused unless --allow-dataset-drift is passed, and the run is then stamped dataset_drift=true."
+  },
+  "question_filter": {
+   "categories": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "_categories_note": "category 5 is LOCOMO's adversarial/unanswerable class and is excluded, exactly as in probes/retrieval_recall_locomo.py.",
+   "require_evidence": true,
+   "require_answer": true
+  },
+  "subsets": {
+   "small": {
+    "conversations": [
+     0
+    ],
+    "qa_max_questions": 20,
+    "_note": "conversation 0 only. Retrieval recall runs on ALL of its answerable questions (LLM-free); end-to-end QA runs on the first qa_max_questions in dataset order. Sized to survive on a GPU shared with other processes."
+   },
+   "medium": {
+    "conversations": [
+     0,
+     3,
+     7
+    ],
+    "qa_max_questions": 20,
+    "_note": "three conversations, 20 QA questions each (60 judged questions x 6 arms = 720 answer+judge pairs). The headline end-to-end number: wide enough that one flipped judgement is not 5 points, small enough to finish inside one quiesced-GPU window."
+   },
+   "full": {
+    "conversations": null,
+    "qa_max_questions": 0,
+    "_note": "all 10 conversations, all 1536 answerable questions -- the exact denominator of the published retrieval pair. Use --retrieval-only: the end-to-end half at this size is ~18000 model calls and needs many hours of a quiesced GPU."
+   }
+  },
+  "retrieval": {
+   "k": 25,
+   "mode": "hybrid",
+   "prefer": "speaker",
+   "reinforce": false,
+   "_reinforce_note": "recall() defaults to reinforce=True, which mutates value/last_access and therefore makes recall ORDER-DEPENDENT. The published probe ran with that default. The harness PINS reinforce=false so a re-run is deterministic, and ALSO measures the reinforce=true arm so the published pair is compared like for like.",
+   "embedder": "nomic-embed-text",
+   "embed_endpoint": "http://localhost:11434/api/embed",
+   "embed_batch": 96
+  },
+  "qa": {
+   "endpoint": "http://localhost:11434/v1",
+   "answerer_model": "llama3.1:8b",
+   "judge_model": "qwen2.5:7b",
+   "_judge_note": "The judge is deliberately a different model family from the answerer (Meta vs Alibaba) so an answer is never graded by its own author. ONE judge grades every arm, so the arms are comparable even where the absolute number is judge-dependent. It must clear judge_calibration.py before any number is trusted.",
+   "temperature": 0.0,
+   "answer_max_tokens": 80,
+   "judge_max_tokens": 8,
+   "context_char_budget": 6000,
+   "fullcontext_char_budget": 48000,
+   "_budget_note": "Every retrieval-based arm gets the SAME 6000-char budget -- an unmatched budget is what flipped the ranking in benchmarks/memops (9x gap, accuracy 0.28 -> 0.59). fullcontext is the ceiling arm and is allowed the whole conversation by definition; its realised context size is recorded per item so the asymmetry is visible rather than assumed.",
+   "request_timeout_s": 300,
+   "retries": 3
+  },
+  "seed": 20260801,
+  "band": {
+   "_note": "The three comparison arms under ONE judge. inspeximus must land STRICTLY between the naive-recency floor and the full-context ceiling. A band violation is reported, not tuned away: retrieval beating a stuffed context is a real result, and so is retrieval failing to beat last-k.",
+   "floor_arm": "naive_recency",
+   "ceiling_arm": "fullcontext",
+   "subject_arm": "inspeximus"
+  },
+  "controls": {
+   "_note": "Independent of the band: the checks that decide whether ANY number may be published. If a floor scores well or the ceiling scores badly, the harness is measuring something other than memory and run.py says BROKEN instead of printing a score.",
+   "floor_empty_max": 0.2,
+   "floor_shuffled_max": 0.35,
+   "ceiling_verbatim_min": 0.8,
+   "_floor_shuffled_note": "allowed a higher bound than floor_empty because a deranged context is still drawn from the SAME conversation and can contain the answer by luck; it is a conservative floor, not a loose one."
+  },
+  "judge_gate": {
+   "min_rate": 0.9,
+   "cases_per_arm": 12,
+   "_note": "Same shape as benchmarks/memops/judge_calibration.py: three arms, >=90% each, or the run is void."
+  },
+  "gpu": {
+   "_note": "HARD pre-flight. The harness never kills anything -- a coordinator owns process lifecycle -- it refuses to start. --allow-shared-gpu overrides it and stamps gpu.contended=true on the result so a contended number can never be read as a quiesced one.",
+   "min_free_vram_mb": 18000,
+   "_min_free_note": "MEASURED, not rounded. The card is 24576 MiB and this is a workstation: the desktop compositor and browsers hold ~4.4 GB that no benchmark can reclaim, so with brain, dungeon and every foreign runner stopped the most that was ever observed free is 21034 MiB. The first version of this gate asked for 20480 free AFTER our own three models had loaded (~15.4 GB), which no state of this machine can satisfy -- a threshold that cannot be crossed is not a gate. 18000 is above what our own models need plus a real margin, and still refuses if another ~2.5 GB job appears. The check compares against effective_free = free + VRAM held by OUR OWN pinned models (read from Ollama's /api/ps), because otherwise a second run is refused for the memory the first run is legitimately holding.",
+   "runner_process_names": [
+    "llama-server",
+    "llama_server",
+    "llamacpp",
+    "vllm",
+    "text-generation-server"
+   ],
+   "own_runner_path_hints": [
+    "\\programs\\ollama\\",
+    "/ollama/",
+    "\\ollama\\lib\\"
+   ],
+   "_runner_note": "A runner launched from inside the Ollama installation is OURS -- on Windows llama-server.exe IS how Ollama runs a model, and a rule that simply forbade that name forbade our own inference backend and could never pass. A runner started from anywhere else is another job competing for the same card, and that is what this refuses on.",
+   "max_unexplained_vram_drop_mb": 2048,
+   "_drift_note": "The card is sampled at the START and the END of every run and the two are diffed. Sampling only at the start is how a run gets certified clean and then measured dirty: on 2026-08-02 a Windows scheduled task restarted two ~20 GB services mid-run, the pre-flight had already stamped contended=false, and the only symptom was per-call latency going from 2.6 s to 75 s before the inference server died. A VRAM drop larger than what our own models account for, by more than this many MiB, means something else took the card and the run spans two regimes.",
+   "cache_hit_threshold_s": 0.05,
+   "_cache_hit_note": "A 0.0 s reply is a CACHE HIT, not a call. Replies faster than this are counted and reported, never averaged away."
+  },
+  "tolerance": {
+   "_note": "A re-run must land inside these bands or the committed result is stale / the run is contaminated. Set from MEASURED run-to-run spread, not guessed -- see README.md, 'Tolerance, and where it comes from'.",
+   "qa_accuracy": 0.1,
+   "retrieval_recall": 0.02,
+   "control_accuracy": 0.15
+  },
+  "published_reference": {
+   "_what": "The number this harness exists to make reproducible.",
+   "probe": "probes/retrieval_recall_locomo.py",
+   "cited_in": "README.md 'And it doesn't cost you recall'; CHANGELOG.md 1.11.0 (0.783/0.648), flagged in 1.54.0 as 'reported, not independently reproducible from this repo'",
+   "subset": "full",
+   "k": 25,
+   "recall_any": 0.783,
+   "recall_all": 0.648,
+   "n": 1536,
+   "match_tolerance": 0.02
+  },
+  "prompts": {
+   "answer_prompt_sha256": "f388cf292efc6b6c254217d9763797073e5289b46b1ce4f4b3131a3e37ce2fdf",
+   "judge_prompt_sha256": "88117ba53b032b46a998434aa47b8d3f7bbf5f83cf91d2a62c135b568c52fecb"
+  }
+ },
+ "dataset": {
+  "path": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\batch2\\b2-locomo-e2e\\benchmarks\\locomo\\data\\locomo10.json",
+  "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "expected_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "matches_pin": true,
+  "drift_allowed": false
+ },
+ "dataset_drift": false,
+ "gpu": {
+  "free_vram_mb": 14199,
+  "total_vram_mb": 24576,
+  "min_free_vram_mb": 18000,
+  "own_models_vram_mb": 6288,
+  "own_models_resident": [
+   "qwen2.5:7b"
+  ],
+  "effective_free_vram_mb": 20487,
+  "ollama_ps_error": null,
+  "own_runners": [
+   "llama-server.exe"
+  ],
+  "foreign_runners": [],
+  "blockers": [],
+  "contended": false,
+  "override_used": false
+ },
+ "gpu_window": {
+  "start": {
+   "utc": "2026-08-02T08:05:08Z",
+   "free_vram_mb": 14312,
+   "total_vram_mb": 24576,
+   "read_error": null,
+   "own_models_vram_mb": 6288,
+   "own_models_resident": [
+    "qwen2.5:7b"
+   ],
+   "own_runners": 1,
+   "foreign_runners": []
+  },
+  "end": {
+   "utc": "2026-08-02T08:15:37Z",
+   "free_vram_mb": 4782,
+   "total_vram_mb": 24576,
+   "read_error": null,
+   "own_models_vram_mb": 15375,
+   "own_models_resident": [
+    "llama3.1:8b",
+    "nomic-embed-text:latest",
+    "qwen2.5:7b"
+   ],
+   "own_runners": 3,
+   "foreign_runners": []
+  },
+  "drift": [],
+  "stable": true,
+  "_note": "A benchmark cannot police the machine it runs on; it can refuse to hide that the machine changed underneath it. If `stable` is false, treat every wall-clock number here as measured across two regimes and re-run before quoting it."
+ },
+ "judge_calibration": {
+  "gate_passed": true,
+  "judge_model": "qwen2.5:7b",
+  "judge_prompt_sha256": "88117ba53b032b46a998434aa47b8d3f7bbf5f83cf91d2a62c135b568c52fecb",
+  "applies_to_this_run": true,
+  "stale_because": [],
+  "arms": {
+   "GOLD": {
+    "correct": 11,
+    "n": 12,
+    "rate": 0.917
+   },
+   "WRONG": {
+    "correct": 12,
+    "n": 12,
+    "rate": 1.0
+   },
+   "REFUSAL": {
+    "correct": 12,
+    "n": 12,
+    "rate": 1.0
+   }
+  }
+ }
+}

@@ -1,0 +1,269 @@
+{
+ "benchmark": "locomo-e2e",
+ "config_version": "1",
+ "subset": "full",
+ "retrieval": {
+  "pinned": {
+   "k": 25,
+   "mode": "hybrid",
+   "reinforce": false,
+   "prefer": "speaker",
+   "denominator": "published",
+   "n": 1536,
+   "n_conversations": 10,
+   "recall_any": 0.8262,
+   "recall_all": 0.6986,
+   "n_resolvable": 1531,
+   "recall_any_resolvable": 0.8289,
+   "recall_all_resolvable": 0.7008,
+   "n_unresolvable_evidence": 5,
+   "by_category_any": {
+    "1": 0.8369,
+    "2": 0.8287,
+    "3": 0.6087,
+    "4": 0.8454
+   },
+   "by_category_all": {
+    "1": 0.3191,
+    "2": 0.785,
+    "3": 0.413,
+    "4": 0.824
+   },
+   "by_category_n": {
+    "1": 282,
+    "2": 321,
+    "3": 92,
+    "4": 841
+   }
+  },
+  "published_config": {
+   "k": 25,
+   "mode": "hybrid",
+   "reinforce": true,
+   "prefer": "speaker",
+   "denominator": "published",
+   "n": 1536,
+   "n_conversations": 10,
+   "recall_any": 0.7839,
+   "recall_all": 0.6484,
+   "n_resolvable": 1531,
+   "recall_any_resolvable": 0.7864,
+   "recall_all_resolvable": 0.6506,
+   "n_unresolvable_evidence": 5,
+   "by_category_any": {
+    "1": 0.805,
+    "2": 0.8131,
+    "3": 0.587,
+    "4": 0.7872
+   },
+   "by_category_all": {
+    "1": 0.273,
+    "2": 0.757,
+    "3": 0.3804,
+    "4": 0.7622
+   },
+   "by_category_n": {
+    "1": 282,
+    "2": 321,
+    "3": 92,
+    "4": 841
+   }
+  },
+  "published_comparison": {
+   "reference": {
+    "probe": "probes/retrieval_recall_locomo.py",
+    "cited_in": "README.md 'And it doesn't cost you recall'; CHANGELOG.md 1.11.0 (0.783/0.648), flagged in 1.54.0 as 'reported, not independently reproducible from this repo'",
+    "subset": "full",
+    "k": 25,
+    "recall_any": 0.783,
+    "recall_all": 0.648,
+    "n": 1536,
+    "match_tolerance": 0.02
+   },
+   "arms": {
+    "pinned": {
+     "n": 1536,
+     "k": 25,
+     "reinforce": false,
+     "same_denominator_as_published": true,
+     "recall_any": 0.8262,
+     "recall_any_delta": 0.0432,
+     "recall_any_within_0.02": false,
+     "recall_all": 0.6986,
+     "recall_all_delta": 0.0506,
+     "recall_all_within_0.02": false,
+     "matches_published": false
+    },
+    "published_config": {
+     "n": 1536,
+     "k": 25,
+     "reinforce": true,
+     "same_denominator_as_published": true,
+     "recall_any": 0.7839,
+     "recall_any_delta": 0.0009,
+     "recall_any_within_0.02": true,
+     "recall_all": 0.6484,
+     "recall_all_delta": 0.0004,
+     "recall_all_within_0.02": true,
+     "matches_published": true
+    }
+   },
+   "any_arm_matches_published": true
+  }
+ },
+ "qa": {
+  "n": 0,
+  "arms": {},
+  "why": "retrieval-only run"
+ },
+ "controls": {
+  "all_passed": null,
+  "why": "retrieval-only run: controls not evaluated"
+ },
+ "band": {
+  "passed": null,
+  "why": "retrieval-only run: band not evaluated"
+ },
+ "latency": {
+  "embed_http_calls": 0,
+  "embed_misses": 0,
+  "embed_cached_records": 7407,
+  "embed_p50_s": null,
+  "embed_max_s": null
+ },
+ "run": {
+  "duration_s": 19.6,
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "retrieval_only": true
+ },
+ "operating_point": {
+  "benchmark": "locomo-e2e",
+  "config_version": "1",
+  "dataset": {
+   "name": "locomo10",
+   "source": "https://github.com/snap-research/locomo",
+   "file": "locomo10.json",
+   "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+   "n_conversations": 10,
+   "n_turns": 5882,
+   "_redistribution": "NOT redistributed here (LOCOMO is not ours to ship). Download locomo10.json, then either put it in benchmarks/locomo/data/ or point --data / $INSPEXIMUS_LOCOMO_PATH at it. When it is absent run.py SKIPS with a reason and exit code 3; it never scores on a substitute. A file whose sha256 differs from the pin is refused unless --allow-dataset-drift is passed, and the run is then stamped dataset_drift=true."
+  },
+  "question_filter": {
+   "categories": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "_categories_note": "category 5 is LOCOMO's adversarial/unanswerable class and is excluded, exactly as in probes/retrieval_recall_locomo.py.",
+   "require_evidence": true,
+   "require_answer": true
+  },
+  "subsets": {
+   "small": {
+    "conversations": [
+     0
+    ],
+    "qa_max_questions": 20,
+    "_note": "conversation 0 only. Retrieval recall runs on ALL of its answerable questions (LLM-free); end-to-end QA runs on the first qa_max_questions in dataset order. Sized to survive on a GPU shared with other processes."
+   },
+   "full": {
+    "conversations": null,
+    "qa_max_questions": 0,
+    "_note": "all 10 conversations, all 1536 answerable questions -- the exact denominator of the published retrieval pair. Needs the coordinator to quiesce the GPU."
+   }
+  },
+  "retrieval": {
+   "k": 25,
+   "mode": "hybrid",
+   "prefer": "speaker",
+   "reinforce": false,
+   "_reinforce_note": "recall() defaults to reinforce=True, which mutates value/last_access and therefore makes recall ORDER-DEPENDENT. The published probe ran with that default. The harness PINS reinforce=false so a re-run is deterministic, and ALSO measures the reinforce=true arm so the published pair is compared like for like.",
+   "embedder": "nomic-embed-text",
+   "embed_endpoint": "http://localhost:11434/api/embed",
+   "embed_batch": 96
+  },
+  "qa": {
+   "endpoint": "http://localhost:11434/v1",
+   "answerer_model": "llama3.1:8b",
+   "judge_model": "qwen2.5:7b",
+   "_judge_note": "The judge is deliberately a different model family from the answerer (Meta vs Alibaba) so an answer is never graded by its own author. ONE judge grades every arm, so the arms are comparable even where the absolute number is judge-dependent. It must clear judge_calibration.py before any number is trusted.",
+   "temperature": 0.0,
+   "answer_max_tokens": 80,
+   "judge_max_tokens": 8,
+   "context_char_budget": 6000,
+   "fullcontext_char_budget": 48000,
+   "_budget_note": "Every retrieval-based arm gets the SAME 6000-char budget -- an unmatched budget is what flipped the ranking in benchmarks/memops (9x gap, accuracy 0.28 -> 0.59). fullcontext is the ceiling arm and is allowed the whole conversation by definition; its realised context size is recorded per item so the asymmetry is visible rather than assumed.",
+   "request_timeout_s": 300,
+   "retries": 3
+  },
+  "seed": 20260801,
+  "band": {
+   "_note": "The three comparison arms under ONE judge. inspeximus must land STRICTLY between the naive-recency floor and the full-context ceiling. A band violation is reported, not tuned away: retrieval beating a stuffed context is a real result, and so is retrieval failing to beat last-k.",
+   "floor_arm": "naive_recency",
+   "ceiling_arm": "fullcontext",
+   "subject_arm": "inspeximus"
+  },
+  "controls": {
+   "_note": "Independent of the band: the checks that decide whether ANY number may be published. If a floor scores well or the ceiling scores badly, the harness is measuring something other than memory and run.py says BROKEN instead of printing a score.",
+   "floor_empty_max": 0.2,
+   "floor_shuffled_max": 0.35,
+   "ceiling_verbatim_min": 0.8,
+   "_floor_shuffled_note": "allowed a higher bound than floor_empty because a deranged context is still drawn from the SAME conversation and can contain the answer by luck; it is a conservative floor, not a loose one."
+  },
+  "judge_gate": {
+   "min_rate": 0.9,
+   "cases_per_arm": 12,
+   "_note": "Same shape as benchmarks/memops/judge_calibration.py: three arms, >=90% each, or the run is void."
+  },
+  "gpu": {
+   "_note": "HARD pre-flight. The harness never kills anything -- a coordinator owns process lifecycle -- it refuses to start. --allow-shared-gpu overrides it and stamps gpu.contended=true on the result so a contended number can never be read as a quiesced one.",
+   "min_free_vram_mb": 20480,
+   "forbid_processes": [
+    "llama-server.exe"
+   ],
+   "cache_hit_threshold_s": 0.05,
+   "_cache_hit_note": "A 0.0 s reply is a CACHE HIT, not a call. Replies faster than this are counted and reported, never averaged away."
+  },
+  "tolerance": {
+   "_note": "A re-run must land inside these bands or the committed result is stale / the run is contaminated. Set from MEASURED run-to-run spread, not guessed -- see README.md, 'Tolerance, and where it comes from'.",
+   "qa_accuracy": 0.1,
+   "retrieval_recall": 0.02,
+   "control_accuracy": 0.15
+  },
+  "published_reference": {
+   "_what": "The number this harness exists to make reproducible.",
+   "probe": "probes/retrieval_recall_locomo.py",
+   "cited_in": "README.md 'And it doesn't cost you recall'; CHANGELOG.md 1.11.0 (0.783/0.648), flagged in 1.54.0 as 'reported, not independently reproducible from this repo'",
+   "subset": "full",
+   "k": 25,
+   "recall_any": 0.783,
+   "recall_all": 0.648,
+   "n": 1536,
+   "match_tolerance": 0.02
+  }
+ },
+ "dataset": {
+  "path": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\batch2\\b2-locomo-e2e\\benchmarks\\locomo\\data\\locomo10.json",
+  "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "expected_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "matches_pin": true,
+  "drift_allowed": false
+ },
+ "dataset_drift": false,
+ "gpu": {
+  "free_vram_mb": 13835,
+  "total_vram_mb": 24576,
+  "min_free_vram_mb": 20480,
+  "forbidden_resident": [
+   "llama-server.exe"
+  ],
+  "blockers": [
+   "free VRAM 13835 MiB < required 20480 MiB",
+   "resident process(es): llama-server.exe"
+  ],
+  "contended": true,
+  "override_used": true
+ }
+}

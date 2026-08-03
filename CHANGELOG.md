@@ -31,6 +31,64 @@ what the round trip is verified against and it passes, so there is no observed b
 
 Nothing in the library changed. `import inspeximus` still has zero required dependencies.
 
+### benchmarks/locomo - the LOCOMO number is reproducible, and it was understated
+
+No library change: `inspeximus/` is untouched, and nothing here adds an install requirement. What changed is
+that a claim this README has carried for a year can now be re-run by anyone who has the dataset.
+
+**`benchmarks/locomo/` — one command, a pinned operating point, a committed result.** From 1.54.0 the
+README said the harness behind LOCOMO **retrieval-recall@25 = 0.783 / 0.648** was *"not currently in this
+repository"* and asked readers to treat the pair as **reported, not independently reproducible**. Three
+things were wrong, and all three are fixed:
+
+1. **The probes could not find their own data.** `probes/retrieval_recall_locomo.py` and
+   `probes/locomo_qa.py` resolve the dataset as `<HERE>/../../agora_output/lab/data/locomo10.json`. They
+   were written under `research/probes/` in another repository; copied into `probes/`, that path points
+   *outside* this repo at a file that does not exist. Both fail on load. `run.py` resolves via `--data`,
+   `$INSPEXIMUS_LOCOMO_PATH`, `$LOCOMO_PATH` or `benchmarks/locomo/data/`, pins the dataset's sha256, and
+   **skips with a reason and exit code 3** when it is absent rather than scoring on a substitute.
+2. **Nothing was pinned.** `recall()` defaults to `reinforce=True`, which updates the value and
+   last-access time of everything it returns — so during a benchmark each query is answered by a store
+   the previous queries modified, and the score depends on the order the questions were asked in.
+3. **No result was committed**, so a re-run had nothing to disagree with. `results/` now holds both.
+
+**The published pair reproduces, and the old number was too low.** At the original probe's own operating
+point (`reinforce=True`) the harness measures **0.7839 / 0.6484** against the published **0.783 / 0.648** —
++0.0009 and +0.0004, on the identical denominator of 1536 questions. At the operating point the benchmark
+now pins (`reinforce=False`, deterministic) it measures **0.8262 / 0.6986**. The README has been corrected
+to **0.83 / 0.70** with the reason stated in place.
+
+*(The denominator is part of the claim. Five of the 1536 questions carry evidence ids matching no turn in
+their own conversation, so no retriever can ever hit them; the original probe scored them as misses. This
+harness reports that denominator as the headline and `*_resolvable` (n=1531) beside it, because dropping
+five unwinnable questions would have flattered the result by roughly the margin that makes a reproduction
+look like an improvement.)*
+
+**End-to-end QA, which we had never actually run.** Six arms under one judge on 20 questions of
+conversation 0, measured on a quiesced card: `fullcontext` 0.20 > `inspeximus` 0.10 > `naive_recency`
+0.05, so the subject lands strictly inside the band; controls `floor_empty` 0.05, `floor_shuffled` 0.10,
+`ceiling_verbatim` 0.90 all pass. The arms are a full-context ceiling, a naive-recency floor, inspeximus,
+and three controls — an empty-context floor, a shuffled-context floor (each
+question answered from another question's retrieved context), and a verbatim-answer ceiling (the gold answer
+written into the store as a record and retrieved normally). If a floor scores well or the ceiling scores
+badly the harness prints **HARNESS BROKEN** and exits non-zero instead of publishing a number.
+
+Retrieval recall on that same conversation is 0.80 while end-to-end QA is 0.10, and `fullcontext` -- the
+whole conversation, no retrieval at all -- reaches only 0.20. On this slice the local 8B answerer, not the
+memory, is the binding constraint, which is why the QA score is reported and not headlined. The judge
+clears a calibration gate first (GOLD / WRONG / REFUSAL, ≥90% each) or the run is void, reusing the design
+of `benchmarks/memops/judge_calibration.py`. The absolute QA score is judge-dependent and is not comparable
+to mem0's 66.9% or Zep's 71.2%; the arm ORDERING is, because one judge grades all six.
+
+**Two defects the benchmark's own tests found, both the same shape.** The ceiling control erased its
+records with `forget(CEILING_KEY)` — but `forget()` takes record *ids*, not keys, so it erased nothing,
+raised nothing, and returned a normal-looking `{"forgotten": 0}` that a bare `try/except` then hid. And the
+GPU pre-flight forbade `llama-server.exe` as evidence of a competing job, which on Windows is exactly how
+Ollama runs a model: the gate forbade the benchmark's own inference backend and could never pass once a
+model loaded. Both are now checked by tests that assert the count and the classification rather than the
+absence of an exception.
+
+
 ## 1.89.0 - UPGRADE IF YOU USE `slash()`/`restore()`: a retraction could be lost, and it walked a stale graph
 
 Two defects on the accountability path, both found by adversarially reviewing a claim we were about to

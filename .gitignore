@@ -28,3 +28,14 @@ memory.json
 # ones were sitting untracked in the root when 1.87.0 was cut. Generated state must not be committable.
 inspeximus_memory.json
 inspeximus_memory.json.tombstones.json
+
+# Benchmark inputs and derived artifacts. THIRD-PARTY DATA IS NOT OURS TO SHIP, and a derived cache is
+# not evidence -- both were once committed here by accident and turned a benchmark PR into a 69,000-line
+# diff, which is unreviewable and therefore unreviewed. What belongs in git is the config, the harness,
+# and the RESULT: benchmarks/locomo/config.json pins the dataset's sha256 so anyone can verify they hold
+# the same file, and run.py resolves it via --data / $INSPEXIMUS_LOCOMO_PATH / this ignored directory.
+benchmarks/locomo/data/
+benchmarks/locomo/.cache/
+# Run artifacts. `<subset>.json` is the committed baseline; `<subset>.latest.json` is whatever the last
+# re-run produced and exists only to be diffed against it.
+benchmarks/locomo/results/*.latest.json

@@ -1,0 +1,1202 @@
+[
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When did Caroline go to the LGBTQ support group?",
+  "gold": "7 May 2023",
+  "pred": "There is no mention of Caroline going to an LGBTQ support group in this conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When did Melanie paint a sunrise?",
+  "gold": "2022",
+  "pred": "There is no mention of Melanie painting a sunrise in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 3,
+  "question": "What fields would Caroline be likely to pursue in her educaton?",
+  "gold": "Psychology, counseling certification",
+  "pred": "Based on the conversation, Caroline is interested in adoption and helping children in need. She wants to create a safe and loving home for them. Therefore, she may be likely to pursue fields such as:\n\n* Social Work\n* Child Development\n* Education (specializing in special needs or at-risk youth)\n* Counseling or Psychology (focusing on child development and family dynamics)",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "What did Caroline research?",
+  "gold": "Adoption agencies",
+  "pred": "The adoption agency.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "What is Caroline's identity?",
+  "gold": "Transgender woman",
+  "pred": "Caroline is a woman considering adoption as a way to build her family and provide a loving home for children in need.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When did Melanie run a charity race?",
+  "gold": "The sunday before 25 May 2023",
+  "pred": "There is no mention of Melanie running a charity race in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When is Melanie planning on going camping?",
+  "gold": "June 2023",
+  "pred": "Melanie has already gone camping with her family the day before (20 October), but she mentions it as a regular activity they enjoy together, so it's likely they will go again in the future.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "What is Caroline's relationship status?",
+  "gold": "Single",
+  "pred": "Single, as she mentions passing adoption agency interviews and her goal of having a family through adoption.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When did Caroline give a speech at a school?",
+  "gold": "The week before 9 June 2023",
+  "pred": "There is no mention of Caroline giving a speech at a school in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When did Caroline meet up with her friends, family, and mentors?",
+  "gold": "The week before 9 June 2023",
+  "pred": "There is no mention of Caroline meeting up with her friends, family, and mentors in the conversation memory. However, it is mentioned that they provided support to her during a difficult time, which helped her find acceptance and transition into who she really is.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "How long has Caroline had her current group of friends for?",
+  "gold": "4 years",
+  "pred": "There is no mention of how long Caroline has had her current group of friends for. The conversation only mentions Melanie as a friend, and it appears they have known each other for at least a few days (as they discuss events from the previous day).",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "Where did Caroline move from 4 years ago?",
+  "gold": "Sweden",
+  "pred": "There is no mention of Caroline moving from a specific place 4 years ago in the conversation memory. The conversation only mentions Caroline's current goals and aspirations related to adoption, but does not provide any information about her past or previous locations.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "How long ago was Caroline's 18th birthday?",
+  "gold": "10 years ago",
+  "pred": "There is no mention of Caroline's age or her 18th birthday in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "What career path has Caroline decided to persue?",
+  "gold": "counseling or mental health for Transgender people",
+  "pred": "Adoption agency work, specifically adoption itself, allowing her to build a family and provide a loving home for children in need.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 3,
+  "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
+  "gold": "Likely no",
+  "pred": "There is no indication in the conversation that Caroline was considering pursuing counseling as a career before receiving support. However, it does suggest that her experience of receiving help from friends and family helped her find acceptance and inspired her to want to \"pass that same support\" to others, implying she may have been motivated by this experience to help others in some way.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "What activities does Melanie partake in?",
+  "gold": "pottery, camping, painting, swimming",
+  "pred": "Melanie goes camping with her family and enjoys bonding over stories, campfires, and nature. She also buys figurines that remind her of family love.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When did Melanie sign up for a pottery class?",
+  "gold": "2 July 2023",
+  "pred": "There is no mention of Melanie signing up for a pottery class in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 2,
+  "question": "When is Caroline going to the transgender conference?",
+  "gold": "July 2023",
+  "pred": "There is no mention of a transgender conference in this conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "Where has Melanie camped?",
+  "gold": "beach, mountains, forest",
+  "pred": "The conversation doesn't specify the exact location where Melanie camped. However, it mentions that they had a \"road trip\" before camping, which suggests that they may have been traveling to get to their camping destination.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "naive_recency",
+  "category": 1,
+  "question": "What do Melanie's kids like?",
+  "gold": "dinosaurs, nature",
+  "pred": "They loved the camping trip with their family.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4364
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When did Caroline go to the LGBTQ support group?",
+  "gold": "7 May 2023",
+  "pred": "May 8th, 2023 (at 1:56 pm)",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 5419
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When did Melanie paint a sunrise?",
+  "gold": "2022",
+  "pred": "She painted a lake sunrise last year.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2934
+ },
+ {
+  "arm": "inspeximus",
+  "category": 3,
+  "question": "What fields would Caroline be likely to pursue in her educaton?",
+  "gold": "Psychology, counseling certification",
+  "pred": "Counseling, mental health, and possibly adoption or social work related to LGBTQ+ issues.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3964
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "What did Caroline research?",
+  "gold": "Adoption agencies",
+  "pred": "Adoption agencies and counseling/mental health as a career.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3544
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "What is Caroline's identity?",
+  "gold": "Transgender woman",
+  "pred": "Transgender.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3782
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When did Melanie run a charity race?",
+  "gold": "The sunday before 25 May 2023",
+  "pred": "Last Saturday (no specific date mentioned).",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2904
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When is Melanie planning on going camping?",
+  "gold": "June 2023",
+  "pred": "Next month.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3446
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "What is Caroline's relationship status?",
+  "gold": "Single",
+  "pred": "Married.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3287
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When did Caroline give a speech at a school?",
+  "gold": "The week before 9 June 2023",
+  "pred": "June 9th, 2023.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3969
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When did Caroline meet up with her friends, family, and mentors?",
+  "gold": "The week before 9 June 2023",
+  "pred": "Caroline mentioned meeting up with them last week in two instances:\n\n* On 6 July 2023 (8:18 pm), she said \"We even had a picnic last week!\"\n* On 9 June 2023 (7:55 pm), she posted a picture of their meetup and said \"Here's a pic from when we met up last week!\"",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4157
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "How long has Caroline had her current group of friends for?",
+  "gold": "4 years",
+  "pred": "4 years.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 4434
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "Where did Caroline move from 4 years ago?",
+  "gold": "Sweden",
+  "pred": "There is no mention of Caroline moving in this conversation.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3540
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "How long ago was Caroline's 18th birthday?",
+  "gold": "10 years ago",
+  "pred": "Ten years ago.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3283
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "What career path has Caroline decided to persue?",
+  "gold": "counseling or mental health for Transgender people",
+  "pred": "Counseling or working in mental health, specifically to help people who have gone through similar issues as her own.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4009
+ },
+ {
+  "arm": "inspeximus",
+  "category": 3,
+  "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
+  "gold": "Likely no",
+  "pred": "No, based on the conversation, it seems that Caroline's desire to help others through counseling and mental health was motivated by her own experiences with receiving support. She mentions that seeing how passionate professionals were about creating a safe space for people like her was \"amazing\" and that she wants to pass on the same support to others.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 5954
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "What activities does Melanie partake in?",
+  "gold": "pottery, camping, painting, swimming",
+  "pred": "Pottery class, playing the clarinet.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2788
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When did Melanie sign up for a pottery class?",
+  "gold": "2 July 2023",
+  "pred": "July 3rd.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3047
+ },
+ {
+  "arm": "inspeximus",
+  "category": 2,
+  "question": "When is Caroline going to the transgender conference?",
+  "gold": "July 2023",
+  "pred": "This month. (According to her message on 3 July, 2023)",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4317
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "Where has Melanie camped?",
+  "gold": "beach, mountains, forest",
+  "pred": "Melanie hasn't actually camped anywhere according to this conversation memory. The conversation mentions a family camping trip, but it's Caroline who is talking about it, not Melanie.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2925
+ },
+ {
+  "arm": "inspeximus",
+  "category": 1,
+  "question": "What do Melanie's kids like?",
+  "gold": "dinosaurs, nature",
+  "pred": "They enjoy activities such as getting their hands dirty making something with clay (15 July 2023), feeding horses carrots, and playing at the park (28 August 2023). They also loved a family outing that involved reassurance about their brother being okay after a scary event (6 October 2023).",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3497
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When did Caroline go to the LGBTQ support group?",
+  "gold": "7 May 2023",
+  "pred": "Yesterday.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When did Melanie paint a sunrise?",
+  "gold": "2022",
+  "pred": "Last year.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 3,
+  "question": "What fields would Caroline be likely to pursue in her educaton?",
+  "gold": "Psychology, counseling certification",
+  "pred": "Counseling or working in mental health.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "What did Caroline research?",
+  "gold": "Adoption agencies",
+  "pred": "Adoption agencies and career options in counseling or mental health.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "What is Caroline's identity?",
+  "gold": "Transgender woman",
+  "pred": "Transgender.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When did Melanie run a charity race?",
+  "gold": "The sunday before 25 May 2023",
+  "pred": "Last Saturday (no specific date mentioned)",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When is Melanie planning on going camping?",
+  "gold": "June 2023",
+  "pred": "Next month.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "What is Caroline's relationship status?",
+  "gold": "Single",
+  "pred": "Single and planning to adopt a child.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When did Caroline give a speech at a school?",
+  "gold": "The week before 9 June 2023",
+  "pred": "June 9th.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When did Caroline meet up with her friends, family, and mentors?",
+  "gold": "The week before 9 June 2023",
+  "pred": "4 years ago, since she moved from her home country.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "How long has Caroline had her current group of friends for?",
+  "gold": "4 years",
+  "pred": "4 years, since she moved from her home country.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "Where did Caroline move from 4 years ago?",
+  "gold": "Sweden",
+  "pred": "Caroline moved from her home country, Sweden.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "How long ago was Caroline's 18th birthday?",
+  "gold": "10 years ago",
+  "pred": "Ten years ago.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "What career path has Caroline decided to persue?",
+  "gold": "counseling or mental health for Transgender people",
+  "pred": "Counseling or mental health work, specifically helping trans people with their mental health and acceptance.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 3,
+  "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
+  "gold": "Likely no",
+  "pred": "Yes. Caroline mentioned that her own journey and the support she got made a huge difference, but then stated \"Now I want to help people go through it too.\" This suggests that even without receiving support herself, she would still be motivated to pursue counseling as a career to help others.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "What activities does Melanie partake in?",
+  "gold": "pottery, camping, painting, swimming",
+  "pred": "Melanie enjoys various activities such as pottery, running, hiking with her family, camping, and playing music (she mentioned a concert she attended). She also values spending quality time with her loved ones, including her husband and children. Additionally, Melanie appreciates reading and has mentioned that it brings her joy and helps her relax.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When did Melanie sign up for a pottery class?",
+  "gold": "2 July 2023",
+  "pred": "27 June, 2023",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 2,
+  "question": "When is Caroline going to the transgender conference?",
+  "gold": "July 2023",
+  "pred": "This month.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "Where has Melanie camped?",
+  "gold": "beach, mountains, forest",
+  "pred": "The mountains and the forest.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "fullcontext",
+  "category": 1,
+  "question": "What do Melanie's kids like?",
+  "gold": "dinosaurs, nature",
+  "pred": "They enjoy nature and animals. They love learning about dinosaurs, exploring the outdoors, hiking in mountains, playing with clay (pottery), and watching meteor showers. They also have pets, a dog named Luna and a cat named Oliver.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 48000
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When did Caroline go to the LGBTQ support group?",
+  "gold": "7 May 2023",
+  "pred": "There is no information about Caroline going to an LGBTQ support group in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When did Melanie paint a sunrise?",
+  "gold": "2022",
+  "pred": "There is no information about Melanie painting a sunrise in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 3,
+  "question": "What fields would Caroline be likely to pursue in her educaton?",
+  "gold": "Psychology, counseling certification",
+  "pred": "Based on the given memory, there is no information about Caroline or her potential fields of study.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "What did Caroline research?",
+  "gold": "Adoption agencies",
+  "pred": "There is no information about what Caroline researched in our conversation so far.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "What is Caroline's identity?",
+  "gold": "Transgender woman",
+  "pred": "There is no information about Caroline in our conversation memory, so I cannot answer the question.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When did Melanie run a charity race?",
+  "gold": "The sunday before 25 May 2023",
+  "pred": "There is no information about Melanie running a charity race in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When is Melanie planning on going camping?",
+  "gold": "June 2023",
+  "pred": "There is no information about Melanie's plans to go camping in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "What is Caroline's relationship status?",
+  "gold": "Single",
+  "pred": "There is no information about Caroline's relationship status in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When did Caroline give a speech at a school?",
+  "gold": "The week before 9 June 2023",
+  "pred": "There is no information about Caroline giving a speech at a school in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When did Caroline meet up with her friends, family, and mentors?",
+  "gold": "The week before 9 June 2023",
+  "pred": "There is no information in the memory about Caroline meeting up with her friends, family, and mentors.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "How long has Caroline had her current group of friends for?",
+  "gold": "4 years",
+  "pred": "There is no information about Caroline or her friends in our conversation, so I cannot answer your question.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "Where did Caroline move from 4 years ago?",
+  "gold": "Sweden",
+  "pred": "I don't have any information about Caroline or her past movements.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "How long ago was Caroline's 18th birthday?",
+  "gold": "10 years ago",
+  "pred": "There is no information about Caroline's age or her 18th birthday in our conversation, so I cannot answer your question.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "What career path has Caroline decided to persue?",
+  "gold": "counseling or mental health for Transgender people",
+  "pred": "There is no information about Caroline's career path in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 3,
+  "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
+  "gold": "Likely no",
+  "pred": "There is no information about Caroline in our conversation memory, so I cannot answer the question.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "What activities does Melanie partake in?",
+  "gold": "pottery, camping, painting, swimming",
+  "pred": "There is no information about Melanie's activities in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When did Melanie sign up for a pottery class?",
+  "gold": "2 July 2023",
+  "pred": "There is no information about Melanie signing up for a pottery class in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 2,
+  "question": "When is Caroline going to the transgender conference?",
+  "gold": "July 2023",
+  "pred": "There is no information about Caroline or a transgender conference in our conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "Where has Melanie camped?",
+  "gold": "beach, mountains, forest",
+  "pred": "There is no information about Melanie camping in our conversation memory, so I cannot provide an answer.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_empty",
+  "category": 1,
+  "question": "What do Melanie's kids like?",
+  "gold": "dinosaurs, nature",
+  "pred": "There is no information about Melanie's kids in our conversation so far.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 0
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When did Caroline go to the LGBTQ support group?",
+  "gold": "7 May 2023",
+  "pred": "May 8th.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4157
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When did Melanie paint a sunrise?",
+  "gold": "2022",
+  "pred": "There is no mention of Melanie painting a sunrise in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3446
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 3,
+  "question": "What fields would Caroline be likely to pursue in her educaton?",
+  "gold": "Psychology, counseling certification",
+  "pred": "Counseling or mental health.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3287
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "What did Caroline research?",
+  "gold": "Adoption agencies",
+  "pred": "There is no mention of Caroline researching anything in this conversation memory. However, it does mention Melanie asking about counseling and mental health services that Caroline wants to pursue (at 10:37 am on 27 June, 2023).",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2925
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "What is Caroline's identity?",
+  "gold": "Transgender woman",
+  "pred": "Caroline identifies as LGBTQ+, specifically mentioning her transition and wanting to help other trans people with their mental health and self-acceptance.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 5954
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When did Melanie run a charity race?",
+  "gold": "The sunday before 25 May 2023",
+  "pred": "There is no mention of Melanie running a charity race in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4434
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When is Melanie planning on going camping?",
+  "gold": "June 2023",
+  "pred": "There's no mention of Melanie planning to go camping in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3283
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "What is Caroline's relationship status?",
+  "gold": "Single",
+  "pred": "Caroline mentioned that she applied to adoption agencies, indicating that she is single and looking to start a family through adoption.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3964
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When did Caroline give a speech at a school?",
+  "gold": "The week before 9 June 2023",
+  "pred": "There is no mention of Caroline giving a speech at a school.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2934
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When did Caroline meet up with her friends, family, and mentors?",
+  "gold": "The week before 9 June 2023",
+  "pred": "There is no specific mention of when Caroline met up with her friends, family, and mentors in the conversation memory. However, it can be inferred that she values their support and mentions being thankful for them on September 13, 2023 (12:09 am).",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 5419
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "How long has Caroline had her current group of friends for?",
+  "gold": "4 years",
+  "pred": "There is no mention of how long Caroline has had her current group of friends for in this conversation memory. The conversations only mention specific events, activities, or interactions between Melanie and Caroline, but not the duration of their friendship.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2904
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "Where did Caroline move from 4 years ago?",
+  "gold": "Sweden",
+  "pred": "There is no mention of Caroline moving from anywhere 4 years ago. The conversation only mentions her current thoughts, feelings, and experiences related to counseling, mental health, adoption, and volunteering at a youth center.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4009
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "How long ago was Caroline's 18th birthday?",
+  "gold": "10 years ago",
+  "pred": "There is no mention of Caroline's 18th birthday in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3047
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "What career path has Caroline decided to persue?",
+  "gold": "counseling or mental health for Transgender people",
+  "pred": "There is no clear answer in the conversation memory. However, it appears that Caroline was considering a career in counseling and mental health services (message from [10:37 am on 27 June, 2023]).",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 2788
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 3,
+  "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
+  "gold": "Likely no",
+  "pred": "There is no indication in the conversation that Caroline's desire to pursue counseling as a career is influenced by receiving support growing up. In fact, her message on 27 June 2023 mentions wanting to help people who have gone through similar things as her, implying she wants to use her own experiences to make a difference.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3540
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "What activities does Melanie partake in?",
+  "gold": "pottery, camping, painting, swimming",
+  "pred": "Melanie appears to be involved in pottery or ceramics, as she has created several handmade items such as a bowl, plate, and cup. She also attends LGBTQ support groups and adoption advice/assistance meetings with Caroline.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3544
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When did Melanie sign up for a pottery class?",
+  "gold": "2 July 2023",
+  "pred": "There's no mention of Melanie signing up for a pottery class in the conversation memory. However, it does mention that Caroline appreciates Melanie's pottery art and thinks her bowls are amazing.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3782
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 2,
+  "question": "When is Caroline going to the transgender conference?",
+  "gold": "July 2023",
+  "pred": "There is no mention of Caroline attending a transgender conference in this conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3497
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "Where has Melanie camped?",
+  "gold": "beach, mountains, forest",
+  "pred": "There is no mention of Melanie camping in the conversation memory.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3969
+ },
+ {
+  "arm": "floor_shuffled",
+  "category": 1,
+  "question": "What do Melanie's kids like?",
+  "gold": "dinosaurs, nature",
+  "pred": "There is no mention of Melanie having kids in the conversation memory. The conversations are between Caroline and Melanie, with Caroline mentioning her own experiences as a transgender woman and her involvement in LGBTQ events and activities.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 4317
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When did Caroline go to the LGBTQ support group?",
+  "gold": "7 May 2023",
+  "pred": "May 7, 2023.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 5355
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When did Melanie paint a sunrise?",
+  "gold": "2022",
+  "pred": "2022.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 2891
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 3,
+  "question": "What fields would Caroline be likely to pursue in her educaton?",
+  "gold": "Psychology, counseling certification",
+  "pred": "Psychology, counseling certification.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3716
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "What did Caroline research?",
+  "gold": "Adoption agencies",
+  "pred": "Adoption agencies.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3489
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "What is Caroline's identity?",
+  "gold": "Transgender woman",
+  "pred": "Caroline is a transgender woman.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3728
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When did Melanie run a charity race?",
+  "gold": "The sunday before 25 May 2023",
+  "pred": "The Sunday before 25 May 2023.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 2756
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When is Melanie planning on going camping?",
+  "gold": "June 2023",
+  "pred": "June 2023.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3395
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "What is Caroline's relationship status?",
+  "gold": "Single",
+  "pred": "Single.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3227
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When did Caroline give a speech at a school?",
+  "gold": "The week before 9 June 2023",
+  "pred": "The week before June 9, 2023.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3729
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When did Caroline meet up with her friends, family, and mentors?",
+  "gold": "The week before 9 June 2023",
+  "pred": "The week before 9 June 2023.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3976
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "How long has Caroline had her current group of friends for?",
+  "gold": "4 years",
+  "pred": "4 years.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 4367
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "Where did Caroline move from 4 years ago?",
+  "gold": "Sweden",
+  "pred": "Sweden.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3437
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "How long ago was Caroline's 18th birthday?",
+  "gold": "10 years ago",
+  "pred": "10 years ago.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3232
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "What career path has Caroline decided to persue?",
+  "gold": "counseling or mental health for Transgender people",
+  "pred": "Counseling or mental health, specifically for transgender people.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3896
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 3,
+  "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
+  "gold": "Likely no",
+  "pred": "Likely no.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 5700
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "What activities does Melanie partake in?",
+  "gold": "pottery, camping, painting, swimming",
+  "pred": "Pottery, camping, painting, swimming.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 2797
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When did Melanie sign up for a pottery class?",
+  "gold": "2 July 2023",
+  "pred": "July 3rd.",
+  "judge_raw": "NO",
+  "correct": false,
+  "context_chars": 3047
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 2,
+  "question": "When is Caroline going to the transgender conference?",
+  "gold": "July 2023",
+  "pred": "July 2023.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 4188
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "Where has Melanie camped?",
+  "gold": "beach, mountains, forest",
+  "pred": "beach, mountains, forest",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 2774
+ },
+ {
+  "arm": "ceiling_verbatim",
+  "category": 1,
+  "question": "What do Melanie's kids like?",
+  "gold": "dinosaurs, nature",
+  "pred": "Dinosaurs, nature.",
+  "judge_raw": "YES",
+  "correct": true,
+  "context_chars": 3321
+ }
+]
