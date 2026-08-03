@@ -469,10 +469,20 @@ NUMBER_CLAIMS = [
        "mem0 and Zep's self-reported LLM-judged QA scores", "EXTERNAL", "",
        "Other projects' published numbers, cited as not comparable across harnesses -- which is the "
        "point the sentence makes."),
-    _c("readme-extractor-keyrate", "README.md", ["5.2", "1,037", "19,851"],
-       "it derived a key for 5.2% of sentences (1,037 of 19,851",
-       "regex_extractor derives a key for 5.2% of conversational sentences (1,037 of 19,851)",
-       "EXTERNAL", "", "Measured on the MemOps dataset by the Agora harness; flagged in place already."),
+    # 1.90.0 (#8) DELETED the paragraph this row used to pin -- the 5.2% / 1,037 / 19,851 figures came
+    # from the MemOps harness, which lives outside this repository and therefore could never be re-run
+    # here. The sentence that carried them is gone, so the row goes with it rather than pinning nothing.
+    # What replaced it is measured IN this repo and has a command, so it is a claim, not an external.
+    _c("readme-chain-binding", "README.md", ["15", "18", "60", "2", "9", "1", "0", "8", "4"],
+       "| correction chains that collapse to one record holding the final value | 2/15 |",
+       "regex_extractor chain binding on benchmarks/chain_binding/ (15 chains, 18 unrelated pairs, "
+       "60 prose sentences): chains collapsing to one record 2/15 -> 9/15; false binds on unrelated "
+       "pairs 1/18 -> 0/18; non-declarative prose keyed 8/60 -> 4/60",
+       "REPRODUCIBLE", "python benchmarks/chain_binding/probe.py",
+       "The 'before' column is measured against `git show main:inspeximus/core.py` on the same fixture, "
+       "not quoted from elsewhere. The false-bind row is the control: a keyer that binds everything "
+       "scores a perfect 15/15 while tripping all 18 negative pairs, which is why the bind rate alone "
+       "is not evidence."),
     _c("readme-ramr-echo", "README.md", ["0.00", "0.57", "1.00"],
        "(keyed-without-guard 0.00, an add-based system 0.57, guard 1.00)",
        "RAMR ECHO-RESISTANCE: keyed-without-guard 0.00, add-based 0.57, echo_guard 1.00",
@@ -662,30 +672,38 @@ NUMBER_CLAIMS = [
 #: in NUMBER_CLAIMS with a command instead.
 NON_CLAIM_TOKENS = {
     "README.md": {
-        "0": (6, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
-                 "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model"),
-        "1": (12, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
-                  "examples, recall_any@1 as a metric NAME, and counts in a pasted example output"),
+        "0": (7, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
+                 "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model, and the "
+                 "'0/18' after-column of the 1.90.0 chain-binding table"),
+        "1": (13, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
+                  "examples, recall_any@1 as a metric NAME, counts in a pasted example output, and the "
+                  "'1/18' before-column of the 1.90.0 chain-binding table"),
         "2": (15, "SOC 2 in a comparison cell and in the certification paragraph, the EU application dates "
                   "2 Dec 2027 / 2 Aug 2028 / 2 Aug 2026, ordinals for demo 2 and rule 2, the corroboration "
                   "threshold >=2, code literals (threshold=2, writes=2), the 'Cell 2' benchmark label, an "
                   "example output line, and the '2 minutes' quickstart heading"),
         "3": (3, "ordinals: demo 3, rule 3, and a count inside a pasted erasure-audit output"),
-        "4": (4, "ACM TOS issue number 5(4), rule 4, a back-reference to rule 4, and the '4-5 points' "
-                 "the reinforce=False fix moves the LOCOMO pair by"),
+        "4": (5, "ACM TOS issue number 5(4), rule 4, a back-reference to rule 4, the '4-5 points' "
+                 "the reinforce=False fix moves the LOCOMO pair by, and the '4/60' after-column of the "
+                 "1.90.0 chain-binding table"),
         "5": (3, "ACM TOS volume 5(4), rule 5, and a back-reference to rule 5"),
         "6": (1, "AI Act Art. 26(6) -- an article sub-paragraph number"),
-        "8": (1, "the withdrawn '8/8' quoted inside the sentence that withdraws it (see "
-                 "readme-supersession-8of8-withdrawn for the 0/24 the probe actually reports)"),
+        "8": (2, "the withdrawn '8/8' quoted inside the sentence that withdraws it (see "
+                 "readme-supersession-8of8-withdrawn for the 0/24 the probe actually reports), and the "
+                 "'8/60' before-column of the 1.90.0 chain-binding table"),
         "12": (2, "AI Act Art. 12 / Article 12 -- article numbers"),
-        "15": (1, "AI Act Art. 15 -- an article number"),
+        "15": (2, "AI Act Art. 15 -- an article number; and the fixture size '15 chains' in the sentence "
+                  "introducing the 1.90.0 chain-binding table"),
+        "18": (1, "the fixture size '18 unrelated pairs' in the sentence introducing the 1.90.0 "
+                  "chain-binding table -- the negative control's denominator"),
         "17": (1, "GDPR Art. 17 -- an article number"),
         "19": (2, "AI Act Art. 19 -- an article number; and the Agora Lab id `19d802`"),
         "24": (1, "the OJ publication date 24 Jul 2026"),
         "26": (1, "AI Act Art. 26(6) -- an article number"),
         "27": (1, "the in-force date 27 Jul 2026"),
         "50": (1, "the documented default of INSPEXIMUS_MAX_K -- a configuration value, not a measurement"),
-        "60": (1, "the '60 seconds' section heading -- a reading-time figure, not a measurement"),
+        "60": (2, "the '60 seconds' section heading -- a reading-time figure, not a measurement; and the "
+                  "fixture size '60 prose sentences' introducing the 1.90.0 chain-binding table"),
         "90": (2, "the retention window in a copy-paste CLI example, written twice on one line as "
                   "\"90 days\" and --object 90d"),
         "03": (1, "a truncated record id (03dad5493e) inside a pasted erasure-audit output"),
@@ -715,9 +733,10 @@ NON_CLAIM_TOKENS = {
         "2018": (1, "Yin 2018 -- a citation year"),
         "2020": (1, "USENIX Security 2020 -- a citation year"),
         "2024": (1, "Zou 2024 (PoisonedRAG) -- a citation year"),
-        "2026": (8, "dates: the three AI Act deferral dates, the source-scan date 24 Jul 2026, the "
-                    "extractor measurement date 2026-07-20, the probe re-run date 2026-08-01, and the "
-                    "2026-08-01 / 2026-07-25 pair on the discharged LOCOMO caveat"),
+        "2026": (7, "dates: the three AI Act deferral dates, the source-scan date 24 Jul 2026, the probe "
+                    "re-run date 2026-08-01, and the 2026-08-01 / 2026-07-25 pair on the discharged "
+                    "LOCOMO caveat. The extractor measurement date 2026-07-20 went with the MemOps "
+                    "paragraph 1.90.0 withdrew"),
         "2027": (2, "the AI Act Annex III application date, 2 Dec 2027"),
         "2028": (1, "the AI Act Annex I application date, 2 Aug 2028"),
         "3.0": (2, "a fictional library version in the code-guard example ('removed in 3.0')"),
@@ -729,7 +748,6 @@ NON_CLAIM_TOKENS = {
         "27001": (1, "ISO 27001 -- a standard's number"),
         "94107": (1, "an illustrative ZIP code fed to regex_extractor"),
         "2606.26511": (1, "arXiv 2606.26511 (MemStrata / Yadav) -- an identifier"),
-        "2607.12893": (1, "arXiv 2607.12893 (MemOps) -- an identifier"),
     },
     "MCP_LISTINGS.md": {
         "1": (2, "the ordinal for submission route 1, and 'route 1 below' referring to it"),

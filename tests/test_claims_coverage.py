@@ -64,9 +64,16 @@ def sandbox(tmp_path):
     for src, pat in ((ROOT / "probes", "*.py"), (ROOT / "tools", "*.py")):
         for p in src.glob(pat):
             (dst / src.name / p.name).touch()
-    for rel in ("benchmarks/locomo/run.py", "docs/CLAIMS.md"):
-        (dst / rel).parent.mkdir(parents=True, exist_ok=True)
-        (dst / rel).touch()
+    # DERIVED, not listed. This used to name `benchmarks/locomo/run.py` by hand, and the moment a new
+    # claim registered `benchmarks/chain_binding/probe.py` the untouched sandbox came up dirty with
+    # BROKEN-COMMAND -- so the two controls below asserted "clean before, dirty after" against a
+    # sandbox that was never clean, and measured nothing. A hardcoded list of the things a registry
+    # can name is a second place to forget; read the registry instead.
+    for _c in ca.NUMBER_CLAIMS:
+        for _tok in ca.ARTIFACT_PATH.findall(_c["command"]):
+            (dst / _tok).parent.mkdir(parents=True, exist_ok=True)
+            (dst / _tok).touch()
+    (dst / "docs" / "CLAIMS.md").touch()
     shutil.copy2(ROOT / "docs" / "integration_conformance.json", dst / "docs" / "integration_conformance.json")
     return dst
 

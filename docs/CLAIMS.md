@@ -15,22 +15,22 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **242** numeric tokens are published across the three enforced files.
-- **107** of those are quantitative claims, in **57** registry rows below.
-- **31** rows (31/57) are reproducible by a command committed to this repository
+- **246** numeric tokens are published across the three enforced files.
+- **106** of those are quantitative claims, in **57** registry rows below.
+- **32** rows (32/57) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
-- The remaining 26 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 135 tokens are declared non-claims — citation years,
+- The remaining 25 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
+- The other 140 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 
 Counts by status:
 
-- `REPRODUCIBLE` — 11
+- `REPRODUCIBLE` — 12
 - `REPRODUCIBLE-WITH-DEPS` — 20
 - `PENDING-HARNESS` — 2
-- `EXTERNAL` — 22
+- `EXTERNAL` — 21
 - `WITHDRAWN` — 2
 
 ## The table
@@ -42,13 +42,13 @@ Counts by status:
 | 3 | `MCP_LISTINGS.md` | `60` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 4 | `README.md` | `13` `0` `5` | The example claims_audit run: 13 checks pass, 5 are not testable from this package | **REPRODUCIBLE** | `python claims_audit.py --local` |
 | 5 | `README.md` | `8` | The bedrock synthesis was checked from ~8 directions | **EXTERNAL** | — |
-| 6 | `README.md` | `0.36` | Per-memory outcome attribution reaches only ~0.36 power at n-of-1 | **EXTERNAL** | — |
-| 7 | `README.md` | `66.9` `71.2` | mem0 and Zep's self-reported LLM-judged QA scores | **EXTERNAL** | — |
-| 8 | `README.md` | `4` | ...and by ~4x at one-eighth budget | **EXTERNAL** | — |
-| 9 | `README.md` | `1.8` | Value-ranked consolidation beats FIFO by ~1.8x at half budget | **EXTERNAL** | — |
-| 10 | `README.md` | `0.17` `1.00` | A soft delete leaves the value recoverable in 5 of 6 stores (0.17); a wired hard delete scores 1.00 | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
-| 11 | `README.md` | `1.00` `0.17` | Same six-store fan-out measurement, restated in the four-operations table | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
-| 12 | `README.md` | `5.2` `1,037` `19,851` | regex_extractor derives a key for 5.2% of conversational sentences (1,037 of 19,851) | **EXTERNAL** | — |
+| 6 | `README.md` | `15` `18` `60` `2` `9` `1` `0` `8` `4` | regex_extractor chain binding on benchmarks/chain_binding/ (15 chains, 18 unrelated pairs, 60 prose sentences): chains collapsing to one record 2/15 -> 9/15; false binds on unrelated pairs 1/18 -> 0/18; non-declarative prose keyed 8/60 -> 4/60 | **REPRODUCIBLE** | `python benchmarks/chain_binding/probe.py` |
+| 7 | `README.md` | `0.36` | Per-memory outcome attribution reaches only ~0.36 power at n-of-1 | **EXTERNAL** | — |
+| 8 | `README.md` | `66.9` `71.2` | mem0 and Zep's self-reported LLM-judged QA scores | **EXTERNAL** | — |
+| 9 | `README.md` | `4` | ...and by ~4x at one-eighth budget | **EXTERNAL** | — |
+| 10 | `README.md` | `1.8` | Value-ranked consolidation beats FIFO by ~1.8x at half budget | **EXTERNAL** | — |
+| 11 | `README.md` | `0.17` `1.00` | A soft delete leaves the value recoverable in 5 of 6 stores (0.17); a wired hard delete scores 1.00 | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
+| 12 | `README.md` | `1.00` `0.17` | Same six-store fan-out measurement, restated in the four-operations table | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
 | 13 | `README.md` | `20` | Pruning hub notes lifts lexical recall ~20% on a link-spammed store only | **EXTERNAL** | — |
 | 14 | `README.md` | `0.00` `0.05` | In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_echo.py --systems inspeximus` |
 | 15 | `README.md` | `5` `0.94` `0.25` | Lexical recall@5 decays 0.94 -> 0.25 as the store grows | **EXTERNAL** | — |
@@ -100,9 +100,9 @@ Counts by status:
 - **mcp-tool-count** — Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 in another. Three surfaces, one server, no error anywhere. Now read from the code.
 - **readme-audit-summary** — Self-referential, so it is checked against len(CHECKS) and len(NOT_TESTABLE_HERE) rather than trusted. The block used to name inspeximus-1.24.1 while the package was at 1.89.0; the version line was dropped rather than pinned, because it would go stale on every release.
 - **readme-bedrock-directions** — A count of the analytical directions taken, not a measurement. Left in because the sentence labels itself 'a synthesis over those cases, not a proof'.
+- **readme-chain-binding** — The 'before' column is measured against `git show main:inspeximus/core.py` on the same fixture, not quoted from elsewhere. The false-bind row is the control: a keyer that binds everything scores a perfect 15/15 while tripping all 18 negative pairs, which is why the bind rate alone is not evidence.
 - **readme-competitor-judges** — Other projects' published numbers, cited as not comparable across harnesses -- which is the point the sentence makes.
 - **readme-erasure-fanout-table** — Replaced a 'measured 15/15 on a verified-forgetting severe-test' for which no artifact in this repository produces a 15/15 of anything. The bench that DOES exist scores 0.17 / 1.00 over six stores, so the sentence now cites the number the committed code prints.
-- **readme-extractor-keyrate** — Measured on the MemOps dataset by the Agora harness; flagged in place already.
 - **readme-integrity-echo-cell** — The inspeximus column runs locally and free; the mem0/Graphiti columns need OPENAI_API_KEY and a live neo4j, which is why this is WITH-DEPS rather than REPRODUCIBLE.
 - **readme-lexical-decay** — Agora Lab b4c260, cited in place. No probe in this repository reproduces it.
 - **readme-locomo-confound** — Kept deliberately: it is a retraction, not a claim. Removing it would erase the correction.
