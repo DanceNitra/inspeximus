@@ -107,18 +107,24 @@ re-runs on every invocation -- none of them is quoted from a note.
       directories). This is the zero-LLM differentiator made testable: an LLM-summarised write path
       cannot pass it.
 
-  P7b SESSION DIGEST ..... FAILS
-      There is no SessionEnd hook and no digest primitive. `claude_code.install()` writes exactly
-      `("PostToolUse", "UserPromptSubmit", "SessionStart")`, and the SessionStart output is a list of
-      up to 8 known files, not a digest of the session that produced them.
+  P7b SESSION DIGEST ..... HOLDS as of 1.91.0 (was FAILS at 1.89.0)
+      MEASURED 1.89.0: there was no SessionEnd hook and no digest primitive -- `claude_code.install()`
+      wrote exactly `("PostToolUse", "UserPromptSubmit", "SessionStart")`, and the SessionStart output
+      was a list of up to 8 known files, not a digest of the session that produced them.
+      1.91.0 adds `open_session`/`close_session`/`session_context` and installs a fourth hook,
+      `SessionEnd`. The strict xfail here went XPASS and the marker was REMOVED, which is this suite
+      working as designed; the property is now asserted end to end (the digest is written, and the next
+      session's SessionStart output contains the decision the previous one recorded).
 
 HOW THIS SUITE IS ALLOWED TO FAIL. A conformance suite that is green before the fixes has measured
 nothing, so:
   * every FALSE property is `xfail(strict=True)` -- when it starts passing the suite goes RED and the
     marker must be removed, rather than rotting into a silent pass;
   * `INSPEXIMUS_CONFORMANCE_STRICT=1` removes the markers, which is the release-gate mode: on this
-    commit that run FAILS on **9** properties, and the last test in this file runs exactly that child
-    process and requires it to fail. "This suite can fail" is a runnable fact here, not a claim;
+    commit that run FAILS on **8** properties (9 at 1.89.0; P7b was fixed), and the last test in this
+    file runs exactly that child process and requires it to fail on EXACTLY the number of properties
+    the file still marks `broken()` -- a count DERIVED at import, not typed in, because the typed one
+    started lying the first time a sibling landed. "This suite can fail" is a runnable fact here;
   * every broken property carries a CONTROL that would fail if the fixture stopped reproducing the
     defect, and the file runs POSITIVE CONTROLS proving each comparator can see a deliberately broken
     implementation. An instrument that cannot fail has measured nothing either.
@@ -152,10 +158,17 @@ from inspeximus.core import StoreChangedOnDisk          # noqa: E402
 # ── how a false property is marked ──────────────────────────────────────────────────────────────────
 _STRICT = os.environ.get("INSPEXIMUS_CONFORMANCE_STRICT", "").strip().lower() in ("1", "true", "yes")
 _CHILD_FLAG = "INSPEXIMUS_CONFORMANCE_CHILD"
-# P2b, P3, P4, P5, P6, P7b -- the six properties the module docstring records as FALSE on this commit.
-# The strict self-check at the bottom requires at least this many failures, so deleting a broken()
-# marker without fixing the property (or without lowering this number) is caught.
-_BROKEN_PROPERTIES = 9
+# The properties the module docstring records as FALSE on this commit -- DERIVED, not hardcoded.
+#
+# It was `_BROKEN_PROPERTIES = 9`, and it started lying the first time a sibling landed: 1.91.0 made P7b
+# true, its strict xfail went XPASS (which is this suite working -- a false property that starts passing
+# turns the run RED so the claim is re-measured instead of rotting into a silent pass), and the honest
+# response was to edit the 9 down by hand. A number maintained by hand is a number that drifts: nothing
+# would have caught it staying at 9 while the file held 8 markers, or sitting at 8 while a later unit
+# added two more false properties -- and in that second case the floor silently stops covering them.
+#
+# So count what is actually MARKED, at the moment it is marked. This cannot disagree with the file.
+_BROKEN_MARKERS: list = []
 
 
 def broken(reason):
@@ -167,7 +180,12 @@ def broken(reason):
 
     `INSPEXIMUS_CONFORMANCE_STRICT=1` drops the marker, so the suite genuinely fails on today's gaps.
     That is the mode a release gate runs, and it is how this file demonstrates it can fail at all.
+
+    Records the reason BEFORE the strict branch, so the count is the same in both modes -- the parent
+    process counts markers while the strict child counts failures, and they are only comparable if
+    dropping the marker still counts it.
     """
+    _BROKEN_MARKERS.append(reason)
     if _STRICT:
         return lambda fn: fn
     return pytest.mark.xfail(strict=True, reason=reason)
@@ -892,8 +910,12 @@ def _injection_mechanisms(project_dir):
         "UserPromptSubmit": lambda: cc.recall({"hook_event_name": "UserPromptSubmit",
                                                "cwd": project_dir, "prompt": "what is in mod3.py"}),
     }
-    if hasattr(cc, "session_end"):          # C2's mechanism, once it exists
-        handlers["SessionEnd"] = lambda: cc.session_end({"hook_event_name": "SessionEnd", "cwd": project_dir})
+    # SessionEnd is deliberately NOT here, for the same reason PostToolUse is not: Claude Code DISCARDS
+    # SessionEnd stdout (the session is ending; there is no context left to inject into), so it is a
+    # WRITE, not an injection. C2's SessionEnd writes the digest and prints nothing; its output reaches
+    # the model one hook later, through SessionStart, which is enumerated above and is where the off
+    # switch has to be provable. Listing it here asserted "this write injects something" and failed on a
+    # handler behaving exactly as its contract requires.
     return [(e, handlers[e]) for e in sorted(_installed_hook_events() & set(handlers))]
 
 
@@ -1010,17 +1032,34 @@ def test_p7a_control_the_comparator_catches_a_non_deterministic_digest():
         "the determinism comparator cannot see a digest that changes between runs"
 
 
-@broken("MEASURED 1.89.0: there is no SessionEnd hook and no digest primitive. claude_code.install() "
-        "writes exactly ('PostToolUse', 'UserPromptSubmit', 'SessionStart'), and the SessionStart "
-        "output is a list of up to 8 known files (claude_code.session_start), not a digest of the "
-        "session that produced them.")
 def test_p7b_a_session_end_digest_exists_and_is_installed():
-    """C2's contract: a session must be able to close itself into something the next one can read."""
+    """C2's contract: a session must be able to close itself into something the next one can read.
+
+    WAS `@broken` ("MEASURED 1.89.0: there is no SessionEnd hook and no digest primitive"). It went
+    XPASS(strict) in 1.91.0, which is this suite working as designed -- a false property that starts
+    passing turns the run RED so the claim gets re-measured instead of rotting into a silent pass. The
+    marker is removed rather than relabelled, so from here the property is asserted, not merely expected
+    to fail. Extended past the two original assertions to pin the behaviour, not just the wiring: a
+    handler that exists and writes nothing would have satisfied the 1.89.0 contract."""
     d = tempfile.mkdtemp()
     cc.install(cwd=d)
     events = set(_read_json(os.path.join(d, ".claude", "settings.json")).get("hooks", {}))
     assert "SessionEnd" in events, f"no SessionEnd hook is installed; only {sorted(events)}"
     assert hasattr(cc, "session_end"), "no session_end handler exists to produce a digest"
+
+    proj = tempfile.mkdtemp()
+    m = cc._store(proj)
+    m.open_session("s1")
+    m.remember_decision("use Postgres for the ledger", because="sqlite locks", topic="db",
+                        session_id="s1")
+    m._save(force=True)
+    rep = cc.session_end({"hook_event_name": "SessionEnd", "cwd": proj, "session_id": "s1"})
+    assert rep.get("written") is True and rep.get("items", 0) >= 1, \
+        f"SessionEnd is installed but closed the session into nothing: {rep}"
+    assert "Postgres" in _capture_stdout(
+        lambda: cc.session_start({"hook_event_name": "SessionStart", "cwd": proj,
+                                  "session_id": "s2"})), \
+        "the digest was written but the next session was not told about it"
 
 
 # ════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -1067,6 +1106,22 @@ def test_a_strict_run_on_this_commit_reports_the_broken_properties():
         ("a strict run is GREEN on this commit: either every property has been fixed (delete the "
          "broken() markers and this test) or the suite has stopped being able to fail.\n" + r.stdout[-2000:])
     failed = re.search(r"(\d+) failed", r.stdout)
-    assert failed and int(failed.group(1)) >= _BROKEN_PROPERTIES, \
-        (f"a strict run should fail on at least the {_BROKEN_PROPERTIES} properties documented as "
-         f"false in the module docstring; got:\n{r.stdout[-2000:]}")
+    expected = _BROKEN_AT_IMPORT
+    assert expected, "no property is marked broken(), so this check would pass over nothing"
+    # EXACT, not a floor. A floor only notices one of the two ways this drifts. Fewer failures than
+    # markers means a marker names a property that is no longer false (delete it, and assert the
+    # property instead) or that strict mode did not actually drop the markers; MORE failures than
+    # markers means something is failing that nobody wrote down as false, which is the more interesting
+    # direction and the one a floor swallows in silence.
+    assert failed and int(failed.group(1)) == expected, \
+        (f"a strict run should fail on exactly the {expected} properties this file marks broken(), "
+         f"got {failed.group(1) if failed else 'no failure count'}:\n{r.stdout[-2000:]}")
+
+
+# ── snapshot, taken after every decorator above has been applied ─────────────────────────────────────
+# The count has to be frozen at IMPORT. `broken()` is also called at RUN time -- the marker meta-test
+# above calls `broken("because")` on a throwaway to check the marker it produces -- and a live len() of
+# the list therefore reads 9 markers in a file that has 8, but only once that test has run, i.e. the
+# number depends on test ORDER. Freezing here counts exactly the decorator applications, which is the
+# thing the strict child's failure count is comparable to.
+_BROKEN_AT_IMPORT = len(_BROKEN_MARKERS)

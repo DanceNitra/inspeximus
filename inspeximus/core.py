@@ -723,7 +723,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "1.90.0"
+__version__ = "1.91.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2330,7 +2330,9 @@ class Inspeximus:
     def remember_decision(self, decision: str, because: str | None = None, context: str | None = None,
                           topic: str | None = None, tags=None, value: float = 2.0,
                           capability: str | None = None, source=None, derived_from=None,
-                          project: str | None = None) -> str:
+                          project: str | None = None,
+                          user_id: str | None = None, agent_id: str | None = None,
+                          session_id: str | None = None) -> str:
         """Capture a DECISION — the memory that actually matters and that a raw event-log misses. A coding/agent
         session logging only commands + file-states records the MECHANICS but not the CONCLUSIONS ("we decided X
         because Y"), so recall can't answer "what did we decide / send / choose". This stores the decision as a
@@ -2363,11 +2365,16 @@ class Inspeximus:
         # decisions on one topic left TWO active records, while plain remember(key=...) left one. Every
         # sentence of the docstring above ("a NEW decision RETIRES the old one", "recall always returns
         # the CURRENT decision", "revert restores the prior one") described behaviour that did not happen.
+        # user/agent/session pass through to the memory hierarchy. `session_id` in particular: a decision
+        # is the single most important thing a session digest carries, and without the stamp
+        # close_session() cannot tell WHICH session recorded it and has to fall back to a time window.
+        # remember() took the triple from the start; this wrapper silently dropped it.
         return self.remember(text, tags=(list(tags) if tags else []) + ["decision"], value=value,
                              mtype="procedural", key=key, object=(decision.strip() or None),
                              meta=md, capability=capability, project=project,
                              source={"doc": source} if isinstance(source, str) and source else source,
-                             derived_from=derived_from or None)
+                             derived_from=derived_from or None,
+                             user_id=user_id, agent_id=agent_id, session_id=session_id)
 
     # The extraction contract for distill_and_remember (the OPTIONAL LLM capture half). A caller's distiller feeds
     # this prompt + the raw text to any LLM and returns the parsed JSON list. inspeximus owns the STRUCTURE (extract ->
@@ -7427,7 +7434,8 @@ class Inspeximus:
         one tenant's consolidation can never link, hub-flag, supersede, or evict another tenant's memory. An
         unbound store consolidates across everything (admin/legacy)."""
         active = [r for r in self.items if r["status"] == "active"
-                  and (self.tenant is None or r.get("tenant") == self.tenant)]
+                  and (self.tenant is None or r.get("tenant") == self.tenant)
+                  and not Inspeximus._is_session_bookkeeping(r)]
         hubs = 0
         if hub_coverage and len(active) >= 50:
             toks, common = self._common_vocab(active)
@@ -7582,7 +7590,8 @@ class Inspeximus:
         topics, where the raw episodes are still the best representation, and (2) unbounded growth in
         dense ones. Cheap to call often (no-op until a cluster is ripe). Runs dedup + the state-toggle
         guard (+ optional keep-budget) WITHIN each ripe cluster only."""
-        clusters = self._cluster_active(cluster_sim)
+        clusters = [[r for r in c if not Inspeximus._is_session_bookkeeping(r)]
+                    for c in self._cluster_active(cluster_sim)]
         fired = linked = toggled = staled = 0
         for members in clusters:
             if len(members) < threshold:
@@ -7671,6 +7680,396 @@ class Inspeximus:
         if retention_days is not None:
             report["retention"] = self.apply_retention(retention_days)
         return report
+
+    # ── SESSION BOUNDARY + CROSS-SESSION DIGEST (deterministic, zero-LLM) ─────────────────────────────
+    # An agent finishes a session; when the next one starts it should already know what happened. The
+    # usual implementation sends the transcript to an LLM to summarise it. This does not: the digest is a
+    # LEDGER DIFF over the store's own supersession ledger — which keys changed value, which decisions
+    # were recorded, what was erased, what is still open — so it is instant, free, byte-reproducible, and
+    # auditable line by line. There is no summariser here to hallucinate, drift, or cost anything.
+    #
+    # Three primitives, in the order a host calls them:
+    #   open_session()    -> mark the boundary (keyed, so exactly one session is open at a time)
+    #   close_session()   -> write ONE digest record for the window (the ledger diff)
+    #   session_context() -> the size-bounded block to inject at the START of the next session
+    #
+    # WHY ONE KEY FOR EVERY DIGEST. All digests share `SESSION_DIGEST_KEY`, so a new one RETIRES the
+    # previous one through ordinary keyed supersession. That buys three things for free: `recall("what
+    # changed last session", k=1)` is unambiguous (exactly one digest is ever active), `history(key)` is
+    # the full session timeline, and `revert(key)` steps back one session. A per-session key would put N
+    # near-identical digests in the pool and make the k=1 answer a coin flip between them.
+
+    SESSION_DIGEST_KEY = "session::digest"          # the single keyed ledger of session digests
+    SESSION_OPEN_KEY = "session::open"              # the boundary marker (keyed -> one open session)
+    SESSION_TAGS = ("session-digest", "session-boundary")   # never digest our own bookkeeping
+    # Raw tool exhaust. A file's current contents and a shell command are captured (they are useful
+    # WITHIN a session, via recall) but they are not what the next session needs to resume, and a
+    # ledger diff that did not demote them would just be the event log again — the thing a context
+    # window already does badly. Their salience is CAPPED, so no amount of accrued value promotes them.
+    SESSION_MECHANICS_TAGS = ("bash", "file", "edit", "tool", "mechanics")
+    SESSION_MECHANICS_CAP = 1.0
+    SESSION_SALIENCE_THRESHOLD = 2.5                # below this a record is not worth a next session's context
+    SESSION_OPEN_TAGS = ("open", "todo", "question", "open-thread")
+
+    @staticmethod
+    def _is_session_bookkeeping(rec: dict) -> bool:
+        """Is this record the session machinery itself (a digest or a boundary marker) rather than a
+        memory? Consolidation must skip these, and skipping them in ONE of its passes is not enough --
+        measured, the digest survived the hub pass and was then retired by the NEAR-DUPLICATE pass as a
+        `_value_clash` against a note it summarises. That is the correct verdict for two ordinary
+        memories and the wrong one here: a session digest is a cross-cutting summary, so it is similar to
+        everything it covers BY CONSTRUCTION, and every consolidation heuristic (universal-matcher, near
+        duplicate, state toggle, keep-budget) reads that similarity as a reason to demote it. Retiring
+        the digest silently ends the cross-session loop -- the next SessionStart injects nothing and
+        reports an honest, wrong `items: 0`.
+
+        These records are keyed and already have their own supersession chain (one active digest, one
+        open marker), so nothing consolidation offers applies to them."""
+        return bool(set(rec.get("tags") or []) & set(Inspeximus.SESSION_TAGS)) or \
+            rec.get("key") in (Inspeximus.SESSION_DIGEST_KEY, Inspeximus.SESSION_OPEN_KEY)
+
+    @staticmethod
+    def session_salience(rec: dict, corrector_ids=()) -> float:
+        """How much does this record deserve a place in the NEXT session's context? Deterministic,
+        content-only, no LLM, no similarity. The weights are constants, not a learned model, so the same
+        record scores the same everywhere and the threshold is auditable:
+
+            decision tag                    3.0     what we concluded, and why
+            open thread (tag / reopened)    3.0     what is still unresolved
+            knowledge tag                   2.0     curated, durable knowledge
+            it CORRECTED an earlier value  +2.0     (its write retired a same-key record)
+            mtype procedural / semantic    +1.0 / +0.5
+            carries a supersession key     +0.5     a keyed fact is live state, not chatter
+            accrued value                  +0.2 x min(value, 5)
+
+        then CAPPED at SESSION_MECHANICS_CAP for raw tool exhaust (bash/file/edit tags), and 0.0 for the
+        session bookkeeping itself. Default admission bar is SESSION_SALIENCE_THRESHOLD (2.5), which a
+        decision (>=4.4) and a correction of a keyed fact (>=3.2) clear and which a shell command (<=1.0),
+        a file state (<=1.0) and an untagged episodic note (0.2) do not.
+
+        HONEST SCOPE — the trade this makes, stated rather than hidden. A plain durable fact written with
+        no tag and no key scores 1.2 and is NOT injected. That is deliberate: the digest carries
+        decisions, corrections and open threads, not everything true. If a fact must survive the session
+        boundary, record it as a decision (`remember_decision`), give it a `key` so a later change is a
+        correction, or tag it `knowledge` — each of which is a statement about the fact's durability that
+        the store can check, unlike a summariser's opinion of it."""
+        tags = set(rec.get("tags") or [])
+        if tags & set(Inspeximus.SESSION_TAGS):
+            return 0.0
+        s = 0.0
+        if "decision" in tags:
+            s += 3.0
+        if (tags & set(Inspeximus.SESSION_OPEN_TAGS)) or rec.get("reopened"):
+            s += 3.0
+        if "knowledge" in tags:
+            s += 2.0
+        if rec.get("id") in corrector_ids:
+            s += 2.0
+        mt = rec.get("mtype") or "episodic"
+        s += {"procedural": 1.0, "semantic": 0.5}.get(mt, 0.0)
+        if rec.get("key"):
+            s += 0.5
+        try:
+            s += 0.2 * min(float(rec.get("value") or 0.0), 5.0)
+        except (TypeError, ValueError):
+            pass
+        if tags & set(Inspeximus.SESSION_MECHANICS_TAGS):
+            s = min(s, Inspeximus.SESSION_MECHANICS_CAP)
+        return round(s, 3)
+
+    def _session_correctors(self) -> dict:
+        """id -> [texts of the records it retired]. A record is a CORRECTION iff some other record names
+        it in meta['superseded_by_toggle'] — the stamp every supersession path already writes (keyed_lww,
+        state_toggle, echo_guard, ...). Read straight off the ledger; nothing is inferred."""
+        out: dict = {}
+        for r in self._tenant_rows():
+            nid = (r.get("meta") or {}).get("superseded_by_toggle")
+            if nid:
+                out.setdefault(nid, []).append(r)
+        return out
+
+    def _session_digests(self) -> list:
+        """Every session-digest record for this tenant, oldest first (the whole keyed chain: the one
+        active digest plus every superseded predecessor)."""
+        recs = [r for r in self._tenant_rows() if r.get("key") == self.SESSION_DIGEST_KEY]
+        recs.sort(key=lambda r: ((r.get("meta") or {}).get("session_seq") or 0, r.get("ts") or 0))
+        return recs
+
+    def open_session(self, session_id: str | None = None, label: str | None = None) -> dict:
+        """Mark a SESSION BOUNDARY. Writes one keyed marker, so opening a new session automatically
+        retires the previous marker — the "exactly one session is open" invariant is the store's own
+        keyed supersession, not a flag someone has to remember to clear.
+
+        `session_id` is the host's id for the session (Claude Code passes one on every hook event). Left
+        out, it is derived from the sequence number, which keeps the whole mechanism reproducible from
+        the event log alone. Returns {session_id, session_seq, opened_ts, digest_at_open, marker_id}."""
+        seq = len(self._session_digests()) + 1
+        sid = str(session_id) if session_id else f"s{seq}"
+        at_open = self.state_digest()
+        mid = self.remember(
+            f"SESSION {seq} OPEN ({sid})", key=self.SESSION_OPEN_KEY, object=f"{seq}:{sid}",
+            tags=["session-boundary"], mtype="episodic",
+            meta={"kind": "session_open", "session_seq": seq, "sid": sid, "label": label,
+                  "digest_at_open": at_open})
+        return {"session_id": sid, "session_seq": seq, "opened_ts": time.time(),
+                "digest_at_open": at_open, "marker_id": mid}
+
+    def _session_window(self, session_id: str | None = None, since: float | None = None):
+        """The records that belong to the session being closed, and how that was decided.
+
+        Preference order, most precise first: (1) an explicit `since` timestamp; (2) records STAMPED with
+        this session_id (`remember(session_id=...)` -> meta['sid'], which the Claude Code hooks set on
+        every capture); (3) everything written after the open marker; (4) everything written after the
+        last digest. A window that resolved to nothing is reported as such rather than silently digesting
+        the whole store — the failure mode where "no session boundary" reads as "one enormous session"."""
+        rows = [r for r in self._tenant_rows()
+                if not (set(r.get("tags") or []) & set(self.SESSION_TAGS))]
+        sid = str(session_id) if session_id else None
+        if since is None and sid:
+            stamped = [r for r in rows if str((r.get("meta") or {}).get("sid") or "") == sid]
+            if stamped:
+                return stamped, "sid"
+        t0 = since
+        if t0 is None:
+            marker = next((r for r in self._tenant_rows()
+                           if r.get("key") == self.SESSION_OPEN_KEY and r.get("status") == "active"),
+                          None)
+            if marker is not None:
+                t0 = marker.get("ts")
+        mode = "since" if since is not None else ("marker" if t0 is not None else "last_digest")
+        if t0 is None:
+            digs = self._session_digests()
+            t0 = digs[-1].get("ts") if digs else 0.0
+        return [r for r in rows if (r.get("ts") or 0.0) >= t0], mode
+
+    def _session_entries(self, rows: list, threshold: float) -> tuple:
+        """The LEDGER DIFF for a window: (kept_entries, considered, rejected). Each entry is typed by what
+        the ledger says happened — a decision recorded, a key whose value CHANGED, a key newly
+        established, a thread left open — not by what a model thought the session was about."""
+        correctors = self._session_correctors()
+        kept, considered, rejected = [], 0, 0
+        for r in rows:
+            if r.get("status") != "active":     # a value retired later in the same session is not the
+                continue                        # session's conclusion; the value that replaced it is
+            considered += 1
+            sal = self.session_salience(r, correctors)
+            if sal < threshold:
+                rejected += 1
+                continue
+            tags = set(r.get("tags") or [])
+            prior = correctors.get(r.get("id")) or []
+            if "decision" in tags:
+                kind = "decision"
+            elif prior:
+                kind = "correction"
+            elif (tags & set(self.SESSION_OPEN_TAGS)) or r.get("reopened"):
+                kind = "open"
+            elif r.get("key"):
+                kind = "key_new"
+            else:
+                kind = "note"
+            kept.append({"kind": kind, "id": r.get("id"), "key": r.get("key"),
+                         "object": r.get("object"), "text": r.get("text") or "",
+                         "salience": sal,
+                         "was": (prior[0].get("object") or prior[0].get("text")) if prior else None})
+        return kept, considered, rejected
+
+    _SESSION_KIND_ORDER = {"decision": 0, "correction": 1, "open": 2, "key_new": 3, "note": 4}
+    _SESSION_KIND_MARK = {"decision": "*", "correction": "!", "open": "?", "key_new": "+", "note": "-"}
+    _SESSION_KIND_HEAD = {"decision": "decisions recorded:", "correction": "corrections (a stored value changed):",
+                          "open": "still open:", "key_new": "new keyed facts:", "note": "notes:"}
+
+    @staticmethod
+    def _session_sort_key(e: dict) -> tuple:
+        """CONTENT-ONLY ordering — no timestamps, no record ids. That is what makes the rendered digest
+        byte-identical across two independently-built stores holding the same event log, which is the
+        zero-LLM claim in falsifiable form."""
+        return (Inspeximus._SESSION_KIND_ORDER.get(e.get("kind"), 9),
+                -float(e.get("salience") or 0.0), e.get("text") or "")
+
+    @staticmethod
+    def _session_line(e: dict, max_entry_chars: int) -> str:
+        mark = Inspeximus._SESSION_KIND_MARK.get(e.get("kind"), "-")
+        txt = " ".join((e.get("text") or "").split())
+        if e.get("kind") == "correction" and e.get("was"):
+            txt += "  (was: " + " ".join(str(e["was"]).split())[:60] + ")"
+        if len(txt) > max_entry_chars:
+            txt = txt[:max_entry_chars].rstrip() + "..."
+        return f"  {mark} {txt}"
+
+    @staticmethod
+    def _session_render(header: str, entries: list, max_chars: int, max_entry_chars: int,
+                        footer: str = "") -> tuple:
+        """Assemble a block that is GUARANTEED <= max_chars. Lines are added while they fit; the footer is
+        reserved up front so the bound holds with it attached, and a final slice is the backstop. Returns
+        (text, n_written, truncated)."""
+        reserve = len(footer) + 1 if footer else 0
+        out, n = [header], 0
+        used = len(header)
+        head_done = set()
+        for e in entries:
+            head = Inspeximus._SESSION_KIND_HEAD.get(e.get("kind"), "")
+            pending = []
+            if head and head not in head_done:
+                pending.append(head)
+            pending.append(Inspeximus._session_line(e, max_entry_chars))
+            cost = sum(len(p) + 1 for p in pending)
+            if used + cost + reserve > max_chars:
+                break
+            out += pending
+            head_done.add(head)
+            used += cost
+            n += 1
+        truncated = n < len(entries)
+        if footer and used + reserve <= max_chars:
+            out.append(footer)
+        text = "\n".join(out)
+        return text[:max_chars], n, truncated
+
+    def close_session(self, session_id: str | None = None, *, since: float | None = None,
+                      threshold: float | None = None, max_items: int = 12, max_chars: int = 1200,
+                      max_entry_chars: int = 200, sleep_pass: bool = False,
+                      write: bool = True) -> dict:
+        """SESSION END: write ONE digest record describing what this session ESTABLISHED — a deterministic
+        ledger diff, not an LLM summary. No model is called anywhere on this path.
+
+        What lands in it, all read off the store's own ledger: decisions recorded (`remember_decision`),
+        keys whose value CHANGED (a record that retired an earlier same-key value — the stamp keyed
+        supersession already writes), keys newly established, threads left open (`reopened()` or an
+        `open`/`todo` tag), and the erasure count for the window from the tombstone chain. Everything
+        below `threshold` salience is dropped, so the digest is the session's conclusions rather than its
+        transcript; `session_salience` documents the weights and what they deliberately exclude.
+
+        The digest is stored under ONE key (`SESSION_DIGEST_KEY`), so it supersedes the previous session's
+        — `recall("what changed last session", k=1)` is unambiguous, `history()` is the session timeline,
+        and `revert()` steps back a session.
+
+        `write=False` computes and returns the digest without storing it (a preview, and the way to assert
+        determinism: the same store must render the same text twice).
+
+        `sleep_pass=True` runs the existing `sleep()` maintenance here first — SessionEnd is the natural
+        idle window for it. OFF by default because `consolidate_clusters` is O(n^2) over active records
+        and this runs in the agent's exit path; turn it on for small stores or a background caller.
+
+        Returns {written, id, session_id, session_seq, text, chars, bound, items, considered,
+        rejected_below_threshold, erased, truncated, store_digest, mode}."""
+        thr = self.SESSION_SALIENCE_THRESHOLD if threshold is None else float(threshold)
+        report: dict = {"threshold": thr, "bound": max_chars}
+        if sleep_pass and write:
+            report["sleep"] = self.sleep()
+        rows, mode = self._session_window(session_id, since)
+        t0 = min((r.get("ts") or 0.0) for r in rows) if rows else None
+        entries, considered, rejected = self._session_entries(rows, thr)
+        entries.sort(key=self._session_sort_key)
+        entries = entries[:max_items]
+        erased = 0
+        if t0 is not None:
+            erased = sum(1 for t in getattr(self, "_tombstones", []) or []
+                         if (t.get("ts") or 0.0) >= t0)
+        seq = len(self._session_digests()) + 1
+        marker = next((r for r in self._tenant_rows()
+                       if r.get("key") == self.SESSION_OPEN_KEY and r.get("status") == "active"), None)
+        sid = str(session_id) if session_id else (
+            str((marker.get("meta") or {}).get("sid")) if marker else f"s{seq}")
+        # The header carries the words a resuming agent actually types ("what changed ... last session"),
+        # because this record has to be findable by plain lexical recall in a store of thousands.
+        header = (f"SESSION DIGEST {seq} -- what changed in the last session "
+                  f"(deterministic ledger diff, no LLM):")
+        footer_bits = [f"[{len(entries)} of {considered} records kept at salience >= {thr}"]
+        if erased:
+            footer_bits.append(f"{erased} erased")
+        footer = "; ".join(footer_bits) + "]"
+        text, n_written, truncated = self._session_render(header, entries, max_chars,
+                                                          max_entry_chars, footer)
+        entries = entries[:n_written]
+        report.update({"session_id": sid, "session_seq": seq, "text": text, "chars": len(text),
+                       "items": n_written, "considered": considered,
+                       "rejected_below_threshold": rejected, "erased": erased,
+                       "truncated": truncated, "mode": mode, "window_records": len(rows),
+                       "store_digest": self.state_digest()})
+        if not write:
+            report["written"] = False
+            report["id"] = None
+            return report
+        mid = self.remember(
+            text, key=self.SESSION_DIGEST_KEY,
+            object=hashlib.sha256(text.encode("utf-8")).hexdigest()[:16],
+            tags=["session-digest"], mtype="semantic", value=3.0,
+            meta={"kind": "session_digest", "session_seq": seq, "sid": sid,
+                  "entries": entries, "considered": considered,
+                  "rejected_below_threshold": rejected, "erased": erased,
+                  "threshold": thr, "store_digest_at_close": report["store_digest"]})
+        report["written"] = True
+        report["id"] = mid
+        return report
+
+    def session_context(self, *, max_sessions: int = 3, max_items: int = 10, max_chars: int = 1200,
+                        max_entry_chars: int = 200, threshold: float | None = None) -> dict:
+        """SESSION START: the size-bounded block to inject so the next session already knows what
+        happened. Built from the stored digests, then RE-RESOLVED against the live store — which is the
+        part a summarised transcript cannot do. Every entry is looked up by id:
+
+          * retired since (a later session changed its mind) -> DROPPED, and if it was keyed, replaced by
+            the value that is current NOW. A correction made in session 3 rewrites what session 4 is
+            told, with no re-summarisation and no LLM.
+          * erased since -> DROPPED. A right-to-erasure request reaches the injected context too, instead
+            of a deleted fact living on inside a frozen summary.
+          * hub-flagged by consolidation -> DROPPED.
+
+        Then re-scored, re-thresholded, ranked newest-session-first and cut to `max_chars`. The returned
+        `text` is guaranteed <= max_chars; `items`, `dropped_*` and `substituted_current` say what the
+        bound and the threshold actually did, so an empty injection is visibly an empty injection."""
+        thr = self.SESSION_SALIENCE_THRESHOLD if threshold is None else float(threshold)
+        digests = self._session_digests()[-max_sessions:]
+        by_id = {r.get("id"): r for r in self._tenant_rows()}
+        correctors = self._session_correctors()
+        counts = {"dropped_superseded": 0, "dropped_erased": 0, "dropped_hub": 0,
+                  "dropped_below_threshold": 0, "substituted_current": 0}
+        seen, cands = set(), []
+        for d in reversed(digests):                       # newest session first
+            seq = (d.get("meta") or {}).get("session_seq") or 0
+            for e in ((d.get("meta") or {}).get("entries") or []):
+                live = by_id.get(e.get("id"))
+                if live is None:
+                    counts["dropped_erased"] += 1
+                    continue
+                if live.get("status") == "hub":
+                    counts["dropped_hub"] += 1
+                    continue
+                if live.get("status") != "active":
+                    k = live.get("key")
+                    cur = next((r for r in self._tenant_rows()
+                                if k and r.get("key") == k and r.get("status") == "active"), None)
+                    if cur is None:
+                        counts["dropped_superseded"] += 1
+                        continue
+                    counts["substituted_current"] += 1
+                    live = cur
+                dedup = live.get("key") or live.get("id")
+                if dedup in seen:
+                    continue
+                sal = self.session_salience(live, correctors)
+                if sal < thr:
+                    counts["dropped_below_threshold"] += 1
+                    continue
+                seen.add(dedup)
+                prior = correctors.get(live.get("id")) or []
+                cands.append({"kind": e.get("kind"), "id": live.get("id"), "key": live.get("key"),
+                              "text": live.get("text") or "", "salience": sal, "session_seq": seq,
+                              "was": (prior[0].get("object") or prior[0].get("text")) if prior else None})
+        cands.sort(key=lambda e: (-int(e.get("session_seq") or 0), self._session_sort_key(e)))
+        cands = cands[:max_items]
+        out = {"enabled": True, "sessions": len(digests), "candidates": len(seen) + counts["dropped_below_threshold"],
+               "bound": max_chars, "threshold": thr}
+        out.update(counts)
+        if not cands:
+            out.update({"text": "", "chars": 0, "items": 0, "truncated": False})
+            return out
+        header = ("[inspeximus] resuming from the previous session(s) -- what changed, decided and stayed open "
+                  "(deterministic ledger diff, no LLM):")
+        text, n, truncated = self._session_render(header, cands, max_chars, max_entry_chars)
+        out.update({"text": text, "chars": len(text), "items": n, "truncated": truncated})
+        return out
 
     # ── contradiction surfacing (flag, never auto-delete) ─────────────────────
     def contradictions(self, sim_threshold: float = 0.5, incompatible=None) -> list[dict]:
@@ -8249,6 +8648,10 @@ class _TenantView:
         "verify_attribution", "register_erasure_target", "explain_growth",
         "detect_split_view", "check_self_narration", "classify_reversion",
         "restore_intent", "revert_intent", "revert_capability", "believed_at",
+        # A pure static scorer: it reads the record dict handed to it and touches no rows, so it has no
+        # tenant to get wrong. (The methods that SELECT the records it scores -- close_session,
+        # session_context, _session_entries -- are rebound on the view, not listed here.)
+        "session_salience",
     })
 
     def __getattr__(self, name):
@@ -8357,6 +8760,16 @@ class _TenantView:
     def graph(self, *a, **k):           return Inspeximus.graph(self, *a, **k)
     def subgraph(self, *a, **k):        return Inspeximus.subgraph(self, *a, **k)
     def route(self, *a, **k):           return Inspeximus.route(self, *a, **k)
+    # Session boundary + cross-session digest. Every one of these reads or writes tenant-scoped rows, so
+    # reached through __getattr__ they would run PARENT-bound and a tenant's session digest would be
+    # assembled from — and stored beside — every other tenant's records.
+    def open_session(self, *a, **k):    return Inspeximus.open_session(self, *a, **k)
+    def close_session(self, *a, **k):   return Inspeximus.close_session(self, *a, **k)
+    def session_context(self, *a, **k): return Inspeximus.session_context(self, *a, **k)
+    def _session_window(self, *a, **k): return Inspeximus._session_window(self, *a, **k)
+    def _session_entries(self, *a, **k): return Inspeximus._session_entries(self, *a, **k)
+    def _session_digests(self, *a, **k): return Inspeximus._session_digests(self, *a, **k)
+    def _session_correctors(self, *a, **k): return Inspeximus._session_correctors(self, *a, **k)
 
 
 # --------------------------------------------------------------------------------------------------------------

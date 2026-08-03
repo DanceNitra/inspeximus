@@ -1066,8 +1066,8 @@
   {
     "name": "the decision path drops the source it was given",
     "file": "inspeximus/core.py",
-    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None)",
-    "new": "                             source=None,\n                             derived_from=derived_from or None)",
+    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
+    "new": "                             source=None,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
     "tests": [
       "tests/test_write_paths_provenance_census.py"
     ]
@@ -1075,8 +1075,8 @@
   {
     "name": "the decision path invents a subject the caller never supplied",
     "file": "inspeximus/core.py",
-    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None)",
-    "new": "                             source={\"doc\": source or \"hr/bob\"},\n                             derived_from=derived_from or None)",
+    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
+    "new": "                             source={\"doc\": source or \"hr/bob\"},\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
     "tests": [
       "tests/test_write_paths_provenance_census.py"
     ]

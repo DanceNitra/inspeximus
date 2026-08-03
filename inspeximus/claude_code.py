@@ -15,8 +15,26 @@ Use it two ways:
 Hook events handled (dispatched by hook_event_name on stdin JSON):
   PostToolUse       -> capture Edit/Write/MultiEdit/Bash deterministically, keyed by file path.
   UserPromptSubmit  -> recall memory relevant to the prompt; print it (Claude Code injects stdout as context).
-  SessionStart      -> print a short digest of the project's known files (latest state only).
+  SessionStart      -> open the session boundary and PRINT THE CROSS-SESSION DIGEST (stdout is injected
+                       as context), plus the project's known files.
+  SessionEnd        -> close the session boundary: write ONE digest record of what this session
+                       established. Stdout is discarded by Claude Code here, so this hook only writes.
 Fail-open: any error exits 0 with no output, so the hook never blocks the agent.
+
+THE CROSS-SESSION LOOP (SessionEnd -> SessionStart), and why it needs no LLM. Other coding-agent memories
+close the loop by sending the transcript to a model and injecting its prose summary. inspeximus emits a LEDGER
+DIFF instead — which keys changed value, which decisions were recorded, what was erased, what is still
+open — read straight off the store's own supersession ledger (`Inspeximus.close_session` /
+`session_context`). It is instant, free, byte-reproducible, and auditable line by line, and because the
+injected block is RE-RESOLVED against the live store at injection time, a decision reversed in a later
+session is replaced by the current one rather than living on inside a frozen summary.
+
+OFF SWITCH: `INSPEXIMUS_SESSION_DIGEST=0` (env), or `.inspeximus/config.json`
+{"session_digest": {"enabled": false}}. With it off, SessionEnd writes NOTHING (the store's state_digest
+is unchanged by the call) and SessionStart injects NOTHING. Tune it with
+INSPEXIMUS_SESSION_MAX_CHARS (default 1200 -- the hard size bound on the injected block),
+INSPEXIMUS_SESSION_SALIENCE (default 2.5 -- the admission bar; see Inspeximus.session_salience) and
+INSPEXIMUS_SESSION_MAX_SESSIONS (default 3 -- how many past sessions the injection draws from).
 
 Recall is deterministic LEXICAL by default (runs anywhere, no service). For SEMANTIC recall, point the plugin
 at any OpenAI-compatible /embeddings endpoint — e.g. local Ollama — via env (INSPEXIMUS_EMBED_URL / INSPEXIMUS_EMBED_MODEL)
@@ -109,6 +127,43 @@ def _store(cwd):
                       embed_id=emb_id, persist_vectors=True)
 
 
+# ── the cross-session digest: settings + off switch ──────────────────────────────────────────────────
+_SESSION_DEFAULTS = {"enabled": True, "max_chars": 1200, "max_items": 10, "max_sessions": 3,
+                     "salience": None, "max_entry_chars": 200, "files": 5, "files_max_chars": 600}
+_OFF = ("0", "false", "no", "off")
+
+
+def _session_cfg(cwd):
+    """Resolve the digest settings: defaults <- .inspeximus/config.json {"session_digest": {...}} <- env.
+    ENV WINS, because the off switch has to be reachable without editing a file in the project."""
+    cfg = dict(_SESSION_DEFAULTS)
+    fc = _cfg(cwd).get("session_digest", {})
+    if isinstance(fc, dict):
+        for k in cfg:
+            if k in fc:
+                cfg[k] = fc[k]
+    env = os.environ.get("INSPEXIMUS_SESSION_DIGEST", "").strip().lower()
+    if env:
+        cfg["enabled"] = env not in _OFF
+    for key, var, cast in (("max_chars", "INSPEXIMUS_SESSION_MAX_CHARS", int),
+                           ("max_items", "INSPEXIMUS_SESSION_MAX_ITEMS", int),
+                           ("max_sessions", "INSPEXIMUS_SESSION_MAX_SESSIONS", int),
+                           ("salience", "INSPEXIMUS_SESSION_SALIENCE", float)):
+        raw = os.environ.get(var, "").strip()
+        if raw:
+            try:
+                cfg[key] = cast(raw)
+            except ValueError:
+                pass                    # a typo in an env var must not disable the feature silently
+    cfg["enabled"] = bool(cfg["enabled"])
+    return cfg
+
+
+def session_digest_enabled(cwd=None):
+    """The documented off switch, in one place so every caller reads the same answer."""
+    return _session_cfg(cwd or os.getcwd())["enabled"]
+
+
 def _rel(p, cwd):
     try:
         return os.path.relpath(p, cwd) if cwd and p else p
@@ -173,6 +228,11 @@ def capture(ev):
     tool = ev.get("tool_name", "")
     ti = ev.get("tool_input", {}) or {}
     m = _store(cwd)
+    # STAMP THE SESSION. Every hook event carries `session_id`; passing it to remember() puts it in
+    # meta['sid'], which is what lets SessionEnd digest exactly THIS session's writes instead of guessing
+    # a time window. It is inert for recall: the hierarchy filter only applies when a QUERY names a
+    # level, and recall() below names none, so stamped and unstamped records rank identically.
+    sid = ev.get("session_id") or None
     did = False
     if tool in ("Edit", "MultiEdit", "Write"):
         fp = _rel(ti.get("file_path", ""), cwd)
@@ -180,13 +240,13 @@ def capture(ev):
             return
         new = ti.get("new_string") or ti.get("content") or ""
         m.remember(f"{fp} :: current state -> {_excerpt(new)}", key=f"file:{fp}", object=_excerpt(new, 80),
-                   mtype="semantic", tags=["file", "edit"])
+                   mtype="semantic", tags=["file", "edit"], session_id=sid)
         did = True
     elif tool == "Bash":
         cmd = _excerpt(ti.get("command", ""), 200)
         if cmd:
             m.remember(f"ran: {cmd}", key=f"cmd:{hashlib.sha1(cmd.encode()).hexdigest()[:10]}",
-                       object=cmd[:60], mtype="episodic", tags=["bash"])
+                       object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid)
             did = True
     m._save()
     if did:
@@ -224,13 +284,38 @@ def recall(ev):
 
 
 def session_start(ev):
+    """SessionStart: open the boundary and INJECT the cross-session digest. Claude Code adds this hook's
+    stdout to the model's context, so what is printed here is literally what the next session knows on
+    its first token. Two blocks, in priority order and each separately bounded:
+
+      1. the DIGEST -- decisions, corrections and open threads carried over from previous sessions,
+         re-resolved against the live store so a reversed decision is replaced by the current one.
+      2. the known-files line -- raw tool mechanics, kept because it orients a coding agent, but printed
+         AFTER the digest, capped, and labelled as mechanics so it is not mistaken for the resumable set.
+         It is exactly the class of content the digest's salience threshold excludes on purpose."""
     cwd = ev.get("cwd") or os.getcwd()
+    cfg = _session_cfg(cwd)
     m = _store(cwd)
+    if cfg["enabled"]:
+        # A `compact` SessionStart is the SAME session continuing after a context compaction, not a new
+        # one. Opening a boundary there would split one session into two digests and orphan the first.
+        if (ev.get("source") or "") != "compact":
+            try:
+                m.open_session(ev.get("session_id"))
+            except Exception:
+                pass
+        ctx = m.session_context(max_sessions=int(cfg["max_sessions"]), max_items=int(cfg["max_items"]),
+                                max_chars=int(cfg["max_chars"]),
+                                max_entry_chars=int(cfg["max_entry_chars"]),
+                                threshold=cfg["salience"])
+        if ctx.get("text"):
+            print(ctx["text"])
     files = [it for it in getattr(m, "items", []) if "file" in (it.get("tags") or [])
-             and it.get("status") != "superseded"][:8]
+             and it.get("status") != "superseded"][:int(cfg["files"])]
     if files:
         lines = "\n".join(f"- {it['text']}" for it in files)
-        print(f"[inspeximus] this project's current known files (latest state only):\n{lines}")
+        block = f"[inspeximus] this project's current known files (mechanics, latest state only):\n{lines}"
+        print(block[:int(cfg["files_max_chars"])])
     # once-a-day, opt-out "newer version exists" courtesy (stdout is injected as context here)
     try:
         from inspeximus import __version__
@@ -242,7 +327,41 @@ def session_start(ev):
         pass
 
 
+def session_end(ev):
+    """SessionEnd: write ONE digest record for the session that just finished — a deterministic ledger
+    diff, no LLM, nothing sent anywhere. Claude Code DISCARDS this hook's stdout, so this handler only
+    writes; everything it produces is read back by the next SessionStart.
+
+    Returns the store's report so a caller (and the off-switch test) can see what happened; the hook
+    itself ignores it. With the digest disabled this returns {"enabled": False, "written": False} and
+    does not touch the store at all -- not a no-content digest, no write, no state change.
+
+    BUDGET: Claude Code gives all SessionEnd hooks 1.5s unless the settings block raises it, which is why
+    close_session()'s O(n^2) sleep pass is off by default and why install() writes an explicit timeout."""
+    cwd = ev.get("cwd") or os.getcwd()
+    cfg = _session_cfg(cwd)
+    if not cfg["enabled"]:
+        # A report that only OMITS the fields it did not fill makes "nothing happened" and "something
+        # happened and I forgot to say so" look identical to a caller reading with .get(). State them.
+        return {"enabled": False, "written": False, "reason": "disabled",
+                "id": None, "items": 0, "chars": 0}
+    m = _store(cwd)
+    rep = m.close_session(ev.get("session_id"), max_chars=int(cfg["max_chars"]),
+                          max_items=int(cfg["max_items"]),
+                          max_entry_chars=int(cfg["max_entry_chars"]),
+                          threshold=cfg["salience"])
+    rep["enabled"] = True
+    return rep
+
+
 _HOOK = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
+# SessionEnd shares a 1.5s budget across every SessionEnd hook unless the settings raise it. The digest
+# is a ledger scan, not a model call, so it is fast -- but on a large store plus a cold interpreter 1.5s
+# is not a margin, and a hook that is killed mid-write writes nothing. Asking for the budget is cheaper
+# than losing the session.
+_HOOK_SESSION_END = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_code",
+                                "timeout": 15}]}
+_EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END}
 
 # Hooks written before the 1.25.0 rename invoke `python -m inspeximus.claude_code`, which still works
 # through the compatibility alias. Both spellings must be RECOGNISED, or install() would add a second
@@ -281,10 +400,10 @@ def install(cwd=None):
             print("            Fix the file (a trailing comma is the usual cause) and re-run --install.")
             return False
     hooks = cfg.setdefault("hooks", {})
-    for evt in ("PostToolUse", "UserPromptSubmit", "SessionStart"):
+    for evt in ("PostToolUse", "UserPromptSubmit", "SessionStart", "SessionEnd"):
         existing = json.dumps(hooks.get(evt, []))
         if not any(mark in existing for mark in _HOOK_MARKERS):
-            hooks.setdefault(evt, []).append(dict(_HOOK))
+            hooks.setdefault(evt, []).append(dict(_EVENT_HOOK.get(evt, _HOOK)))
     _atomic_write_json(p, cfg)
     print(f"inspeximus: installed Claude Code hooks into {p}")
     print("Restart Claude Code in this project. Memory lands in ./.inspeximus/coding_memory.json (deterministic, "
@@ -327,6 +446,8 @@ def main():
             recall(ev)
         elif name == "SessionStart":
             session_start(ev)
+        elif name == "SessionEnd":
+            session_end(ev)
     except Exception:
         pass
 

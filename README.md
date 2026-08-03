@@ -21,7 +21,7 @@ one creep back — deterministically, with no LLM on the write path, from a sing
 a real state model and not a log. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault (our own deployment — you cannot re-run that one; every number you CAN re-run
 is listed in [docs/CLAIMS.md](docs/CLAIMS.md) with its command).*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.90.0
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.91.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -52,6 +52,25 @@ extra matters, because the core library is deliberately zero-dependency and the 
 piece that needs a dependency.
 
 ## What you install, at a glance
+### Your next session starts knowing what this one decided — with no LLM
+
+`python -m inspeximus.claude_code --install` also wires the cross-session loop. On `SessionEnd` inspeximus
+writes a **ledger diff** of what the session established — which keys changed value, which decisions were
+recorded, what was erased, what is still open — read straight off its own supersession ledger. On
+`SessionStart` it injects that, size-bounded and ranked. No transcript is sent anywhere, so it is instant,
+free, and *byte-reproducible*: two stores replaying the same event log render an identical digest.
+
+Measured on an 8-session, 2,606-record fixture (`probes/session_digest_multisession.py`): **1.000** of a
+session's conclusions reach the next session, **1.0000** of below-threshold items stay out — and with the
+salience bar removed that rejection collapses to **0.2213**, which is how you know the bar is doing the
+work and the digest is not just the log again. Shell commands and file states are capped below the bar no
+matter how much value they accrue. `close_session` costs 7 ms at that size.
+
+Two things a frozen summary cannot do: the injected block is **re-resolved against the live store**, so a
+decision reversed in a later session is replaced by the current one and an erased record leaves the
+context too. Off switch: `INSPEXIMUS_SESSION_DIGEST=0`. Details in [docs/API.md](docs/API.md).
+
+## What you install, and what it does that others don't
 
 A **mem0 alternative** built the opposite way: deterministic, not an LLM extracting facts on every write — a
 memory that can say where a fact came from, keep a correction corrected, and show with an offline-verifiable
@@ -612,7 +631,7 @@ inspeximus check-code src/**/*.py                                            # e
 ```yaml
 # .pre-commit-config.yaml  (point INSPEXIMUS_PATH at a store committed to the repo, e.g. .inspeximus/memory.json)
 - repo: https://github.com/<owner>/inspeximus
-  rev: v1.90.0
+  rev: v1.91.0
   hooks: [{ id: inspeximus-check-code }]
 ```
 
@@ -957,6 +976,7 @@ checkout until the files land.
 ## Status
 
 `v1.90.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 60 tools) and a
+`v1.91.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 60 tools) and a
 deterministic supersession key (`remember(..., key=...)`) that closes the embedding *supersession blind
 spot*. Roadmap: pluggable vector stores, a hosted tier. Open-core; the core stays free.
 

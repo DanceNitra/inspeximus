@@ -330,17 +330,42 @@ def test_the_example_in_the_notes_actually_runs_and_prints_what_it_promises():
                 if "example" in p]
 
 
+def _mutate_example(notes, old, new):
+    """Apply a mutation INSIDE the fenced example only, and prove it landed.
+
+    Both controls below used to hardcode a literal from one release's example -- `m.remember(` and
+    `# -> ['The staging database is db-7.internal.']`. That is a mutation aimed at a moving target: the
+    next release writes a different example, `str.replace` finds nothing, the notes go through
+    unmutated, and the control then asserts that an UNBROKEN example produces a problem. It cannot pass
+    once the example changes, which is the good half; the bad half is that it says nothing about the
+    gate, only about which release happened to be on top. Deriving the target from the example that is
+    actually there fixes both, and the assertion here is what stops it silently degrading again.
+    """
+    code, _ = release_notes.python_example(notes)
+    assert code, "the notes carry no python example, so there is nothing for this control to break"
+    mutated_code = code.replace(old, new, 1)
+    assert mutated_code != code, \
+        f"the mutation {old!r} did not change the example, so this control is aimed at nothing:\n{code}"
+    return notes.replace(code, mutated_code, 1)
+
+
 def test_a_broken_example_is_caught():
     """FALSIFICATION. Break what the example promises to print and the gate must go red -- otherwise
     the check above is only asserting that a subprocess exited 0."""
-    notes = release_notes.render().replace("# -> ['The staging database is db-7.internal.']",
-                                           "# -> ['whatever we wish it said']")
+    notes = release_notes.render()
+    _, expected = release_notes.python_example(notes)
+    assert expected, "the example states no expected output; this control would test nothing"
+    notes = _mutate_example(notes, "# -> %s" % expected, "# -> whatever we wish it said")
     problems = release_notes.verify(notes, release_notes.pyproject_version())
     assert any("the notes promise" in p for p in problems), problems
 
 
 def test_an_example_that_raises_is_caught():
-    notes = release_notes.render().replace("m.remember(", "m.no_such_method(", 1)
+    notes = release_notes.render()
+    code, _ = release_notes.python_example(notes)
+    call = re.search(r'^\s*(\w+)\.(\w+)\(', code or "", re.M)
+    assert call, f"the example makes no method call to break; this control would test nothing:\n{code}"
+    notes = _mutate_example(notes, "%s.%s(" % call.groups(), "%s.no_such_method(" % call.group(1))
     problems = release_notes.verify(notes, release_notes.pyproject_version())
     assert any("does not run" in p for p in problems), problems
 
