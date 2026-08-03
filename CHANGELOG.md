@@ -75,6 +75,77 @@ script and two test modules had shipped for months with no declared install path
 what the round trip is verified against and it passes, so there is no observed breakage to cap on.
 
 Nothing in the library changed. `import inspeximus` still has zero required dependencies.
+## 1.91.0 - UPGRADE IF YOUR AGENT WORKS IN SESSIONS: the next one now starts already knowing what the last one decided
+
+The most-asked thing of an agent memory is that a session END should mean something to the session that
+follows. The usual way to build it is to send the transcript to a model and inject its prose summary.
+**This does it with no LLM at all** — `SessionEnd` writes a **ledger diff** off the store's own
+supersession ledger (which keys changed value, which decisions were recorded, what was erased, what is
+still open) and `SessionStart` injects it, size-bounded and ranked.
+
+Three new primitives, and the Claude Code hooks that drive them:
+
+```python
+from inspeximus import Inspeximus
+
+m = Inspeximus(path=None)
+m.open_session("sess-1")                       # boundary; keyed, so one session is open at a time
+m.remember_decision("use Postgres for the ledger", because="sqlite locks", topic="db")
+m.close_session("sess-1")                      # ONE digest record, keyed `session::digest`, no LLM
+
+m.open_session("sess-2")                       # ...and the next session already knows
+print("Postgres" in m.session_context()["text"])
+# -> True
+```
+
+`python -m inspeximus.claude_code --install` now writes a fourth hook, `SessionEnd` (with an explicit
+`timeout`, because Claude Code gives all SessionEnd hooks 1.5 s together and a hook killed mid-write
+writes nothing). Off switch: `INSPEXIMUS_SESSION_DIGEST=0`, or `{"session_digest": {"enabled": false}}`
+in `.inspeximus/config.json`.
+
+**Measured** on an 8-session, 2,606-record fixture (`probes/session_digest_multisession.py`; our own
+dogfood recall failed at ~2,550, so a smaller one cannot reproduce the problem this fixes):
+
+| | |
+|---|---|
+| conclusions of session *i* that reach session *i+1* | **1.000** (12/12) |
+| below-threshold items kept out | **1.0000** (5,799/5,799) |
+| the same rejection with the salience bar removed | **0.2213** — the threshold is what does the work |
+| injected block | **<= 1,200 chars**, never exceeded |
+| cost at 2,606 records | `close_session` 7 ms, `session_context` 1 ms (budget 1,500 ms) |
+| `recall("what changed last session", k=1)` | returns the current digest, **rank 1** |
+
+Two properties a frozen summary cannot have. The injected block is **re-resolved against the live store**
+at injection time: a decision reversed in a later session is replaced by the current one, and an erased
+record leaves the injected context too. And the digest is **byte-reproducible** — two independently-built
+stores replaying the same event log render an identical digest, which is the zero-LLM claim in falsifiable
+form (the rendered text is content-ordered and carries no timestamp or record id; those live in `meta`).
+
+**What it deliberately refuses to carry**, because a digest that injects everything has merely reinvented
+"paste the whole log". Raw tool exhaust — a file's current contents, a shell command — is **capped** below
+the admission bar no matter how much value it accrues, so no amount of recall promotes it. A plain durable
+fact with no tag and no key scores 1.2 against a bar of 2.5 and is not injected either; record it with
+`remember_decision`, give it a `key` so a later change registers as a correction, or tag it `knowledge`.
+`Inspeximus.session_salience` documents every weight.
+
+**Fixed on the way, and it would have ended the loop silently.** A session digest is a cross-cutting
+summary, so it is similar to everything it covers *by construction* — and every consolidation heuristic
+reads that similarity as a reason to demote it. Measured: the digest cleared the hub pass and was then
+retired by the near-duplicate pass as a `state_toggle` against a note it summarises, after which every
+following `SessionStart` injects nothing and reports a truthful, useless `items: 0`. Guarding one pass was
+not guarding the mechanism; `consolidate`, `consolidate_clusters` and `sleep` now all skip session
+bookkeeping, and the test is parametrised over one fixture per pass because a single fixture made two of
+the three parameters pass with the guard removed.
+
+**`remember_decision` now forwards `user_id`/`agent_id`/`session_id`.** It dropped them, so the one record
+type the digest most depends on could not be attributed to the session that recorded it.
+
+**Honest scope, measured on our own dogfood store.** 884 records, of which **0** clear the salience bar:
+that store is 720 shell commands and 164 file states, because the capture hook writes mechanics and
+nothing writes decisions through it. The digest correctly reports nothing to resume rather than padding
+with 770 mechanics rows. The cross-session loop is bounded by what gets *written*, not by recall quality —
+it is a ledger read, so it does not depend on recall ranking at all.
+
 ## 1.90.0 - UPGRADE IF YOU SET `m.extractor = regex_extractor` AND HAVE AN EXISTING STORE: first-person keys changed, and old records will no longer be superseded
 
 **What you will see if that is you.** Facts you wrote as "my title is X" are keyed `my title` in your

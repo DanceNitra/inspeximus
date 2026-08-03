@@ -96,6 +96,7 @@ _UNSWEEPABLE = {
     "verify_cosigned_anchor":  "static, operates on a passed-in anchor dict",
     "verify_consistency":      "compares two passed-in anchors",
     "check_self_narration":    "static text classifier, no store access",
+    "session_salience":        "static scorer over a passed-in record dict, no store access",
     "classify_reversion":      "needs an embedder",
     "detect_split_view":       "compares two passed-in anchors",
     "submit_revert":    "needs a signed capability",

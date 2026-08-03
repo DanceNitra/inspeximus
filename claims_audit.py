@@ -473,6 +473,25 @@ NUMBER_CLAIMS = [
     # from the MemOps harness, which lives outside this repository and therefore could never be re-run
     # here. The sentence that carried them is gone, so the row goes with it rather than pinning nothing.
     # What replaced it is measured IN this repo and has a command, so it is a claim, not an external.
+    _c("readme-session-digest-fixture", "README.md", ["2,606", "1.000"],
+       "Measured on an 8-session, 2,606-record fixture",
+       "SessionEnd digest -> SessionStart injection, 8-session / 2,606-record fixture: injection recall "
+       "1.000 of a session's conclusions reach the next session",
+       "REPRODUCIBLE", "python probes/session_digest_multisession.py"),
+    _c("readme-session-digest-rejection", "README.md", ["1.0000"],
+       "**1.0000** of below-threshold items stay out",
+       "Below-threshold rejection 1.0000 on the same fixture",
+       "REPRODUCIBLE", "python probes/session_digest_multisession.py"),
+    _c("readme-session-digest-control", "README.md", ["0.2213"],
+       "collapses to **0.2213**",
+       "NEGATIVE CONTROL: with the salience bar removed, rejection collapses to 0.2213",
+       "REPRODUCIBLE", "python probes/session_digest_multisession.py",
+       "Registered deliberately rather than dropped: without it a rejection of 1.0000 cannot be told "
+       "apart from a fixture that contained nothing to reject."),
+    _c("readme-session-digest-cost", "README.md", ["7"],
+       "`close_session` costs 7 ms at that size",
+       "close_session costs 7 ms on the 2,606-record fixture",
+       "REPRODUCIBLE", "python probes/session_digest_multisession.py"),
     _c("readme-chain-binding", "README.md", ["15", "18", "60", "2", "9", "1", "0", "8", "4"],
        "| correction chains that collapse to one record holding the final value | 2/15 |",
        "regex_extractor chain binding on benchmarks/chain_binding/ (15 chains, 18 unrelated pairs, "
@@ -672,7 +691,7 @@ NUMBER_CLAIMS = [
 #: in NUMBER_CLAIMS with a command instead.
 NON_CLAIM_TOKENS = {
     "README.md": {
-        "0": (7, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
+        "0": (8, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
                  "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model, and the "
                  "'0/18' after-column of the 1.90.0 chain-binding table"),
         "1": (14, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
@@ -694,7 +713,7 @@ NON_CLAIM_TOKENS = {
                  "command, not a measurement"),
         "100": (2, "the invoice total in that same witness example, written twice on one line: once in "
                    "the remembered sentence and once as its --object value"),
-        "8": (2, "the withdrawn '8/8' quoted inside the sentence that withdraws it (see "
+        "8": (3, "the withdrawn '8/8' quoted inside the sentence that withdraws it (see "
                  "readme-supersession-8of8-withdrawn for the 0/24 the probe actually reports), and the "
                  "'8/60' before-column of the 1.90.0 chain-binding table"),
         "12": (2, "AI Act Art. 12 / Article 12 -- article numbers"),

@@ -147,8 +147,51 @@ python -m inspeximus.claude_code --install     # writes the hooks into ./.claude
 ```
 
 That is it. `PostToolUse` captures your edits and commands into a deterministic, keyed store; `UserPromptSubmit`
-injects the current-state memory before Claude answers; `SessionStart` shows what the project already knows. The
-store is a local JSON file at `.inspeximus/coding_memory.json` you can read, grep, or delete.
+injects the current-state memory before Claude answers; `SessionEnd` writes a digest of what the session
+established; `SessionStart` injects it, so the next session starts already knowing. The store is a local JSON
+file at `.inspeximus/coding_memory.json` you can read, grep, or delete.
+
+### The cross-session loop (`SessionEnd` -> `SessionStart`), with no LLM
+
+The usual way to make an agent remember the last session is to send the transcript to a model and inject its
+prose summary. inspeximus emits a **ledger diff** instead — which keys changed value, which decisions were
+recorded, what was erased, what is still open — read straight off the store's own supersession ledger. It is
+instant, free, and *byte-reproducible*: two stores replaying the same event log render an identical digest,
+which a summariser cannot promise.
+
+```python
+m.open_session("sess-1")                 # boundary (keyed: exactly one session open at a time)
+m.remember_decision("use Postgres for the ledger", because="sqlite locks", topic="db")
+m.close_session("sess-1")                # -> ONE digest record, keyed `session::digest`
+...
+m.session_context()["text"]              # -> the size-bounded block to inject next session
+```
+
+Two properties the frozen-summary approach cannot have. The injected block is **re-resolved against the live
+store** every time: a decision reversed in a later session is replaced by the current one, and a record that
+was erased leaves the injected context too. And everything below a **salience threshold** is dropped, so the
+block carries decisions, corrections and open threads rather than the event log — shell commands and file
+states are capped below the bar no matter how much value they accrue. Measured on an 8-session, 2,606-record
+fixture (`probes/session_digest_multisession.py`): **1.000** of a session's conclusions reach the
+next session, **1.0000** of below-threshold items stay out, and with the bar removed rejection collapses to
+**0.2213** — the threshold is what does the work, not an empty fixture.
+
+Because it is a ledger read rather than a search, it does not depend on recall quality: `close_session` runs
+in ~9 ms and `session_context` in ~2 ms at 2,606 records, against Claude Code's 1.5 s `SessionEnd` budget.
+
+| knob | default | what it does |
+|---|---|---|
+| `INSPEXIMUS_SESSION_DIGEST=0` | on | **the off switch.** `SessionEnd` writes nothing (the store's `state_digest()` is unchanged by the call) and `SessionStart` injects nothing |
+| `INSPEXIMUS_SESSION_MAX_CHARS` | `1200` | hard bound on the injected block |
+| `INSPEXIMUS_SESSION_SALIENCE` | `2.5` | the admission bar; see `Inspeximus.session_salience` for the weights |
+| `INSPEXIMUS_SESSION_MAX_SESSIONS` | `3` | how many past sessions the injection draws from |
+
+The same settings live in `.inspeximus/config.json` under `{"session_digest": {...}}`; the environment wins.
+
+**What it deliberately does not carry.** A plain durable fact written with no tag and no key scores 1.2 and is
+not injected. Record it with `remember_decision`, give it a `key` so a later change registers as a correction,
+or tag it `knowledge`. Each of those is a claim about the fact's durability the store can check — unlike a
+summariser's opinion of it.
 
 Why it differs from the LLM-summarizing coding memories: you change an API signature, rename a symbol, move a
 file, and inspeximus keeps only the current state (keyed by file). Next session Claude recalls the new signature,
