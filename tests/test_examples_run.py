@@ -10,6 +10,7 @@ root, with a clean exit required. Where a script needs an optional dependency it
 reason rather than dropped silently — a sweep that quietly skips is a sweep that stops covering.
 """
 import os
+import re
 import subprocess
 import tempfile
 import sys
@@ -240,12 +241,35 @@ def test_an_example_either_runs_on_a_base_install_or_says_what_it_needs(script):
     assert dep in INSTALL_HINT, f"nothing tells a reader how to install {dep!r}"
 
 
+def _optional_dependencies():
+    """`[project.optional-dependencies]` without tomllib, which is 3.11+ while this project supports 3.9.
+
+    The first version imported tomllib and passed locally and on two of the three CI legs; 3.9 failed with
+    ModuleNotFoundError. Adding `tomli` would put a dependency into the test suite of a package whose
+    entire pitch is that it has none, so the section is parsed directly. It is a flat table of
+    `name = ["req", ...]` lines, which is worth exactly these ten lines and no library."""
+    out, current = {}, None
+    with open(os.path.join(ROOT, "pyproject.toml"), encoding="utf-8") as fh:
+        for line in fh:
+            stripped = line.strip()
+            if stripped.startswith("["):
+                current = stripped
+                continue
+            if (current != "[project.optional-dependencies]" or "=" not in stripped
+                    or stripped.startswith("#")):
+                continue     # a comment inside the table also contains "="; it is not an extra
+            name, _, rest = stripped.partition("=")
+            reqs = re.findall(r'"([^"]+)"', rest)
+            if reqs:
+                out[name.strip()] = reqs
+    assert out, "parsed no extras at all from pyproject.toml; the parser or the file moved"
+    return out
+
+
 def test_every_declared_dependency_maps_to_a_real_extra():
     """`pip install "inspeximus[crypto]"` has to exist. Before 2.0.2 it did not: pip accepts an unknown
     extra, installs nothing, and the example fails exactly as before -- the most confusing outcome."""
-    import tomllib
-    with open(os.path.join(ROOT, "pyproject.toml"), "rb") as fh:
-        extras = tomllib.load(fh)["project"]["optional-dependencies"]
+    extras = _optional_dependencies()
     for dep, hint in INSTALL_HINT.items():
         name = hint.split("[", 1)[1].split("]", 1)[0]
         assert name in extras, f"install hint for {dep!r} names extra {name!r}, which pyproject does not define"
