@@ -25,9 +25,10 @@ drop-in overlay, not a rebuild.
 | Letta, cognee, Memobase, LangMem, Redis, Pinecone | plain `forget()`/`delete()` — no receipt | none found | none found |
 | **inspeximus** | **`forget_subject` + signed content-free tombstone + `erasure_certificate`** | **hash-linked receipts + signed anchor, verified offline** | **`inspeximus compliance` article-labelled overlay** |
 
-*(“the only one **we've found**” — a scan of nine libraries, not an exhaustive proof of a universal negative;
-Zep does have a genuine SOC2/HIPAA compliance surface, just not verifiable erasure or tamper-evident logs or
-AI-Act alignment.)*
+*(Every "none found" above means **we did not find it in the source and docs we read on that date** — a scan of
+nine libraries, not an exhaustive proof of a universal negative, and not a statement about what any of them can
+do or has shipped since. Zep does have a genuine SOC2/HIPAA compliance surface, just not verifiable erasure or
+cryptographically tamper-evident logs or AI-Act alignment. Send us a correction and we will make it.)*
 
 ## What it gives the memory slice
 

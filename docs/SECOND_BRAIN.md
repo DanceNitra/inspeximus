@@ -79,7 +79,7 @@ beside it, is found):
 | `extract_claims` | claim-like sentences from a note so the agent can ground or challenge them |
 | `idea_methods` | a toolkit of named idea-generation recipes, so generation is principled, not a vibe |
 
-Dogfood result, stated honestly: pointed at the maintainer's own 10,000-note vault, an agent using
+Dogfood result, stated honestly: pointed at the maintainer's own production vault, an agent using
 these tools caught a number in his *own* forecasting note inflated ~7× ("60-78%" vs the real ~6-11%),
 surfaced two silently-contradicting notes, and proposed ideas via `idea_methods` — two of which were
 then severe-tested **in Agora's separate research lab** (not inside this server) and held. The LLM did

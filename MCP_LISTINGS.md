@@ -7,8 +7,9 @@
 `inspeximus/mcp_server.py` and fails if this file disagrees. It said 30 until 2026-08-01, when it was
 26 short.)*
 
-**One-liner:** Zero-dependency memory layer for AI agents with a first-class correction channel — recall,
-consolidation, revert, echo-guard, lineage-aware retract + re-derive, and tamper-evident erasure proof.
+**One-liner:** Zero-dependency memory layer for AI agents that can say where a fact came from and prove
+what it erased — one-call provenance, an auditable correction trail (supersession + echo-guard + revert),
+and offline-verifiable erasure receipts, all deterministic with no LLM on the write path.
 
 **Install / run:**
 ```bash
@@ -27,17 +28,18 @@ inspeximus-mcp            # stdio; persists to ./inspeximus_memory.json (set INS
 
 Or let the CLI write it: `inspeximus install --ide claude` (also cursor, windsurf, codex, cline).
 
-**Tools (60):** remember · remember_decision · revert · route · observe · reopened · resolve_reopened · recall ·
-recall_iterative · recall_followup · where_am_i · projects · get · neighbors · token_report ·
-consolidate · sleep · consolidate_clusters · contradictions · check_conflict · verify_claim ·
-check_self_narration · selection_integrity · value_by_cohort · credit · forget · forget_subject ·
-governance_report · verify_writes · anchor · verify_consistency · verify_cosigned_anchor ·
-detect_split_view · witness · verify_witness · index_coherence · pii_report · forget_pii ·
-influence_gate_report · why_recalled · supersession_report · compliance_report ·
-compliance_check · retention · audit_bundle · verify_audit_bundle · erasure_residue ·
-deprecate_symbol · symbol_status · check_code · state_digest · erasure_report ·
-erasure_certificate · history · erasure_audit · provenance · as_of · verify_attribution ·
-irreversible_budget_report · memory_report
+**Tools (60):** provenance and verification first, because that is what people ask for; the ordinary
+memory operations follow. The count and the names are both checked against `@mcp.tool()` in
+`inspeximus/mcp_server.py` (`python claims_audit.py --numbers`, plus `tests/test_readme_capabilities.py`),
+so this list cannot drift from the server again.
+
+*Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · state_digest · selection_integrity · index_coherence
+
+*Memory operations:* remember · remember_decision · recall · recall_iterative · recall_followup · get · neighbors · as_of · token_report · route · observe · reopened · resolve_reopened · revert · check_conflict · contradictions · consolidate · consolidate_clusters · sleep · credit · value_by_cohort · where_am_i · projects
+
+*Erasure & governance:* forget · forget_subject · forget_pii · erasure_certificate · erasure_residue · erasure_audit · erasure_report · retention · compliance_report · compliance_check · governance_report · pii_report · irreversible_budget_report · influence_gate_report · memory_report · verify_claim · check_self_narration
+
+*Code guard:* deprecate_symbol · symbol_status · check_code
 
 **Links:** repo https://github.com/DanceNitra/inspeximus · PyPI https://pypi.org/project/inspeximus/ ·
 category: memory / knowledge-management.
@@ -49,7 +51,8 @@ category: memory / knowledge-management.
 Corrected 2026-07-21. The previous version of this file was wrong in three ways and would have sent
 people nowhere: it told them to `pip install agora-inspeximus` (that name 404s on PyPI — the package is
 `inspeximus`), it claimed 12 tools when the server registers 30, and route 1 below had already been
-retired upstream.
+retired upstream. A count maintained by hand drifts on exactly the schedule you stop watching it, which is
+why both the count and the tool list are now checked against `inspeximus/mcp_server.py` rather than typed.
 
 1. **The official MCP registry** — `registry.modelcontextprotocol.io`. This is now the primary route and
    the one the reference repo itself redirects to. Self-serve, no review queue. Ownership is proven by the
