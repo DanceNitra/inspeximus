@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "1.91.0"
+__version__ = "2.0.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5751,7 +5751,7 @@ class Inspeximus:
                tie_recent: float | None = None,
                with_status: bool = False, with_warrant: bool = False,
                redact_pii: bool = False, rerank=None, rerank_pool: int | None = None,
-               reinforce: bool = True, trusted_only: bool = False, mmr: float | None = None,
+               reinforce: bool = False, trusted_only: bool = False, mmr: float | None = None,
                user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
                rerank_by: str | None = None, resolve_conflicts: bool = False,
                suppress_stale_values: bool = False, project: str | None = None) -> list[dict]:

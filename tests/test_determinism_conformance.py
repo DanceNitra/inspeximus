@@ -4,12 +4,20 @@ Determinism is the property this library is marketed on, and it was spread acros
 dozen docstrings with no single suite that asserts all of it. So a regression could ship, and a marketing
 sentence could drift away from behaviour, without anything turning red.
 
-This file is the instrument, not the fix. Where a property does NOT hold today it is recorded as a
+This file is the instrument, not the fix. Where a property does NOT hold it is recorded as a
 `xfail(strict=True)` carrying the measured number, so the failure is written down rather than softened --
 and when the property starts holding, strict xfail turns the suite RED and forces someone to delete the
 marker. A conformance suite that is green before the fix has measured nothing.
 
-MEASURED BASELINE -- 2026-08-01, v1.89.0 @ ba7a3d4, CPython 3.12.10 on Windows, numpy present.
+That mechanism has now fired once, which is the reason this header reads differently from its first
+revision. In 2.0.0 `reinforce` defaults to False, and ELEVEN of the strict xfails below became xpasses in
+a single run -- all of P5 and all of P5b. They are ordinary assertions now, and each block carries a
+CONTROL pinned to `reinforce=True` that must still reproduce the old number, because an assertion that
+the defect is gone is worthless next to a harness that has merely stopped looking.
+
+MEASURED BASELINE -- 2026-08-01, v1.89.0 @ ba7a3d4, CPython 3.12.10 on Windows, numpy present;
+re-measured 2026-08-03 for 2.0.0 on the same box. The `FAILS` rows below are the 1.89.0 numbers, kept
+because they are what the controls now assert; the `-> HOLDS` suffix is the 2.0.0 result.
 (The CI matrix is 3.9 / 3.11 / 3.12; nothing here uses syntax past 3.8.)
 Reproduce with `python -m pytest tests/test_determinism_conformance.py -q -rxX`.
 
@@ -33,13 +41,13 @@ Reproduce with `python -m pytest tests/test_determinism_conformance.py -q -rxX`.
         recall(reinforce=False), both routings .................. HOLDS   0/11 records mutated
         why_recalled(), both routings .......................... HOLDS   0/11
         selection_integrity(), both routings ................... HOLDS   0/11
-        recall()  lexical ...................................... FAILS   4/11
-                  semantic ..................................... FAILS   4/11
-                  hybrid ....................................... FAILS   5/11
-                  auto -- THE SHIPPED DEFAULT PATH ............. FAILS   5/11
-        admit() on a duplicate (a no-write outcome) ............ FAILS   1/11  value 1.00 -> 1.25,
-                                                                 identical in both routings
-        mcp_server.token_report() (lexical routing) ............ FAILS   4/11
+        recall()  lexical ...................................... 1.89.0 4/11  -> 2.0.0 HOLDS 0/11
+                  semantic ..................................... 1.89.0 4/11  -> 2.0.0 HOLDS 0/11
+                  hybrid ....................................... 1.89.0 5/11  -> 2.0.0 HOLDS 0/11
+                  auto -- THE SHIPPED DEFAULT PATH ............. 1.89.0 5/11  -> 2.0.0 HOLDS 0/11
+        admit() on a duplicate (a no-write outcome) ............ 1.89.0 1/11  -> 2.0.0 HOLDS 0/11
+                                                                 (was value 1.00 -> 1.25, both routings)
+        mcp_server.token_report() (lexical routing) ............ 1.89.0 4/11  -> 2.0.0 HOLDS 0/11
         state_digest() after any of the above .................. UNCHANGED, always -- `value`/`good`/`bad`
                                                                  are outside the digest BY DESIGN
                                                                  (core.py:3594 docstring), so the digest
@@ -53,16 +61,19 @@ Reproduce with `python -m pytest tests/test_determinism_conformance.py -q -rxX`.
   P5b the consequence of P5: the answer to query N+1 depends on
       which queries ran before it.  8 permutations (the reversal
       + 7 rotations) x 8 queries = 64 answers per mode:
-        reinforce=True (the default) lexical .................... FAILS    5/64 =   7.81%
-                                     semantic ................... FAILS   10/64 =  15.62%
-                                     hybrid ..................... FAILS   64/64 = 100.00%
-                                     auto ....................... FAILS   64/64 = 100.00%
-        reinforce=False (the control) all four modes ............ HOLDS    0/64 =   0.0000
+        reinforce=True  lexical ................................ 1.89.0   5/64 =   7.81%
+                        semantic ............................... 1.89.0  10/64 =  15.62%
+                        hybrid ................................. 1.89.0  64/64 = 100.00%
+                        auto ................................... 1.89.0  64/64 = 100.00%
+        reinforce=False  all four modes ........................ HOLDS    0/64 =   0.0000
+                                                                 -- the 2.0.0 DEFAULT
 
-      Read that hybrid row twice: with the shipped default, NO answer in hybrid mode survives a
-      reordering of the same question set. It is the worst-hit mode because RRF ranks are coarse, so a
+      Read that hybrid row twice: under the 1.89.0 default, NO answer in hybrid mode survived a
+      reordering of the same question set. It was the worst-hit mode because RRF ranks are coarse, so a
       value nudge crosses a rank boundary easily -- and `auto` routes there on any store past
-      semantic_threshold, so it is the default path, not a corner.
+      semantic_threshold, so it was the default path, not a corner. That row is why 2.0.0 flipped the
+      default rather than documenting the behaviour. The reinforce=True numbers are still measured, by
+      the controls, so this table stays falsifiable in both directions.
 
   P6  mode coverage, and what it means per property:
         P1, P2, P3, P4, P5b, recall() under P5 ... all four modes, and every call asserts the mode recall
@@ -85,8 +96,9 @@ magnitudes move, which is why each number above is quoted with its environment r
 constant of the library:
 
         P4 hybrid/auto relevances .... 1.000/0.984/0.968/0.952/0.938/0.923 (spread 0.077, was 0.047)
-        P5 recall() / admit() ........ 4/11 and 1/11 -- unchanged
-        P5b lexical/semantic/hybrid/auto  5/64, 17/64, 60/64, 60/64 -- every one still non-zero
+        P5 recall() / admit() ........ 4/11 and 1/11 at reinforce=True -- unchanged
+        P5b lexical/semantic/hybrid/auto  5/64, 17/64, 60/64, 60/64 at reinforce=True -- every one still
+                                          non-zero, which is why the P5b control asserts a FLOOR of 60
         P5b reinforce=False control .. 0/64 in every mode, in BOTH environments
 
 mcp is absent there too, so the MCP surface test SKIPS rather than xfailing. Verified deliberately: a
@@ -559,21 +571,10 @@ def test_p5_state_digest_is_blind_to_the_ranking_state_by_design(route, threshol
 
 
 @pytest.mark.parametrize("mode,measured", [
-    pytest.param("lexical", "4/11", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: recall() is documented as a read but bumps `value` and resets `last_access` "
-        "on every returned record (core.py:5730-5733) and can graduate episodic->semantic "
-        "(core.py:5766). Lexical channel: one k=5 call mutates 4/11 records. Owned by A1."))),
-    pytest.param("semantic", "4/11", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: semantic channel, one k=5 call mutates 4/11 records. Owned by A1."))),
-    pytest.param("hybrid", "5/11", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: hybrid channel, one k=5 call mutates 5/11 records -- MORE than lexical, "
-        "because RRF admits a candidate whenever EITHER channel is non-empty (core.py:5433), so a wider "
-        "set of records reaches the top-k and gets reinforced. Owned by A1."))),
-    pytest.param("auto", "5/11", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: THE SHIPPED DEFAULT PATH -- default mode, default reinforcement. On any "
-        "store past semantic_threshold auto routes to hybrid and mutates 5/11 records per k=5 call. The "
-        "nudges are marked dirty and persisted by the next write (core.py:5826), so this outlives the "
-        "process. Owned by A1 (reinforcement ablation)."))),
+    ("lexical", "4/11"),
+    ("semantic", "4/11"),
+    ("hybrid", "5/11"),
+    ("auto", "5/11"),
 ])
 def test_p5_recall_is_a_read(mode, measured):
     """BOTH halves of the public property -- the digest AND the ranking vector -- are asserted, even
@@ -581,7 +582,11 @@ def test_p5_recall_is_a_read(mode, measured):
     widened to cover `value`, this test keeps meaning what it says instead of quietly narrowing.
 
     Parametrized over all four channels because the number is NOT the same in each (4/11 lexical and
-    semantic, 5/11 hybrid and auto) and the default path is the 5."""
+    semantic, 5/11 hybrid and auto) and the default path is the 5.
+
+    `measured` is the pre-2.0.0 baseline, when `reinforce` defaulted to True and this test was a strict
+    xfail carrying that number. It is kept in the id so a run can be compared against what the defect
+    used to cost, and it is now the CONTROL's expectation rather than this test's."""
     moved, total, digest_changed = _purity_delta(lambda s: s.recall(PURITY_QUERY, k=5, mode=mode),
                                                  mode=mode)
     assert not digest_changed, f"recall(mode={mode}) changed state_digest()"
@@ -589,14 +594,31 @@ def test_p5_recall_is_a_read(mode, measured):
         f"recall(mode={mode}) mutated {moved}/{total} records' ranking state (baseline {measured})")
 
 
-@pytest.mark.parametrize("route,threshold", [
-    pytest.param(r, t, marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: admit() on an exact duplicate takes the NO-WRITE branch -- it returns "
-        "{'admitted': False, 'reason': 'duplicate'} -- but reaches that verdict through "
-        "`self.recall(t, k=1)` with reinforcement ON (core.py:7002), so the rejected write still promotes "
-        "the record it collided with: exactly one record moves, value 1.00 -> 1.25, in BOTH the lexical "
-        "and hybrid routings. A write-admission gate that refuses a write must not write.")))
-    for r, t in ROUTES])
+@pytest.mark.parametrize("mode,measured", [
+    ("lexical", 4), ("semantic", 4), ("hybrid", 5), ("auto", 5),
+])
+def test_p5_control_the_purity_harness_still_sees_a_mutating_read(mode, measured):
+    """The control for the four assertions above, and the reason they are not vacuous.
+
+    Passing `reinforce=True` explicitly restores the pre-2.0.0 behaviour, and `_purity_delta` must
+    still report exactly the number the strict xfails used to carry. Without this, a `_purity_delta`
+    that stopped observing anything -- a rank_state() that returned a constant, a corpus that stopped
+    reaching top-k -- would make every P5 test above pass while measuring nothing at all."""
+    moved, total, _ = _purity_delta(
+        lambda s: s.recall(PURITY_QUERY, k=5, mode=mode, reinforce=True), mode=mode)
+    # A FLOOR, not the exact count, for the same reason the P5b control uses one: the number is
+    # environment-dependent. `measured` is Windows/3.12 with numpy; the base CI leg has no numpy and the
+    # semantic channel moves 5 there, not 4. Pinning equality made this fail on 3.11 for the wrong
+    # reason -- the harness was working perfectly. 3 is below every environment we have measured and
+    # far above the 0 a blind harness reports, which is the only thing this control has to separate.
+    assert moved >= 3, (
+        f"mode={mode}: the harness saw {moved}/{total} records move on a reinforce=True read "
+        f"(baseline {measured}/11 on Windows+numpy, 5/11 on the no-numpy leg). Below 3 means either the "
+        f"harness has stopped observing the ranking state or reinforcement itself has changed -- in both "
+        f"cases the purity assertions above are no longer evidence of anything")
+
+
+@pytest.mark.parametrize("route,threshold", ROUTES)
 def test_p5_a_refused_admission_writes_nothing(route, threshold):
     store = build_store(PURITY_CORPUS, threshold=threshold)
     before, digest_before = rank_state(store), store.state_digest()
@@ -615,11 +637,6 @@ def test_p5_a_refused_admission_writes_nothing(route, threshold):
         + "; ".join(f"{i}: value {v0} -> {v1}" for i, v0, v1 in moved))
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "MEASURED 2026-08-01: mcp_server.token_report() is documented DETERMINISTIC and is a sizing report, "
-    "but calls `_MEM.recall(query, k=k)` with the default reinforcement (mcp_server.py:386), so asking "
-    "how big a payload WOULD be reorders the store it measures: 4/11 records mutated per call. The MCP "
-    "server is how this product is actually used, so the surface matters as much as the library."))
 def test_p5_the_mcp_sizing_report_does_not_reorder_the_store(tmp_path, monkeypatch):
     pytest.importorskip("mcp")
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "mcp.json"))
@@ -674,20 +691,10 @@ def _order_sensitivity(mode, **kw):
 
 
 @pytest.mark.parametrize("mode,measured", [
-    pytest.param("lexical", "5/64 = 7.81%", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: 5 of 64 answers change when the same questions are asked in a different "
-        "order (reinforce=True, the shipped default). Owned by A1."))),
-    pytest.param("semantic", "10/64 = 15.62%", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: 10 of 64 answers change under reordering (reinforce=True); 17/64 without "
-        "numpy. Owned by A1."))),
-    pytest.param("hybrid", "64/64 = 100.00%", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: 64 of 64 -- EVERY answer changes under reordering (reinforce=True); 60/64 "
-        "without numpy. Hybrid is the worst-hit mode because RRF ranks are coarse, so a value nudge "
-        "crosses a rank boundary easily. Owned by A1."))),
-    pytest.param("auto", "64/64 = 100.00%", marks=pytest.mark.xfail(strict=True, reason=(
-        "MEASURED 2026-08-01: auto routes to hybrid past semantic_threshold and inherits its 64/64 "
-        "(60/64 without numpy). This is the SHIPPED DEFAULT path -- default mode, default "
-        "reinforcement. Owned by A1."))),
+    ("lexical", "5/64 = 7.81%"),
+    ("semantic", "10/64 = 15.62%"),
+    ("hybrid", "64/64 = 100.00%"),
+    ("auto", "64/64 = 100.00%"),
 ])
 def test_p5b_asking_the_same_questions_in_a_different_order_gives_the_same_answers(mode, measured):
     """The user-visible consequence of P5: because a read is a write, the answer to question N+1 depends
@@ -720,7 +727,7 @@ def test_p5b_control_the_sweep_can_detect_a_changed_answer():
     comparing two hand-made tuples. The earlier version of this control compared a k=5 answer against a
     k=3 answer, which is a fact about slicing and not about the sweep: stubbing `_order_sensitivity` to
     `return 0, 64` left it green, so the control certified a function it never called."""
-    changed, total = _order_sensitivity("hybrid")
+    changed, total = _order_sensitivity("hybrid", reinforce=True)
     assert total == SWEEP_SIZE, f"the sweep compared {total} answers, not {SWEEP_SIZE}"
     # A FLOOR, not the exact 64: the same sweep measures 64/64 with numpy and 60/64 without it (the
     # base CI leg has no numpy), and a control pinned to one environment's number is a control that

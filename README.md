@@ -21,7 +21,7 @@ one creep back — deterministically, with no LLM on the write path, from a sing
 a real state model and not a log. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault (our own deployment — you cannot re-run that one; every number you CAN re-run
 is listed in [docs/CLAIMS.md](docs/CLAIMS.md) with its command).*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v1.91.0
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v2.0.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -535,11 +535,12 @@ python benchmarks/locomo/run.py --subset full --retrieval-only   # ~0.83 / 0.70,
 > Two things changed in the numbers, and both are corrections in your favour rather than ours.
 > **The old pair was 0.78 / 0.65, and it reproduces exactly** — at *its* operating point the harness measures
 > 0.7839 / 0.6484 against the published 0.783 / 0.648, on the identical 1536-question denominator.
-> **The pair above is higher because the benchmark now pins `reinforce=False`.** `recall()` defaults to
-> reinforcing what it returns, so during a benchmark each query is answered by a store the previous queries
-> modified and the score depends on the order the questions were asked in. Turning that off makes the run
-> deterministic and, it turns out, scores 4-5 points better. The old number was not optimistic; it was
-> measuring a memory that was learning from the benchmark while being measured by it.
+> **The pair above is higher because the benchmark pins `reinforce=False`** — which, as of 2.0.0, is simply
+> the default. Before 2.0.0 `recall()` reinforced what it returned, so during a benchmark each query was
+> answered by a store the previous queries had modified and the score depended on the order the questions
+> were asked in. Turning that off makes the run deterministic and, it turns out, scores 4-5 points better.
+> The old number was not optimistic; it was measuring a memory that was learning from the benchmark while
+> being measured by it. That is also why the flag became the default: see CHANGELOG 2.0.0.
 >
 > The two arms, the controls, the judge gate and the exact reason the original probe could not run are all in
 > [`benchmarks/locomo/README.md`](benchmarks/locomo/README.md).
@@ -680,7 +681,7 @@ inspeximus check-code src/**/*.py                                            # e
 ```yaml
 # .pre-commit-config.yaml  (point INSPEXIMUS_PATH at a store committed to the repo, e.g. .inspeximus/memory.json)
 - repo: https://github.com/<owner>/inspeximus
-  rev: v1.91.0
+  rev: v2.0.0
   hooks: [{ id: inspeximus-check-code }]
 ```
 
@@ -1024,7 +1025,7 @@ checkout until the files land.
 
 ## Status
 
-`v1.91.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 67 tools) and a
+`v2.0.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 67 tools) and a
 deterministic supersession key (`remember(..., key=...)`) that closes the embedding *supersession blind
 spot*. Roadmap: pluggable vector stores, a hosted tier. Open-core; the core stays free.
 

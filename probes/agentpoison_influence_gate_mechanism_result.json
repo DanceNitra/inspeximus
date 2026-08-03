@@ -3,9 +3,9 @@
   "retriever": "hashing-256 (mechanism, NOT a dense retriever)",
   "natural_trigger_ppl_class": "low (441, evades perplexity filter)",
   "measurement_class": "mechanism",
-  "raw_hijack": 1.0,
+  "raw_hijack": 0.938,
   "influence_hijack": 0.0,
-  "utility_gated_top3": 0.7,
+  "utility_gated_top3": 0.8,
   "poison_is_corroborated": false,
   "rare_frac": 0.2,
   "n_rare_uncorroborated": 12
