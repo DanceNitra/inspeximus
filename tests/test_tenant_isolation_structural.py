@@ -75,6 +75,11 @@ _ARGS = {                                     # plausible arguments that would r
     "propagate_outcome": (True, [None]),
     "ratify": (f"GLOBEX_SECRET {SECRET}", "fact", "b/k"),
     "recall_iterative": (f"GLOBEX_SECRET {SECRET}", lambda *a, **k: None),
+    # the agent-grant ACL, aimed at tenant B: positional (agent, scope, tag, key, ...) so the selector
+    # names B's key. A tenant must not be able to hand another tenant's records to an agent, and
+    # `can_read`/`grant_log` must not report on them either.
+    "grant": ("mallory", None, None, "b/k"), "revoke": ("mallory", None, None, "b/k"),
+    "grants": (), "grant_log": (), "can_read": ("mallory", None), "as_agent": ("mallory",),
 }
 
 

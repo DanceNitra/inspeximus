@@ -399,6 +399,33 @@ def main(argv=None):
     # and lands on 0 or negative got an answer indistinguishable from an empty store. An invalid
     # request must not be reported as an empty result.
     q.add_argument("-k", type=_positive_k, default=6, help="how many to return (>= 1)")
+    q.add_argument("--as-agent", dest="as_agent", metavar="AGENT",
+                   help="read AS this agent: only what it owns or has been granted (fail-closed)")
+
+    # ── agent-to-agent read grants ────────────────────────────────────────────────────────────────
+    def _selector_args(p):
+        """One selector per grant, matched EXACTLY on a stored field. No query selector: a grant whose
+        membership came from a similarity score would cover a different set after a re-embed."""
+        p.add_argument("--scope", help="grant records whose meta scope equals this")
+        p.add_argument("--tag", help="grant records carrying this tag")
+        p.add_argument("--key", help="grant records under this supersession key")
+        p.add_argument("--ids", help="grant these record ids (comma-separated)")
+        p.add_argument("--by", help="the granting AGENT (its grant covers only records it owns); "
+                                    "omit for an operator-wide grant")
+        p.add_argument("--note", help="free-text note recorded with the act")
+
+    gr = sub.add_parser("grant", help="give an agent READ access to a subset of memories (scoped, revocable)")
+    gr.add_argument("agent", help="the agent being granted access")
+    _selector_args(gr)
+
+    rv = sub.add_parser("revoke", help="end a grant (effective on the next read; deletes nothing)")
+    rv.add_argument("agent", help="the agent whose access ends")
+    _selector_args(rv)
+
+    gl = sub.add_parser("grants", help="what access is in force — or, with --log, every grant and revocation")
+    gl.add_argument("--agent", help="restrict to one agent")
+    gl.add_argument("--log", action="store_true",
+                    help="show EVERY act incl. revoked/retired ones, not just what is in force")
 
     ri = sub.add_parser("recall-iterative",
                         help="MULTI-HOP recall: round-1 plus the follow-up queries YOUR model writes "
@@ -841,7 +868,12 @@ def main(argv=None):
         return _flush_or_fail(m)
 
     elif a.cmd == "recall":
-        hits = m.recall(a.query, k=a.k) or []
+        # --as-agent narrows the handle BEFORE the read, so there is no path where the scope is computed
+        # and then not applied. An unknown/typo'd agent name is not an error: it owns nothing and has been
+        # granted nothing, so it correctly reads an empty store. Fail-closed means a typo loses access,
+        # never gains it.
+        reader = m.as_agent(a.as_agent) if getattr(a, "as_agent", None) else m
+        hits = reader.recall(a.query, k=a.k) or []
         if a.json:
             _out(hits, True)
         elif not hits:
@@ -902,6 +934,39 @@ def main(argv=None):
                 print(f"+ {h.get('text','')}")
             print(f"\n{res['bridged']} new record(s) from {res['recall_calls']} follow-up retrieval(s)",
                   file=sys.stderr)
+
+    elif a.cmd in ("grant", "revoke"):
+        sel = {"scope": a.scope, "tag": a.tag, "key": a.key,
+               "ids": [x.strip() for x in a.ids.split(",") if x.strip()] if a.ids else None}
+        try:
+            res = (m.grant if a.cmd == "grant" else m.revoke)(a.agent, by=a.by, note=a.note, **sel)
+        except (ValueError, PermissionError) as e:
+            # Exit 2, not 0 with an explanation. A refused access-control change that reports success is
+            # the failure this whole feature exists to avoid: `inspeximus grant bob && echo shared` must
+            # not print `shared` when nothing was granted.
+            print(f"{a.cmd} refused: {e}", file=sys.stderr)
+            return 2
+        rc = _flush_or_fail(m)
+        if rc:
+            return rc
+        if not _out(res, a.json):
+            what = f"{res['kind']}={res['value']!r}"
+            who = "the operator" if res["by"] == "*" else f"agent {res['by']!r}"
+            if a.cmd == "grant":
+                print(f"granted: agent {res['agent']!r} may now read {what} (by {who})")
+            else:
+                had = "" if res.get("was_granted") else " (nothing was in force; recorded anyway)"
+                print(f"revoked: agent {res['agent']!r} can no longer read {what} (by {who}){had}")
+
+    elif a.cmd == "grants":
+        rows = m.grant_log(a.agent) if a.log else m.grants(a.agent)
+        if not _out(rows, a.json):
+            if not rows:
+                print("(no grants in this store)" if not a.log else "(no access-control acts in this store)")
+            for r in rows:
+                who = "operator" if r["by"] == "*" else r["by"]
+                state = f" [{r['state']}/{r['status']}]" if a.log else ""
+                print(f"- {who} -> {r['agent']}: {r['kind']}={r['value']!r}{state}")
 
     elif a.cmd == "revert":
         res = m.revert(a.key)

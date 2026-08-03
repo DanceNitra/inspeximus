@@ -73,6 +73,8 @@ def _args_for(name, sig, mod):
         # for real rather than declaring it undriveable. `values` must be non-empty, since an empty
         # search is deliberately not a clean result.
         "root": tempfile.mkdtemp(), "values": ["a-value-that-is-not-anywhere"],
+        # the agent-grant ACL: a plain agent name is all the read-side tools need
+        "agent": "bob",
     }
     args = []
     for pname, p in sig.parameters.items():
@@ -110,6 +112,14 @@ def test_every_mcp_tool_can_be_called(mcp_mod):
             out = fn(key="deploy")                        # exclusive-argument signature, driven by hand
             driven += 1
             assert out.get("found") is True
+            continue
+        if name in ("grant", "revoke"):
+            # Same shape as provenance: the generic table cannot supply a SELECTOR, and calling these with
+            # only an agent is refused on purpose (a grant with no selector is ambiguous, and an ambiguous
+            # access-control decision must deny rather than mean "everything"). Driven by hand with one.
+            out = fn("bob", tag="ops")
+            driven += 1
+            assert out.get("state") == ("granted" if name == "grant" else "revoked"), out
             continue
         args = _args_for(name, inspect.signature(fn), mcp_mod)
         if args is None:
