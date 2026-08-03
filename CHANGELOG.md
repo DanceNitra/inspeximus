@@ -3,6 +3,60 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.0.1 - UPGRADE IF YOU RAN 2.0.0: nothing could mature into the semantic tier, and nothing said so
+
+**BEHAVIOUR FIX.** 2.0.0 made `recall(reinforce=...)` default to False so a read stops writing. Episodic
+to semantic graduation was implemented as a side effect of that same read, guarded by
+`if reinforce and ...`, so it left with it. Measured on shipped 2.0.0, with a positive control:
+
+| | graduated |
+|---|---|
+| `recall(..., reinforce=True)`, 6 corroborated records over the value bar | 5 of 6 |
+| the 2.0.0 default | **0 of 6** |
+| `credit()` + `sleep()` + `consolidate()`, no reinforcing read | **0** |
+
+There was no other route in the package. `_GRADUATE_VALUE` had exactly one call site and it was inside
+the reinforcement block, so on 2.0.0 defaults the durable slow-decay tier was unreachable and a store
+could not mature. Anyone who upgraded and relied on episodic memories settling into semantic ones got a
+store that quietly stopped doing it.
+
+**Nothing went red.** 2422 tests passed, `tools/release_check.py` reported READY, CI was 19 of 19. Every
+test that touched graduation had been written for a store whose reads reinforced, so not one of them
+could tell "graduation is correct" from "graduation never ran". That is the failure this project keeps
+rediscovering, and it found us on the release that was supposed to be about rigour.
+
+**The fix: maturation is a consolidation concern, so it now runs in `consolidate()`.** The dream pass
+promotes any active episodic record that clears the same bar as before -- value at or above
+`_GRADUATE_VALUE`, corroborated by earned credit or two distinct sources, not slashed, not orphaned --
+and reports the count as `graduated`. Reads stay pure. Maturation now happens at a moment the caller
+chooses instead of as a side effect of asking a question, which is where it should have been.
+
+The bar itself moved into two shared helpers, `_graduation_corroborated()` and `_may_graduate()`, used
+by both the opted-in read path and `consolidate()`. Two copies of a corroboration rule drift, and the
+drift is invisible because each side keeps passing its own tests.
+
+`recall(..., reinforce=True)` still matures on read, unchanged.
+
+**New regression test:** `tests/test_maturation_survives_a_pure_read.py` asserts the PAIR, because
+either half alone is satisfiable by a bug -- a corroborated record DOES mature when consolidation runs,
+AND a read still matures nothing. It carries a control proving the fixture can graduate at all (else
+the pure-read assertion is vacuous) and two negative controls, since a pass that promotes whatever it
+is handed would satisfy the positive assertion and be worthless.
+
+**One thing I broke while fixing this, kept here because it is the argument for the helper.** Moving
+the graduation block out of `recall()` took four lines with it that the `with_warrant` tier reporting
+a few lines below still referred to, so `recall(with_warrant=True)` raised `NameError: name '_good' is
+not defined`. Two tests caught it. The point is not the typo: those four lines were a SECOND copy of
+the corroboration inputs, and the copy is what made the move unsafe. They now live in one place,
+`_corroboration_facts()`, used by the graduation bar and by the warrant tier both.
+
+**Still true, and not fixed here.** With reads pure, `last_access` is only written at write time, so
+the decay clock no longer resets on use: a memory recalled 500 times and one never recalled now age
+identically unless you pass `reinforce=True`. That is a real trade rather than an oversight -- usage
+that changes ranking IS a write, and you cannot have a pure read and use-based decay at the same time.
+Deciding where usage evidence should live, most likely an access log applied during consolidation, is
+2.1 work and is not going to be smuggled into a patch release.
+
 ## 2.0.0 - BREAKING, UPGRADE IF YOU CALL `recall()` OR SET `m.extractor = regex_extractor`: a read no longer writes, so the order your questions arrive in no longer changes the answers
 
 **If you are upgrading from PyPI, you are upgrading from 1.89.0.** 1.90.0 and 1.91.0 were tagged and
