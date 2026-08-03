@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "inspeximus"
-version = "2.0.1"
+version = "2.0.2"
 description = "The self-correcting memory layer for AI agents: when a fact is corrected, Inspeximus serves the new value and resists the old one resurfacing. Zero-dependency single file + MCP server — value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -27,6 +27,10 @@ Issues = "https://github.com/DanceNitra/inspeximus/issues"
 Research = "https://dancenitra.github.io/agora/"
 
 [project.optional-dependencies]
+# The five examples that sign anything need Ed25519. The base package deliberately has no
+# dependencies, so this is the extra a reader is told to install -- and `inspeximus[crypto]`
+# is the form everyone guesses first, which until 2.0.2 silently installed nothing.
+crypto = ["cryptography>=41"]
 # Upper bound is load-bearing, not caution. mcp 2.0 removed `mcp.server.fastmcp`, which is what
 # inspeximus/mcp_server.py imports, so with an unbounded `>=1.0` a fresh `pip install "inspeximus[mcp]"`
 # resolved to 2.0.0 and the MCP server raised ImportError on import -- every tool, unusable. Measured in a

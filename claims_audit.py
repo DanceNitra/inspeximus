@@ -691,6 +691,11 @@ NUMBER_CLAIMS = [
 #: in NUMBER_CLAIMS with a command instead.
 NON_CLAIM_TOKENS = {
     "README.md": {
+        # The quickstart names the five examples that need Ed25519 by FILENAME, so their
+        # numeric prefixes are published tokens. They are file names, not measurements.
+        "04": (1, "the `04_encryption` example filename in the quickstart"),
+        "06": (1, "the `06_gdpr_erasure_receipt` example filename in the quickstart"),
+        "07": (1, "the `07_witness_pool` example filename in the quickstart"),
         "0": (8, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
                  "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model, and the "
                  "'0/18' after-column of the 1.90.0 chain-binding table"),
@@ -716,7 +721,7 @@ NON_CLAIM_TOKENS = {
         "8": (3, "the withdrawn '8/8' quoted inside the sentence that withdraws it (see "
                  "readme-supersession-8of8-withdrawn for the 0/24 the probe actually reports), and the "
                  "'8/60' before-column of the 1.90.0 chain-binding table"),
-        "12": (2, "AI Act Art. 12 / Article 12 -- article numbers"),
+        "12": (3, "AI Act Art. 12 / Article 12 -- article numbers"),
         "15": (2, "AI Act Art. 15 -- an article number; and the fixture size '15 chains' in the sentence "
                   "introducing the 1.90.0 chain-binding table"),
         "18": (1, "the fixture size '18 unrelated pairs' in the sentence introducing the 1.90.0 "
