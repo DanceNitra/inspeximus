@@ -264,6 +264,49 @@ def new_ed25519_keypair() -> tuple[str, str]:
     return sk_raw.hex(), pk_raw.hex()
 
 
+#: The fields an anchor()'s `sth_hash` COMMITS TO. Named once and read everywhere, because the split between
+#: "what the signature covers" and "what the reader consumes" is exactly where this scheme leaked: a witness
+#: signature covers only the `sth_hash` STRING, while every consumer reads these FIELDS --
+#: verify_consistency() pins a store to `writes_tip`/`n_writes`, detect_split_view() compares them.
+_STH_FIELDS = ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")
+
+
+def _int_or(x, default: int) -> int:
+    """int(x) or `default` — a malformed count must not crash a verifier that exists to report on it."""
+    try:
+        return int(x)
+    except (TypeError, ValueError):
+        return default
+
+
+def sth_hash_of(anchor: dict) -> str:
+    """Re-derive an anchor's `sth_hash` from the fields it commits to — the SAME formula anchor() uses.
+
+    ONE implementation. There used to be two: anchor() computed it, audit_bundle.verify_bundle re-derived it
+    as its check (4), and the primitive every other surface goes through -- verify_cosigned_anchor -- did not
+    re-derive it at all. So the check existed, was known to be necessary, and simply never reached the
+    function that needed it most."""
+    return _sha256_hex(_canon({k: (anchor or {}).get(k) for k in _STH_FIELDS}))
+
+
+def anchor_binds_its_fields(anchor) -> bool:
+    """Does this anchor's `sth_hash` actually COMMIT to the fields this anchor carries?
+
+    WHY THIS EXISTS (measured, 2026-08-01). A witness signs the `sth_hash` string. Nothing re-derived that
+    hash from the head's own fields, so an operator could take a genuinely co-signed anchor, paste a
+    DIFFERENT `writes_tip` into it, keep the original `sth_hash` and signatures -- and
+    verify_cosigned_anchor returned ok=True, 3 of 3 witnesses. The auditor then ran
+    verify_consistency(that anchor), which reads `writes_tip`, and it CERTIFIED THE REWRITTEN STORE as
+    append-only while reporting the honest store as the fork. The guarantee did not merely fail open, it
+    inverted: the co-signature authenticated a number no witness had ever seen.
+
+    A signature over a hash nobody re-derives authenticates nothing a reader uses."""
+    if not isinstance(anchor, dict):
+        return False
+    h = anchor.get("sth_hash")
+    return isinstance(h, str) and bool(h) and sth_hash_of(anchor) == h
+
+
 def witness_cosign(witness_sk_hex: str, anchor: dict, prior_anchor: dict | None = None) -> str:
     """WITNESS-side: co-sign an anchor()'s signed tree head, so a client can require k-of-n INDEPENDENT
     witnesses before trusting the store's history. This is the external gossip layer that turns inspeximus's
@@ -282,6 +325,12 @@ def witness_cosign(witness_sk_hex: str, anchor: dict, prior_anchor: dict | None 
     h = anchor.get("sth_hash")
     if not h:
         raise ValueError("anchor has no sth_hash (produce the head with store.anchor())")
+    if not anchor_binds_its_fields(anchor):
+        # A witness that signs an incoherent head mints a signature over a commitment no reader can
+        # re-derive -- precisely the material the field-substitution attack needs.
+        raise ValueError("refusing to co-sign: sth_hash does not commit to this anchor's own fields "
+                         "(n_writes/writes_tip/n_tombstones/tombstones_tip). The head is not one "
+                         "store.anchor() produced, or a field was altered after it was built.")
     if prior_anchor is not None:
         for ntag, tiptag in (("n_writes", "writes_tip"), ("n_tombstones", "tombstones_tip")):
             n_new, n_old = int(anchor.get(ntag, 0)), int(prior_anchor.get(ntag, 0))
@@ -3976,17 +4025,55 @@ class Inspeximus:
         iterable of (pubkey_hex, sig_hex). `witnesses` = the allowlist: a set/list of pubkey_hex, OR a
         {pubkey_hex: class} map so Sybil variants declared to one class collapse to a single vote
         (independence is a DECLARED grouping the allowlist curator owns — the store enforces it but cannot
-        prove two classes are causally independent). Returns {ok, count, threshold, signers}; ok = count >=
-        threshold. Read-only; needs no access to the log. Needs `cryptography`."""
+        prove two classes are causally independent). Returns {ok, count, threshold, signers,
+        covers_history[, limits, error]}; ok = count >= threshold. Read-only; needs no access to the log.
+        Needs `cryptography`.
+
+        THREE THINGS THIS REFUSES TO REPORT AS SUCCESS, each a verifier passing over nothing:
+        the anchor's `sth_hash` is re-derived from its own fields first, so genuine signatures over a
+        SUBSTITUTED n_writes/writes_tip yield `error` rather than a co-signed verdict; `threshold` below 1
+        is rejected, because a quorum of zero is met by an anchor no witness ever signed; and an anchor
+        over an empty receipt chain reports `covers_history: False` plus a `limits` line, since a valid
+        co-signature over a history of nothing is evidence about no stored data at all."""
         if not _HAVE_ED:
             raise RuntimeError("verifying witness co-signatures needs the `cryptography` package")
+        # `covers_history` is a property of the ANCHOR, not of the verdict, so it is computed once here and
+        # reported on every return path. Returning it only on success would leave the refusal paths with a
+        # field that reads False for a head that covers plenty -- a declared field answering a question it
+        # never looked at.
+        _a = anchor if isinstance(anchor, dict) else {}
+        covers = (_int_or(_a.get("n_writes"), 0) + _int_or(_a.get("n_tombstones"), 0)) > 0
+        # A QUORUM OF ZERO IS NOT A QUORUM. threshold<=0 made `count >= threshold` true for an anchor with
+        # NO signatures, an EMPTY allowlist, and no witnesses in existence -- ok=True, signers=[]. That is
+        # the vacuous pass: every check in the function is a comparison, and comparisons over an empty set
+        # all succeed. A caller that computes k from `len(configured_witnesses)` and lands on 0 because the
+        # config failed to load got "externally witnessed" for free.
+        if not isinstance(threshold, int) or isinstance(threshold, bool) or threshold < 1:
+            return {"ok": False, "count": 0, "threshold": threshold, "signers": [], "covers_history": covers,
+                    "error": f"threshold must be an integer >= 1 (got {threshold!r}); a threshold of 0 or "
+                             f"less is satisfied by an anchor no witness ever signed"}
         h = anchor.get("sth_hash") if isinstance(anchor, dict) else None
         try:
             msg = bytes.fromhex(h) if isinstance(h, str) else None
         except ValueError:
             msg = None
         if not msg:
-            return {"ok": False, "count": 0, "threshold": threshold, "signers": [], "error": "anchor has no valid sth_hash"}
+            return {"ok": False, "count": 0, "threshold": threshold, "signers": [],
+                    "covers_history": covers, "error": "anchor has no valid sth_hash"}
+        # BIND THE SIGNATURE TO THE FIELDS THE CALLER WILL READ. The signatures below cover the sth_hash
+        # STRING only; every consumer of the verdict then reads n_writes/writes_tip (verify_consistency
+        # pins a store to them, detect_split_view compares them). Without re-deriving the hash from those
+        # fields, an operator could keep a genuine sth_hash + genuine signatures, paste in the tip of a
+        # REWRITTEN history, and collect ok=True from 3 of 3 honest witnesses -- after which
+        # verify_consistency certified the rewrite and flagged the honest store as the fork.
+        if not anchor_binds_its_fields(anchor):
+            return {"ok": False, "count": 0, "threshold": threshold, "signers": [],
+                    "covers_history": covers,
+                    # ASCII: this string is printed by `inspeximus witness verify` onto a console that is
+                    # not always UTF-8 (cp1250 here), where an em dash renders as a replacement character.
+                    "error": "anchor sth_hash does not commit to this anchor's own fields "
+                             "(n_writes/writes_tip/n_tombstones/tombstones_tip) - a co-signature over it "
+                             "would authenticate a head no witness saw; refusing to count it"}
         allow = set(witnesses); cls = witnesses if isinstance(witnesses, dict) else {}
         classes, signers = set(), []
         for item in (cosignatures or []):
@@ -4003,7 +4090,18 @@ class Inspeximus:
             if c not in classes:
                 classes.add(c); signers.append(pk)
         count = len(classes)
-        return {"ok": count >= threshold, "count": count, "threshold": threshold, "signers": signers}
+        # EMPTY SCOPE. store.anchor() over a store with no receipt chain is a perfectly valid signed head
+        # of NOTHING: witnesses co-sign it, this returns ok=True, and the report reads "3 of 3 witnesses
+        # co-signed" over zero writes and zero erasures. That is a true sentence about an empty history,
+        # and it is exactly how a verifier misleads -- so `ok` keeps its narrow contract (did k allowlisted
+        # witnesses sign THIS head) and the scope is reported alongside it rather than folded into it.
+        # `ok=True, covers_history=False` is a signature over an empty log, not evidence about any data.
+        out = {"ok": count >= threshold, "count": count, "threshold": threshold, "signers": signers,
+               "covers_history": covers}
+        if not covers:
+            out["limits"] = ["this anchor commits to 0 writes and 0 erasures: a valid co-signature over an "
+                             "EMPTY history, which is evidence about no stored data at all"]
+        return out
 
     @staticmethod
     def detect_split_view(anchor_a: dict, cosigs_a, anchor_b: dict, cosigs_b, witnesses) -> dict:
@@ -4034,12 +4132,19 @@ class Inspeximus:
         va = Inspeximus.verify_cosigned_anchor(a, cosigs_a, witnesses, threshold=1)
         vb = Inspeximus.verify_cosigned_anchor(b, cosigs_b, witnesses, threshold=1)
         common = sorted(set(va["signers"]) & set(vb["signers"]))
+        # An anchor whose sth_hash does not commit to its own fields yields no valid signers, so it would
+        # otherwise leave the auditor reading "inconsistent heads, no witness proof" -- when the real
+        # answer is "one of these is not a head any witness could have signed". Say which.
+        malformed = [side for side, anc in (("a", a), ("b", b)) if not anchor_binds_its_fields(anc)]
         # undetermined: no decidable inconsistency AND the heads differ in size, so append-only-vs-fork
         # cannot be settled from signed tree heads alone — run verify_consistency against a replica.
         undetermined = (not inconsistent) and diff_size
         return {"fork": bool(inconsistent and common), "inconsistent": inconsistent, "undetermined": undetermined,
                 "at": where, "evidence": common, "both_cosigned": bool(va["ok"] and vb["ok"]),
-                "note": ("different-size heads: run verify_consistency against a replica to settle append-only"
+                "malformed": malformed,
+                "note": ("anchor(s) " + "/".join(malformed) + " do not bind their own fields - not a head "
+                         "store.anchor() produced" if malformed else
+                         "different-size heads: run verify_consistency against a replica to settle append-only"
                          if undetermined else "")}
 
     def retract_lineage(self, subject: str, reason: str = "lineage_corrected",

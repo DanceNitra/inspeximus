@@ -15,13 +15,13 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **246** numeric tokens are published across the three enforced files.
+- **253** numeric tokens are published across the three enforced files.
 - **106** of those are quantitative claims, in **57** registry rows below.
 - **32** rows (32/57) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 25 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 140 tokens are declared non-claims — citation years,
+- The other 147 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 

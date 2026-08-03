@@ -675,10 +675,11 @@ NON_CLAIM_TOKENS = {
         "0": (7, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
                  "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model, and the "
                  "'0/18' after-column of the 1.90.0 chain-binding table"),
-        "1": (13, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
-                  "examples, recall_any@1 as a metric NAME, counts in a pasted example output, and the "
-                  "'1/18' before-column of the 1.90.0 chain-binding table"),
-        "2": (15, "SOC 2 in a comparison cell and in the certification paragraph, the EU application dates "
+        "1": (14, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
+                  "examples, recall_any@1 as a metric NAME, counts in a pasted example output, the "
+                  "'1/18' before-column of the 1.90.0 chain-binding table, and the '1' in the witness "
+                  "quickstart's `inv7::total` example key"),
+        "2": (17, "SOC 2 in a comparison cell and in the certification paragraph, the EU application dates "
                   "2 Dec 2027 / 2 Aug 2028 / 2 Aug 2026, ordinals for demo 2 and rule 2, the corroboration "
                   "threshold >=2, code literals (threshold=2, writes=2), the 'Cell 2' benchmark label, an "
                   "example output line, and the '2 minutes' quickstart heading"),
@@ -688,6 +689,11 @@ NON_CLAIM_TOKENS = {
                  "1.90.0 chain-binding table"),
         "5": (3, "ACM TOS volume 5(4), rule 5, and a back-reference to rule 5"),
         "6": (1, "AI Act Art. 26(6) -- an article sub-paragraph number"),
+        "7": (1, "the invoice id in the witness quickstart's example memory "
+                 "(\"invoice 7 total is 100 EUR\", key inv7::total) -- a made-up literal in a copy-paste "
+                 "command, not a measurement"),
+        "100": (2, "the invoice total in that same witness example, written twice on one line: once in "
+                   "the remembered sentence and once as its --object value"),
         "8": (2, "the withdrawn '8/8' quoted inside the sentence that withdraws it (see "
                  "readme-supersession-8of8-withdrawn for the 0/24 the probe actually reports), and the "
                  "'8/60' before-column of the 1.90.0 chain-binding table"),
@@ -742,7 +748,7 @@ NON_CLAIM_TOKENS = {
         "3.0": (2, "a fictional library version in the code-guard example ('removed in 3.0')"),
         "1.0": (1, "a coverage ratio inside a pasted erasure-audit output"),
         "5000": (1, "the corrected example fact in the quickstart ('5000 req/min')"),
-        "6962": (1, "RFC 6962 -- a standard's number"),
+        "6962": (2, "RFC 6962 -- a standard's number, cited twice: in the integrity comparison row and again in the witness section's prior-art credit"),
         "9700": (1, "a port in a copy-paste command (--port 9700)"),
         "14227": (1, "Claude Code issue #14227 -- an issue number"),
         "27001": (1, "ISO 27001 -- a standard's number"),

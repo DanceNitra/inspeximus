@@ -185,6 +185,54 @@ Ollama runs a model: the gate forbade the benchmark's own inference backend and 
 model loaded. Both are now checked by tests that assert the count and the classification rather than the
 absence of an exception.
 
+### witness co-signing - UPGRADE IF YOU RELY ON IT: a co-signed anchor authenticated nothing a reader used
+
+**The witness signature did not bind the fields every consumer reads, and the failure INVERTED the
+guarantee rather than merely weakening it.** `verify_cosigned_anchor` verified Ed25519 signatures over the
+anchor's `sth_hash` string and never re-derived that hash from the head's own fields. But nothing
+downstream reads `sth_hash`: `verify_consistency(prior_anchor)` pins a store to `n_writes`/`writes_tip`,
+and `detect_split_view` compares those same fields. So an operator could take a genuinely co-signed
+anchor, paste in the tip of a **rewritten** history, keep the original `sth_hash` and the original
+signatures — and collect `ok: true, count: 3, threshold: 3` from three honest witnesses. Measured
+end-to-end: the auditor then ran `verify_consistency` against that anchor and got a clean **append-only**
+verdict on the rewritten store, while the honest store was reported as `fork detected`. A signature over
+a hash nobody re-derives authenticates nothing.
+
+The check already existed in `audit_bundle.verify_bundle` as its check (4) and had simply never reached
+the primitive that every other witness surface calls — the Python API, both MCP tools, and the audit
+bundle's own co-signature step. There is one implementation now (`core.sth_hash_of` /
+`core.anchor_binds_its_fields`), used by all of them. `witness_cosign` also refuses to sign a head whose
+`sth_hash` does not commit to its own fields, closing the same class at the write end.
+
+**Three vacuous passes closed alongside it** — a verifier that succeeds over nothing:
+
+- `threshold <= 0` made `count >= threshold` true for an anchor with **no signatures**, an **empty
+  allowlist**, and no witnesses in existence. A caller computing k from a config that failed to load got
+  "externally witnessed" for free. Now refused with an error, in the library and in the CLI.
+- An anchor over a store with **no receipt chain** is a valid signed head of nothing; witnesses co-sign
+  it and it verifies. `ok` keeps its narrow contract, but the result now carries `covers_history` and a
+  `limits` line, and the CLI prints a `NOTE`.
+- `detect_split_view` now reports `malformed`, naming any side whose head does not bind its own fields —
+  otherwise an auditor reads "inconsistent, no witness proof" when the answer is "that is not a head any
+  witness could have signed".
+
+**New: `inspeximus anchor` and `inspeximus witness`.** `witness_pool.py` and `witness_server.py` have
+worked since 1.34.0 and were reachable from no shell command at all, so the strongest operator-adversarial
+property in the package was invisible to anyone who did not read the source. `anchor`, `witness keygen`,
+`witness cosign`, `witness verify`, `witness split-view` and `witness serve`, with exit codes meant for
+CI (0 pass, 1 fail, 2 refused-to-co-sign or usage, 3 undetermined, 4 no Ed25519). A witness's `--state`
+file defaults to `<key>.state.json` rather than being optional: each CLI call is a fresh process, so a
+witness with no state file has no memory and can never refuse anything.
+
+**New: `docs/TRANSPARENCY.md`**, a cold-reader quickstart from an empty directory to a verified co-signed
+anchor, plus the worked split-view proof. Every command on the page is **executed** by
+`tests/test_witness_quickstart.py` and its output asserted, so the page cannot rot. Both controls are
+asserted in both directions: the detector fires on a divergent pair and stays silent on an identical one,
+a three-witness fork attempt cannot reach threshold at k=1, 2 or 3, and a tampered anchor fails —
+parametrised over all four committed fields, beside an honest anchor that must still pass.
+`examples/12_split_view_detection.py` runs the whole story. Prior art credited rather than reinvented:
+RFC 6962 (Certificate Transparency), Sigstore/Rekor.
+
 ## 1.89.0 - UPGRADE IF YOU USE `slash()`/`restore()`: a retraction could be lost, and it walked a stale graph
 
 Two defects on the accountability path, both found by adversarially reviewing a claim we were about to

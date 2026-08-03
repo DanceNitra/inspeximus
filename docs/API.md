@@ -233,7 +233,11 @@ well-known primitive, credited below.
   head). The write/tombstone receipts are hash-chained, but an operator who *holds the receipt key* can rewrite
   and re-chain the whole history so it still verifies internally. `anchor()` emits a compact commitment you
   publish/witness out of band; `verify_consistency(prior_anchor)` then catches a key-holder rewrite or rollback.
-  *Prior art: RFC 6962 (Laurie-Langley-Kasper 2013); Crosby-Wallach 2009; Schneier-Kelsey 1999.*
+  Independent witnesses co-sign that head (`witness_cosign`, `verify_cosigned_anchor`) so k-of-n makes a
+  **split view** — one history shown to one reader, another to another — detectable, and `detect_split_view`
+  turns two inconsistent co-signed heads into a fork proof attributable to a named key. **Quickstart with
+  runnable commands: [TRANSPARENCY.md](TRANSPARENCY.md)**; CLI: `inspeximus anchor`, `inspeximus witness`.
+  *Prior art: RFC 6962 (Laurie-Langley-Kasper 2013); Sigstore/Rekor; Crosby-Wallach 2009; Schneier-Kelsey 1999.*
 - **`forget_subject(subject, basis=, authorized_by=, authorization=)`** — right-to-erasure across derived
   lineage, with an erasure tombstone that binds the act to an **authenticated principal** (Ed25519 signature
   over the request, via `sign_erasure()`) and records the **decision basis** — both inside the tamper-evident

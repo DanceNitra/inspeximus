@@ -26,7 +26,7 @@ check co-signatures) -- the append-only guarantee comes from that external witne
 from __future__ import annotations
 import json
 import os
-from .core import Inspeximus, _sha256_hex, _canon, _GENESIS, __version__
+from .core import Inspeximus, _sha256_hex, _canon, _GENESIS, __version__, sth_hash_of
 
 BUNDLE_KIND = "inspeximus.audit_bundle/1"
 
@@ -245,9 +245,10 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     else:
         ok(f"erasure chain verifies from genesis: {len(tc)} tombstones -> anchor tip")
 
-    # (4) anchor internal consistency
-    recomputed = _sha256_hex(_canon({k: anchor.get(k) for k in
-                            ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")}))
+    # (4) anchor internal consistency. Shared with core.verify_cosigned_anchor / witness_cosign, which is
+    # the point: this check lived HERE only, so the primitive every other witness surface calls shipped
+    # without it and a field-substituted anchor verified as co-signed by 3 of 3 witnesses.
+    recomputed = sth_hash_of(anchor)
     if recomputed == anchor.get("sth_hash"):
         ok("anchor sth_hash is internally consistent")
     else:

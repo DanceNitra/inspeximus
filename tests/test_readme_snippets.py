@@ -149,7 +149,22 @@ def test_every_documented_cli_invocation_names_a_real_subcommand():
             if block.group(1).lower() not in ("", "bash", "sh", "console", "shell", "text"):
                 continue
             for line in block.group(2).splitlines():
-                m = re.match(r"\s*(?:\$\s*)?inspeximus((?:\s+--[\w-]+(?:[= ]\S+)?)*)\s+([\w-]+)\b", line)
-                if m and m.group(2) not in subs:
+                # POSITIONAL SCANNING CANNOT WORK HERE, and the regex that tried it manufactured its own
+                # finding -- the third time this file has hit that shape. `--path store.json` and
+                # `--receipts remember` are the same shape (flag, then a bare token), so a pattern that
+                # optionally eats a space-separated value read `inspeximus --receipts --path store.json
+                # remember ...` as subcommand `store` and reported four correct commands as broken. It
+                # never fired before only because no documented line put a value-taking global flag
+                # BETWEEN `inspeximus` and the subcommand.
+                # So ask the question the test actually cares about: does this documented command name a
+                # real subcommand ANYWHERE in its non-flag tokens? A typo'd or removed subcommand still
+                # names none, which is the defect being caught.
+                s = line.strip()
+                s = s[1:].strip() if s.startswith("$") else s
+                toks = s.split()
+                if not toks or toks[0] != "inspeximus":
+                    continue
+                candidates = [t for t in toks[1:] if not t.startswith("-")]
+                if candidates and not (set(candidates) & subs):
                     bad.append(f"{os.path.basename(path)}: {line.strip()[:60]}")
     assert not bad, "documented CLI commands with no such subcommand: " + "; ".join(bad)
