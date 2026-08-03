@@ -1283,7 +1283,8 @@ class Inspeximus:
                  derived_from: list | None = None, attestation=None, derived: bool = False,
                  object: str | None = None, reaffirm: bool = False, capability: str | None = None,
                  pii=None, identity_confidence: float | None = None,
-                 user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> str:
+                 user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
+                 project: str | None = None) -> str:
         """Append-only raw capture. Stamped with an absolute UTC time; never edited afterward.
         mtype in {episodic, semantic, procedural} sets the decay prior (episodic fades fast,
         semantic slow, procedural barely); inferred from the text if not given. Pass it explicitly
@@ -1391,6 +1392,14 @@ class Inspeximus:
             rec["meta"]["aid"] = str(agent_id)
         if session_id is not None:
             rec["meta"]["sid"] = str(session_id)
+        # PROJECT / WORKSPACE STAMP (opt-in): which project this memory belongs to, for a store shared across
+        # several repos/workspaces by one coding agent. Stamped ONLY when a project is named -> an unstamped
+        # record is GLOBAL (visible from every project), which is what makes adopting a project scope
+        # non-destructive: memories written before you opted in stay reachable. recall(project=...) applies
+        # the same wildcard rule the uid/aid/sid hierarchy above uses. project=None leaves no stamp at all,
+        # so an unscoped store is byte-identical to one written before this existed.
+        if project is not None:
+            rec["meta"]["project"] = str(project)
         # TENANT STAMP: bind this write to the store's tenant so recall/supersession/erasure can isolate it.
         # Unbound stores (tenant=None) leave no tag -> byte-identical legacy.
         if self.tenant is not None:
@@ -2271,7 +2280,8 @@ class Inspeximus:
 
     def remember_decision(self, decision: str, because: str | None = None, context: str | None = None,
                           topic: str | None = None, tags=None, value: float = 2.0,
-                          capability: str | None = None, source=None, derived_from=None) -> str:
+                          capability: str | None = None, source=None, derived_from=None,
+                          project: str | None = None) -> str:
         """Capture a DECISION — the memory that actually matters and that a raw event-log misses. A coding/agent
         session logging only commands + file-states records the MECHANICS but not the CONCLUSIONS ("we decided X
         because Y"), so recall can't answer "what did we decide / send / choose". This stores the decision as a
@@ -2306,7 +2316,7 @@ class Inspeximus:
         # the CURRENT decision", "revert restores the prior one") described behaviour that did not happen.
         return self.remember(text, tags=(list(tags) if tags else []) + ["decision"], value=value,
                              mtype="procedural", key=key, object=(decision.strip() or None),
-                             meta=md, capability=capability,
+                             meta=md, capability=capability, project=project,
                              source={"doc": source} if isinstance(source, str) and source else source,
                              derived_from=derived_from or None)
 
@@ -5206,7 +5216,7 @@ class Inspeximus:
                reinforce: bool = True, trusted_only: bool = False, mmr: float | None = None,
                user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
                rerank_by: str | None = None, resolve_conflicts: bool = False,
-               suppress_stale_values: bool = False) -> list[dict]:
+               suppress_stale_values: bool = False, project: str | None = None) -> list[dict]:
         """Top-k memories by RELEVANCE × VALUE — high-value memories outrank merely-similar ones.
         Memories the dream pass flagged as hubs (universal matchers) are skipped unless include_hubs.
 
@@ -5228,6 +5238,13 @@ class Inspeximus:
         entity where={"speaker": {"$in": ["Caroline","Mel"]}}. NOTE: this is a HARD filter — a record that
         doesn't match is removed, so on lossy/predicted extraction prefer a broad/loose filter (or rerank)
         over an aggressive one, since a wrong filter hard-deletes the answer (measured harm mode).
+
+        project (OPT-IN, default None -> zero behaviour change): restrict the pool to memories written for
+        this project/workspace, PLUS every memory that carries no project stamp. Records stamped for a
+        DIFFERENT project are dropped before ranking. Pair it with remember(project=...). The
+        unstamped-is-global rule is deliberate: a store written before you adopted project scoping has no
+        stamps, so adopting one narrows what you see WITHOUT hiding anything you already had. Pass
+        project=None to search across every project (the "I know I wrote this somewhere" query).
 
         influence_only (OPT-IN, default False -> zero behavior change): restrict the result to CORROBORATED
         memories — those that meet the same bar inspeximus uses for episodic->semantic GRADUATION (an EARNED
@@ -5365,6 +5382,17 @@ class Inspeximus:
         # one scope's memories into another's recall. scope=None (default) sees everything (legacy behavior).
         if scope is not None:
             pool = [r for r in pool if (r.get("meta") or {}).get("scope") == scope]
+        # PROJECT / WORKSPACE isolation (opt-in): one store, several repos. A named project sees its OWN
+        # memories plus every UNSTAMPED (global) one — the same wildcard rule the uid/aid/sid hierarchy below
+        # uses, and the reason opting in is non-destructive: everything written before you passed a project is
+        # unstamped, so it stays reachable from every project instead of vanishing the day you adopt a scope.
+        # A record stamped for ANOTHER project is filtered out HERE, before ranking, so a peer project's
+        # memories cannot occupy top-k slots and then be dropped (which would silently shrink k).
+        # project=None (default) filters nothing at all — byte-identical legacy behaviour, and the way to
+        # search ACROSS projects deliberately.
+        if project is not None:
+            pool = [r for r in pool
+                    if (r.get("meta") or {}).get("project") in (None, str(project))]
         # MEMORY HIERARCHY visibility (user > agent > session): when the query names any of user/agent/session,
         # a memory is visible iff, for each NAMED level, the memory is EITHER unscoped at that level (wildcard)
         # OR equal to the query's value; an UNNAMED query level is unconstrained. So (a) a session query sees that

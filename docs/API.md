@@ -15,7 +15,8 @@ inspeximus forget --key deploy-channel        # or --id <id> / --contains <subst
 inspeximus stats               # store summary   ·   add --json to any command for scripting
 ```
 
-It shares one store with the MCP server (`--path`, else `$INSPEXIMUS_PATH`, else `./inspeximus_memory.json`). Recall is
+It shares one store with the MCP server (`--path`, else `$INSPEXIMUS_PATH`, else `$INSPEXIMUS_SCOPE`, else
+`./inspeximus_memory.json` — see [Working across several projects](#working-across-several-projects)). Recall is
 lexical by default; set `$INSPEXIMUS_EMBED_URL` (+ `$INSPEXIMUS_EMBED_MODEL`) to any OpenAI-compatible `/embeddings`
 endpoint (e.g. local Ollama) for semantic recall. Zero dependencies.
 
@@ -79,6 +80,60 @@ gold-blind reader** (proper nouns in round-1 that are absent from the question) 
   already measured as null on this corpus. It is the honest floor for the surface, and it is the argument for
   the design — the gain lives in the reader, which is why the loop is handed to the caller's model rather
   than faked inside the library.
+
+## Working across several projects
+
+One agent, several repos, one store: by default a session in repo A recalls what it wrote in repo B. inspeximus
+separates the two questions that hide behind "project", because they have different answers.
+
+**Which store file am I on?** The default store path is a *relative* filename, and an MCP stdio server does not
+choose its own working directory — the host does. So the same config could reach a different store depending on
+where the client happened to start, and nothing said so: writes succeeded, recalls came back empty, and the
+memories were one directory away.
+
+```bash
+INSPEXIMUS_SCOPE=project    # store at <git-root>/.inspeximus/memory.json — an ABSOLUTE path,
+                            # identical from every directory inside the repo, different between repos
+INSPEXIMUS_SCOPE=user       # today's behaviour, stated explicitly (the cwd-relative default filename)
+```
+
+Unset means `user`, so nothing changes for anyone who does not ask. A `project` scope with **no enclosing git
+repository raises** rather than quietly falling back to the cwd-relative default — that fallback would
+reintroduce the exact cwd-dependence the scope was set to remove. An explicit `--path`/`$INSPEXIMUS_PATH`
+outranks the scope; the MCP `where_am_i` tool reports which rule actually won, so a scope that was silently
+outranked looks different from a scope that did not work.
+
+**Which memories inside that store can I see?** A separate, composable axis — one store, several project scopes:
+
+```bash
+inspeximus-mcp --project web-app          # or INSPEXIMUS_PROJECT=web-app; 'auto' derives it from the cwd basename
+```
+
+Writes are stamped with the project; recalls return that project's memories **plus every memory carrying no
+project stamp**. That wildcard rule is what makes adoption non-destructive: a store written before you adopted a
+scope has no stamps, so opting in narrows what you see *without hiding anything you already had*. It mirrors the
+rule `recall()` already uses for the `user_id`/`agent_id`/`session_id` hierarchy, and the two axes intersect
+rather than override each other.
+
+From Python the same thing is two keyword arguments:
+
+```python
+m.remember("the deploy channel is BLUE-9", project="web-app")
+m.recall("deploy channel", project="web-app")   # web-app's memories + every unstamped one
+m.recall("deploy channel")                      # project=None searches EVERY project
+```
+
+The escape hatch for "I know I wrote this somewhere" is `recall(all_projects=True)` over MCP (`project=None` in
+Python); each hit then names the project it came from. `projects()` lists the scopes present with a count each,
+and `where_am_i()` reports the resolved store path, which rule chose it, and the active scope.
+
+**One honest limit.** Supersession keys are global to the store and are **not** namespaced by project. Two
+projects writing the same `key` (or the same `remember_decision` `topic`, which becomes `decision::<topic>`) still
+supersede one another, and under a project scope the loser then sees *nothing* rather than the other project's
+value. Namespacing the key space would change `revert(key)`, `history(key)` and every `decision::<topic>` already
+stored for existing users, so this is documented rather than silently changed: qualify the topic per project
+(`topic="web-app/database"`), or give each project its own store with `INSPEXIMUS_SCOPE=project`, which isolates
+the key space too.
 
 ## Claude Code: deterministic auto-capture memory (1.10.0)
 

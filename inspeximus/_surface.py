@@ -43,9 +43,70 @@ def echo_guard_default() -> bool:
     return _resolve_echo_guard()
 
 
-def resolve_path(path=None) -> str:
-    """`--path`, else `$INSPEXIMUS_PATH`, else the documented default filename."""
-    return path or os.environ.get("INSPEXIMUS_PATH") or "inspeximus_memory.json"
+class StoreScopeError(ValueError):
+    """`INSPEXIMUS_SCOPE` asked for a store location that could not be resolved."""
+
+
+def find_project_root(cwd=None):
+    """The nearest enclosing git repository root, or None. Zero dependencies: walks up looking for `.git`.
+
+    `.git` is accepted as a DIRECTORY or a FILE — a git worktree and a submodule both carry a `.git` file
+    holding a `gitdir:` pointer, and treating only the directory as a repo would silently fail to find the
+    root in exactly those checkouts (this repo's own development happens in worktrees).
+    """
+    p = os.path.abspath(cwd or os.getcwd())
+    while True:
+        if os.path.exists(os.path.join(p, ".git")):
+            return p
+        parent = os.path.dirname(p)
+        if parent == p:                       # filesystem root reached
+            return None
+        p = parent
+
+
+def resolve_path(path=None, *, env=None, cwd=None) -> str:
+    """`--path`, else `$INSPEXIMUS_PATH`, else `$INSPEXIMUS_SCOPE`, else the documented default filename.
+
+    THE BUG THIS CLOSES. The default is the RELATIVE filename `inspeximus_memory.json`, and an MCP stdio
+    server does not choose its own working directory — the host does. So the same agent, with the same
+    config, talked to a DIFFERENT store depending on where its client happened to start, and nothing said
+    so: writes succeeded, recalls came back empty, and the store that held the memories was one directory
+    away. Silent, and worse than having no scoping at all.
+
+    `INSPEXIMUS_SCOPE` (opt-in) fixes it by anchoring the store to something stable:
+        user     — today's behaviour, stated explicitly (the cwd-relative default filename).
+        project  — `<git-root>/.inspeximus/memory.json`, an ABSOLUTE path. Identical from every directory
+                   inside the repo; different between repos.
+    UNSET is `user`, so nothing changes for anyone who does not ask.
+
+    A `project` scope with no enclosing git repository RAISES rather than falling back to the cwd-relative
+    default — the fallback would reintroduce the very cwd-dependence the scope was set to remove, and would
+    do it silently, which is how a store ends up "empty" for reasons nobody can see.
+
+    PRECEDENCE: an explicit `--path` or `$INSPEXIMUS_PATH` beats the scope, because naming a file is the
+    more specific instruction. That combination is reported by the MCP `where_am_i` tool (`path_source`)
+    rather than left to be inferred — a scope silently outranked is the same class of defect as a scope
+    silently resolved.
+    """
+    env = os.environ if env is None else env
+    if path:
+        return path
+    from_env = env.get("INSPEXIMUS_PATH")
+    if from_env:
+        return from_env
+    scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
+    if scope in ("", "user"):
+        return "inspeximus_memory.json"
+    if scope == "project":
+        root = find_project_root(cwd)
+        if root is None:
+            raise StoreScopeError(
+                f"INSPEXIMUS_SCOPE=project needs an enclosing git repository, and none was found above "
+                f"{os.path.abspath(cwd or os.getcwd())!r}. Refusing to fall back to the working-directory "
+                f"default, because that is the cwd-dependent behaviour this scope exists to remove. "
+                f"Either run inside a repository, or set INSPEXIMUS_PATH to an absolute file.")
+        return os.path.join(root, ".inspeximus", "memory.json")
+    raise StoreScopeError(f"INSPEXIMUS_SCOPE={scope!r} is not a known scope; use 'user' or 'project'")
 
 
 def open_store(path=None, *, receipts: bool = False, persist_vectors: bool = False, embed=None,
