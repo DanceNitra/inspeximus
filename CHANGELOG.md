@@ -3,6 +3,52 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.0.2 - UPGRADE IF YOU RUN THE EXAMPLES: five of them could not work on a plain install, and the test that watched them could not see it
+
+**No library behaviour changes.** Packaging, examples and the check that should have caught this.
+
+`pip install inspeximus` gives a package with zero dependencies, which is the point. Five examples sign
+with Ed25519 and therefore need `cryptography`, so on a clean machine they raise:
+
+```
+RuntimeError: signing write receipts needs the `cryptography` package
+```
+
+Affected: `04_encryption`, `06_gdpr_erasure_receipt`, `07_witness_pool`, `12_split_view_detection`,
+`trust_is_not_truth`. Measured on a fresh virtualenv against the released 2.0.1: **6 of 15 examples
+failed**, five for that reason and one needing `langgraph`.
+
+**There was no `crypto` extra**, so `pip install "inspeximus[crypto]"` -- the form everyone guesses --
+installed nothing extra and failed identically, which is the most confusing possible outcome. The extra
+now exists.
+
+### Why the existing test said nothing
+
+`tests/test_examples_run.py` has run every example on every suite run for months, and it was green. It
+invokes them with `sys.executable`, the developer's interpreter, and the base CI leg installs
+`pytest cryptography pyyaml` -- so `cryptography` is present in **both** places the check ever runs. The
+five failing examples passed there while failing for every reader. The check ran in the one environment
+where the defect could not occur.
+
+### The fix, and it is the check rather than the packaging
+
+A second sweep runs each example with every non-stdlib optional import BLOCKED, reproducing
+`pip install inspeximus` regardless of what the machine has. Each example must then either run clean, or
+declare its dependency in `NEEDS`, with the failure mentioning that dependency so a reader can act on it,
+and the named dependency must resolve to an extra `pyproject.toml` actually defines.
+
+Blocking imports rather than building a virtualenv per example is deliberate: milliseconds instead of
+minutes, and it cannot be defeated by whatever the CI image happens to ship.
+
+Mutation-tested rather than asserted. Removing the `trust_is_not_truth` declaration fails that exact
+parameter; pointing the `crypto` extra at the wrong package fails the extras check as well. Both were
+run and both were caught, because a guard nobody has watched fire is a guard nobody has tested.
+
+### Also
+
+README's quickstart names the crypto extra and lists the five examples, instead of leaving a reader to
+discover it from a traceback.
+
 ## 2.0.1 - UPGRADE IF YOU RAN 2.0.0: nothing could mature into the semantic tier, and nothing said so
 
 **BEHAVIOUR FIX.** 2.0.0 made `recall(reinforce=...)` default to False so a read stops writing. Episodic
