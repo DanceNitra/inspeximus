@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.0.2"
+__version__ = "2.1.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -7962,11 +7962,19 @@ class Inspeximus:
                             # (earned credit, or >=2 links — same bar as graduation). An uncorroborated
                             # single contradiction is recorded as a link but does NOT override a standing
                             # fact (resists single-shot poison flips). Default OFF -> legacy fast behavior.
-                            if self.supersede_requires_corroboration:
-                                _ng = float(newer.get("good", 0) or 0); _nb = float(newer.get("bad", 0) or 0)
-                                if not ((_ng > 0 and _ng >= _nb) or len(newer.get("links") or []) >= 2):
-                                    a["links"].append(b["id"]); linked += 1
-                                    continue
+                            if self.supersede_requires_corroboration and not                                     self._graduation_corroborated(newer, _by_id):
+                                # The SAME predicate as graduation and the influence gate, which is what
+                                # the comment above always claimed and what the code did not do. It used
+                                # to read `len(newer["links"]) >= 2` -- a raw LINK COUNT. That required
+                                # neither distinct sources nor verified keys, so it was strictly weaker
+                                # than the bar it named, and `strict_corroboration = True` did not touch
+                                # it at all: measured, an attacker with ONE source string and two filler
+                                # links overturned a standing fact with strict corroboration ON, while
+                                # the graduation bar rejected the identical shape. Asked directly by
+                                # yun520-1 (DeepSeek-V3#1462) whether corroboration here is counted from
+                                # the forgeable dimension; it was counted from something weaker still.
+                                a["links"].append(b["id"]); linked += 1
+                                continue
                             # Persistence (CUSUM) guard: supersede only once the NEW state is asserted by
                             # >= supersede_persistence independent records (the change has persisted). Count
                             # active records that (i) match newer's value/polarity and (ii) contradict older —

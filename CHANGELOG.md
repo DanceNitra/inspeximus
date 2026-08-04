@@ -3,6 +3,49 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.1.0 - UPGRADE IF YOU SET `supersede_requires_corroboration`: it was counting raw links, not sources
+
+**BEHAVIOUR CHANGE, opt-in flag only.** The guard's own comment said "same bar as graduation (earned
+credit, or >=2 links)". The code read `len(newer["links"]) >= 2` -- a raw LINK COUNT, requiring neither
+distinct sources nor verified keys -- while graduation counts distinct canonical sources, or distinct
+Ed25519 keys under `strict_corroboration`. The guard was strictly weaker than the bar it named, and
+`strict_corroboration = True` did not touch it.
+
+Measured on a fixture that reaches the guard: an attacker holding ONE source string and two filler
+records it also wrote overturned a standing fact. The old predicate returned True; the graduation bar
+returned False on the identical records.
+
+| | old predicate | new | standing fact |
+|---|---|---|---|
+| one actor, one source, two self-supplied links | True | **False** | stays **active** |
+| legitimate change, three distinct sources | True | True | correctly superseded |
+
+The guard now calls `_graduation_corroborated` -- the same function, not a similar rule, so the two
+cannot drift apart again. That is what the comment always claimed.
+
+### The measurement mistake, kept because it is the useful part
+
+The first investigation reported that the attacker wins even with `strict_corroboration` on. That was
+true and measured off the WRONG PATH: both records were written under the same `key`, so keyed
+last-write-wins superseded at WRITE time and the consolidate-time guard never executed. The number
+looked like evidence for the bug and was evidence of something else. The regression test therefore
+carries a control asserting that with the guard OFF the fixture DOES supersede via `state_toggle` --
+without it, the two real assertions are satisfied by a fixture that never reaches the guard.
+
+Mutation-tested: restoring the old raw-link predicate fails the attacker assertion and nothing else.
+
+### A limit now written down rather than rediscovered
+
+The keyed path bypasses this guard by design. Writing the same `key` supersedes at write time under
+last-write-wins with no corroboration asked for at all -- whoever knows the key overturns the fact in
+one write, no sources, no links, no attestation. That is the keyed-supersession model working as
+intended, and it is also the most forgeable route in the substrate. `test_the_keyed_path_bypasses_this_guard_by_design`
+asserts it so the scope of the guard is stated instead of implied.
+
+Found by answering a direct question from yun520-1 on deepseek-ai/DeepSeek-V3#1462, who asked whether
+corroboration here is counted from source strings -- the forgeable dimension. It was counted from
+something weaker still.
+
 ## 2.0.2 - UPGRADE IF YOU RUN THE EXAMPLES: five of them could not work on a plain install, and the test that watched them could not see it
 
 **No library behaviour changes.** Packaging, examples and the check that should have caught this.
