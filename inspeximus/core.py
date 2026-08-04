@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.1.1"
+__version__ = "2.1.2"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2640,6 +2640,25 @@ class Inspeximus:
         sup.sort(key=lambda r: r.get("superseded_ts", r.get("ts", 0)))
         return sup[-1].get("object") if sup else None
 
+    def _flag_contested(self, rec: dict, reason: str, contra_object, meta) -> None:
+        """Mark a record CONTESTED from the consolidation path, without the observe() flow's side effects.
+
+        `_do_reopen` belongs to `observe()`, where an accrual has just reached its threshold and is being
+        consumed -- which is why it pops `_reopen_contra`/`_reopen_support` and force-saves. Called from
+        `consolidate()` those are both wrong: the pop destroys an accrual another party is part-way
+        through (measured: one attacker write reset a 1-of-2 observation), and the force-save fires per
+        pair inside an O(n^2) loop. This sets the flag and nothing else; the pass saves once at the end."""
+        m = rec.setdefault("meta", {})
+        rec["reopened"] = True
+        rec["reopened_ts"] = time.time()
+        m["reopened_reason"] = reason
+        m.setdefault("reopened_surfaced_prior", None)
+        if contra_object is not None:
+            m["reopened_contradiction"] = contra_object
+        if meta:
+            m.setdefault("reopened_meta", {}).update(meta)
+        self._dirty = True
+
     def _do_reopen(self, cur: dict, prior, reason: str, contra_object, meta) -> dict:
         m = cur.setdefault("meta", {})
         # flag, NOT a status change: the record stays 'active' so recall() still returns it as the current best
@@ -2674,7 +2693,10 @@ class Inspeximus:
             m = r.get("meta", {})
             out.append({"id": r["id"], "key": r.get("key"), "object": r.get("object"), "text": r.get("text"),
                         "reason": m.get("reopened_reason"), "surfaced_prior": m.get("reopened_surfaced_prior"),
-                        "contradiction": m.get("reopened_contradiction")})
+                        "contradiction": m.get("reopened_contradiction"),
+                        # WHICH record contested this one. Without it a steward facing N entries from one
+                        # unverified source has N investigations instead of one filter.
+                        "contested_by": (m.get("reopened_meta") or {}).get("contested_by")})
         return out
 
     def resolve_reopened(self, rid: str, decision: str, capability: str | None = None) -> dict:
@@ -7986,8 +8008,15 @@ class Inspeximus:
                                 # value tells the reader a retraction arrived. It did not.
                                 # The cost is stated rather than hidden: the default is noisier now,
                                 # because every refused single-source claim marks the record it targeted.
-                                self._do_reopen(a, None, "uncorroborated_contradiction",
-                                                b.get("object"), {"contested_by": b["id"]})
+                                # BOTH records, because both survive a refused overturn and because
+                                # picking one made the flag depend on sort order: `older` is decided by
+                                # `_vf`, and two writes in the same clock tick tie, so it fell back to
+                                # the `-value` sort -- reachable by an attacker. Measured on 2.1.1: a
+                                # boosted contradiction moved the flag onto the ATTACKER's record and
+                                # left a plain recall() of the surviving value showing under_review=None.
+                                for _r, _o in ((older, newer), (newer, older)):
+                                    self._flag_contested(_r, "uncorroborated_contradiction",
+                                                         _o.get("object"), {"contested_by": _o["id"]})
                                 continue
                             # Persistence (CUSUM) guard: supersede only once the NEW state is asserted by
                             # >= supersede_persistence independent records (the change has persisted). Count
@@ -8003,6 +8032,15 @@ class Inspeximus:
                                     and (_value_clash(older["text"], r["text"]) or _negation_clash(older["text"], r["text"])))
                                 if support < self.supersede_persistence:
                                     a["links"].append(b["id"]); linked += 1
+                                    # The second guard reaching this same refusal. 2.1.1 gave the flag
+                                    # to the corroboration guard only, so a store hardened with
+                                    # persistence alone still refused overturns SILENTLY.
+                                    for _r, _o in ((older, newer), (newer, older)):
+                                        self._flag_contested(_r, "insufficient_persistence",
+                                                             _o.get("object"),
+                                                             {"contested_by": _o["id"],
+                                                              "support": support,
+                                                              "required": self.supersede_persistence})
                                     continue
                             older["status"] = "superseded"
                             older["superseded_ts"] = time.time()
