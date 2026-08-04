@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -7974,6 +7974,20 @@ class Inspeximus:
                                 # yun520-1 (DeepSeek-V3#1462) whether corroboration here is counted from
                                 # the forgeable dimension; it was counted from something weaker still.
                                 a["links"].append(b["id"]); linked += 1
+                                # FAIL LOUD, not just fail safe. Refusing the overturn is only half the
+                                # job: a consumer calling plain recall() used to see the correct live
+                                # value and nothing else, because the only trace was an extra UNLABELLED
+                                # link -- indistinguishable from any other link. The same substrate
+                                # already flags contested records via observe() -> reopened(), so one of
+                                # its two contradiction paths simply was not using its own fail-loud
+                                # channel. Measured before this change: under_review=None on the blocked
+                                # path, under_review=True on the observe() path, identical situation.
+                                # Raised by yun520-1 (DeepSeek-V3#1466) asking whether a surviving live
+                                # value tells the reader a retraction arrived. It did not.
+                                # The cost is stated rather than hidden: the default is noisier now,
+                                # because every refused single-source claim marks the record it targeted.
+                                self._do_reopen(a, None, "uncorroborated_contradiction",
+                                                b.get("object"), {"contested_by": b["id"]})
                                 continue
                             # Persistence (CUSUM) guard: supersede only once the NEW state is asserted by
                             # >= supersede_persistence independent records (the change has persisted). Count

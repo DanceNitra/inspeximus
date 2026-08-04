@@ -3,6 +3,41 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.1.1 - UPGRADE IF YOU SET `supersede_requires_corroboration`: a refused overturn is now visible to the reader
+
+2.1.0 made the guard refuse an uncorroborated overturn. It did not tell anyone. A consumer calling
+plain `recall(query)` saw the correct live value and no sign that a retraction had arrived and been
+rejected -- the only trace was an extra link on the record, unlabelled and indistinguishable from any
+other link.
+
+The substrate already has a fail-loud channel: `observe()` marks a contested record `under_review` and
+lists it in `reopened()`, and that flag rides on the record, so a reader who does nothing special sees
+it. One of the two contradiction paths simply was not using it. Measured on the least curious consumer
+possible, a plain `recall()` with no options:
+
+| | before 2.1.1 | after |
+|---|---|---|
+| contradiction refused by the corroboration bar | `under_review = None` | **`under_review = True`**, reason `uncorroborated_contradiction` |
+| contradiction arriving via `observe()` | `under_review = True` | unchanged, reason `novel_support_contradiction` |
+| no contradiction at all | silent | silent |
+
+The two reasons are distinct so a consumer can tell which path flagged the record.
+
+**The cost, stated rather than buried.** The opt-in path is noisier now: every refused single-source
+claim marks the record it targeted, and those land in `reopened()` for steward review. That is the
+trade against a continuous-weight design, where the same event is a small negative increment nobody
+has to look at. A test asserts the other side of it -- a properly corroborated correction must NOT
+leave a review flag, or the queue fills with resolved cases and stops being read.
+
+**What is deliberately unchanged:** the contested value is still RETURNED. A substrate that withholds
+it leaves the agent with nothing, which is a different failure rather than a safer one. We fail loud
+by annotating, never by hiding.
+
+Mutation-tested: removing the flag fails the visibility assertion and nothing else.
+
+Raised by yun520-1 on deepseek-ai/DeepSeek-V3#1466, asking whether a surviving live value tells the
+reader a retraction arrived. On one of the two paths it did not.
+
 ## 2.1.0 - UPGRADE IF YOU SET `supersede_requires_corroboration`: it was counting raw links, not sources
 
 **BEHAVIOUR CHANGE, opt-in flag only.** The guard's own comment said "same bar as graduation (earned
