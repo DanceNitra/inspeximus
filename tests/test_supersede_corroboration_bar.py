@@ -125,3 +125,48 @@ def test_the_keyed_path_bypasses_this_guard_by_design():
     assert _policy(m, standing) == "keyed_lww", (
         f"expected the keyed last-write-wins path, got {_policy(m, standing)!r}; if this changed, the "
         f"limit documented here is stale")
+
+
+# ── the blocked contradiction must be VISIBLE, not merely blocked ────────────────────────────────
+
+def test_a_blocked_contradiction_is_surfaced_to_a_plain_reader():
+    """Refusing the overturn is half the job; the other half is telling the consumer.
+
+    Before 2.1.1 a caller doing `recall(query)` and nothing else saw the correct live value and no
+    indication that a retraction had arrived and been refused. The only trace was an extra link on the
+    record, unlabelled and indistinguishable from any other link. The same substrate already flags
+    contested records through `observe()` -> `reopened()`, so one of its two contradiction paths was
+    not using its own fail-loud channel."""
+    m, standing = _toggle_fixture(ATTACKER, guard=True)
+    m.consolidate()
+    assert _status(m, standing) == "active", "precondition: the overturn must have been refused"
+
+    hits = [h for h in (m.recall("the office printer is on floor 3", k=10) or []) if h["text"] == STANDING]
+    assert hits, "the contested value must still be RETURNED; hiding it is a different failure"
+    assert hits[0].get("under_review") is True, (
+        "a plain recall() gave no sign that a retraction had arrived and been refused")
+    assert hits[0].get("review_reason") == "uncorroborated_contradiction", (
+        f"expected the blocked-supersession reason, got {hits[0].get('review_reason')!r}")
+    assert m.reopened(), "the steward queue does not list the contested record"
+
+
+def test_control_a_store_with_no_contradiction_stays_silent():
+    """Without this, the assertion above is satisfied by a flag that is always on."""
+    m = Inspeximus(path=None)
+    m.supersede_requires_corroboration = True
+    m.remember(STANDING, key="printer::a")
+    m.consolidate()
+    hits = m.recall("the office printer is on floor 3", k=10) or []
+    assert hits, "the fixture returns nothing at all, so the flag test measures nothing"
+    assert hits[0].get("under_review") is None, "a record with no contradiction is flagged as contested"
+    assert not m.reopened(), "the steward queue is populated with a record nobody contradicted"
+
+
+def test_a_corroborated_overturn_does_not_leave_a_review_flag():
+    """A legitimate change should settle the record, not park it in the steward queue."""
+    m, standing = _toggle_fixture(LEGITIMATE, guard=True)
+    m.consolidate()
+    assert _status(m, standing) == "superseded", "precondition: the corroborated change must go through"
+    assert not m.reopened(), (
+        "a properly corroborated correction left the old record flagged for review; the queue will "
+        "fill with resolved cases and stop being read")
