@@ -3,6 +3,51 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.1.2 - UPGRADE IF YOU RAN 2.1.1: the review flag it added could land on the attacker's record
+
+2.1.1 gave the corroboration guard a fail-loud flag and shipped three defects with it. All three were
+found by an adversarial review of the *reply* explaining the release, not by the gate, which passed
+8/8 with 2456 tests.
+
+**The flag depended on sort order.** It was set on the outer loop's anchor, and that loop sorts by
+`-value`. Which record counts as "standing" is decided by `valid_from`/`ts`, and two writes in the same
+clock tick tie -- so the decision fell through to the value order, which an attacker reaches through
+reinforcement or credit. Measured: boosting the contradiction's value moved the flag onto the
+ATTACKER's record and left a plain `recall()` of the surviving value showing `under_review=None`,
+exactly the state 2.1.1 was cut to end. Both records now carry the flag, because both survive a refused
+overturn and picking one re-introduces the ordering dependence.
+
+**Only one of the two guards had it.** `supersede_persistence` reaches the same refusal and had no flag
+at all, so a store hardened with persistence alone still refused overturns silently.
+
+**Consolidation was borrowing the wrong function.** `_do_reopen` belongs to the `observe()` flow, where
+an accrual has just reached its threshold and is being consumed -- which is why it pops
+`_reopen_contra`/`_reopen_support` and force-saves. Called from `consolidate()` both are wrong:
+measured, a single attacker write reset another party's in-flight 1-of-2 observation, and the
+force-save fired per pair inside an O(n^2) loop. New `_flag_contested` sets the flag and nothing else.
+
+**`reopened()` now returns `contested_by`.** It was written into meta and never surfaced, so a steward
+facing N entries from one unverified source had N investigations instead of one filter.
+
+### Written as properties first, and two of them were wrong
+
+`tests/test_blocked_overturn_properties.py` was written BEFORE the fix, against released 2.1.1, where
+it fails 5 times; it passes 11/11 after. Two of the properties had to be corrected by measurement
+rather than by argument:
+
+* the queue property started as `reopened() <= 1`. That is an arbitrary cap, and it is wrong: if one
+  actor contests eight genuine facts, eight facts ARE contested and every reader deserves to know.
+  Capping suppresses true information to make a number look good. The real property is that the queue
+  is TRIAGEABLE -- every entry names its reason and the record that contested it.
+* the annotation property demanded a flag in a case where the contradiction had simply LOST: under one
+  configuration the attacker's own record is superseded, nothing is contested, and flagging the winner
+  would be a false alarm. The test now separates three outcomes -- guard failed, dispute resolved,
+  dispute unresolved -- and only the last owes the reader a warning.
+
+**Unchanged and deliberate:** both guards remain opt-in and OFF by default; in the default build a
+contradicting write still supersedes. And the contested value is still returned -- we annotate rather
+than withhold.
+
 ## 2.1.1 - UPGRADE IF YOU SET `supersede_requires_corroboration`: a refused overturn is now visible to the reader
 
 2.1.0 made the guard refuse an uncorroborated overturn. It did not tell anyone. A consumer calling
