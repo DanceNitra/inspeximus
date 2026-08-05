@@ -85,7 +85,9 @@ class _Trace:
 def traced(monkeypatch):
     records, questions = _tiny_corpus()
     tr = _Trace().install(monkeypatch)
-    result = P.arm_admit_write_path(records, questions, sample=8, n_admits=25, seed=7)
+    # repeats=1: these assertions are about the ARRANGEMENT of one paired trial. The repetition
+    # contract is asserted separately below.
+    result = P.arm_admit_write_path(records, questions, sample=8, n_admits=25, seed=7, repeats=1)
     return tr, result
 
 
@@ -136,7 +138,8 @@ def test_the_excess_is_the_raw_figure_minus_the_control(traced):
     assert None not in (raw, ctl, excess)
     assert excess == pytest.approx(max(0.0, raw - ctl), abs=1e-9), (
         f"excess {excess} is not max(0, raw {raw} - control {ctl})")
-    assert r["attributable_to_admit"] == (raw - ctl > 1e-9)
+    assert r["attributable_resolution"] == pytest.approx(1.0 / 8, abs=1e-9), (
+        "the arm did not report the grain it can actually resolve")
 
 
 def test_the_headline_aggregate_uses_the_excess_not_the_raw_figure():
@@ -171,3 +174,36 @@ def test_the_control_control_the_trace_can_actually_see_a_broken_arrangement():
             "control from a present one")
     finally:
         P.build_store = real_build
+
+
+def test_one_trial_cannot_settle_this_so_the_arm_repeats():
+    """A threshold cannot separate the excess from the control's own noise; only repetition can.
+
+    Five consecutive single-trial runs of identical code on locomo_conv2 gave excesses
+    0.0250 / 0.0125 / 0.0000 / 0.0000 / 0.0000 -- so a lone trial announced "attributable to admit()"
+    one time in five with nothing to attribute. Any fixed bar either swallows a real small effect or
+    keeps admitting that noise; the sign across repeats does neither."""
+    records, questions = _tiny_corpus()
+    r = P.arm_admit_write_path(records, questions, sample=8, n_admits=25, seed=7, repeats=4)
+    assert r["n_trials"] == 4, "the arm did not run the requested number of paired trials"
+    for key in ("per_trial_divergence", "per_trial_time_control", "per_trial_excess"):
+        assert len(r[key]) == 4, f"{key} does not report every trial, so the spread is invisible"
+    assert r["trials_with_positive_excess"] <= r["n_trials"]
+    assert r["attributable_to_admit"] == (r["trials_with_positive_excess"] == r["n_trials"]), (
+        "the flag is not 'every trial agreed on the sign'; a median-plus-threshold reading is what "
+        "reported a finding once in five runs of code with a true excess of zero")
+
+
+def test_a_single_dissenting_trial_withdraws_the_attribution():
+    """The bar is EVERY trial, so one trial at zero must be enough to withdraw the claim.
+
+    Without this the all-positive rule could be satisfied by a majority rule that happens to agree on
+    the fixtures here."""
+    records, questions = _tiny_corpus()
+    r = P.arm_admit_write_path(records, questions, sample=8, n_admits=25, seed=7, repeats=3)
+    n, pos = r["n_trials"], r["trials_with_positive_excess"]
+    if 0 < pos < n:
+        assert not r["attributable_to_admit"], (
+            f"{pos} of {n} trials showed a positive excess and the arm still attributed it to admit()")
+    # and the contract holds by construction whatever this run produced
+    assert r["attributable_to_admit"] is (pos == n)

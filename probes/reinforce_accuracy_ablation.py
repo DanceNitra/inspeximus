@@ -710,7 +710,7 @@ def arm_query_order(records, questions, reinforce, orders=ORDERS, sample=None, s
     return r
 
 
-def arm_admit_write_path(records, questions, sample=80, n_admits=400, seed=7):
+def arm_admit_write_path(records, questions, sample=80, n_admits=400, seed=7, repeats=5):
     """(d) `admit()` and `remember_dedup()` call recall(t, k=1) with reinforcement ON.
 
     The candidates are EXACT COPIES of stored records, so a correct dedup rejects every one of them and
@@ -740,80 +740,105 @@ def arm_admit_write_path(records, questions, sample=80, n_admits=400, seed=7):
     """
     rng = random.Random(seed)
     qs = questions if len(questions) <= sample else rng.sample(questions, sample)
-    store, idx = build_store(records)
-    # The control store is built HERE, beside the treated one, not after the admits. Both must share a
-    # timeline: recall() recomputes decay from wall-clock age, so a control built later is younger and
-    # crosses its integer-second boundaries at different moments. Built after the fact it reported 0.0
-    # where the matched control reports the treated store's own figure -- i.e. it manufactured an
-    # "attributable to admit()" that is not there.
-    ctl_store, ctl_idx = build_store(records)
-    before, ctl_before = {}, {}
-    for text, gold in qs:
-        gs = set(gold) if isinstance(gold, (list, tuple)) else {gold}
-        before[text] = _score(store.recall(text, k=K, reinforce=False) or [], idx, gs)[2]
-        ctl_before[text] = _score(ctl_store.recall(text, k=K, reinforce=False) or [], ctl_idx, gs)[2]
-    n_before = len(store.items)
-    v_before = max_value(store)
-    admitted = 0
-    _t_admit = time.time()
-    for _ in range(n_admits):
-        res = store.admit(records[rng.randrange(len(records))])
-        if res.get("admitted"):
-            admitted += 1
-    v_after = max_value(store)
-    elapsed = time.time() - _t_admit
-    # THE CONTROL THAT THIS ARM SHIPPED WITHOUT, AND IT INVERTED THE RESULT. A second store, identical
-    # in every way, is left ALONE for exactly as long as the admits took. Measured on locomo_conv2:
-    # 400 admit() calls moved 20 of 80 answers -- and so did the control, with admit() never called.
-    # recall() recomputes decay per read, so a few seconds of wall clock reorders near-ties on its own,
-    # and everything this arm attributed to the write path was the clock. Whatever the control moves is
-    # not evidence about admit(); only the EXCESS is.
-    # INTERLEAVED, one query at a time across both stores. Run as two separate passes the control's
-    # reads land later than the treated store's, and since the quantity under test is itself a clock
-    # effect, that skew is measured as if it were the treatment.
-    ctl_changed = changed = changed_clean = clean_n = 0
-    for text, gold in qs:
-        gs = set(gold) if isinstance(gold, (list, tuple)) else {gold}
-        now = _score(store.recall(text, k=K, reinforce=False) or [], idx, gs)[2]
-        ctl_now = _score(ctl_store.recall(text, k=K, reinforce=False) or [], ctl_idx, gs)[2]
-        if ctl_now != ctl_before[text]:
-            ctl_changed += 1
-        if now != before[text]:
-            changed += 1
-        if now is not None:                 # None == a record appended by admit(), not a pre-existing one
-            clean_n += 1
-            if now != before[text]:
-                changed_clean += 1
-    texts = [it["text"] for it in store.items]
-    dupes = len(texts) - len(set(texts))
-    raw = (changed / len(qs)) if qs else None
-    ctl = (ctl_changed / len(qs)) if qs else None
+
+    def _trial():
+        """ONE paired trial: a treated store and a time-matched twin, read interleaved.
+
+        The twin is built HERE, beside the treated store, not after the admits. Both must share a
+        timeline -- recall() recomputes decay from wall-clock age, so a control built later is younger
+        and crosses its integer-second boundaries at different moments. Built after the fact it
+        reported 0.0000 and manufactured an "attributable to admit()" that is not there.
+        """
+        store, idx = build_store(records)
+        ctl_store, ctl_idx = build_store(records)
+        before, ctl_before = {}, {}
+        for text, gold in qs:
+            gs = set(gold) if isinstance(gold, (list, tuple)) else {gold}
+            before[text] = _score(store.recall(text, k=K, reinforce=False) or [], idx, gs)[2]
+            ctl_before[text] = _score(ctl_store.recall(text, k=K, reinforce=False) or [], ctl_idx, gs)[2]
+        n_before, v_before = len(store.items), max_value(store)
+        admitted = 0
+        t0 = time.time()
+        for _ in range(n_admits):
+            if store.admit(records[rng.randrange(len(records))]).get("admitted"):
+                admitted += 1
+        elapsed = time.time() - t0
+        # INTERLEAVED, one query at a time across both stores. Run as two separate passes, the control's
+        # reads land later than the treated store's, and since the quantity under test IS a clock effect
+        # that skew is measured as if it were the treatment.
+        ctl_changed = changed = changed_clean = clean_n = 0
+        for text, gold in qs:
+            gs = set(gold) if isinstance(gold, (list, tuple)) else {gold}
+            now = _score(store.recall(text, k=K, reinforce=False) or [], idx, gs)[2]
+            ctl_now = _score(ctl_store.recall(text, k=K, reinforce=False) or [], ctl_idx, gs)[2]
+            ctl_changed += (ctl_now != ctl_before[text])
+            changed += (now != before[text])
+            if now is not None:            # None == a record appended by admit(), not a pre-existing one
+                clean_n += 1
+                changed_clean += (now != before[text])
+        texts = [it["text"] for it in store.items]
+        return {"changed": changed, "ctl_changed": ctl_changed, "admitted": admitted,
+                "n_before": n_before, "n_after": len(store.items), "elapsed": elapsed,
+                "v_before": v_before, "v_after": max_value(store),
+                "dupes": len(texts) - len(set(texts)),
+                "changed_clean": changed_clean, "clean_n": clean_n}
+
+    # REPEATED, because one trial cannot resolve this. The excess is a difference between two noisy
+    # counts on the same grain, and on locomo_conv2 five consecutive trials of identical code gave
+    # excesses 0.0250 / 0.0125 / 0.0000 / 0.0000 / 0.0000 -- so a single trial reported "attributable
+    # to admit()" one time in five with nothing to attribute. A threshold cannot fix that; only
+    # repetition can. The flag below therefore asks for a SIGN, not a size: every trial positive.
+    trials = [_trial() for _ in range(max(1, int(repeats)))]
+    n_q = len(qs)
+    raws = [t["changed"] / n_q for t in trials] if n_q else []
+    ctls = [t["ctl_changed"] / n_q for t in trials] if n_q else []
+    excesses = [max(0.0, r - c) for r, c in zip(raws, ctls)]
+    positive = sum(1 for r, c in zip(raws, ctls) if r - c > 1e-9)
+
+    def _median(xs):
+        if not xs:
+            return None
+        ys = sorted(xs)
+        return ys[len(ys) // 2] if len(ys) % 2 else (ys[len(ys) // 2 - 1] + ys[len(ys) // 2]) / 2.0
+
+    last = trials[-1]
+    admitted = sum(t["admitted"] for t in trials)
     return {"property": "write-path read-purity: admit() calls recall(t, k=1) (core.py ~7002; "
-                        "remember_dedup() the same at ~2561). Read `divergence_excess_over_time_control`, "
-                        "NOT `divergence`: an untouched store moves on elapsed time alone.",
-            "seconds_admitting": round(elapsed, 2),
-            "time_control_changed": ctl_changed,
-            "time_control_divergence": round(ctl, 4) if ctl is not None else None,
-            "divergence_excess_over_time_control": (round(max(0.0, raw - ctl), 4)
-                                                    if raw is not None and ctl is not None else None),
-            "attributable_to_admit": bool(raw is not None and ctl is not None and raw - ctl > 1e-9),
-            "n_admit_calls": n_admits, "n_admitted": admitted,
+                        "remember_dedup() the same at ~2561). Read "
+                        "`divergence_excess_over_time_control`, NOT `divergence`: an untouched store "
+                        "moves on elapsed time alone, and the raw figure is mostly that.",
+            "n_trials": len(trials),
+            "per_trial_divergence": [round(r, 4) for r in raws],
+            "per_trial_time_control": [round(c, 4) for c in ctls],
+            "per_trial_excess": [round(e, 4) for e in excesses],
+            "trials_with_positive_excess": positive,
+            "divergence": round(_median(raws), 4) if raws else None,
+            "time_control_divergence": round(_median(ctls), 4) if ctls else None,
+            "divergence_excess_over_time_control": round(_median(excesses), 4) if excesses else None,
+            "attributable_resolution": round(1.0 / n_q, 4) if n_q else None,
+            # Every trial positive, not a median above some threshold. With 5 trials that is p = 1/32
+            # under a symmetric null, and it is the only reading that survived five repeats of code
+            # whose true excess is zero.
+            "attributable_to_admit": bool(trials and positive == len(trials)),
+            "seconds_admitting": round(sum(t["elapsed"] for t in trials), 2),
+            "time_control_changed": last["ctl_changed"],
+            "n_admit_calls": n_admits * len(trials), "n_admitted": admitted,
             "all_rejected_as_duplicates": admitted == 0,
             "dedup_failure": ("admit() appended %d byte-identical duplicates: on a reinforced ranking a "
                               "high-value hub outranks the identical record, so recall(t, k=1) hands the "
                               "similarity test the wrong neighbour" % admitted) if admitted else None,
-            "store_size_before": n_before, "store_size_after": len(store.items),
-            "exact_duplicate_texts_after": dupes,
-            "max_value_before": round(v_before, 3), "max_value_after": round(v_after, 3),
-            "n_queries": len(qs), "changed": changed,
-            "divergence": round(changed / len(qs), 4) if qs else None,
+            "store_size_before": last["n_before"], "store_size_after": last["n_after"],
+            "exact_duplicate_texts_after": last["dupes"],
+            "max_value_before": round(last["v_before"], 3), "max_value_after": round(last["v_after"], 3),
+            "n_queries": n_q, "changed": last["changed"],
             "divergence_confounded_by_admissions": admitted > 0,
-            "divergence_excluding_new_records": round(changed_clean / clean_n, 4) if clean_n else None,
-            "n_queries_excluding_new_records": clean_n,
-            "control": "candidates are exact copies of stored records. If `all_rejected_as_duplicates` "
-                       "is true the raw divergence is pure read-purity; when it is false, read "
-                       "`divergence_excluding_new_records` instead, which drops every answer that moved "
-                       "onto a newly appended record"}
+            "divergence_excluding_new_records": (round(last["changed_clean"] / last["clean_n"], 4)
+                                                 if last["clean_n"] else None),
+            "n_queries_excluding_new_records": last["clean_n"],
+            "control": "a time-matched twin store, built beside the treated one and read interleaved "
+                       "with it, is never handed to admit(). Whatever it moves is the clock; only the "
+                       "excess over it is evidence about the write path, and only when every trial "
+                       "agrees on the sign"}
 
 
 def decompose_divergence(records, questions, verbose=True, sample=None):
