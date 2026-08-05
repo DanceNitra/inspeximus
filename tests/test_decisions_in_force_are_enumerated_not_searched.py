@@ -39,17 +39,23 @@ CURRENT = "DECISION: publish releases from the trusted publisher workflow"
 RETIRED = "DECISION: publish releases from the tag-triggered pipeline"
 QUERY = "how does a release get published these days?"
 TOPIC = "release::channel"
+KEY = "decision::" + TOPIC
 
 
 def _store():
     """The correction case, buried in enough surface-similar noise to sink it in a ranked list."""
     m = Inspeximus(path=None)
-    retired = m.remember(RETIRED, key=TOPIC, tags=["decision"])
-    current = m.remember(CURRENT, key=TOPIC, tags=["decision"])
-    other = m.remember("DECISION: pin the reasoning budget to 16000", key="llm::budget",
-                       tags=["decision"])
+    # Written through the real API, so the fixture exercises the `decision::<topic>` convention the
+    # method keys on rather than an ad-hoc key invented by the test.
+    retired = m.remember_decision(RETIRED, topic=TOPIC)
+    current = m.remember_decision(CURRENT, because="the tag pipeline cannot mint the attestation",
+                                  topic=TOPIC)
+    other = m.remember_decision("pin the reasoning budget to 16000", topic="llm::budget")
     m.remember("file x.py :: current state -> pass", key="file:x.py", tags=["file"])
     m.remember("DECISION recorded without any key at all", tags=["decision"])
+    # An EVENT decision: a commit message. Keyed by SHA, unique forever, retracts nothing.
+    m.remember("DECISION: api: drop the tag-triggered publish path", key="commit::abc123def456",
+               tags=["decision", "commit"])
     for i in range(60):
         m.remember(f"draft: a short summary of how release and closed interact today {i}",
                    tags=["noise"])
@@ -70,7 +76,7 @@ def test_the_retired_decision_is_not():
 def test_one_record_per_key():
     m, _, _, _ = _store()
     keys = [r["key"] for r in m.decisions_in_force()]
-    assert sorted(keys) == ["llm::budget", TOPIC]
+    assert sorted(keys) == ["decision::llm::budget", KEY]
     assert len(keys) == len(set(keys)), "a key with two 'current' decisions is a supersession failure"
 
 
@@ -87,11 +93,26 @@ def test_an_unkeyed_decision_is_not_reported():
         "no key means nothing can supersede it, so it has no current-value semantics to report")
 
 
-def test_tag_none_enumerates_every_key():
+def test_tag_none_and_no_prefix_enumerates_every_key():
     m, _, _, _ = _store()
-    keys = {r["key"] for r in m.decisions_in_force(tag=None)}
-    assert "file:x.py" in keys and TOPIC in keys, (
-        "tag=None is the escape hatch for callers who key things other than decisions")
+    keys = {r["key"] for r in m.decisions_in_force(tag=None, key_prefix="")}
+    assert "file:x.py" in keys and KEY in keys, (
+        "the empty prefix with tag=None is the escape hatch for callers who key other things")
+
+
+def test_a_commit_is_an_event_and_is_not_in_force_by_default():
+    """The distinction the default exists for. A commit does not retract its predecessor, so every
+    commit is 'current' forever; enumerating them returns the project's whole history and buries the
+    handful of decisions that actually hold."""
+    m, _, _, _ = _store()
+    assert not any(str(r["key"]).startswith("commit::") for r in m.decisions_in_force())
+
+
+def test_but_the_commit_log_is_still_reachable_on_request():
+    m, _, _, _ = _store()
+    got = m.decisions_in_force(key_prefix="commit::")
+    assert len(got) == 1 and got[0]["key"] == "commit::abc123def456", (
+        "excluding events from the default must not make them unreachable")
 
 
 def test_it_is_deterministic():

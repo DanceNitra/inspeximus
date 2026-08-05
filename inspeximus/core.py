@@ -5509,8 +5509,20 @@ class Inspeximus:
         out["limits"] = limits
         return out
 
-    def decisions_in_force(self, *, tag: str = "decision", limit: int | None = None) -> list[dict]:
+    def decisions_in_force(self, *, tag: str = "decision", key_prefix: str = "decision::",
+                           limit: int | None = None) -> list[dict]:
         """Every keyed decision that is CURRENT, ENUMERATED rather than searched.
+
+        TWO KINDS OF DECISION, and only one of them has a "current" value. A decision recorded with
+        `remember_decision(topic=...)` is a VALUE on a topic: it is keyed `decision::<topic>` and a
+        later one on the same topic retires it, so asking "what is in force" is meaningful and the
+        answer is one record. A commit message is an EVENT: keyed `commit::<sha>`, unique forever,
+        and it does not retract its predecessor. Both are decisions and both belong in the store, but
+        enumerating the second kind returns the whole project history -- on any real repository that
+        is thousands of records, and it would bury the handful that are actually in force.
+
+        So `key_prefix` defaults to the value namespace. Pass `key_prefix=""` to enumerate the current
+        record for every key regardless of kind, or `"commit::"` for the commit log alone.
 
         Why this exists as a separate call. `recall()` finds a decision by similarity, and similarity is
         the wrong instrument for this question. Measured on the cross-session dogfood corpus (2,571
@@ -5541,6 +5553,8 @@ class Inspeximus:
             k = r.get("key")
             if not k:
                 continue                      # an unkeyed decision cannot supersede, so it has no "force"
+            if key_prefix and not str(k).startswith(key_prefix):
+                continue
             if tag and tag not in (r.get("tags") or []):
                 continue
             prev = best.get(k)

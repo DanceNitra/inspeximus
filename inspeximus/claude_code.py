@@ -380,10 +380,25 @@ def recall(ev):
     # recalled is the DECISIONS/RULES relevant to what it's about to do ("what did we decide, and why"). So we
     # surface decision-typed memories ahead of the command/file mechanics — otherwise the useful signal drowns
     # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
-    hits = _store(cwd).recall(q, k=16)
+    m = _store(cwd)
+    hits = m.recall(q, k=16)
     def has(h, tag):
         return tag in (h.get("tags") or [])
-    decisions = [h for h in hits if has(h, "decision")][:4]
+    # STANDING DECISIONS ARE NOT SEARCHED FOR, THEY ARE ENUMERATED. Similarity is the wrong instrument
+    # for "what is in force": measured on the cross-session corpus, the question "how does a release get
+    # published these days?" shares ZERO tokens with the decision that answers it, so it ranked 25th of
+    # 2,571 and no sane k reached it. Keyed supersession leaves exactly one active record per topic, so
+    # the current value is a scan. These are prepended, de-duplicated against the ranked hits, and
+    # bounded -- the block is prompt budget spent before the user has typed anything.
+    # Only the VALUE namespace (`decision::<topic>`): commit-message decisions are events keyed by SHA,
+    # never retracted, and enumerating them would paste the project's whole history into every prompt.
+    try:
+        standing = m.decisions_in_force(limit=4)
+    except Exception:
+        standing = []
+    seen_ids = {h.get("id") for h in hits}
+    standing = [s for s in standing if s.get("id") not in seen_ids]
+    decisions = standing + [h for h in hits if has(h, "decision")][:4]
     knowledge = [h for h in hits if has(h, "knowledge") and not has(h, "decision")][:4]
     mechanics = [h for h in hits if not has(h, "decision") and not has(h, "knowledge")][:2]
     out = []
