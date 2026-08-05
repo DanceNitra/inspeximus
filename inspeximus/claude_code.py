@@ -160,6 +160,84 @@ def _legacy_fragments(cwd):
     return sorted(out)
 
 
+def merge_fragments(cwd=None, apply=False):
+    """Fold the cwd-keyed fragments into the project store. DRY BY DEFAULT; nothing is deleted, ever.
+
+    The old layout put a store in every directory the agent stood in, so one project's memory ends up
+    in a dozen files that cannot see each other. This gathers them. What it does NOT do is as
+    important: it never removes a fragment, and it backs the destination up before writing, because
+    the failure that would matter here is not a bad merge but a lost one.
+
+    Records are merged by id, so re-running is idempotent and a record present in two fragments lands
+    once. Returns a report -- per-fragment counts, how many were new, how many collided -- so the
+    caller can see what a real run would do before it does it.
+    """
+    import json as _json
+    import shutil as _shutil
+    import time as _time
+    frags = _legacy_fragments(cwd)
+    dest_dir = _store_dir(cwd)
+    dest = os.path.join(dest_dir, "coding_memory.json")
+
+    def _load(p, strict=False):
+        """Load a store. An UNREADABLE file is not an empty one -- with strict=True it raises.
+
+        This was a silent data-loss trap and it was live. Our own project store is 1.9 MB, ends with
+        a complete JSON array followed by a 7-character tail from an older, longer write (a write
+        that did not truncate), and therefore does not parse. The first version of this function
+        swallowed that and returned [], so the destination read as empty and a real merge would have
+        replaced 2,990 records with the fragments. The valid prefix is recoverable -- raw_decode
+        stops cleanly at the junk -- so the file is reported, never silently rewritten.
+        """
+        try:
+            with open(p, encoding="utf-8") as f:
+                d = _json.load(f)
+        except Exception as e:
+            if strict:
+                raise ValueError(
+                    "destination store exists but does not parse (%s: %s). Refusing to merge into "
+                    "it: an unreadable store is not an empty one, and writing here would replace "
+                    "whatever it holds. Recover or move it first." % (type(e).__name__, e))
+            return []
+        return d if isinstance(d, list) else (d.get("items") or d.get("records") or [])
+
+    # STRICT on the destination: this is the only file the merge can overwrite.
+    existing = _load(dest, strict=True) if os.path.exists(dest) else []
+    seen = {r.get("id") for r in existing if isinstance(r, dict)}
+    report = {"destination": dest, "already_there": len(existing), "fragments": [],
+              "new": 0, "collisions": 0, "applied": False, "backup": None}
+    merged = list(existing)
+    for p in frags:
+        recs = _load(p)
+        new = coll = 0
+        for r in recs:
+            if not isinstance(r, dict):
+                continue
+            rid = r.get("id")
+            if rid in seen:
+                coll += 1
+                continue
+            seen.add(rid)
+            merged.append(r)
+            new += 1
+        report["fragments"].append({"path": p, "records": len(recs), "new": new, "collisions": coll})
+        report["new"] += new
+        report["collisions"] += coll
+    report["total_after"] = len(merged)
+    if apply and report["new"]:
+        os.makedirs(dest_dir, exist_ok=True)
+        if os.path.exists(dest):
+            bak = dest + ".bak-merge-" + _time.strftime("%Y%m%d-%H%M%S")
+            _shutil.copy2(dest, bak)
+            report["backup"] = bak
+        tmp = dest + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            _json.dump(merged, f, ensure_ascii=False)
+        os.replace(tmp, dest)
+        report["applied"] = True
+    return report
+
+
 def _store(cwd):
     from ._surface import open_store
     d = _store_dir(cwd)
