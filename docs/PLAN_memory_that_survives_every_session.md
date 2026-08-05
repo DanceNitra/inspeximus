@@ -83,14 +83,20 @@ uncovered; it is just not automatic. If this is revisited, the surface is the as
 (a Stop hook sees it; UserPromptSubmit never does) rather than the prompt, and the bar has to be
 precision, not recall.
 
-**A3. Topic keys, or supersession cannot fire.**
-`inspeximus/core.py` (`regex_extractor` neighbourhood), `claude_code.py`.
-A decision without a topic key sits beside its correction instead of retiring it. Derive the key
-deterministically from the decision's subject.
-*Measure:* on a 12-link correction chain, the number of links that bind to one key. Current
-measured baseline for conversational text: **0 of 12**. *Negative control:* two unrelated decisions
-must stay unbound. Size **L** — this is the hard one and it may not be solvable without a model, in
-which case the honest deliverable is the boundary, published as one.
+**A3. ~~Topic keys, baseline 0 of 12.~~ STALE BY A WHOLE PIECE OF WORK — closed 2026-08-05.**
+Measured directly on `benchmarks/chain_binding/`: **9 of 15 chains bind to one key**, against 18
+negative controls, with the unsolved cases pinned individually and with reasons rather than left as
+a count. The plan's "0 of 12" predated that work by some margin.
+
+And the honest deliverable this unit reserved for the case where it cannot be solved without a
+model is already written down: of the six that do not bind, four need world knowledge ("that a
+Principal Engineer is a *title*", "that vegan is a *diet*") which no deterministic keyer reaches
+without an ontology, and two are bare-copula ambiguities that are undecidable without a lexicon
+("my wife is Sarah" / "my wife is tired" share a subject and differ in relation).
+
+So the boundary is published, in the place it belongs — the test that pins each unsolved chain to
+its reason. Nothing here needs building. What would move it is an ontology or a model on the write
+path, and the second is refused by the constraint at the top of this plan.
 
 ## Unit B — make the boundary carry what it collected
 
@@ -189,3 +195,26 @@ outcome is a published boundary, not a quiet retreat to an LLM on the write path
 Summarise sessions with a model, rank better, add a retrieval mechanism, or ship a hosted tier. The
 first is the competitors' design and the reason their memory is not reproducible. The second and
 third are measured nulls in our own lab. The fourth is killed.
+
+---
+
+## What the plan turned out to be
+
+Six units. One shipped (A1, plus the value/event split that only appeared when it was wired in).
+Five closed by measuring instead of building:
+
+| unit | outcome |
+|---|---|
+| C1 | real defect, fixed — `decisions_in_force()` |
+| A1 | real gap, built — commit messages carry the rationale |
+| B1 | not a defect; the digest was doing its job |
+| E1 | already shipped on both surfaces |
+| A2 | measured at ~12% precision over 1.3% of traffic, not built |
+| A3 | already at 9/15 with the boundary published |
+
+The plan opened by saying the product's pipeline was complete and being fed nothing but mechanics.
+That held, and it turned out to be truer than intended: the capability was almost entirely there,
+and what was missing was one capture path and a set of measurements nobody had run. Four of the six
+units were stale on the day they were written, which is itself the finding — this codebase moves
+faster than the documents about it, so the first step of any unit here is to check whether it is
+still true.
