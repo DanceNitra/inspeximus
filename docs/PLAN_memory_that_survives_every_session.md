@@ -86,12 +86,26 @@ which case the honest deliverable is the boundary, published as one.
 
 ## Unit B — make the boundary carry what it collected
 
-**B1. The digest filter kept 0 of 1.**
-`inspeximus/core.py` (`close_session`, `session_salience`).
-Find why the only substantive record was dropped and fix the predicate.
-*Measure:* on a synthetic session containing 1 decision, 1 correction, 1 erasure and 20 file edits,
-the digest must contain the first three and must not contain 20 file lines. *Control:* a session
-containing only file edits must produce a digest that says so rather than an empty one. Size **S**.
+**B1. ~~The digest filter kept 0 of 1.~~ NOT A DEFECT — closed 2026-08-05 by running the test.**
+The measurement that was going to justify the fix refuted it instead. A session containing one
+decision, one correction on a key and twenty file edits: `considered=22, items=2, rejected=20`, and
+the digest reads
+
+```
+decisions recorded:
+  * DECISION: pin the reasoning budget to 24000
+  * DECISION: run the release from the trusted publisher workflow — because: ...
+[2 of 22 records kept at salience >= 2.5]
+```
+
+Both decisions survived, the correction survived as the current value, and zero file lines leaked
+in. So `0 of 1 kept` in the demo project was correct: the only record there was a file state, which
+is transcript rather than conclusion, and the filter exists to drop exactly that.
+
+This closes B1 and sharpens the plan. Everything from the decision onward — the digest, the
+re-resolution in `session_context`, the substitution of a corrected value, and now
+`decisions_in_force()` — works. The pipeline is complete and correct and is being fed nothing but
+mechanics. **Unit A is not one item on a list, it is the whole bottleneck.**
 
 **B2. Decisions first, under a budget.**
 `claude_code.py` (`SessionStart`).
@@ -142,10 +156,11 @@ reachable, or the test is passing on an empty store. Size **S**.
 
 ## Order
 
-C1 first — it is the flagship claim and it is currently null. Then B1 (the digest is dropping what
-it collects, so improving capture without it just fills a bucket with a hole). Then A1, which is the
-highest value-to-effort item in the plan because the corpus already exists. A2 and A3 after. D and E
-are independent and can land any time.
+C1 first — done, commit 50004b0. B1 second — opened, measured, and closed as not-a-defect without
+a line of code changing; the digest keeps decisions and drops transcript exactly as designed.
+
+That leaves A1 as the next unit and, after B1 dissolved, as the only thing standing between this
+product and its claim. Then A2, then A3. D and E are independent and can land any time.
 
 A3 is the risk. If a deterministic key cannot be derived from conversational decisions, the honest
 outcome is a published boundary, not a quiet retreat to an LLM on the write path.
