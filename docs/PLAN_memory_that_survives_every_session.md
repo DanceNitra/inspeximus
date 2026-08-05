@@ -144,8 +144,19 @@ loudly rather than omitting the line. Size **S**.
 
 ## Unit E — surface
 
-**E1. `recall_iterative` is absent from all 56 MCP tools and all 25 CLI subcommands.**
-Our only working multi-hop lever is unreachable from every surface a user has. Size **S**.
+**E1. ~~`recall_iterative` is absent from every surface.~~ ALREADY SHIPPED — closed 2026-08-05.**
+The claim was stale and checking it took ten minutes. `recall_iterative` is a registered MCP tool
+with its phase-2 companion `recall_followup`, and a CLI subcommand `recall-iterative`. Both were
+called end to end against a three-hop fixture and both returned the bridge evidence plus the
+phase-2 handoff (`ask`, `next_call`, `prior_ids`).
+
+One usability note found while testing, not worth a fix on its own: the global `--path` must precede
+the subcommand, and putting it after produces `unrecognized arguments` with **exit code 0**, so a
+script would read the failure as success.
+
+Second plan item in a row that turned out to be done or not-a-defect. Worth stating plainly: this
+product is further along than its own plan says, and what is missing is adoption and measurement,
+not capability.
 
 **E2. Project scoping.**
 `--project` so one agent's memories do not bleed across repos.
