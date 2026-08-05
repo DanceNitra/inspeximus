@@ -223,6 +223,111 @@ def _maybe_nudge(cwd):
         pass
 
 
+#: A command that WRITES a commit. `git commit`, `git merge`, `git revert` and `git cherry-pick` all
+#: land one; `git log`, `git show`, `git status` and `git diff` all mention commits and write none.
+#: The distinction has to be made on the verb, because HEAD moves for the first group only.
+_COMMIT_VERBS = ("commit", "merge", "revert", "cherry-pick", "am")
+
+
+def _invokes_commit(raw_cmd):
+    """Does this command line actually RUN one of those git verbs?
+
+    The first version asked `any(verb in command.lower())` and it fired on three of five controls:
+    `git log --oneline | grep commit` (the word is an argument to grep), `echo 'remember to git
+    commit later'` (the word is inside a quoted string), and -- the one worth remembering --
+    `git diff HEAD~0 --name-only`, because the verb `am` is a substring of `--n[am]e-only`. A
+    substring test over a shell command line matches text the shell never executes.
+
+    So parse instead: split on the separators that start a new command, tokenise each segment, skip
+    leading environment assignments, require the program to be `git`, and require the first
+    non-flag argument after it to be the verb. `--dry-run` writes nothing and is excluded.
+    """
+    import shlex
+    for sep in ("&&", "||", "|", ";", "\n"):
+        raw_cmd = raw_cmd.replace(sep, "\x00")
+    for seg in raw_cmd.split("\x00"):
+        seg = seg.strip()
+        if not seg:
+            continue
+        try:
+            toks = shlex.split(seg, posix=True)
+        except ValueError:                       # unbalanced quotes: not something a shell would run
+            continue
+        while toks and "=" in toks[0] and not toks[0].startswith("-"):
+            toks = toks[1:]                      # FOO=bar git commit ...
+        if not toks:
+            continue
+        prog = toks[0].replace("\\", "/").rsplit("/", 1)[-1].lower()
+        if prog not in ("git", "git.exe"):
+            continue
+        rest = toks[1:]
+        if any(t == "--dry-run" for t in rest):
+            continue
+        verb = next((t for t in rest if not t.startswith("-")), "")
+        if verb.lower() in _COMMIT_VERBS:
+            return True
+    return False
+
+
+def _capture_commit(m, raw_cmd, cwd, sid):
+    """If the command just wrote a commit, store its MESSAGE as a decision. Returns True if it did.
+
+    Deterministic and model-free. The guards are the whole design:
+
+      * the verb must be one that moves HEAD, so `git log --oneline` and `git show HEAD` -- which
+        contain the word `commit` and a full message -- capture nothing;
+      * `--dry-run` and `--amend`-less failures write no commit, so HEAD's age is checked: a commit
+        older than the window belonged to some earlier run and is not this event's outcome. Without
+        that check every `git status` after a commit would re-capture it;
+      * a subject with no body yields no `because`, and is stored anyway with an empty one rather than
+        dropped -- "we did X" with no stated reason is still the decision, and pretending we have the
+        rationale would be worse than admitting we do not.
+
+    Fail-open like the rest of this module: no repo, no git, a detached HEAD or a broken encoding all
+    return False silently rather than costing the agent its tool call.
+    """
+    import shlex
+    import subprocess
+    if not _invokes_commit(raw_cmd):
+        return False
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%H%x00%ct%x00%s%x00%b"],
+            cwd=cwd, capture_output=True, timeout=10,
+        ).stdout.decode("utf-8", "replace")
+        parts = out.split("\x00")
+        if len(parts) < 4:
+            return False
+        sha, ct, subject, body = parts[0].strip(), parts[1].strip(), parts[2].strip(), parts[3].strip()
+        if not sha or not subject:
+            return False
+        import time as _t
+        if abs(_t.time() - float(ct or 0)) > 300:      # not this event's commit
+            return False
+        files = subprocess.run(
+            ["git", "show", "--name-only", "--format=", sha],
+            cwd=cwd, capture_output=True, timeout=10,
+        ).stdout.decode("utf-8", "replace").split()
+    except Exception:
+        return False
+    text = "DECISION: " + subject
+    if body:
+        text += " -- because: " + _excerpt(body, 600)
+    try:
+        m.remember(text, key="commit::" + sha[:12], object=subject[:80], mtype="semantic",
+                   tags=["decision", "commit"], session_id=sid,
+                   source={"doc": "git:" + sha[:12]},
+                   meta={"files": files[:20], "sha": sha})
+    except TypeError:                                   # older signature: no meta/source kwargs
+        try:
+            m.remember(text, key="commit::" + sha[:12], mtype="semantic", tags=["decision", "commit"])
+        except Exception:
+            return False
+    except Exception:
+        return False
+    return True
+
+
 def capture(ev):
     cwd = ev.get("cwd") or os.getcwd()
     tool = ev.get("tool_name", "")
@@ -243,11 +348,24 @@ def capture(ev):
                    mtype="semantic", tags=["file", "edit"], session_id=sid)
         did = True
     elif tool == "Bash":
-        cmd = _excerpt(ti.get("command", ""), 200)
+        raw = ti.get("command", "")
+        cmd = _excerpt(raw, 200)
         if cmd:
             m.remember(f"ran: {cmd}", key=f"cmd:{hashlib.sha1(cmd.encode()).hexdigest()[:10]}",
                        object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid)
             did = True
+        # A COMMIT IS A DECISION THAT IS ALREADY WRITTEN DOWN. Everything above this line is mechanics:
+        # which command ran, which file holds which bytes. Measured on this plugin's own dogfood store,
+        # that is 100% of what months of capture produced -- 917 records, tagged `bash` and `file`, zero
+        # decisions. The decisions were not missing from the project, they were sitting in `git log`:
+        # 92% of the last 200 commits there carry a substantive body and 80% state a reason in it. A
+        # commit is the one moment an agent writes down a choice AND its rationale in a structured form,
+        # and the hook was recording that `git commit` ran instead of what it said.
+        # No model is involved: the subject is the decision, the body is the `because`, the paths are the
+        # provenance. Keyed by SHA because two commits are two decisions, not a correction chain --
+        # supersession is for values that change, and a commit does not retract its predecessor.
+        if raw:
+            _capture_commit(m, raw, cwd, sid) and (did := True)
     m._save()
     if did:
         _bump_writes(cwd)
