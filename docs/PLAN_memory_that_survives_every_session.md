@@ -64,16 +64,24 @@ event.
 non-empty `because`. *Control:* a `git status` or `git log` Bash call must produce **no** decision
 record — a capturer that fires on every git command has learned nothing. Size **M**.
 
-**A2. An explicit decision hook that costs one line.**
-`inspeximus/claude_code.py`, `UserPromptSubmit`.
-`remember_decision` exists in the MCP surface and has been used a handful of times against the 313
-hand-written notes the same project accumulated in the same period. The
-adoption defect is that nothing makes it the default path. Add a deterministic trigger: a prompt or
-an assistant turn containing a decision marker (`DECISION:`, `we chose`, `going with`, `dropped`)
-writes one keyed decision record.
-*Measure:* precision and recall of the trigger on a hand-labelled set of 60 real turns from our own
-transcripts, 30 decisions and 30 not. *Control:* the 30 non-decisions must produce zero records; a
-trigger that fires on everything scores perfect recall and is worthless. Size **M**.
+**A2. ~~A decision marker in the prompt.~~ MEASURED AND NOT VIABLE — closed 2026-08-05.**
+Built the measurement before the detector, and the detector did not survive it.
+
+Fixture: 234 real user prompts from one working session. A marker trigger
+(`we chose|going with|dropped|never|always` plus the Slovak equivalents) fires on 24 of them, 10%
+of traffic. Judged one by one, the 24 break down as **7 harness boilerplate** (skill headers,
+context-continuation preamble), **8 quoted email** where the marker sits in someone else's text,
+and **3 genuine decisions**. The rest are pasted drafts and instructions.
+
+So: ~12% precision, covering 1.3% of prompts. A detector that is wrong seven times in eight would
+file skill headers as project decisions, and at read time those are indistinguishable from real
+ones — worse than capturing nothing.
+
+What the three real ones have in common is the useful part: all three are the owner stating a
+STANDING RULE, and all three were already in the store, written by hand. The channel is not
+uncovered; it is just not automatic. If this is revisited, the surface is the assistant's own turn
+(a Stop hook sees it; UserPromptSubmit never does) rather than the prompt, and the bar has to be
+precision, not recall.
 
 **A3. Topic keys, or supersession cannot fire.**
 `inspeximus/core.py` (`regex_extractor` neighbourhood), `claude_code.py`.
