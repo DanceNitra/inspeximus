@@ -12,7 +12,9 @@ excluded — deterministically, zero-LLM. Asserts (each able to FAIL):
   1. default recall returns the POISON (the attack works absent the defense — so the test is real, not rigged).
   2. recall(trusted_only=True) returns the TRUE fact against the adaptive attacker.
   3. an attestation by a NON-trusted key (valid signature, wrong signer) is still EXCLUDED (trust != mere authorship).
-  4. trusted_only with NO trust_seeds set is a fail-open no-op (returns normally, never silently empties recall).
+  4. trusted_only with NO trust_seeds set fails CLOSED (returns []), not open. REVERSED in 1.18.1: failing open
+     handed back exactly the poisoned records the caller asked to exclude, and was indistinguishable from a
+     successful trusted recall. An empty result is loud and safe.
 """
 import sys
 sys.path.insert(0, ".")

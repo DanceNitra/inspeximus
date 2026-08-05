@@ -12,7 +12,9 @@ excluded — deterministically, zero-LLM. Asserts (each able to FAIL):
   1. default recall returns the POISON (the attack works absent the defense — so the test is real, not rigged).
   2. recall(trusted_only=True) returns the TRUE fact against the adaptive attacker.
   3. an attestation by a NON-trusted key (valid signature, wrong signer) is still EXCLUDED (trust != mere authorship).
-  4. trusted_only with NO trust_seeds set is a fail-open no-op (returns normally, never silently empties recall).
+  4. trusted_only with NO trust_seeds set fails CLOSED (returns []), not open. REVERSED in 1.18.1 and this line
+     went stale with it: failing open handed back exactly the poisoned records the caller asked to exclude, and
+     was indistinguishable from a successful trusted recall. An empty result is loud and safe.
 """
 import sys
 sys.path.insert(0, ".")
@@ -56,7 +58,7 @@ m3.remember(POISON, key="bank_x", attestation=(APK, attest(POISON, ASK)))   # va
 only = m3.recall(Q, k=3, trusted_only=True)
 check("3 non-trusted-key attestation is excluded (trust != authorship)", all(h["text"] != POISON for h in only))
 
-# 4. fail-open: no trust_seeds -> trusted_only is a no-op, recall still returns hits
+# 4. fail-CLOSED: with no trust_seeds nothing can be anchored, so trusted_only returns [].
 # 4 REVERSED in 1.18.1 (was: "no-op when no trust_seeds (fail-open, not empty)"). trusted_only is a SECURITY
 # flag, and with no trust root nothing can be anchored to it — so the honest answer is "no trusted memories",
 # not the entire untrusted pool. Failing open returned exactly the poisoned records the caller asked to
