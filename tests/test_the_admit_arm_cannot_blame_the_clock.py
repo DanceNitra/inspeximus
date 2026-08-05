@@ -30,8 +30,11 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "probes"))
 
-reinforce_accuracy_ablation = pytest.importorskip("reinforce_accuracy_ablation")
-P = reinforce_accuracy_ablation
+# Imported directly, NOT via pytest.importorskip. The probe is a first-party file in this repo and
+# depends on nothing outside the stdlib and inspeximus itself, so an importorskip here does not guard
+# an optional dependency -- it declares seven of this repo's own tests optional and hides them from
+# the base CI job. The skip census caught exactly that (152 -> 159) and the pin was right to refuse.
+import reinforce_accuracy_ablation as P  # noqa: E402
 
 
 def _tiny_corpus(n=40, n_q=8):
