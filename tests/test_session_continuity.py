@@ -938,7 +938,11 @@ def _declared_env_switches():
             if fn.endswith(".py"):
                 with open(os.path.join(root, fn), encoding="utf-8", errors="ignore") as fh:
                     names.update(re.findall(r"INSPEXIMUS_[A-Z0-9_]+", fh.read()))
-    return sorted(n for n in names if not any(w in n for w in ("PATH", "URL", "KEY", "MODEL")))
+    # STORE joined the list on 2026-08-05: INSPEXIMUS_CODING_STORE is a path, and setting it to "0"
+    # silenced every mechanism by pointing the hook at an empty directory. That is the exact false
+    # positive this filter was written to exclude; it just did not name the variable.
+    return sorted(n for n in names
+                  if not any(w in n for w in ("PATH", "URL", "KEY", "MODEL", "STORE")))
 
 
 def _silenced_by(handler, var, value):

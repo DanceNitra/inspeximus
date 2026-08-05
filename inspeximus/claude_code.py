@@ -108,9 +108,61 @@ def _make_embedder(cwd):
     return _embed, None, model
 
 
+def _store_dir(cwd):
+    """Where this project's coding memory lives: the PROJECT ROOT, not the current directory.
+
+    Keying the store by `cwd` shatters one project's memory into one store per directory the agent
+    happens to be standing in. Measured on this plugin's own dogfood repo: **13 separate stores**,
+    ~2,290 records, split as 917 / 504 / 374 / 216 / 200 / ... across `server/`, `agora_output/lab/`,
+    `agora-game-server/`, `tools/`, `research/probes/` and more. Nothing recalls across them, so a
+    question asked from one directory cannot see what was learned in another, and the store that
+    answers is whichever fragment the shell was in. That is almost certainly why the real-store
+    dogfood found 2 of 5 facts where the single-store synthetic fixture found 11 of 13.
+
+    `find_project_root` walks up for `.git` (directory OR file, so worktrees and submodules work) and
+    already shipped in `_surface`; the hook simply never called it. Falls back to `cwd` when there is
+    no repository, which is the old behaviour, and `INSPEXIMUS_CODING_STORE` overrides both.
+    """
+    override = (os.environ.get("INSPEXIMUS_CODING_STORE") or "").strip()
+    if override:
+        return override
+    base = cwd or os.getcwd()
+    try:
+        from ._surface import find_project_root
+        root = find_project_root(base)
+    except Exception:
+        root = None
+    return os.path.join(root or base, ".inspeximus")
+
+
+def _legacy_fragments(cwd):
+    """Stores left by the cwd-keyed layout, under this project root but not AT it.
+
+    Reported, never moved. Silently relocating a user's memory is exactly the class of action this
+    codebase has been burned by; the caller is told what exists and asked to merge explicitly.
+    """
+    try:
+        from ._surface import find_project_root
+        root = find_project_root(cwd or os.getcwd())
+    except Exception:
+        root = None
+    if not root:
+        return []
+    here = os.path.normcase(os.path.join(root, ".inspeximus", "coding_memory.json"))
+    out = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in (".git", "node_modules", "__pycache__")
+                       and not d.startswith(".claude")]
+        if "coding_memory.json" in filenames and os.path.basename(dirpath) == ".inspeximus":
+            p = os.path.join(dirpath, "coding_memory.json")
+            if os.path.normcase(p) != here:
+                out.append(p)
+    return sorted(out)
+
+
 def _store(cwd):
     from ._surface import open_store
-    d = os.path.join(cwd or os.getcwd(), ".inspeximus")
+    d = _store_dir(cwd)
     os.makedirs(d, exist_ok=True)
     emb_doc, emb_query, emb_id = _make_embedder(cwd)
     # Opened through the SHARED SURFACE opener (inspeximus/_surface.py). This hook set echo_guard=True by
