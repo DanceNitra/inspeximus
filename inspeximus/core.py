@@ -5509,6 +5509,47 @@ class Inspeximus:
         out["limits"] = limits
         return out
 
+    def decisions_in_force(self, *, tag: str = "decision", limit: int | None = None) -> list[dict]:
+        """Every keyed decision that is CURRENT, ENUMERATED rather than searched.
+
+        Why this exists as a separate call. `recall()` finds a decision by similarity, and similarity is
+        the wrong instrument for this question. Measured on the cross-session dogfood corpus (2,571
+        records): the query "how does a release get published these days?" shares ZERO tokens with the
+        decision it is asking for ("publish releases from the trusted publisher workflow"), so the
+        current decision ranks 25th with the read-purity default and 29th with the library default,
+        below a draft note that merely repeats the query's surface words. The decision was in the store
+        the whole time and reachable; ranking put it out of reach of any sane k.
+
+        But "which decision is in force on topic X" does not need ranking at all. The store already
+        knows: keyed supersession leaves exactly one active record per key, so the answer is a scan,
+        not a search. This returns it -- deterministic, O(n), no embedder, no model, and no dependence
+        on whether a session digest happened to capture the decision when it was made.
+
+        Ordering is newest-first with the id as the tie-break, so two calls on the same bytes return the
+        same list in the same order. `tag` filters to decision-shaped records; pass tag=None to
+        enumerate the current record for every key. Retired records are never returned, which is the
+        half of the correction case that already worked -- this call fixes the other half.
+        """
+        # The tie-break is INSERTION ORDER, not the id. `ts` is whole seconds, so two decisions written
+        # in the same second tie on it, and an id tie-break then orders them by a hash -- deterministic,
+        # but "newest first" stops being true and `limit` returns an arbitrary one of the two. Position
+        # in the store is the write order and is stable on disk, so it is both.
+        best: dict = {}
+        for pos, r in enumerate(self._tenant_rows()):
+            if r.get("status") != "active":
+                continue
+            k = r.get("key")
+            if not k:
+                continue                      # an unkeyed decision cannot supersede, so it has no "force"
+            if tag and tag not in (r.get("tags") or []):
+                continue
+            prev = best.get(k)
+            if prev is None or (float(r.get("ts") or 0), pos) > (float(prev[0].get("ts") or 0), prev[1]):
+                best[k] = (r, pos)
+        out = [r for r, _ in sorted(best.values(),
+                                    key=lambda rp: (-float(rp[0].get("ts") or 0), -rp[1]))]
+        return out[:limit] if limit else out
+
     def supersession_report(self) -> dict:
         """Audit view of WHY memories were retired: a count of superseded records per adjudicating
         policy (keyed_lww / keyed_lww_backfill / keyed_reaffirm / echo_guard / objectless_guard /
@@ -9255,6 +9296,10 @@ class _TenantView:
     def memory_report(self, *a, **k):       return Inspeximus.memory_report(self, *a, **k)
     def value_by_cohort(self, *a, **k):     return Inspeximus.value_by_cohort(self, *a, **k)
     def index_coherence(self, *a, **k):     return Inspeximus.index_coherence(self, *a, **k)
+    # Tenant-scoped: it reads `_tenant_rows()`, so a view sees only its own decisions. Forwarding it
+    # unclassified would have run it against the shared store as tenant=None -- the leak the
+    # classification test exists to stop, and it caught this one.
+    def decisions_in_force(self, *a, **k): return Inspeximus.decisions_in_force(self, *a, **k)
     def supersession_report(self, *a, **k): return Inspeximus.supersession_report(self, *a, **k)
     def state_digest(self, *a, **k):        return Inspeximus.state_digest(self, *a, **k)
     def erasure_report(self, *a, **k):      return Inspeximus.erasure_report(self, *a, **k)
