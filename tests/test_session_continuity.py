@@ -93,7 +93,7 @@ re-runs on every invocation -- none of them is quoted from a note.
       corpus; mine does not reproduce that, which is why the assertion is conditional ("if tied, the
       newer wins") rather than "the newer record is top-1".
 
-  P6  OFF SWITCH ..... FAILS
+  P6  OFF SWITCH ..... HOLDS since 2026-08-05 (INSPEXIMUS_NO_INJECT)
       Two shipped mechanisms inject cross-session state into an agent's context: `claude_code`'s
       SessionStart handler (prints the project's known files) and its UserPromptSubmit handler (prints
       recalled memory). Measured: neither is silenced by ANY `INSPEXIMUS_*` variable the package
@@ -967,11 +967,12 @@ def test_p6_control_the_injection_mechanisms_exist_and_actually_inject():
     assert not silent, f"these mechanisms inject nothing even with a stocked store, so they cannot be tested: {silent}"
 
 
-@broken("MEASURED 1.89.0: neither shipped injection mechanism (claude_code.session_start -> "
-        "SessionStart stdout, claude_code.recall -> UserPromptSubmit stdout, both injected into the "
-        "agent's context) is silenced by ANY INSPEXIMUS_* variable the package declares. The only "
-        "switches that exist are INSPEXIMUS_NO_NUDGE (the star ask) and INSPEXIMUS_NO_UPDATE_CHECK "
-        "(the version line) -- both for lines that ride alongside the injection, neither for it.")
+# FIXED 2026-08-05 by INSPEXIMUS_NO_INJECT. Was broken since 1.89.0: neither shipped injection
+# mechanism was silenced by any declared variable -- the only switches were INSPEXIMUS_NO_NUDGE (the
+# star ask) and INSPEXIMUS_NO_UPDATE_CHECK (the version line), both for lines riding alongside the
+# injection rather than for the injection itself. INSPEXIMUS_SESSION_DIGEST gated the digest but not
+# the file list beside it and not the recall block at all. The marker is removed rather than the
+# assertion relaxed: this test now holds, and if it stops holding that is a regression, not a known gap.
 def test_p6_every_injection_mechanism_has_an_off_switch_that_injects_nothing():
     """An injection an operator cannot turn off is not a feature they can adopt."""
     proj = tempfile.mkdtemp()

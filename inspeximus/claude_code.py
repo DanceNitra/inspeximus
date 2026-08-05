@@ -238,6 +238,25 @@ def merge_fragments(cwd=None, apply=False):
     return report
 
 
+def injection_enabled(cwd=None):
+    """Is this plugin allowed to write into the agent's context at all?
+
+    Both hooks that inject -- SessionStart's digest and UserPromptSubmit's recall block -- are
+    silenced by INSPEXIMUS_NO_INJECT=1, or by .inspeximus/config.json {"inject": {"enabled": false}}.
+
+    This exists because a conformance test said so and was right: an injection an operator cannot
+    turn off is not a feature they can adopt. Before this, the only switches the package declared
+    were for the star ask and the version line -- decorations riding alongside the injection, with
+    nothing for the injection itself. INSPEXIMUS_SESSION_DIGEST already gated the digest, but not the
+    file list beside it and not the recall block at all, so no single variable silenced the plugin.
+    """
+    env = os.environ.get("INSPEXIMUS_NO_INJECT", "").strip().lower()
+    if env in ("1", "true", "yes"):
+        return False
+    c = _cfg(cwd).get("inject", {})
+    return not (isinstance(c, dict) and c.get("enabled") is False)
+
+
 def _store(cwd):
     from ._surface import open_store
     d = _store_dir(cwd)
@@ -503,6 +522,8 @@ def capture(ev):
 
 def recall(ev):
     cwd = ev.get("cwd") or os.getcwd()
+    if not injection_enabled(cwd):
+        return
     q = ev.get("prompt") or ev.get("user_prompt") or ""
     if not q.strip():
         return
@@ -555,8 +576,23 @@ def session_start(ev):
          re-resolved against the live store so a reversed decision is replaced by the current one.
       2. the known-files line -- raw tool mechanics, kept because it orients a coding agent, but printed
          AFTER the digest, capped, and labelled as mechanics so it is not mistaken for the resumable set.
-         It is exactly the class of content the digest's salience threshold excludes on purpose."""
+         It is exactly the class of content the digest's salience threshold excludes on purpose.
+
+    Silenced entirely by INSPEXIMUS_NO_INJECT=1: the boundary is still OPENED (the session record is
+    written, so the ledger stays continuous) but nothing is printed, because stdout here IS the
+    injection."""
     cwd = ev.get("cwd") or os.getcwd()
+    if not injection_enabled(cwd):
+        try:
+            # ONE handle. `_store` constructs a fresh Inspeximus on every call, so opening on one and
+            # saving on another writes a store that never saw the open -- the two-handles-on-one-file
+            # shape that has already cost this project a dataset.
+            m = _store(cwd)
+            m.open_session(ev.get("session_id"))
+            m.flush()
+        except Exception:
+            pass
+        return
     cfg = _session_cfg(cwd)
     m = _store(cwd)
     if cfg["enabled"]:
