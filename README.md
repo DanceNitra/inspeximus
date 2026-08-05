@@ -4,6 +4,8 @@
 
 # inspeximus — a zero-dependency Python agent-memory library
 
+[![MCP Toplist](https://mcptoplist.com/badge/io.github.DanceNitra%2Finspeximus.svg)](https://mcptoplist.com/server/io.github.DanceNitra%2Finspeximus)
+
 **Ask any memory where it came from — and check the answer.** `provenance(key)` returns the declared
 source, the lineage it inherited, the evidence grade, every value the fact has held and which policy
 retired each one, and whether the record still matches what its write receipt committed to. Delete the
