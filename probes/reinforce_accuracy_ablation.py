@@ -717,7 +717,17 @@ def arm_admit_write_path(records, questions, sample=80, n_admits=400, seed=7):
     the store's contents never change. Any answer that moves afterwards moved because a write-admission
     check that stored nothing reinforced what it checked against.
 
-    MEASURED, AND IT IS THE SHARPER RESULT: some copies are NOT rejected. `admit()` looks for the
+    MEASURED 2026-08-05, AND IT RETRACTS THIS ARM'S HEADLINE: the divergence this arm reported was the
+    CLOCK, not the write path. A time-matched control store -- built beside the treated one, read
+    interleaved with it, never handed to admit() at all -- moves the same answers. On locomo_conv2 the
+    raw figure is 0.2500 and the control is 0.2500, so the excess attributable to admit() is 0.0000; on
+    conv1 and conv3 the excess is likewise 0.0000. Nothing was admitted, no stored field changed, and
+    the order of `store.items` was identical before and after. `recall()` recomputes decay from
+    wall-clock age, so about a second of elapsed time is enough to reorder records that are tied to
+    within the API's own 3-decimal score resolution.
+    Read `divergence_excess_over_time_control`. The raw `divergence` is kept only so the correction
+    stays visible; on its own it measures how long the machine took.
+    THE EARLIER CLAIM, now unsupported: some copies are NOT rejected. `admit()` looks for the
     duplicate with `recall(t, k=1)`, and on a reinforced ranking a high-value hub can outrank the
     byte-identical record, so the similarity test is run against the wrong neighbour and an exact
     duplicate is appended. That is a write-correctness defect caused by read-path reinforcement, and it
@@ -731,22 +741,43 @@ def arm_admit_write_path(records, questions, sample=80, n_admits=400, seed=7):
     rng = random.Random(seed)
     qs = questions if len(questions) <= sample else rng.sample(questions, sample)
     store, idx = build_store(records)
-    before = {}
+    # The control store is built HERE, beside the treated one, not after the admits. Both must share a
+    # timeline: recall() recomputes decay from wall-clock age, so a control built later is younger and
+    # crosses its integer-second boundaries at different moments. Built after the fact it reported 0.0
+    # where the matched control reports the treated store's own figure -- i.e. it manufactured an
+    # "attributable to admit()" that is not there.
+    ctl_store, ctl_idx = build_store(records)
+    before, ctl_before = {}, {}
     for text, gold in qs:
         gs = set(gold) if isinstance(gold, (list, tuple)) else {gold}
         before[text] = _score(store.recall(text, k=K, reinforce=False) or [], idx, gs)[2]
+        ctl_before[text] = _score(ctl_store.recall(text, k=K, reinforce=False) or [], ctl_idx, gs)[2]
     n_before = len(store.items)
     v_before = max_value(store)
     admitted = 0
+    _t_admit = time.time()
     for _ in range(n_admits):
         res = store.admit(records[rng.randrange(len(records))])
         if res.get("admitted"):
             admitted += 1
     v_after = max_value(store)
-    changed = changed_clean = clean_n = 0
+    elapsed = time.time() - _t_admit
+    # THE CONTROL THAT THIS ARM SHIPPED WITHOUT, AND IT INVERTED THE RESULT. A second store, identical
+    # in every way, is left ALONE for exactly as long as the admits took. Measured on locomo_conv2:
+    # 400 admit() calls moved 20 of 80 answers -- and so did the control, with admit() never called.
+    # recall() recomputes decay per read, so a few seconds of wall clock reorders near-ties on its own,
+    # and everything this arm attributed to the write path was the clock. Whatever the control moves is
+    # not evidence about admit(); only the EXCESS is.
+    # INTERLEAVED, one query at a time across both stores. Run as two separate passes the control's
+    # reads land later than the treated store's, and since the quantity under test is itself a clock
+    # effect, that skew is measured as if it were the treatment.
+    ctl_changed = changed = changed_clean = clean_n = 0
     for text, gold in qs:
         gs = set(gold) if isinstance(gold, (list, tuple)) else {gold}
         now = _score(store.recall(text, k=K, reinforce=False) or [], idx, gs)[2]
+        ctl_now = _score(ctl_store.recall(text, k=K, reinforce=False) or [], ctl_idx, gs)[2]
+        if ctl_now != ctl_before[text]:
+            ctl_changed += 1
         if now != before[text]:
             changed += 1
         if now is not None:                 # None == a record appended by admit(), not a pre-existing one
@@ -755,8 +786,17 @@ def arm_admit_write_path(records, questions, sample=80, n_admits=400, seed=7):
                 changed_clean += 1
     texts = [it["text"] for it in store.items]
     dupes = len(texts) - len(set(texts))
-    return {"property": "write-path read-purity: admit() calls recall(t, k=1) with reinforcement ON "
-                        "(core.py ~7002; remember_dedup() the same at ~2561)",
+    raw = (changed / len(qs)) if qs else None
+    ctl = (ctl_changed / len(qs)) if qs else None
+    return {"property": "write-path read-purity: admit() calls recall(t, k=1) (core.py ~7002; "
+                        "remember_dedup() the same at ~2561). Read `divergence_excess_over_time_control`, "
+                        "NOT `divergence`: an untouched store moves on elapsed time alone.",
+            "seconds_admitting": round(elapsed, 2),
+            "time_control_changed": ctl_changed,
+            "time_control_divergence": round(ctl, 4) if ctl is not None else None,
+            "divergence_excess_over_time_control": (round(max(0.0, raw - ctl), 4)
+                                                    if raw is not None and ctl is not None else None),
+            "attributable_to_admit": bool(raw is not None and ctl is not None and raw - ctl > 1e-9),
             "n_admit_calls": n_admits, "n_admitted": admitted,
             "all_rejected_as_duplicates": admitted == 0,
             "dedup_failure": ("admit() appended %d byte-identical duplicates: on a reinforced ranking a "
@@ -786,10 +826,22 @@ def decompose_divergence(records, questions, verbose=True, sample=None):
         "d_admit_write_path": arm_admit_write_path(records, questions),
     }
     fixable = arms["c_query_order_reinforce_true"]["divergence"] or 0.0
-    every = [v.get("divergence") or 0.0 for v in arms.values()]
+
+    def _attributable(v):
+        """The divergence an arm may contribute to the headline: for the admit arm that is the EXCESS
+        over its time-matched control, never the raw figure. Raw, arm (d) contributed 0.2500 on
+        locomo_conv2 that was entirely elapsed time; it happened to sit below arm (b)'s 0.4464 and so
+        never became the carrier, but nothing stopped it from doing so on a slower machine."""
+        if not isinstance(v, dict):
+            return 0.0
+        if "divergence_excess_over_time_control" in v:
+            return v.get("divergence_excess_over_time_control") or 0.0
+        return v.get("divergence") or 0.0
+
+    every = [_attributable(v) for v in arms.values()]
     arms["seconds"] = round(time.time() - t0, 1)
     arms["carrier"] = max((k for k in arms if k not in ("seconds", "carrier")),
-                          key=lambda k: arms[k].get("divergence") or 0.0)
+                          key=lambda k: _attributable(arms[k]))
     arms["claim_reproduces"] = bool(max(every) > RETRACT_BELOW)
     arms["read_purity_divergence"] = round(fixable, 4)
     arms["note"] = ("the 2026-07-28 '49-90% of answers change on reorder' figure, apportioned. Arm (b) is "
@@ -800,7 +852,11 @@ def decompose_divergence(records, questions, verbose=True, sample=None):
     if verbose:
         for name in ("a_run_to_run", "b_insert_order_BY_DESIGN", "c_query_order_reinforce_true",
                      "c_query_order_reinforce_false", "d_admit_write_path"):
-            print("    divergence %-32s %.4f" % (name, arms[name]["divergence"] or 0.0))
+            _shown = _attributable(arms[name])
+            _note = ("  (raw %.4f, time-control %.4f)"
+                     % (arms[name].get("divergence") or 0.0, arms[name].get("time_control_divergence") or 0.0)
+                     ) if "divergence_excess_over_time_control" in arms[name] else ""
+            print("    divergence %-32s %.4f%s" % (name, _shown, _note))
         print("    carrier=%s  claim_reproduces=%s" % (arms["carrier"], arms["claim_reproduces"]))
     return arms
 
@@ -853,12 +909,15 @@ def verdict_for(entry):
                  "could have carried a prior about; for the rest, warming can only add noise"
                  % (entry["corpus"], 100.0 * (tc or 0.0)))
     d = entry["divergence_decomposition"]
+    _d = d["d_admit_write_path"]
     lines.append("DIVERGENCE %s: read-purity(c, reinforce=True)=%.4f  insert-order(b, BY DESIGN)=%.4f  "
-                 "run-to-run(a)=%.4f  admit-write-path(d)=%.4f  carrier=%s"
+                 "run-to-run(a)=%.4f  admit-write-path(d)=%.4f [excess over its time-matched control; "
+                 "raw %.4f, control %.4f]  carrier=%s"
                  % (entry["corpus"], d["c_query_order_reinforce_true"]["divergence"] or 0.0,
                     d["b_insert_order_BY_DESIGN"]["divergence"] or 0.0,
                     d["a_run_to_run"]["divergence"] or 0.0,
-                    d["d_admit_write_path"]["divergence"] or 0.0, d["carrier"]))
+                    _d.get("divergence_excess_over_time_control") or 0.0,
+                    _d.get("divergence") or 0.0, _d.get("time_control_divergence") or 0.0, d["carrier"]))
     if "retraction" in d:
         lines.append("DIVERGENCE %s: %s" % (entry["corpus"], d["retraction"]))
     return lines
