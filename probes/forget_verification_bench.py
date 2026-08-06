@@ -33,6 +33,14 @@ from inspeximus.erasure_auditor import (  # noqa: E402
 SUBJECT = "user:alice"
 VALUE = "account balance 12.69"
 
+# A DERIVED record: it quotes the subject's value, but its own subject line is the ROTATION, not the
+# person. Added 2026-08-06 after arXiv:2606.23276 (Basani & Chhabra) made the general point that a
+# system's own success metric is the last place its failures show. The original scenario has no such
+# row, so both published strategies purge on the subject string and score as if that were enough --
+# and for that fixture it is. A subject-keyed purge cannot see this row; only lineage can.
+DERIVED_SUBJECT = "rotation:payments"
+DERIVED = f"{DERIVED_SUBJECT} handover note: the balance on file is {VALUE}"
+
 
 def _embed():
     """Local nomic embedder if present, else a cheap deterministic hashing embedder (keeps the bench runnable)."""
@@ -75,21 +83,43 @@ class _S3:
 
 
 def build(strategy, embed):
-    """Register all six stores with the subject's value planted, then apply `strategy` ('hard' | 'soft')."""
+    """Register all six stores with the subject's value planted, then apply `strategy`.
+
+    Strategies:
+      soft              the common bug -- delete the primary row, leave the rest
+      hard              purge every store correctly
+      hard+derived      the same correct purge, on a fan-out that ALSO holds a derived record
+      lineage+derived   purge by subject AND by lineage, which is the only one that reaches it
+
+    The first two are the original published scenario and are unchanged, so 0.17 / 1.00 still
+    reproduce; the derived-record arms are added beside them rather than folded in.
+    """
+    with_derived = strategy.endswith("+derived")
     vec = VectorIndexProbe("vector-index", embed)
     vec.add(SUBJECT, f"{SUBJECT} :: {VALUE}")
-    text_rows = [f"{SUBJECT} statement: {VALUE}"]
+    if with_derived:
+        vec.add(DERIVED_SUBJECT, DERIVED)
+    text_rows = [f"{SUBJECT} statement: {VALUE}"] + ([DERIVED] if with_derived else [])
     cache = {"k1": f"cached embedding input: {VALUE}"}
     q, pg, s3 = _Q(5, 995), _Pg(7), _S3(1)                    # soft-delete residue present by default
     if strategy == "soft":
         text_rows = []                                        # the common bug: delete the primary ROW and log it,
         #                                                       but the vector index, cache, and versioned stores
         #                                                       are never touched -> the data is still recoverable
-    if strategy == "hard":
+    if strategy != "soft":
+        # A SUBJECT-KEYED purge done properly across all six stores. This is what a careful team ships,
+        # and on the original fixture (no derived record) it is complete -- `hard` scores 1.00.
         vec.purge(SUBJECT)                                    # correct hard-delete + reindex
-        text_rows = []                                        # purged
+        text_rows = [r for r in text_rows if SUBJECT not in r]  # every row attributable to the subject, gone
         cache = {}
         q, pg, s3 = _Q(0, 1000), _Pg(0), _S3(0)               # compaction/vacuum ran; versions destroyed
+    if strategy == "lineage+derived":
+        # LINEAGE-AWARE: also take what was DERIVED from the subject's data. The row names another
+        # subject, so no subject-keyed query reaches it; only a lineage edge does. inspeximus does this
+        # in forget_subject -- measured directly in probes/erasure_elicitation.py, where the derived
+        # summary is among the records erased.
+        vec.purge(DERIVED_SUBJECT)
+        text_rows = [r for r in text_rows if DERIVED_SUBJECT not in r]
     a = ErasureAuditor()
     a.register(TextStoreProbe("primary-log", text_rows))
     a.register(vec)
@@ -113,7 +143,7 @@ def main():
     print(f"\nForget-Verification Benchmark — 6-store fan-out, embedder={embname}\n")
     print(f"{'strategy':<12} {'score':>6}  {'verdict':<9} {'signed-receipt':<15} leaking stores")
     print("-" * 78)
-    for strat in ("soft", "hard"):
+    for strat in ("soft", "hard", "hard+derived", "lineage+derived"):
         a = build(strat, embed)
         s, rep = score(a)
         receipt = a.compliance_receipt(SUBJECT, [VALUE, "12.69"], sign=ed25519_signer(sk), pubkey=pk,
