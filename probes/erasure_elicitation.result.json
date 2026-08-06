@@ -1,0 +1,66 @@
+{
+ "probe": "erasure_elicitation",
+ "paper": "arXiv:2606.23276v2 Basani & Chhabra, Exposing the Illusion of Erasure in KE",
+ "their_numbers": {
+  "white_box_context_guided": ">85%",
+  "blind_reconstruction": "15-48.5%",
+  "cross_model_context_guided": ">75%"
+ },
+ "scope_note": "they edit model weights, we delete store rows; their result is not evidence about a store. The transferable part is the method: refuse the eraser's own success metric and go looking for the value elsewhere.",
+ "forget_report": {
+  "erased": 4,
+  "ids": [
+   "2d9fb50295",
+   "4be18b42f9",
+   "852518c697",
+   "c26287c39b"
+  ],
+  "request_id": "dsar-elicit-1",
+  "tombstones": 4,
+  "residue_in_store": {
+   "ok": true,
+   "checked_records": 4,
+   "searched_values": 4,
+   "findings": [],
+   "problems": [],
+   "method": "substring match on text/object -- a paraphrase is NOT caught, so a clean result is evidence and not proof"
+  },
+  "coverage": {
+   "store": true,
+   "external_targets": 0,
+   "confirmed": 0,
+   "complete": false,
+   "unregistered": true,
+   "note": "no external erasure target is registered, so this covers THIS store only -- any copy the application embedded elsewhere (vector index, prompt logs, backups) is untouched and unaccounted for. Register targets with register_erasure_target() to erase across them and get a verifiable receipt."
+  }
+ },
+ "by_subject": {
+  "Marta Kovacova": {
+   "n_values": 3,
+   "before_context": 3,
+   "before_blind": 3,
+   "after_context": 0,
+   "after_blind": 0
+  },
+  "Tomas Bilek": {
+   "n_values": 3,
+   "before_context": 3,
+   "before_blind": 3,
+   "after_context": 3,
+   "after_blind": 3
+  }
+ },
+ "leaks": {},
+ "control_holds": true,
+ "route_controls": {
+  "recall": true,
+  "residue": true,
+  "disk": true,
+  "receipt_channel_exists": true,
+  "vectors_present": true,
+  "links_present": true
+ },
+ "store_path_on_disk": true,
+ "vectors_on_disk": 4,
+ "orphan_vectors_after_erasure": []
+}
