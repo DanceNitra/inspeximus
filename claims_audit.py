@@ -473,6 +473,50 @@ NUMBER_CLAIMS = [
     # from the MemOps harness, which lives outside this repository and therefore could never be re-run
     # here. The sentence that carried them is gone, so the row goes with it rather than pinning nothing.
     # What replaced it is measured IN this repo and has a command, so it is a claim, not an external.
+    _c("readme-time-gap-fixture", "README.md", ["80"],
+       "Four LOCOMO conversations, 80 questions each",
+       "The time-gap measurement runs on four LOCOMO conversations, 80 questions sampled from each",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
+    _c("readme-time-gap-movement", "README.md", ["64", "83", "320"],
+       "between 64 and 83 of 320 top-1 answers differ",
+       "Reading the same untouched store twice ~2s apart moves 64-83 of 320 top-1 answers "
+       "(four LOCOMO conversations, 80 questions each, reinforce=False)",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
+    _c("readme-time-gap-cause", "README.md", ["0", "80"],
+       "at a zero gap 0 of 80 differ",
+       "GAP CONTROL: 0 of 80 top-1 answers move when the two reads are not separated at all",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py",
+       "Registered deliberately rather than dropped: without a zero-gap arm, 'the ranking depends on "
+       "when you ask' is only an observation about two reads and names no cause."),
+    _c("readme-time-gap-saturates", "README.md", ["16", "80"],
+       "16 of 80 move at two seconds and the same count at ten seconds",
+       "The effect saturates: 16 of 80 move at a two-second gap and the same count at ten",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
+    _c("readme-time-gap-tie-band", "README.md", ["0.847"],
+       "same score (0.847 against 0.847)",
+       "Every top-1 answer that moved across the gap moved between records reported at the same "
+       "score, e.g. 0.847 against 0.847",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
+    _c("readme-time-gap-tie-band-share", "README.md", ["100", "6"],
+       "100% of them, in all six insert orders tried",
+       "100% of the moved answers stayed inside a displayed tie, across all six insert orders",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
+    _c("readme-time-gap-no-direction", "README.md", ["0.0094"],
+       "the hit@1 change runs +0.0094 to",
+       "Across five randomised insertion orders the hit@1 change over the gap runs +0.0094 to -0.0219",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
+    _c("readme-time-gap-spread-low", "README.md", ["-0.0219", "2", "5", "-0.0062"],
+       "-0.0219, negative in 2 of 5. Natural conversation order alone reads -0.0062",
+       "The hit@1 change is negative in only 2 of 5 randomised insert orders; natural conversation "
+       "order alone reads -0.0062",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py",
+       "The natural-order figure is registered beside the spread on purpose: alone it reproduces to "
+       "four decimals every run and reads as a systematic loss, which is the fixture (LOCOMO gold "
+       "turns skew late, so gold records are newer) and not a property of the store."),
+    _c("readme-fixed-instant-determinism", "README.md", ["0.0000"],
+       "arm (a) of the reinforce ablation measures 0.0000 on every corpus",
+       "Run-to-run determinism at a fixed instant: arm (a) divergence 0.0000 on every corpus",
+       "REPRODUCIBLE-WITH-DEPS", "python probes/reinforce_accuracy_ablation.py"),
     _c("readme-session-digest-fixture", "README.md", ["2,606", "1.000"],
        "Measured on an 8-session, 2,606-record fixture",
        "SessionEnd digest -> SessionStart injection, 8-session / 2,606-record fixture: injection recall "
@@ -699,9 +743,9 @@ NON_CLAIM_TOKENS = {
         "0": (8, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
                  "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model, and the "
                  "'0/18' after-column of the 1.90.0 chain-binding table"),
-        "1": (14, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
-                  "examples, recall_any@1 as a metric NAME, counts in a pasted example output, the "
-                  "'1/18' before-column of the 1.90.0 chain-binding table, and the '1' in the witness "
+        "1": (15, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "
+                  "examples, recall_any@1 and hit@1 as metric NAMES, counts in a pasted example output, "
+                  "the '1/18' before-column of the 1.90.0 chain-binding table, and the '1' in the witness "
                   "quickstart's `inv7::total` example key"),
         "2": (17, "SOC 2 in a comparison cell and in the certification paragraph, the EU application dates "
                   "2 Dec 2027 / 2 Aug 2028 / 2 Aug 2026, ordinals for demo 2 and rule 2, the corroboration "

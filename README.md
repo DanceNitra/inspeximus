@@ -904,6 +904,33 @@ the orphan/dangling half being classical referential-integrity checking.
    count: episodic events fade in days, semantic facts in months, procedural rules barely at all. A
    cold-but-critical fact survives by being **typed** semantic/procedural (long half-life × its high
    value), not by frequent reads; access only resets the clock *within* a type's window.
+
+   One measured property worth stating plainly, because it surprises people who read "deterministic"
+   as "frozen": **the ranking depends on when you ask.** Read the same untouched store twice a couple
+   of seconds apart -- nothing written in between, no field, value or insertion position altered --
+   and a large minority of the top-1 answers differ. Four LOCOMO conversations, 80 questions each,
+   `reinforce=False`:
+
+   * **Movement:** across a two-second gap, between 64 and 83 of 320 top-1 answers differ.
+   * **Cause:** at a zero gap 0 of 80 differ, so it is elapsed time and not the act of reading.
+   * **It saturates:** on one corpus 16 of 80 move at two seconds and the same count at ten seconds.
+   * **It never leaves the tie band:** every moved answer moved between records the API reports at the
+     same score (0.847 against 0.847) -- 100% of them, in all six insert orders tried. Records a
+     caller can tell apart are not reordered.
+   * **It has no direction:** over five randomised insert orders the hit@1 change runs +0.0094 to
+     -0.0219, negative in 2 of 5. Natural conversation order alone reads -0.0062 and reproduces to
+     four decimals every run, which is that fixture rather than the store: LOCOMO gold turns skew
+     late, so gold records are newer and a fresh store flatters them.
+
+   **What is NOT established is the mechanism.** The only clock-dependent input to ranking is the
+   per-type decay term, which makes it the obvious candidate -- but a synthetic store built with the
+   same age spread and the same tie structure does not reproduce the movement at all, so the
+   explanation is incomplete and is not claimed here. Reproduce the measurement with
+   `python probes/recall_over_a_time_gap.py`.
+
+   Run-to-run determinism at a FIXED instant is a different property and it holds: two back-to-back
+   reads are identical, and arm (a) of the reinforce ablation measures 0.0000 on every corpus.
+   Time-invariance is not claimed and is not true.
 4. **Value is reported at the cohort level** (tag / time-block), never per-memory.
 5. **Contradictions are flagged, never auto-resolved.** Silent rewrites destroy trust in the whole
    memory.

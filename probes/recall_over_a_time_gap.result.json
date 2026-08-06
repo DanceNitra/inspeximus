@@ -1,0 +1,108 @@
+{
+ "probe": "recall_over_a_time_gap",
+ "gap_seconds": 2.0,
+ "locomo_path": "C:\\Users\\Danculus\\agora\\agora_output\\lab\\data\\locomo10.json",
+ "n_conversations": 4,
+ "natural_order": {
+  "hit1_before": 0.25625,
+  "hit1_after": 0.25,
+  "hitk_before": 0.459375,
+  "hitk_after": 0.45,
+  "n": 320,
+  "moved": 64,
+  "moved_within_displayed_tie": 64,
+  "delta_hit1": -0.006249999999999978,
+  "delta_hitk": -0.009374999999999967
+ },
+ "shuffled_orders": [
+  {
+   "hit1_before": 0.271875,
+   "hit1_after": 0.271875,
+   "hitk_before": 0.4625,
+   "hitk_after": 0.4375,
+   "n": 320,
+   "moved": 80,
+   "moved_within_displayed_tie": 80,
+   "delta_hit1": 0.0,
+   "delta_hitk": -0.025000000000000022,
+   "order_seed": 11
+  },
+  {
+   "hit1_before": 0.28125,
+   "hit1_after": 0.259375,
+   "hitk_before": 0.48125,
+   "hitk_after": 0.453125,
+   "n": 320,
+   "moved": 83,
+   "moved_within_displayed_tie": 83,
+   "delta_hit1": -0.021874999999999978,
+   "delta_hitk": -0.02812500000000001,
+   "order_seed": 22
+  },
+  {
+   "hit1_before": 0.259375,
+   "hit1_after": 0.26875,
+   "hitk_before": 0.434375,
+   "hitk_after": 0.4375,
+   "n": 320,
+   "moved": 79,
+   "moved_within_displayed_tie": 79,
+   "delta_hit1": 0.009374999999999967,
+   "delta_hitk": 0.003124999999999989,
+   "order_seed": 33
+  },
+  {
+   "hit1_before": 0.275,
+   "hit1_after": 0.275,
+   "hitk_before": 0.4625,
+   "hitk_after": 0.45625,
+   "n": 320,
+   "moved": 82,
+   "moved_within_displayed_tie": 82,
+   "delta_hit1": 0.0,
+   "delta_hitk": -0.006250000000000033,
+   "order_seed": 44
+  },
+  {
+   "hit1_before": 0.2625,
+   "hit1_after": 0.25625,
+   "hitk_before": 0.44375,
+   "hitk_after": 0.446875,
+   "n": 320,
+   "moved": 78,
+   "moved_within_displayed_tie": 78,
+   "delta_hit1": -0.006250000000000033,
+   "delta_hitk": 0.0031250000000000444,
+   "order_seed": 55
+  }
+ ],
+ "shuffled_delta_hit1_min": -0.021874999999999978,
+ "shuffled_delta_hit1_max": 0.009374999999999967,
+ "shuffled_delta_hit1_negative_of": [
+  2,
+  5
+ ],
+ "gap_control": [
+  {
+   "gap_seconds": 0.0,
+   "moved": 0,
+   "n": 80
+  },
+  {
+   "gap_seconds": 0.0,
+   "moved": 0,
+   "n": 80
+  },
+  {
+   "gap_seconds": 2.0,
+   "moved": 16,
+   "n": 80
+  },
+  {
+   "gap_seconds": 10.0,
+   "moved": 16,
+   "n": 80
+  }
+ ],
+ "note": "movement is large and real; its accuracy consequence has no consistent sign once insert order is randomised. Run-to-run determinism at a fixed instant is a different property and holds (reinforce_accuracy_ablation arm a = 0.0000)."
+}
