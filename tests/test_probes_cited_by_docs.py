@@ -34,6 +34,12 @@ NOT_STANDALONE = {
     "locomo_composed_soft_filters.py": "needs agora_output/lab/data/locomo10.json (LoCoMo, not redistributable)",
     "locomo_correlated_cue_composition.py": "needs the LoCoMo dataset",
     "locomo_metadata_prefilter.py": "needs locomo10.json",
+    # Exits 2 with a message naming --locomo when the dataset is absent. Recorded rather than made to
+    # pass on a synthetic corpus: the movement it measures does NOT reproduce on any synthetic store
+    # tried (120-600 records, ages spread over 2-10 s, exact-tie and near-tie text -> 0 answers move),
+    # so a self-contained version of this probe would print zeros and quietly retire the README
+    # paragraph it exists to support.
+    "recall_over_a_time_gap.py": "needs locomo10.json (LoCoMo, not redistributable)",
     "locomo_retrieval_map.py": "needs benchmark output under agora_output/",
     "locomo_soft_prefer_filter.py": "needs benchmark output under agora_output/",
     "membench_recall_probe_v2.py": "needs MemBench output under agora_output/",
