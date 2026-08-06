@@ -34,10 +34,26 @@ SUBJECT = "user:alice"
 VALUE = "account balance 12.69"
 
 # A DERIVED record: it quotes the subject's value, but its own subject line is the ROTATION, not the
-# person. Added 2026-08-06 after arXiv:2606.23276 (Basani & Chhabra) made the general point that a
-# system's own success metric is the last place its failures show. The original scenario has no such
-# row, so both published strategies purge on the subject string and score as if that were enough --
-# and for that fixture it is. A subject-keyed purge cannot see this row; only lineage can.
+# person. Added 2026-08-06; the conclusion first drawn from it was WRONG and is corrected below.
+#
+# WHAT STANDS: a subject-keyed purge, executed correctly across all six stores, scores 1.00 on the
+# original fixture and 0.67 once one derived record exists. That is real and it reproduces.
+#
+# WHAT WAS WITHDRAWN, same day, before any of it was published:
+#   1. NOVELTY. This is already scored. Chen et al., arXiv:2606.10062 (8 Jun 2026) define a Forgetting
+#      Residue Score and report "raw-only deletion leaves derived summary copies recoverable in
+#      approximately 20% of instances"; Zhao et al., MemoRepair, arXiv:2605.07242 (8 May 2026)
+#      formalise the cascade update problem and take invalidated-memory exposure from 69.8-94.3% to 0%.
+#      The mechanism is older still: Buneman/Khanna/Tan, deletion propagation through views (PODS
+#      2002), and Green/Karvounarakis/Tannen, provenance semirings (PODS 2007).
+#   2. THE DECISIVE ARM WAS CIRCULAR. A "lineage+derived" arm purged DERIVED_SUBJECT -- a constant
+#      declared eighty lines above it. That is a second subject-keyed purge told the answer in advance,
+#      and `erasure_auditor.py` contains no lineage concept at all. Replaced by the arm below.
+#   3. "ONLY LINEAGE REACHES IT" IS FALSE, and the harness's own detector says so: TextStoreProbe finds
+#      the derived row by verbatim value substring, so a VALUE-keyed purge reaches it too. Measured:
+#      value+derived scores 1.00 with no provenance graph anywhere.
+#   4. AND THE REMEDY WOULD HAVE POINTED AT AN EMPTY FIELD. This library's own writer-declared lineage
+#      measured 0.00% across a 27,290-record production store (CHANGELOG 1.49.0-1.50.0).
 DERIVED_SUBJECT = "rotation:payments"
 DERIVED = f"{DERIVED_SUBJECT} handover note: the balance on file is {VALUE}"
 
@@ -113,13 +129,14 @@ def build(strategy, embed):
         text_rows = [r for r in text_rows if SUBJECT not in r]  # every row attributable to the subject, gone
         cache = {}
         q, pg, s3 = _Q(0, 1000), _Pg(0), _S3(0)               # compaction/vacuum ran; versions destroyed
-    if strategy == "lineage+derived":
-        # LINEAGE-AWARE: also take what was DERIVED from the subject's data. The row names another
-        # subject, so no subject-keyed query reaches it; only a lineage edge does. inspeximus does this
-        # in forget_subject -- measured directly in probes/erasure_elicitation.py, where the derived
-        # summary is among the records erased.
+    if strategy == "value+derived":
+        # VALUE-KEYED: drop anything carrying the value, whatever subject it is filed under. No
+        # provenance graph, no derived_from, no lineage. This is the arm the first version of this
+        # file failed to run, and it is the one that falsifies "only lineage-aware erasure reaches
+        # it" -- the detector locates the row by verbatim value, so a purge keyed the same way
+        # reaches it by the same route.
         vec.purge(DERIVED_SUBJECT)
-        text_rows = [r for r in text_rows if DERIVED_SUBJECT not in r]
+        text_rows = [r for r in text_rows if VALUE not in r]
     a = ErasureAuditor()
     a.register(TextStoreProbe("primary-log", text_rows))
     a.register(vec)
@@ -143,7 +160,7 @@ def main():
     print(f"\nForget-Verification Benchmark — 6-store fan-out, embedder={embname}\n")
     print(f"{'strategy':<12} {'score':>6}  {'verdict':<9} {'signed-receipt':<15} leaking stores")
     print("-" * 78)
-    for strat in ("soft", "hard", "hard+derived", "lineage+derived"):
+    for strat in ("soft", "hard", "hard+derived", "value+derived"):
         a = build(strat, embed)
         s, rep = score(a)
         receipt = a.compliance_receipt(SUBJECT, [VALUE, "12.69"], sign=ed25519_signer(sk), pubkey=pk,
