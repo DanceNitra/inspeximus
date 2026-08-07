@@ -1396,5 +1396,77 @@
     "tests": [
       "tests/test_probe_gate.py"
     ]
+  },
+  {
+    "name": "the recall window is never stamped onto the write",
+    "file": "inspeximus/core.py",
+    "old": "            rec[\"recall_window\"] = _obs",
+    "new": "            pass",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
+  },
+  {
+    "name": "forget() scrubs the recall window, deleting the erasure evidence",
+    "file": "inspeximus/core.py",
+    "old": "        scrubbed = 0\n        if redact_links:",
+    "new": "        scrubbed = 0\n        for _r in self.items:\n            _rw = _r.get(\"recall_window\")\n            if _rw: _rw[\"ids\"] = [i for i in _rw[\"ids\"] if i not in target]\n        if redact_links:",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
+  },
+  {
+    "name": "erasure_audit goes blind to the recall_window pointer channel",
+    "file": "inspeximus/core.py",
+    "old": "            for pid in [p for p in ((r.get(\"recall_window\") or {}).get(\"ids\") or []) if p not in by_id]:",
+    "new": "            for pid in []:",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
+  },
+  {
+    "name": "a capped window truncates silently, hiding its true width",
+    "file": "inspeximus/core.py",
+    "old": "                _obs[\"n\"] = len(_win)",
+    "new": "                pass",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
+  },
+  {
+    "name": "the writes-since-recall counter never resets",
+    "file": "inspeximus/core.py",
+    "old": "        self._last_recall_writes = 0\n",
+    "new": "        pass\n",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
+  },
+  {
+    "name": "an iterative recall stamps only its last hop, not the union",
+    "file": "inspeximus/core.py",
+    "old": "        self._note_recall_window(list(seen), query)\n",
+    "new": "",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
+  },
+  {
+    "name": "the two-phase surface drops round 1 from the window",
+    "file": "inspeximus/core.py",
+    "old": "        self._note_recall_window(merged, query)\n",
+    "new": "",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
+  },
+  {
+    "name": "a foreign (observe=False) read is observed anyway",
+    "file": "inspeximus/core.py",
+    "old": "                self._last_recall_at = 0.0      # sentinel",
+    "new": "                self._last_recall_at = self._last_recall_at or 0.0  # sentinel",
+    "tests": [
+      "tests/test_recall_window_observation.py"
+    ]
   }
 ]

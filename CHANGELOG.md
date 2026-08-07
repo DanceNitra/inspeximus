@@ -3,14 +3,20 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## Unreleased - `observe_recall`: the store keeps the recall->write window it already watches
+## 2.2.0 - UPGRADE IF YOU WANT THE STORE TO RECORD WHICH MEMORIES PRECEDED EACH WRITE: `observe_recall`
 
-Not released. Default **off**; a store written without it is byte-identical to one written before it
-existed, and no gate, ranking or branch reads the new field.
+Opt-in and inert. Default **off**; a store written without it is byte-identical to one written before it
+existed, and no gate, ranking or branch reads the new field. **If you do not turn it on, this release
+changes nothing for you** — there is no fix here and no reason to hurry.
 
 **What it adds.** `Inspeximus(observe_recall=True)` stamps `recall_window = {ids, at, q, w}` on any write
 that followed a recall: the ids as served in rank order, when the recall happened, a 12-char fingerprint of
-the query (never its text), and how many writes have already followed that recall.
+the query, and how many writes have already followed that recall.
+
+`q` is a **grouping key, not a privacy measure** — it exists so an analysis can tell which writes came from
+the same retrieval. Do not read it as anonymisation: hashing personal data is pseudonymisation, the AEPD/EDPS
+joint paper is explicit that it does not put the data out of scope, and a short query drawn from a
+low-entropy space is recoverable by dictionary search. If your queries carry personal data, so does `q`.
 
 **Why.** Declared lineage measured **0.00%** across a 27,290-record deployment, and the window that could
 have stood in for it lived in memory and died with the process -- so *"on writes where the store observed a
@@ -23,11 +29,55 @@ It also generalises *why* declaration failed. `derived_from` needs a judgement *
 that does not track lineage, and gets skipped. `observe_recall` needs **one decision per store**, at
 construction, after which the store fills it from a flow it already sees.
 
+**PRIOR ART: none of this is new, and the parts that are old are old by twenty years.** Stating it here so a
+reader does not have to find it:
+
+- The mechanism is verbatim **PASS** (Muniswamy-Reddy et al., USENIX ATC 2006): *"when a process issues a
+  `read`… PASS creates a record that the process depends upon the file… when that process then issues a
+  `write`… the written file depends upon the process."* Read-before-write as observed provenance is theirs.
+- Keeping observation in a **separate channel from declaration** is likewise established, not our idea:
+  **PASSv2** (ATC 2009) shipped a distinct *Disclosed Provenance API* precisely so applications could
+  disclose alongside what the system observed.
+- **W3C PROV-DM** (Recommendation, 2013) names our inference as an explicit anti-pattern — *"if an artifact
+  was used by an activity that also generated a new artifact, it does not always follow that the second
+  artifact was derived from the first"* — and supplies `wasInfluencedBy` as the weaker relation. That is the
+  right reading of `recall_window`: **influence, not derivation.** `derived_from` remains the only
+  `wasDerivedFrom` in this library.
+- Instrumenting a chokepoint instead of asking authors to annotate is the oldest pattern here: `gcc -M`
+  replacing hand-written Makefile dependencies, and **Dapper** (Google, 2010), which rejected declaration in
+  as many words — *"a tracing infrastructure that relies on active collaboration from application-level
+  developers… becomes extremely fragile, and is often broken due to instrumentation bugs or omissions."*
+  Our 0.00% is a re-measurement of a known result, not a discovery.
+
+**And the known failure mode, which we do not escape.** Read-before-write over-approximates: **BackTracker**
+(King & Chen, SOSP 2003) measured an unfiltered dependency graph of 5,281 objects / 9,825 events against an
+analyzable truth of 24 / 28. Theory says the same — a read-*set* is why-provenance, a lossy image
+(Green/Karvounarakis/Tannen, PODS 2007: two outputs can share why-provenance `{r,s}` while one derives from
+`s` alone), which is exactly why this field **must not** drive trust or deletion propagation, and does not.
+And for retrieval specifically, *served ≠ used*: Wallat et al. (ICTIR 2025) measure up to **57%** of RAG
+citations as post-rationalised — retrieved and cited without being causally used. A record that sits in
+every top-k becomes a parent of everything, the direct analogue of PASS finding `/etc/mtab` in the
+provenance of every process that touched glibc.
+
+**So what is actually unmeasured?** Not the mechanism — the *number*, in this setting. The 99.5% is
+OS-syscall, the 57% is RAG-citation; we found no peer-reviewed measurement of read-before-write precision in
+a document/memory store. That gap is the whole reason to persist the window: **this release buys the data,
+it does not report a result.** If that measurement never happens, this field is a correlation log, and we
+would rather say so now than discover it later.
+
 **Observation, not claim -- and the separation is load-bearing.** `derived_from` asserts parentage and earns
 consequences: taint inheritance, the orphan rule, the influence gate, evidence-grade capping.
 `recall_window` asserts only that the store served these ids before this write -- true by construction, no
 threshold, no embedding, no model. It feeds nothing. If a gate ever consumes it, it stops being evidence and
 becomes a claim, and the measurement it exists to enable would be measuring its own stamp.
+
+**A second reason it must stay inert, which is adversarial rather than statistical.** The window is
+attacker-influenceable: anyone who can issue a recall against a store immediately before another writer's
+write decides what lands in that write's `recall_window`, and `observe=False` only helps where the caller
+knows the read was foreign. Today this is harmless precisely because nothing consumes the field — but it
+means the field can never be promoted into a trust, corroboration or erasure decision without first solving
+an injection problem that does not currently exist. Treat "recall_window feeds nothing" as a security
+property, not just a measurement hygiene rule.
 
 **Nothing is thresholded at write time** -- no age cutoff, no relevance filter, no classification of the
 write. Each would be a parameter a later analysis could never reach past (a window stamped only when it is
@@ -59,6 +109,15 @@ exists to produce. The observation now has its own id list (`_last_recall_window
 operation: the union for `recall_iterative`, and round-1-plus-the-bridge (`merged`) for
 `recall_iterative_followup`. `_last_recall` itself is untouched, so `derived=True` / `infer_lineage` behave
 exactly as before.
+
+**Two things we are open about rather than settled on.** First, as shipped this field has no consumer, so
+nothing yet can return the verdict *"these edges are wrong"* — the falsification is the planned adjudication
+against human-labelled parent sets, and until that runs the honest status is *unverified*, not *sound*.
+Second, our "declaration doesn't work" argument has a real counter-example in its own best source: Dapper
+eliminated *mandatory* annotation, yet 70% of its spans and 90% of its traces went on to carry a **hand**
+annotation once the automatic spine existed. Automatic capture may not replace declaration so much as give
+people a skeleton worth decorating. If `derived_from` coverage rises from 0.00% on stores that turn this on,
+that is the more interesting result, and it argues against us.
 
 20 tests, all eight deliberate mutants caught (stamp removed, `forget()` scrubbing the window, audit blind to
 the channel, silent truncation, counter never resetting, iterative stamping the last hop, the two-phase

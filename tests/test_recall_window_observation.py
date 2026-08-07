@@ -248,6 +248,38 @@ def test_the_two_phase_surface_stamps_round_one_plus_the_bridge():
     assert set(prior) <= set(obs["ids"]), "round-1 records must survive into the window"
 
 
+# ── the structural property that keeps this out of PASS's cycle problem ──────────────────────────
+
+def test_every_window_edge_points_strictly_backwards_in_time():
+    """PASS (USENIX ATC 2006) found its read/write provenance produced CYCLES — `read a; write a`
+    makes a process a descendant of `a` — and had to merge nodes to break them, losing precision.
+
+    That cannot happen here, and this asserts the reason rather than stating it in a comment: a
+    recall can only serve records that already exist, so every window edge points from a newer
+    record to strictly older ones. The graph is a DAG by construction, not by repair.
+    """
+    m = _store(observe_recall=True)
+    order, seen = [], set()
+    for i in range(12):
+        if i % 3 == 0:
+            m.recall(f"topic {i//3}", k=6)
+        rid = m.remember(f"record {i} about topic {i//3}")
+        order.append(rid)
+        seen.add(rid)
+
+    pos = {rid: i for i, rid in enumerate(order)}
+    edges = 0
+    for r in m.items:
+        for pid in (r.get("recall_window") or {}).get("ids", []):
+            assert pid in pos, "a window id that is not a record of this store"
+            assert pos[pid] < pos[r["id"]], (
+                f"window edge {r['id']}->{pid} points forwards or at itself; the graph is not a DAG")
+            edges += 1
+    assert edges > 0, "fixture no longer reproduces: no window edges were created at all"
+    # ...and no record can ever be its own parent, the specific PASS failure.
+    assert not any(r["id"] in (r.get("recall_window") or {}).get("ids", []) for r in m.items)
+
+
 # ── the cap, which must never delete evidence silently ───────────────────────────────────────────
 
 def test_a_capped_window_reports_its_true_width():

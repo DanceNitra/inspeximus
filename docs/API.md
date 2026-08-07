@@ -590,12 +590,31 @@ provenance-carrying poison — that needs content moderation + trust-decay retri
 
 Everything above is about **claimed** lineage. `Inspeximus(observe_recall=True)` persists the other end of the
 `recall → write` flow the store already watches, as an **observation**: `recall_window = {ids, at, q, w}` on any
-write that followed a recall — the ids as served in rank order, when, a 12-char fingerprint of the query (never
-its text), and how many writes have already followed that recall. It **feeds nothing**: no gate reads it, nothing
-ranks or branches on it, and it never becomes `derived_from`. That separation is the point — `derived_from`
+write that followed a recall — the ids as served in rank order, when, a 12-char fingerprint of the query, and
+how many writes have already followed that recall. It **feeds nothing**: no gate reads it, nothing ranks or
+branches on it, and it never becomes `derived_from`. That separation is the point — `derived_from`
 *asserts* parentage and earns taint, the orphan rule and the influence gate; `recall_window` asserts only that
 the store served these ids before this write, which is true by construction and needs no threshold, embedding or
-model.
+model. In W3C PROV terms it is **`wasInfluencedBy`, never `wasDerivedFrom`** — reachability, not derivation —
+and the spec names conflating the two as an anti-pattern: *"if an artifact was used by an activity that also
+generated a new artifact, it does not always follow that the second artifact was derived from the first."*
+
+`q` is a **grouping key, not a privacy measure.** It lets an analysis tell which writes came from the same
+retrieval. Hashing personal data is pseudonymisation, not anonymisation (AEPD/EDPS joint paper), and a short
+query drawn from a low-entropy space is recoverable by dictionary search — if your queries carry personal
+data, so does `q`.
+
+**Prior art, so you do not have to go find it.** The mechanism is verbatim PASS (Muniswamy-Reddy et al.,
+USENIX ATC 2006) read-before-write provenance; keeping observation in a channel separate from declaration is
+PASSv2's Disclosed Provenance API (ATC 2009); instrumenting a chokepoint instead of asking authors to
+annotate is `gcc -M` and Dapper (2010), which rejected declared instrumentation as *"extremely fragile, and
+often broken due to instrumentation bugs or omissions."* The known failure mode is over-approximation —
+BackTracker (King & Chen, SOSP 2003) measured an unfiltered graph of 5,281 objects against an analyzable 24
+— and for retrieval specifically *served ≠ used*: up to **57%** of RAG citations are post-rationalised
+(Wallat et al., ICTIR 2025). A read-set is why-provenance and lossy (Green/Karvounarakis/Tannen, PODS 2007),
+which is precisely why this field must not drive trust or deletion propagation, and does not. **What is
+unmeasured is the precision number in a memory store** — no peer-reviewed study we could find reports it.
+That gap is what persisting the window is for: this is data collection, not a result.
 
 **Why it exists.** Declared lineage measured **0.00%** on a real 27,290-record deployment, and the window that
 could have stood in for it lived in memory and died with the process — so *"how much of the true parent set does

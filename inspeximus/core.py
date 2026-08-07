@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.1.2"
+__version__ = "2.2.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -6637,10 +6637,13 @@ class Inspeximus:
         # two things that decide whether the window is even plausible: its AGE and its POSITION in the run of
         # writes that followed. Neither is thresholded here -- a cutoff baked in at write time is a parameter
         # the later analysis could never reach past, so the raw observation is stored and every cutoff is left
-        # to the analysis. The query is fingerprinted, never stored: it groups writes by the recall that drove
-        # them (which is what exposes a window set by a COLLEAGUE's query in a shared-store deployment)
-        # without putting arbitrary user text -- and its PII -- into every record of a store whose entire
-        # governance story is erasure.
+        # to the analysis. The query is fingerprinted so an analysis can tell which writes came from the same
+        # recall -- which is what exposes a window set by a COLLEAGUE's query in a shared-store deployment.
+        # `q` IS A GROUPING KEY AND NOT A PRIVACY MEASURE, and this comment claimed otherwise until an
+        # adversarial review corrected it: hashing personal data is pseudonymisation, not anonymisation
+        # (AEPD/EDPS joint paper), and a short query drawn from a low-entropy space is recoverable by
+        # dictionary search. Storing the digest rather than the text lowers incidental exposure; it does
+        # not put the query out of scope. If the queries carry personal data, so does this field.
         #
         # `observe=False` marks a read that is NOT part of a recall->write flow, and it is needed because
         # some reads are about the store rather than for the writer: a scoring pass that credits memories
