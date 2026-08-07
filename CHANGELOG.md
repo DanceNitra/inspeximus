@@ -3,6 +3,29 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.2.1 - UPGRADE IF YOU RAN 2.2.0 AND WANTED `observe_recall` OVER MCP: the server could not switch it on
+
+2.2.0 added `observe_recall` to the library and shipped it with **no consumer**. `inspeximus/mcp_server.py`
+built its store as `open_store(..., receipts=_RECEIPTS)` — no `observe_recall`, and no environment variable
+for it, while the same file already read env vars for receipts, the echo guard, `max_k` and snippet chars.
+The pattern was right there and the switch was simply missing.
+
+That mattered more on this surface than anywhere else, which is why it is a same-day fix rather than a note.
+The MCP server holds ONE module-level store for the whole process, so a `recall` call followed by a
+`remember` / `remember_decision` call is the same agent writing to the same store, causally linked. It is the
+one deployment where the `recall -> write` flow the field exists to observe is actually real — and it was the
+one place that could not turn the field on.
+
+**`INSPEXIMUS_OBSERVE_RECALL=1`** now enables it, accepting the same spellings as the other switches
+(`1/true/yes/on`). Default off, unchanged behaviour, and documented in the module's Config block — including
+that the query digest is a GROUPING key and not anonymisation.
+
+**The test that would have caught this is not `assert _OBSERVE_RECALL is True`.** A module flag that is read
+and then dropped passes that and changes nothing; the whole defect was a value that existed and went nowhere.
+Every assertion in `tests/test_mcp_observe_recall.py` goes through `_MEM` and lands on a written record,
+including one that drives the actual MCP `recall` and `remember_decision` tools rather than the store
+directly. Registered as a mutation (the exact line 2.2.0 shipped); it kills 3 of the 4 tests.
+
 ## 2.2.0 - UPGRADE IF YOU WANT THE STORE TO RECORD WHICH MEMORIES PRECEDED EACH WRITE: `observe_recall`
 
 Opt-in and inert. Default **off**; a store written without it is byte-identical to one written before it

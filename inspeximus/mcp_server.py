@@ -22,6 +22,12 @@ Config (environment):
     INSPEXIMUS_EMBED_URL   optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall
     INSPEXIMUS_EMBED_MODEL embedding model id (default: text-embedding-3-small)
     INSPEXIMUS_EMBED_KEY   bearer key for that endpoint
+    INSPEXIMUS_OBSERVE_RECALL  record which memories were served immediately before each write, as an
+                           observation (`recall_window`), never as claimed lineage. Off by default; a store
+                           written without it is byte-identical to one written before it existed. It feeds
+                           no gate, no ranking and no branch. Note the query is stored as a 12-char digest
+                           for GROUPING, which is pseudonymisation and not anonymisation — if your queries
+                           carry personal data, so does that field.
     INSPEXIMUS_RECEIPT_PUBKEY  hex Ed25519 PUBLIC key the write receipts are expected to be signed by.
                            Set it whenever the store is signed: without it the tamper-evidence tools
                            verify that receipts are signed by SOMEBODY, which a party who rewrites the
@@ -194,7 +200,15 @@ _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
 #   INSPEXIMUS_RECEIPTS alone, so an MCP write against a receipted store did not extend the chain and the
 #   next verify_writes() reported an uncovered record -- the CLI defect, one surface over. Enabling receipts
 #   on a store that has no sidecar is still opt-in, so nothing is created unasked.
-_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS)
+# INSPEXIMUS_OBSERVE_RECALL (opt-in, default off): persist the recall->write window this server already
+# watches, as an OBSERVATION (`recall_window`), never as claimed lineage. 2.2.0 added the capability to the
+# library and this server could not switch it on -- which mattered more here than anywhere else, because
+# THIS is the surface where the flow is real: one module-level store for the whole process, so a `recall`
+# call followed by a `remember`/`remember_decision` call is the same agent, causally linked. The library
+# feature shipped with no consumer for exactly one release.
+_OBSERVE_RECALL = os.environ.get("INSPEXIMUS_OBSERVE_RECALL", "").strip().lower() in ("1", "true", "yes", "on")
+_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
+                  observe_recall=_OBSERVE_RECALL)
 
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
 
