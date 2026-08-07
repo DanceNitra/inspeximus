@@ -370,3 +370,65 @@ def test_CONTROL_deleting_a_surface_file_does_not_read_as_clean(sandbox):
     """"I found no numbers" and "I could not look" produce the same empty list."""
     (sandbox / "MCP_LISTINGS.md").unlink()
     assert "MISSING-SURFACE" in _kinds(sandbox)
+
+
+# ── the promise itself, not only the numbers behind it ──────────────────────────────────────────────
+# Everything above checks that each published number IS registered. Nothing checked that the README
+# still TELLS the reader so. Those are different properties, and a mutation that swapped
+#   **Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**
+# for the vaguer
+#   **Every number on this page traces to a runnable probe.**
+# survived the whole suite: the registry was still correct, still complete, and no longer reachable
+# from the page a reader lands on. The coverage guarantee is the one sentence that turns a number into
+# a checkable number, so it is load-bearing in exactly the way an unverifiable promise is not.
+#
+# Deliberately narrow. It does not police every sentence containing "every number" -- three legitimate
+# ones exist (the audit command's own help text, a description of a companion that FAILED audit, and a
+# caveat in CLAIMS.md warning against precisely this over-read), and a lint that fires on honest prose
+# gets switched off, which is the failure mode the release-notes lint documents.
+
+_PROMISE = re.compile(r"\*\*\s*Every (?:number|figure) on this page\b[^*]*\*\*", re.I)
+
+
+def test_the_readme_coverage_promise_names_the_registry():
+    """A blanket promise about every number on the page must NAME the artifact that backs it.
+
+    Fails in both directions: if the sentence is weakened to one that names no registry, and if it
+    disappears (or is reworded past recognition) so the page makes no promise at all. An absent
+    promise and a kept one must not read the same to this test -- that is the whole defect.
+    """
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
+    promises = _PROMISE.findall(text)
+    assert promises, (
+        "README.md no longer carries a bolded 'Every number on this page ...' guarantee. Either it "
+        "was removed, or it was reworded -- and a reworded guarantee is not silently equivalent: it "
+        "is the sentence that tells a reader where to check us."
+    )
+    unbacked = [p for p in promises if "CLAIMS.md" not in p]
+    assert not unbacked, (
+        "the README promises something about every number on the page without naming the registry "
+        f"that makes it checkable: {unbacked}. 'traces to a runnable probe' is a claim a reader "
+        "cannot act on; '[docs/CLAIMS.md](docs/CLAIMS.md)' is."
+    )
+
+
+def test_CONTROL_a_coverage_promise_that_names_no_registry_is_caught(tmp_path):
+    """The mutation that survived, reproduced on a copy. If this goes green the check is decorative."""
+    real = (ROOT / "README.md").read_text(encoding="utf-8")
+    weakened = real.replace(
+        "**Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**",
+        "**Every number on this page traces to a runnable probe.**")
+    assert weakened != real, "fixture no longer reproduces: the promise sentence has changed"
+    found = _PROMISE.findall(weakened)
+    assert found and all("CLAIMS.md" not in p for p in found), (
+        "the weakened promise was not detected as unbacked -- the guard would have let the mutant through")
+
+
+def test_CONTROL_a_deleted_coverage_promise_is_caught():
+    """The other direction: removing the sentence must not read as compliance."""
+    real = (ROOT / "README.md").read_text(encoding="utf-8")
+    deleted = real.replace(
+        "**Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**", "")
+    assert deleted != real, "fixture no longer reproduces: the promise sentence has changed"
+    assert not _PROMISE.findall(deleted), (
+        "a README with the guarantee deleted still looked like one that carries it")
