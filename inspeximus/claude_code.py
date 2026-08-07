@@ -550,12 +550,50 @@ def recall(ev):
     seen_ids = {h.get("id") for h in hits}
     standing = [s for s in standing if s.get("id") not in seen_ids]
     decisions = standing + [h for h in hits if has(h, "decision")][:4]
+    # A SECOND STORE HOLDS THE DECISIONS, AND THIS HOOK WAS NOT READING IT.
+    #
+    # The ordering above is correct and was never the problem. The problem is WHICH FILE it orders.
+    # This hook reads the project's coding store; `remember_decision` over MCP writes to the store the
+    # MCP server was configured with, and those are different files. Measured on this repo's own
+    # deployment: the project store held 6,779 records of which 5,857 are `ran: ...` bash captures and
+    # exactly 16 are decisions, while the MCP store held 350 records, ALL of them decisions. So the
+    # writes were happening, correctly typed, into a file the reader never opened -- and the hook
+    # printed "recent mechanics" while the decision that answered the prompt sat one path away.
+    #
+    # That is the same class the `_store_dir` docstring above records for INTRA-project fragmentation
+    # ("13 separate stores... nothing recalls across them"), one level up: this time the split is
+    # between the hook's store and the agent's own decision store.
+    #
+    # Explicit, not guessed. Pointing at `~/.inspeximus/mcp_memory.json` by default would be inventing
+    # the user's configuration; a store that is silently consulted is as bad as one silently ignored.
+    # DECISIONS ONLY, and read-only: the second store is somebody else's memory, so its mechanics stay
+    # out of this prompt and nothing here writes to it. Fail-open, like every other read on this path --
+    # a hook that raises costs the user their turn.
+    ext = (os.environ.get("INSPEXIMUS_DECISION_STORE") or "").strip()
+    if ext and decisions is not None:
+        try:
+            if os.path.abspath(ext) != os.path.abspath(getattr(m, "path", "") or ""):
+                from ._surface import open_store
+                em = open_store(ext, resolve=False)
+                extra = list(em.decisions_in_force(limit=4))
+                extra += [h for h in em.recall(q, k=8) if has(h, "decision")]
+                have = {d.get("id") for d in decisions}
+                for e in extra:
+                    if e.get("id") not in have and len(decisions) < 8:
+                        decisions.append(e); have.add(e.get("id"))
+        except Exception:
+            pass
     knowledge = [h for h in hits if has(h, "knowledge") and not has(h, "decision")][:4]
     mechanics = [h for h in hits if not has(h, "decision") and not has(h, "knowledge")][:2]
     out = []
     if decisions:
         out.append("decisions/rules (what we concluded, and why):")
-        out += [f"  * {d['text']}" for d in decisions]
+        # BOUNDED. A decision record is prose written for a human, and ours run to ten thousand
+        # characters; eight of them unbounded put 18 KB into the context before the user finished
+        # typing. The block is a POINTER -- the subject plus the head of the `because` is what makes an
+        # agent stop and go read the record, and the full text is one `recall` away. Measured: 18,032
+        # bytes unbounded against ~4 KB at this cap, on the same eight decisions.
+        out += [f"  * {_excerpt(d['text'], 480)}" for d in decisions]
     if knowledge:
         out.append("curated knowledge (from memory):")
         out += [f"  = {k['text']}" for k in knowledge]
@@ -729,6 +767,28 @@ def uninstall(cwd=None):
 
 
 def main():
+    # A HOOK MUST NEVER BE SILENCED BY THE CONSOLE CODEPAGE, AND THIS ONE WAS.
+    #
+    # Every line this module prints goes through the host's stdout, which on a Windows console is
+    # cp1250/cp1252, not UTF-8. Our decision records routinely contain characters those codepages have
+    # no mapping for -- an em dash, an arrow, Cyrillic, Chinese -- so `print()` raised
+    # UnicodeEncodeError, the caller swallowed it, and the process exited 0 with an EMPTY stdout and an
+    # EMPTY stderr. Measured on this deployment: the same event that emits 18,032 bytes under
+    # PYTHONIOENCODING=utf-8 emits 0 bytes under cp1250. Not a truncated block, not a mojibake block --
+    # nothing, indistinguishable from "no relevant memory found".
+    #
+    # That is the worst possible failure for a recall hook: the richer the memory, the more likely it
+    # is to contain a character that deletes the entire block, so the hook goes quiet exactly when it
+    # has the most to say. A day was lost to it -- decisions that answered the prompt were retrieved,
+    # ranked and then thrown away at the last statement.
+    #
+    # `errors="replace"` and NOT a switch to UTF-8: the encoding is a contract with whatever reads this
+    # pipe, and changing it would trade a silent crash for silent mojibake. Replacing the unmappable
+    # character keeps the contract and costs one '?'.
+    try:
+        sys.stdout.reconfigure(errors="replace")
+    except Exception:
+        pass
     if "--install" in sys.argv:
         install(); return
     if "--uninstall" in sys.argv:

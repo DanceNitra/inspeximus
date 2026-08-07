@@ -1477,5 +1477,32 @@
     "tests": [
       "tests/test_mcp_observe_recall.py"
     ]
+  },
+  {
+    "name": "the recall hook loses its encoding guard (cp1250 deletes the block)",
+    "file": "inspeximus/claude_code.py",
+    "old": "    try:\n        sys.stdout.reconfigure(errors=\"replace\")\n    except Exception:\n        pass\n",
+    "new": "",
+    "tests": [
+      "tests/test_claude_code_recall_surfaces_decisions.py"
+    ]
+  },
+  {
+    "name": "the recall hook stops reading the external decision store",
+    "file": "inspeximus/claude_code.py",
+    "old": "    ext = (os.environ.get(\"INSPEXIMUS_DECISION_STORE\") or \"\").strip()",
+    "new": "    ext = \"\"",
+    "tests": [
+      "tests/test_claude_code_recall_surfaces_decisions.py"
+    ]
+  },
+  {
+    "name": "the recall block drops its per-record bound",
+    "file": "inspeximus/claude_code.py",
+    "old": "out += [f\"  * {_excerpt(d['text'], 480)}\" for d in decisions]",
+    "new": "out += [f\"  * {d['text']}\" for d in decisions]",
+    "tests": [
+      "tests/test_claude_code_recall_surfaces_decisions.py"
+    ]
   }
 ]
