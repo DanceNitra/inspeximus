@@ -3,6 +3,39 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.2.2 - UPGRADE IF YOU USE THE CLAUDE CODE PLUGIN: the recall hook could go silent, and did
+
+The hook that injects "what we decided, and why" before each prompt spent a full working day printing
+`ran: git status` while the decision that answered the prompt sat in the store the whole time. Two
+independent causes, both silent by construction.
+
+**It read the wrong file.** The hook opens the PROJECT coding store; `remember_decision` over MCP writes
+to whatever store the MCP server was configured with. Measured on the deployment where this was found:
+the project store held **6,779 records, of which 5,857 were `ran: ...` captures and 16 were decisions**;
+the MCP store held **350 records, all of them decisions**. The writes were happening, correctly typed,
+into a file the reader never opened — the same class the `_store_dir` docstring already records for
+intra-project fragmentation, one level up. **`INSPEXIMUS_DECISION_STORE`** now names a second store,
+consulted for decisions only, read-only, fail-open, de-duplicated against the project hits. Explicit
+rather than guessed: defaulting to a path we assume is your configuration would be inventing it.
+
+**The console codepage deleted the block.** Decision prose carries em dashes, arrows, Cyrillic, Chinese.
+On a cp1250 console `print()` raised `UnicodeEncodeError`, the caller swallowed it, and the process
+exited **0 with empty stdout and empty stderr**. Measured on one event: **18,032 bytes under
+`PYTHONIOENCODING=utf-8`, 0 bytes under cp1250.** Not truncated, not mojibake — nothing, and
+indistinguishable from "no relevant memory found". The richer the record, the likelier a character that
+erases the whole block, so the hook went quiet exactly when it had most to say. Fixed with
+`errors="replace"` and **not** a switch to UTF-8: the encoding is a contract with whatever reads the
+pipe, and trading a silent crash for silent mojibake is not a fix. It costs one `?`.
+
+**And a bound, because the fix without it is its own problem.** Eight unbounded decision records is 18 KB
+of context spent before the user has typed. Now ~4,500 bytes for the same eight. The block is a pointer
+to a record; the record is one `recall` away.
+
+Six tests drive the real hook as a subprocess and read its output as **bytes** — a harness that decodes
+the pipe with the console codec dies on the same character the hook died on, then reports the crash it
+caused as an empty result. Three mutants registered and caught: guard removed, store unread, bound
+dropped.
+
 ## 2.2.1 - UPGRADE IF YOU RAN 2.2.0 AND WANTED `observe_recall` OVER MCP: the server could not switch it on
 
 2.2.0 added `observe_recall` to the library and shipped it with **no consumer**. `inspeximus/mcp_server.py`
