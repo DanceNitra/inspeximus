@@ -274,6 +274,70 @@ def test_the_pinner_refuses_a_citation_file_that_lost_its_version_key(tmp_path):
         _pinner(root).main(["_", "99.98.97"])
 
 
+def test_the_homepage_versions_match_the_package():
+    """THE FIFTH INSTANCE of the class CITATION.cff records, and the most public one.
+
+    index.html carries TWO version strings and neither was pinned or asserted. Measured 2026-08-07,
+    the day LangChain's integration tables started linking to this page: the JSON-LD
+    `softwareVersion` said 1.89.0 and the hero eyebrow a reader sees first said **v1.26.0**, while
+    the package was 2.2.2. Search engines and AI answerers read the JSON-LD as authoritative, and a
+    developer arriving from LangChain reads the eyebrow. The visible carrier had drifted furthest.
+    """
+    text = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+    m = re.search(r'"softwareVersion":\s*"([^"]+)"', text)
+    assert m, 'index.html has no "softwareVersion"; structured data would carry whatever it last said'
+    assert m.group(1) == _pyproject_version(), \
+        'index.html softwareVersion says %s, the package is %s' % (m.group(1), _pyproject_version())
+    e = re.search(r'<p class="eyebrow">v(\d+\.\d+\.\d+)\s', text)
+    assert e, "index.html has no v<semver> hero eyebrow; the first version a reader sees is unguarded"
+    assert e.group(1) == _pyproject_version(), \
+        "index.html hero eyebrow says v%s, the package is %s" % (e.group(1), _pyproject_version())
+
+
+def test_the_pinner_pins_both_homepage_carriers(tmp_path):
+    """OUTCOME, on a copy, from the two stale values the page actually carried."""
+    import shutil
+    root = _seed(tmp_path)
+    shutil.copy(os.path.join(ROOT, "index.html"), root / "index.html")
+    p = root / "index.html"
+    t = p.read_text(encoding="utf-8")
+    t = re.sub(r'("softwareVersion":\s*")[^"]*(")', r'\g<1>1.89.0\g<2>', t, count=1)
+    t = re.sub(r'(<p class="eyebrow">)v\d+\.\d+\.\d+(\s)', r'\g<1>v1.26.0\g<2>', t, count=1)
+    p.write_text(t, encoding="utf-8")
+    assert _pinner(root).main(["_", "99.98.97"]) == 0
+    out = p.read_text(encoding="utf-8")
+    assert '"softwareVersion": "99.98.97"' in out, "the JSON-LD carrier was not pinned"
+    assert '<p class="eyebrow">v99.98.97 ' in out, "the hero eyebrow was not pinned"
+    # ...and the stale values are gone FROM THE CARRIERS. Scoped deliberately: unlike CITATION.cff,
+    # this page legitimately mentions other versions in prose, so a blanket "1.89.0 not in file"
+    # asserts something the file was never promising and fails on honest content.
+    assert '"softwareVersion": "1.89.0"' not in out
+    assert '<p class="eyebrow">v1.26.0 ' not in out
+
+
+def test_the_pinner_refuses_a_homepage_that_lost_either_version_key(tmp_path):
+    """THE FALSIFICATION CONTROL, once per carrier. A pin that silently covers nothing is the defect
+    this whole family of tests exists for, so removing EITHER key must fail rather than shrug."""
+    import shutil
+    for kill in ('"softwareVersion"', "eyebrow"):
+        sub = tmp_path / kill.strip('"')
+        sub.mkdir()
+        root = _seed(sub)
+        shutil.copy(os.path.join(ROOT, "index.html"), root / "index.html")
+        p = root / "index.html"
+        t = p.read_text(encoding="utf-8")
+        t = (t.replace('"softwareVersion"', '"releaseVersion"', 1) if kill == '"softwareVersion"'
+             else re.sub(r'(<p class="eyebrow">)v\d+\.\d+\.\d+(\s)', r'\g<1>\g<2>', t, count=1))
+        p.write_text(t, encoding="utf-8")
+        with pytest.raises(SystemExit):
+            _pinner(root).main(["_", "99.98.97"])
+
+
+def test_a_missing_homepage_is_skipped_rather_than_fatal(tmp_path):
+    """A partial ROOT is not a defect; kept distinct from the refusal above, same as CITATION.cff."""
+    assert _pinner(_seed(tmp_path)).main(["_", "99.98.97"]) == 0   # _seed copies no index.html
+
+
 def test_a_missing_citation_file_is_skipped_rather_than_fatal(tmp_path):
     """A partial ROOT (a harness) is not a defect. Kept distinct from the case above on purpose."""
     assert _pinner(_seed(tmp_path)).main(["_", "99.98.97"]) == 0   # _seed copies no CITATION.cff

@@ -1504,5 +1504,23 @@
     "tests": [
       "tests/test_claude_code_recall_surfaces_decisions.py"
     ]
+  },
+  {
+    "name": "index.html JSON-LD softwareVersion stops being pinned",
+    "file": "packages/_pin_server_json.py",
+    "old": "        new, n = re.subn(r'(\"softwareVersion\":\\s*\")[^\"]*(\")', rf'\\g<1>{version}\\g<2>', text, count=1)",
+    "new": "        new, n = text, 1",
+    "tests": [
+      "tests/test_manifest_versions.py"
+    ]
+  },
+  {
+    "name": "the index.html hero eyebrow stops being pinned",
+    "file": "packages/_pin_server_json.py",
+    "old": "        new, m = re.subn(r'(<p class=\"eyebrow\">)v\\d+\\.\\d+\\.\\d+(\\s)', rf'\\g<1>v{version}\\g<2>', new, count=1)",
+    "new": "        m = 1",
+    "tests": [
+      "tests/test_manifest_versions.py"
+    ]
   }
 ]

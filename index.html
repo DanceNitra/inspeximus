@@ -30,7 +30,7 @@
           "name": "inspeximus",
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Windows, macOS, Linux",
-          "softwareVersion": "1.89.0",
+          "softwareVersion": "2.2.2",
           "description": "The self-correcting memory layer for AI agents: zero-dependency, with an MCP server. Value-ranked recall, consolidation, and a first-class correction and erasure channel.",
           "license": "https://opensource.org/licenses/MIT",
           "url": "https://dancenitra.github.io/inspeximus/",
@@ -86,6 +86,7 @@
         <a href="#measured">Measured</a>
         <a href="#features">Features</a>
         <a href="#mcp">MCP</a>
+        <a href="#langgraph">LangGraph</a>
         <a href="#governance">Governance</a>
         <a href="ai-act.html">EU AI Act</a>
       </nav>
@@ -106,7 +107,7 @@
         <!-- Beat 0 — hero -->
         <section class="panel panel--hero" data-beat="0">
           <div class="panel__inner reveal">
-            <p class="eyebrow">v1.26.0 · MIT · zero dependencies</p>
+            <p class="eyebrow">v2.2.2 · MIT · zero dependencies</p>
             <h1 class="hero__title">
               Agent memory that keeps a<br />
               <span class="glow-text">corrected fact corrected.</span>
@@ -311,6 +312,65 @@
             <div class="orbit__ring" data-r="2"></div>
             <div class="orbit__ring" data-r="3"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- LangGraph -->
+      <section class="section" id="langgraph">
+        <div class="section__head reveal">
+          <p class="eyebrow">langgraph</p>
+          <h2 class="section__title">A checkpointer and a store, drop-in</h2>
+          <p class="section__lede">Listed in LangChain&rsquo;s own integrations tables. <code>InspeximusStore</code> implements <code>BaseStore</code> and <code>InspeximusSaver</code> implements the checkpointer interface, so an existing graph swaps one line and keeps its corrections.</p>
+        </div>
+        <div class="cards">
+          <article class="card spotlight">
+            <div class="card__icon" data-i="adapter"></div>
+            <h3>Install</h3>
+            <p>Two packages, either alone:</p>
+            <div class="code-block scanlines">
+              <div class="code-block__bar"><span>pip</span>
+                <button class="copy-mini magnetic" data-copy="pip install langgraph-checkpoint-inspeximus langgraph-store-inspeximus" type="button">copy</button>
+              </div>
+<pre>pip install langgraph-checkpoint-inspeximus langgraph-store-inspeximus</pre>
+            </div>
+          </article>
+          <article class="card spotlight">
+            <div class="card__icon" data-i="adapter"></div>
+            <h3>Store</h3>
+            <p>Hand it to a graph anywhere a <code>BaseStore</code> goes. Keyed supersession means a corrected value replaces the old one instead of ranking beside it.</p>
+            <div class="code-block scanlines">
+              <div class="code-block__bar"><span>python</span>
+                <button class="copy-mini magnetic" data-copy='from inspeximus.integrations.langgraph import InspeximusStore
+
+store = InspeximusStore(path="memory.json")
+graph = builder.compile(store=store)' type="button">copy</button>
+              </div>
+<pre><span class="k">from</span> inspeximus.integrations.langgraph <span class="k">import</span> InspeximusStore
+
+store = InspeximusStore(path=<span class="s">"memory.json"</span>)
+graph = builder.compile(store=store)</pre>
+            </div>
+          </article>
+          <article class="card spotlight">
+            <div class="card__icon" data-i="audit"></div>
+            <h3>Checkpointer</h3>
+            <p>The same store backs graph state, so a thread&rsquo;s history and its long-term memory share one file and one erasure path.</p>
+            <div class="code-block scanlines">
+              <div class="code-block__bar"><span>python</span>
+                <button class="copy-mini magnetic" data-copy='from inspeximus.integrations.langgraph import InspeximusSaver
+
+graph = builder.compile(checkpointer=InspeximusSaver(path="state.json"))' type="button">copy</button>
+              </div>
+<pre><span class="k">from</span> inspeximus.integrations.langgraph <span class="k">import</span> InspeximusSaver
+
+graph = builder.compile(checkpointer=InspeximusSaver(path=<span class="s">"state.json"</span>))</pre>
+            </div>
+          </article>
+          <article class="card spotlight">
+            <div class="card__icon" data-i="audit"></div>
+            <h3>Parity is measured, not claimed</h3>
+            <p><code>store_audit.py</code> runs the same operation scripts against LangGraph&rsquo;s own <code>InMemoryStore</code> and against <code>InspeximusStore</code> and requires identical observable results, operation by operation. It has a falsification mode that swallows the writes, and CI fails if that mode comes back green &mdash; an audit that cannot fail is a demo.</p>
+          </article>
         </div>
       </section>
 

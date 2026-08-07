@@ -120,6 +120,33 @@ def main(argv: list[str]) -> int:
             p.write_text(new, encoding="utf-8")
         print(f"CITATION.cff pinned to {version}")
 
+    # THE FIFTH INSTANCE, and the same file the CITATION.cff note above is about. `index.html` carries a
+    # JSON-LD `softwareVersion` that search engines and AI answerers read as the authoritative version of
+    # this software, and nothing pinned it: measured 2026-08-07 it said `1.89.0` while the package was at
+    # 2.2.2, three releases behind. It is the most public version string we publish -- the site is what
+    # LangChain's integration tables now link to -- and it was the only one still hand-maintained.
+    # Same refusal rule: a present file whose key has gone missing is an error, not a shrug.
+    p = ROOT / "index.html"
+    if not p.exists():
+        print("index.html not present under this ROOT; nothing pinned there")
+    else:
+        text = p.read_text(encoding="utf-8")
+        new, n = re.subn(r'("softwareVersion":\s*")[^"]*(")', rf'\g<1>{version}\g<2>', text, count=1)
+        if n != 1:
+            raise SystemExit('::error::index.html has no `"softwareVersion"` key to pin; refusing to '
+                             "guess where the version lives")
+        # TWO carriers on the same page, and the visible one had drifted further. The hero eyebrow
+        # reads `v1.26.0 - MIT - zero dependencies` while the JSON-LD said 1.89.0 and the package was
+        # 2.2.2: the first version string a human sees was the stalest of the three. Narrow pattern,
+        # same rule as the README badge -- only a standalone `v<semver>` inside that eyebrow.
+        new, m = re.subn(r'(<p class="eyebrow">)v\d+\.\d+\.\d+(\s)', rf'\g<1>v{version}\g<2>', new, count=1)
+        if m != 1:
+            raise SystemExit("::error::index.html has no `v<semver>` hero eyebrow to pin; refusing to "
+                             "guess where the version lives")
+        if new != text:
+            p.write_text(new, encoding="utf-8")
+        print(f"index.html softwareVersion + hero eyebrow pinned to {version}")
+
     # The README badge is the first version a reader sees, and it is prose, so it gets a NARROW
     # pattern: only the standalone `v<semver>` token, never a bare number that might be a citation,
     # a DOI fragment or a dependency bound. If the token is absent the pinner says so and moves on
