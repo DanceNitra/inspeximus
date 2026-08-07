@@ -74,7 +74,18 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: RAISED 150 -> 152 on 2026-07-30, same file, two more tests in it: the legacy-record rework added
 #: test_erase_namespace_reaches_a_legacy_record_whose_id_predates_escaping and the subtree case. Both
 #: need langgraph for the same reason the rest of that file does. Exactly +2: 150 + 2 = 152.
-MAX_HIDDEN_IN_BASE_ENV = 152
+#: RAISED 152 -> 156 on 2026-08-07, for test_mcp_observe_recall.py (4), which needs the MCP SDK.
+#: The guard is unavoidable and the reason is the same one that makes the file worth having: 2.2.0
+#: shipped `observe_recall` in the library while mcp_server.py could not switch it on, and the defect
+#: was a module flag that was read and never passed to open_store(). Every assertion therefore goes
+#: through the server's own `_MEM` and lands on a written record -- two of them drive the MCP `recall`
+#: and `remember_decision` TOOLS -- so importing inspeximus.mcp_server, and with it mcp.server.fastmcp,
+#: is what makes them evidence instead of an assertion about a variable. A version that avoided the
+#: import could only have re-checked the flag, which is exactly the test that would have passed while
+#: the bug shipped. The `integrations` CI job installs .[mcp,...] and runs all four under
+#: --require-all, where a SKIP is a failure rather than an acceptable outcome.
+#: Exactly +4, no slack: 152 + 4 = 156.
+MAX_HIDDEN_IN_BASE_ENV = 156
 
 
 def _base_env_census():
