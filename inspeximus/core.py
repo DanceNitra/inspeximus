@@ -819,7 +819,7 @@ class Inspeximus:
                  support_authorities: list | None = None, persist_vectors: bool = False,
                  embed_query=None, embed_id: str | None = None,
                  infer_lineage: float = 0.0, echo_guard: bool | None = None,
-                 agent: str | None = None):
+                 agent: str | None = None, observe_recall: bool = False):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -1191,6 +1191,46 @@ class Inspeximus:
         # flow, not supplied by the untrusted LLM. Transient (not persisted); see remember(derived=True).
         self._last_recall: list[str] = []
         self._last_recall_text: str = ""            # normalized text of that recall, for infer_lineage
+        # The OBSERVATION's own id list, deliberately not `_last_recall`. That attribute is the legacy
+        # lineage substrate for derived=True / infer_lineage, and on a multi-hop recall it holds only the
+        # LAST hop -- while `recall_iterative` returns the UNION of every hop. Reading the observation off
+        # it would stamp a strict subset of what the caller actually saw, which does not merely lose data:
+        # it biases the one metric this field exists to produce, silently and in a known direction
+        # (understating what the free window captures). Separate lists, one meaning each.
+        self._last_recall_window: list[str] = []
+        self._last_recall_at: float = 0.0           # WHEN that recall happened, so a write can stamp the window's AGE
+        self._last_recall_q: str = ""               # fingerprint (not text) of the query that drove it
+        self._last_recall_writes: int = 0           # how many writes have already followed that recall
+        # OBSERVE THE RECALL WINDOW (opt-in, default OFF = byte-identical legacy).
+        #
+        # The three attributes above are the store's own observation of the recall->write flow, and until now
+        # BOTH ends were thrown away: they live in memory, are consumed at remember(), and die with the
+        # process. So the question "on writes where the store observed a recall, how much of the true parent
+        # set does the free window already capture?" cannot be asked of ANY historical store -- measured on
+        # our own 8-agent deployment (2026-08-07), `derived_from` is filled on 0 of 181,523 records and none
+        # carries a window field at all. There is nothing to replay. This flag persists the observation so
+        # that in a few days there is.
+        #
+        # WHY THIS IS NOT THE `derived_from` MISTAKE AGAIN. The note above records that `derived_from` read
+        # 0.00% over 27,290 real writes because "anything the writer must declare reads zero". The difference
+        # is WHERE the decision sits: `derived_from` needs a judgement PER WRITE, from the caller, about
+        # lineage it does not track; `observe_recall` needs ONE decision per store, at construction, and
+        # after that the STORE fills it from a flow it already sees. A per-write declaration is a tax on the
+        # hot path and gets skipped; a constructor flag is a deployment choice. That is why this is the
+        # chokepoint fix and the flag it replaces was not.
+        #
+        # OBSERVATION, NOT CLAIM -- the distinction is the whole point and it must not erode. `derived_from`
+        # ASSERTS parentage and therefore earns consequences: taint inheritance, the orphan rule, the
+        # influence gate, evidence-grade capping. `recall_window` asserts only "the store served these ids,
+        # at this time, before this write" -- which is true by construction and needs no threshold, no
+        # embedding and no LLM. It feeds NOTHING. Nothing branches on it, nothing ranks on it, no gate reads
+        # it. If a later change makes a gate consume it, the field stops being evidence and becomes a claim,
+        # and the measurement it exists to enable is then measuring its own stamp.
+        self.observe_recall: bool = bool(observe_recall)
+        # Bound on a single stamp. A recall(k=500) would otherwise write 500 ids onto one record. Truncation
+        # is NEVER silent: `n` carries the true count whenever it exceeds what was kept, because a cap that
+        # quietly drops the tail deletes exactly the evidence half a later audit would need.
+        self._recall_window_max: int = 64
         # INFER LINEAGE WITHOUT A FLAG (opt-in, default OFF = byte-identical legacy).
         #
         # The auto-stamp above only fires when the caller passes derived=True, and that flag is writer-set.
@@ -1544,6 +1584,36 @@ class Inspeximus:
                 # Lineage was claimed and NONE of it resolved: the record is exactly the orphan case the
                 # `derived=True` rule below covers, reached by a different door. Same treatment.
                 rec["orphan"] = True
+        # RECALL-WINDOW OBSERVATION (opt-in; see observe_recall in __init__). Everything above this line is
+        # about CLAIMED lineage and has consequences. This is the other half of the same flow, recorded with
+        # none: what the store SERVED just before this write. It is written even when `derived_from` was also
+        # stamped -- the two are deliberately kept side by side, because the open question is precisely how
+        # much of the claimed set the free observation already covers, and collapsing them would destroy the
+        # comparison before it could be made.
+        #
+        # NOTHING IS DECIDED HERE. No age cutoff, no relevance filter, no classification of the write. Each
+        # of those is a parameter the later analysis would be unable to reach past -- a window stamped only
+        # when it is <60s old can never answer what the window captures at 300s. So the raw observation goes
+        # down and every threshold stays in the analysis, where it can be varied.
+        #
+        # `w` is the discriminator that does the work a write-time classifier would have done badly. One
+        # recall followed by a burst of twelve writes stamps w=0..11 on them, so an analysis can restrict to
+        # w=0 (the write that actually followed the recall) without anyone having decided at write time which
+        # writes were "real". This matters because the library's OWN maintenance writes -- revert(),
+        # rederive(), consolidate()'s distillates, route() -- go through this same method and will carry a
+        # window they are not derived from. They are noise, they are identifiable after the fact (by
+        # revert_of / reaffirm / tags=['distilled']), and w=0 removes nearly all of them. Excluding them here
+        # by inspecting the call stack was tried and rejected: `remember_decision` is a library-internal
+        # caller too, and it is the main MCP write path, so "the caller is inside this module" classifies the
+        # single most important write as maintenance.
+        if self.observe_recall and self._last_recall_window and self._last_recall_at > 0.0:
+            _win = list(self._last_recall_window)
+            _obs = {"ids": _win[:self._recall_window_max], "at": self._last_recall_at,
+                    "q": self._last_recall_q, "w": self._last_recall_writes}
+            if len(_win) > self._recall_window_max:
+                _obs["n"] = len(_win)       # true width, so the cap can never read as a narrow recall
+            rec["recall_window"] = _obs
+            self._last_recall_writes += 1
         # INTEGRITY-FLOOR FOR SELF-DECLARED TRANSFORMATION OUTPUTS (prompted by jacksonxly). A write the caller
         # DECLARES a transformation output (derived=True -- a summary / consolidation / LLM rewrite) that could
         # not name/resolve ANY parent is an ORPHAN: missing lineage is treated as unverified, so it earns NO
@@ -4078,6 +4148,22 @@ class Inspeximus:
                     _add(False, "dangling_lineage", r["id"],
                          f"declares parent {pid}, which is gone with no erasure request",
                          cause="removed without an erasure request (capacity eviction or consolidation)")
+            # A RECALL-WINDOW id that is gone. `recall_window` is a history/evidence field, so forget() keeps
+            # it for the same reason it keeps derived_from and taint (see the note there: scrubbing history
+            # deletes the evidence and makes this audit read clean). But "kept" only stays honest while THIS
+            # surface can see it -- a pointer channel the audit never walks is residue that reports as no
+            # residue, which is the failure mode the whole erasure story exists to deny. It is reported under
+            # its own kind, never merged into dangling_lineage: an observation that the store served an id is
+            # not a claim of parentage, and an auditor who reads them as one would over-count declared
+            # lineage in a store that never declared any.
+            for pid in [p for p in ((r.get("recall_window") or {}).get("ids") or []) if p not in by_id]:
+                if _deliberate(pid):
+                    _add(True, "dangling_recall_window", r["id"],
+                         f"records having been served {pid}, which was deliberately erased")
+                else:
+                    _add(False, "dangling_recall_window", r["id"],
+                         f"records having been served {pid}, which is gone with no erasure request",
+                         cause="removed without an erasure request (capacity eviction or consolidation)")
             # inherited a source whose origin no longer survives anywhere
             for t in (r.get("taint") or []):
                 if t.startswith("id:"):
@@ -4101,7 +4187,12 @@ class Inspeximus:
         undeclared = sum(1 for r in self.items if r.get("orphan"))
         coverage = {"records": len(self.items), "with_declared_lineage": declared,
                     "undeclared_derived": undeclared,
-                    "declared_ratio": round(declared / len(self.items), 3) if self.items else 0.0}
+                    "declared_ratio": round(declared / len(self.items), 3) if self.items else 0.0,
+                    # Reported BESIDE declared lineage and never folded into it. On a store with
+                    # observe_recall on, this is typically the larger number by orders of magnitude
+                    # (declaring is per-write and gets skipped; observing is automatic), and an auditor
+                    # who read the two as one would conclude the store has lineage it does not have.
+                    "with_recall_window": sum(1 for r in self.items if r.get("recall_window"))}
 
         limits = [
             "this is evidence about what the store RECORDED, not proof that no copy of the material remains",
@@ -4109,6 +4200,9 @@ class Inspeximus:
             "read `coverage` before trusting a pass",
             "covers THIS store only -- not your vector index, prompt logs, model weights or backups",
             "does not discharge an erasure obligation; a party that stops declaring lineage always looks clean",
+            "`recall_window` is an OBSERVATION that the store served an id before a write, not a claim of "
+            "parentage: it is reported as dangling_recall_window and counted separately in coverage, and it "
+            "must not be read as lineage",
         ]
         if values:
             # Word boundaries alone are NOT enough: plain \b lets 'UTC' fire inside 'UTC-8', reporting a
@@ -5868,7 +5962,8 @@ class Inspeximus:
                reinforce: bool = False, trusted_only: bool = False, mmr: float | None = None,
                user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
                rerank_by: str | None = None, resolve_conflicts: bool = False,
-               suppress_stale_values: bool = False, project: str | None = None) -> list[dict]:
+               suppress_stale_values: bool = False, project: str | None = None,
+               observe: bool = True) -> list[dict]:
         """Top-k memories by RELEVANCE × VALUE — high-value memories outrank merely-similar ones.
         Memories the dream pass flagged as hubs (universal matchers) are skipped unless include_hubs.
 
@@ -6538,6 +6633,34 @@ class Inspeximus:
         self._last_recall = [o["id"] for o in out]
         # keep the recalled TEXT too, so infer_lineage can decide from content instead of a caller's flag
         self._last_recall_text = " ".join(str(o.get("text") or "") for o in out) if self.infer_lineage else ""
+        # ...and WHEN, WHAT ASKED, and a fresh write-counter, so a write that stamps this window carries the
+        # two things that decide whether the window is even plausible: its AGE and its POSITION in the run of
+        # writes that followed. Neither is thresholded here -- a cutoff baked in at write time is a parameter
+        # the later analysis could never reach past, so the raw observation is stored and every cutoff is left
+        # to the analysis. The query is fingerprinted, never stored: it groups writes by the recall that drove
+        # them (which is what exposes a window set by a COLLEAGUE's query in a shared-store deployment)
+        # without putting arbitrary user text -- and its PII -- into every record of a store whose entire
+        # governance story is erasure.
+        #
+        # `observe=False` marks a read that is NOT part of a recall->write flow, and it is needed because
+        # some reads are about the store rather than for the writer: a scoring pass that credits memories
+        # after an outcome, a maintenance sweep, or -- the case that forced this -- one agent reading a
+        # COLLEAGUE's store. That last one is not merely noisy, it is unfilterable: a foreign read resets
+        # the colleague's window AND its write counter, so the colleague's next write looks exactly like a
+        # write that followed its own recall (w=0, fresh `at`). No later analysis could separate them, so
+        # the caller that knows the read was foreign has to say so here.
+        #
+        # It INVALIDATES the window rather than freezing it. Leaving the old `at`/`q`/`w` in place while
+        # `_last_recall` moved on would stamp the next write with one recall's ids and another recall's
+        # timestamp -- a record that looks complete and is internally false, which is worse than no record.
+        # `_last_recall` / `_last_recall_text` are deliberately still updated: they drive the pre-existing
+        # derived=True and infer_lineage paths, and changing those here would be a behaviour change wearing
+        # an observability change's clothes.
+        if self.observe_recall:
+            if observe:
+                self._note_recall_window([o["id"] for o in out], query)
+            else:
+                self._last_recall_at = 0.0      # sentinel: no valid observation to attribute to a write
         # NOTE: recall is a READ. It nudges in-memory access value / graduation, but must NOT persist the
         # whole store here — serializing (json.dumps) on every recall, across many agents' stores,
         # saturated the thread pool and FROZE the world. The in-memory nudges are persisted on the next
@@ -6545,6 +6668,22 @@ class Inspeximus:
         if out:
             self._dirty = True   # mark for the next throttled/forced save; do NOT serialize on the read path
         return out
+
+    def _note_recall_window(self, ids, query) -> None:
+        """Record what the store served for ONE LOGICAL recall operation, and when, and what asked.
+
+        Called once per operation, not once per underlying `recall()`: a multi-hop retrieval
+        (`recall_iterative`, or a `recall_iterative_followup` that bridges to more records) is one act of
+        retrieval from the caller's point of view, and the window has to be the whole set it saw or the
+        stamp understates what the caller was actually holding when it wrote. `w` resets here for the same
+        reason — a follow-up hop is not a write, and counting it as one would make the position of the
+        first real write unrecoverable."""
+        if not self.observe_recall:
+            return
+        self._last_recall_window = list(ids)
+        self._last_recall_at = time.time()
+        self._last_recall_q = hashlib.sha256(str(query or "").encode("utf-8", "replace")).hexdigest()[:12]
+        self._last_recall_writes = 0
 
     @staticmethod
     def _canon_subject(doc) -> str:
@@ -7709,6 +7848,10 @@ class Inspeximus:
                     continue
                 for r in self.recall(fq, k=k, **recall_kw):
                     seen.setdefault(r["id"], r)
+        # One logical retrieval, so ONE window: the union the caller receives, not the last hop that
+        # happened to run. Each self.recall() above already overwrote the window with its own hits; this
+        # restores it to what is actually being returned, under the ORIGINAL query.
+        self._note_recall_window(list(seen), query)
         return list(seen.values())
 
     # ── the same lever, INVERTED for a surface that cannot take a callable ───────────────────────────────
@@ -7792,6 +7935,10 @@ class Inspeximus:
                 seen.add(rid)
                 merged.append(rid)
                 new.append(r)
+        # `merged` is round-1 plus everything the bridge added -- exactly what the caller now holds, and so
+        # exactly the window a write after this call should carry. Without this the window would be the last
+        # follow-up's hits alone, dropping the round-1 records the caller is most likely writing from.
+        self._note_recall_window(merged, query)
         return {
             "followups_used": used, "followups_dropped": dropped,
             "new_hits": new, "bridged": len(new), "merged_ids": merged,

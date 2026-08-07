@@ -3,6 +3,67 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## Unreleased - `observe_recall`: the store keeps the recall->write window it already watches
+
+Not released. Default **off**; a store written without it is byte-identical to one written before it
+existed, and no gate, ranking or branch reads the new field.
+
+**What it adds.** `Inspeximus(observe_recall=True)` stamps `recall_window = {ids, at, q, w}` on any write
+that followed a recall: the ids as served in rank order, when the recall happened, a 12-char fingerprint of
+the query (never its text), and how many writes have already followed that recall.
+
+**Why.** Declared lineage measured **0.00%** across a 27,290-record deployment, and the window that could
+have stood in for it lived in memory and died with the process -- so *"on writes where the store observed a
+recall, how much of the true parent set does the free window already capture?"* is unanswerable on any store
+ever written. Re-measured on our own swarm before building this (2026-08-07): `derived_from` filled on
+**0 of 181,523** records across all eight live stores, and no record carrying a window field of any kind.
+There is nothing to replay, which is why this had to be a write before it could be a measurement.
+
+It also generalises *why* declaration failed. `derived_from` needs a judgement **per write**, from a caller
+that does not track lineage, and gets skipped. `observe_recall` needs **one decision per store**, at
+construction, after which the store fills it from a flow it already sees.
+
+**Observation, not claim -- and the separation is load-bearing.** `derived_from` asserts parentage and earns
+consequences: taint inheritance, the orphan rule, the influence gate, evidence-grade capping.
+`recall_window` asserts only that the store served these ids before this write -- true by construction, no
+threshold, no embedding, no model. It feeds nothing. If a gate ever consumes it, it stops being evidence and
+becomes a claim, and the measurement it exists to enable would be measuring its own stamp.
+
+**Nothing is thresholded at write time** -- no age cutoff, no relevance filter, no classification of the
+write. Each would be a parameter a later analysis could never reach past (a window stamped only when it is
+under 60s old cannot answer what the window captures at 300s). `w` carries what a write-time classifier
+would have been used for, as data: one recall followed by a burst stamps `w=0,1,2,...`, so an analysis can
+restrict to `w=0` without anyone having decided which writes were real. Excluding the library's own
+maintenance writes by inspecting the call stack was tried and rejected -- `remember_decision` is a
+library-internal caller too, and it is the main MCP write path.
+
+**`recall(..., observe=False)`** marks a read that is not part of a write flow: a scoring pass, a maintenance
+sweep, or one agent reading **another agent's** store. That last case is why it exists -- a foreign read
+resets both the window and the write counter, so the other agent's next write would look exactly like one
+that followed its own recall, with nothing left in the record to separate them. It *invalidates* the window
+rather than freezing it: pairing one recall's ids with another's timestamp yields a record that looks
+complete and is internally false, which is worse than no record. `_last_recall` / `_last_recall_text` are
+still updated, so the pre-existing `derived=True` and `infer_lineage` paths are untouched.
+
+**Erasure treats it as history, not a pointer to chase.** `forget()` keeps it for the same reason it keeps
+`derived_from` and `taint` -- scrubbing history deletes the evidence and makes the audit read clean --
+and `erasure_audit()` now reports a window id whose record is gone as `dangling_recall_window`, counted in
+`coverage` as `with_recall_window`, deliberately apart from `with_declared_lineage`. This was not optional:
+`recall_window.ids` is a new inter-record pointer channel, and the audit walked only `derived_from`, so a
+dangling window id would have been residue that reports as no residue.
+
+**Multi-hop retrieval gets ONE window.** `recall_iterative` returns the union of every hop but each internal
+`recall()` overwrote the window, so a write after it would have been stamped with the last hop alone —
+understating what the free window captures, silently and in a known direction, in the one metric the field
+exists to produce. The observation now has its own id list (`_last_recall_window`), set once per logical
+operation: the union for `recall_iterative`, and round-1-plus-the-bridge (`merged`) for
+`recall_iterative_followup`. `_last_recall` itself is untouched, so `derived=True` / `infer_lineage` behave
+exactly as before.
+
+20 tests, all eight deliberate mutants caught (stamp removed, `forget()` scrubbing the window, audit blind to
+the channel, silent truncation, counter never resetting, iterative stamping the last hop, the two-phase
+surface dropping round 1, and a foreign read still being observed).
+
 ## 2.1.2 - UPGRADE IF YOU RAN 2.1.1: the review flag it added could land on the attacker's record
 
 2.1.1 gave the corroboration guard a fail-loud flag and shipped three defects with it. All three were

@@ -586,6 +586,43 @@ taint-tracking *application* (not novel) that closes the **laundered-summary** p
 provenance-carrying poison — that needs content moderation + trust-decay retrieval. All opt-in; `derived=False` default
 → zero behavior change. Credit: jacksonxly (transformation-boundary framing) + marintkael.
 
+### The other half of the same flow, recorded with no consequences: `observe_recall`
+
+Everything above is about **claimed** lineage. `Inspeximus(observe_recall=True)` persists the other end of the
+`recall → write` flow the store already watches, as an **observation**: `recall_window = {ids, at, q, w}` on any
+write that followed a recall — the ids as served in rank order, when, a 12-char fingerprint of the query (never
+its text), and how many writes have already followed that recall. It **feeds nothing**: no gate reads it, nothing
+ranks or branches on it, and it never becomes `derived_from`. That separation is the point — `derived_from`
+*asserts* parentage and earns taint, the orphan rule and the influence gate; `recall_window` asserts only that
+the store served these ids before this write, which is true by construction and needs no threshold, embedding or
+model.
+
+**Why it exists.** Declared lineage measured **0.00%** on a real 27,290-record deployment, and the window that
+could have stood in for it lived in memory and died with the process — so *"how much of the true parent set does
+the free window already capture?"* is unanswerable on any store ever written. This makes it answerable
+prospectively. It also generalises the reason declaration failed: `derived_from` needs a judgement **per write**
+and gets skipped; `observe_recall` needs **one decision per store**, at construction, after which the store fills
+it from a flow it already sees.
+
+**Nothing is thresholded at write time** — no age cutoff, no relevance filter, no classification of the write.
+Each would be a parameter a later analysis could never reach past (a window stamped only when it is under 60s old
+cannot answer what the window captures at 300s), so the raw observation is stored and every cutoff stays in the
+analysis. `w` is what makes that workable: one recall followed by a burst of writes stamps `w=0,1,2,…`, so an
+analysis can restrict to `w=0` without anyone having decided at write time which writes were real.
+
+`recall(..., observe=False)` marks a read that is **not** part of a write flow — a scoring pass, a maintenance
+sweep, or one agent reading **another agent's** store. That last case is why the switch exists: a foreign read
+resets both the window and the write counter, so the other agent's next write would otherwise look exactly like
+one that followed its own recall, with nothing in the record to separate them later. It *invalidates* the window
+rather than freezing it, because pairing one recall's ids with another's timestamp yields a record that looks
+complete and is internally false.
+
+Erasure treats it as **history, not a pointer to chase**: `forget()` keeps it for the same reason it keeps
+`derived_from` and `taint` (scrubbing history deletes the evidence and makes the audit read clean), and
+`erasure_audit()` reports a window id whose record is gone as `dangling_recall_window` — counted in `coverage`
+as `with_recall_window`, deliberately **apart** from `with_declared_lineage`, since observation is not a claim.
+Default **off**; a store written without it is byte-identical to one written before it existed.
+
 ### A landed retraction wins on every path: `slash()` → 0 load-bearing (0.6.2)
 
 Corroboration can only raise *confidence*, never confer *truth* — so an authenticated-but-false claim **will**
