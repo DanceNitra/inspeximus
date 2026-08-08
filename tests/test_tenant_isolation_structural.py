@@ -66,6 +66,10 @@ _ARGS = {                                     # plausible arguments that would r
     "retract_lineage": ("globex-src",), "rederive": ("globex-src",),
     "remember": ("a new acme row",), "remember_decision": ("d", "because", "ctx"),
     "admit": ("x",),
+    # The transparency surface, swept rather than exempted. inclusion_proof returns a LEAF, so if the
+    # leaf ever grew a text-bearing field this is the test that catches it reaching another tenant.
+    "inclusion_proof": (0,), "merkle_consistency_proof": (0,), "merkle_root": (),
+    "verify_inclusion": ({"leaf": "x", "index": 0, "tree_size": 1, "audit_path": [], "root": "00" * 32},),
     # store-level, but still swept: it reports receipt seqs and memory_ids, so if it ever grew a
     # text-bearing field a tenant view could read another tenant's content through it.
     "explain_growth": ({"n_writes": 0, "writes_tip": "", "n_tombstones": 0},),

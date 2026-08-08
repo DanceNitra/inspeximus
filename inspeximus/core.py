@@ -323,7 +323,7 @@ def anchor_binds_its_fields(anchor) -> bool:
 
 
 def witness_cosign(witness_sk_hex: str, anchor: dict, prior_anchor: dict | None = None) -> str:
-    """WITNESS-side: co-sign an anchor()'s signed tree head, so a client can require k-of-n INDEPENDENT
+    """WITNESS-side: co-sign an anchor()'s signed head commitment, so a client can require k-of-n INDEPENDENT
     witnesses before trusting the store's history. This is the external gossip layer that turns inspeximus's
     tamper-evidence — which catches a rewrite on ONE timeline (verify_consistency) — into SPLIT-VIEW detection:
     a compromised operator cannot show divergent histories to different clients without getting the witnesses
@@ -4512,7 +4512,17 @@ class Inspeximus:
                 "unexplained": unexplained, "prefix_intact": prefix_intact, "problems": problems}
 
     def anchor(self, sign=None) -> dict:
-        """Emit a Certificate-Transparency-style SIGNED TREE HEAD — a compact, EXTERNALLY-publishable commitment
+        """Emit a SIGNED HEAD COMMITMENT — a compact, EXTERNALLY-publishable commitment
+
+        NOT a Merkle "signed tree head", and the difference is a capability, not a name. RFC 6962's STH is the
+        signed ROOT OF A MERKLE TREE, and that structure is what buys O(log n) INCLUSION proofs ("record X is in
+        the log") and succinct consistency proofs a client can check WITHOUT holding the log. This is a hash
+        CHAIN: `verify_consistency` re-derives the tip over the full prefix, so the verifier must possess the
+        log, and there is NO inclusion proof at all. We borrow CT's WITNESSING MODEL (untrusted log + external
+        witnesses make append-only violations detectable) — not its proof system. Corrected 2026-08-08 after a
+        SCITT feasibility check: IETF SCITT Receipts MUST support inclusion proofs, so this structure cannot
+        emit one, and the old wording promised a proof capability the code does not have.
+
         to the entire write + tombstone history at this instant: {n_writes, writes_tip, n_tombstones,
         tombstones_tip, ts}. Because each chain is hash-linked, its tip hash commits to every prior entry, so
         publishing this anchor to a place the operator cannot retroactively alter (a public log, a witness, the
@@ -4530,8 +4540,22 @@ class Inspeximus:
         sth = {"n_writes": len(self._receipts), "writes_tip": writes_tip,
                "n_tombstones": len(self._tombstones), "tombstones_tip": tomb_tip,
                "ts": time.time()}
+        # RFC 6962 roots, ADDITIVE. The chain tips stay exactly as they were, byte for byte, so an
+        # anchor a witness co-signed before this version still verifies and `verify_consistency`
+        # is untouched. What the roots ADD is the proof the chain cannot give: an inclusion proof
+        # ("this record is in your log") checkable in O(log n) by someone who does NOT hold the log.
+        # `sth_hash` deliberately still covers only the four original fields -- widening it would
+        # change the bytes every existing witness signature was made over.
+        sth["writes_root"] = self.merkle_root("write")
+        sth["tombstones_root"] = self.merkle_root("tombstone")
+        sth["merkle"] = "rfc6962-sha256"
         sth["sth_hash"] = _sha256_hex(_canon({k: sth[k] for k in
                                               ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")}))
+        # A SECOND commitment over the roots, so a witness that understands them can bind them too
+        # without invalidating one that does not. Both are published; a verifier uses what it knows.
+        sth["root_hash"] = _sha256_hex(_canon({k: sth[k] for k in
+                                               ("n_writes", "writes_root", "n_tombstones",
+                                                "tombstones_root", "merkle")}))
         if sign is not None:
             try:
                 sth["witness_sig"] = sign(bytes.fromhex(sth["sth_hash"]))
@@ -4543,6 +4567,60 @@ class Inspeximus:
                     f"the witness signer raised ({type(e).__name__}: {e}); refusing to return an anchor that "
                     f"looks unsigned when co-signing was requested") from None
         return sth
+
+    def _merkle_leaves(self, kind: str = "write") -> list[bytes]:
+        """The leaf DATA for each entry: the same canonical bytes the hash chain commits to.
+
+        Reusing `_chain_core` is deliberate -- the leaf is then the record's CONTENT, so an inclusion
+        proof proves "this record is in the log", not merely "something occupied slot i".
+        """
+        records = self._receipts if kind == "write" else self._tombstones
+        return [_canon(Inspeximus._chain_core(r, kind)) for r in records]
+
+    def merkle_root(self, kind: str = "write") -> str:
+        """RFC 6962 Merkle Tree Hash over the write (or tombstone) log, as hex."""
+        from inspeximus.merkle import root as _mroot
+        return _mroot(self._merkle_leaves(kind)).hex()
+
+    def inclusion_proof(self, index: int, kind: str = "write") -> dict:
+        """Prove entry `index` is in the log, in O(log n), WITHOUT handing over the log.
+
+        This is the capability a hash chain cannot provide at any cost, and the one IETF SCITT
+        requires of a Receipt. The returned bundle is self-contained: give it plus a root the
+        verifier already trusts to `verify_inclusion` and they can check it offline, with no access
+        to the store and no trust in its operator.
+        """
+        from inspeximus.merkle import inclusion_proof as _proof
+        leaves = self._merkle_leaves(kind)
+        path = _proof(leaves, index)
+        return {"kind": kind, "index": index, "tree_size": len(leaves),
+                "leaf": leaves[index].decode("utf-8"),   # canonical JSON, safe to carry as text
+                "audit_path": [h.hex() for h in path],
+                "root": self.merkle_root(kind), "merkle": "rfc6962-sha256"}
+
+    @staticmethod
+    def verify_inclusion(bundle: dict, expected_root: str | None = None) -> bool:
+        """Check an inclusion_proof() bundle offline. Pass the root YOU witnessed, not the one in the
+        bundle -- a bundle that carries its own root and is checked against it proves nothing, which
+        is why `expected_root` defaults to None and falls back only for a self-consistency check."""
+        from inspeximus.merkle import verify_inclusion as _vi
+        try:
+            root_hex = expected_root or bundle.get("root")
+            return _vi(str(bundle["leaf"]).encode("utf-8"), int(bundle["index"]),
+                       int(bundle["tree_size"]),
+                       [bytes.fromhex(h) for h in bundle.get("audit_path", [])],
+                       bytes.fromhex(str(root_hex)))
+        except Exception:
+            return False
+
+    def merkle_consistency_proof(self, m: int, kind: str = "write") -> dict:
+        """O(log n) proof that the log is an append-only extension of its own first `m` entries --
+        the succinct version of verify_consistency, checkable without a replica of the log."""
+        from inspeximus.merkle import consistency_proof as _cp
+        leaves = self._merkle_leaves(kind)
+        return {"kind": kind, "m": m, "n": len(leaves),
+                "proof": [h.hex() for h in _cp(leaves, m)],
+                "root": self.merkle_root(kind), "merkle": "rfc6962-sha256"}
 
     def verify_consistency(self, prior_anchor: dict) -> tuple[bool, list[str]]:
         """Prove the current log is an APPEND-ONLY extension of a previously-witnessed anchor() — the check an
@@ -4662,7 +4740,7 @@ class Inspeximus:
         fork). Returns {fork, inconsistent, at, evidence, both_cosigned}: `inconsistent` = the two heads
         disagree at a shared size; `evidence` = witnesses that validly signed BOTH (the proof); `both_cosigned`
         = both heads independently carry >=1 valid allowlisted co-signature. HONEST LIMIT: decidable from signed
-        tree heads alone ONLY at a SHARED size — if the two logs differ in size, append-only-vs-fork needs a
+        head commitments alone ONLY at a SHARED size — if the logs differ in size, append-only-vs-fork needs a
         consistency proof (verify_consistency), reported here as inconsistent=False (undetermined)."""
         def _int(x, d):
             try:
@@ -4686,7 +4764,7 @@ class Inspeximus:
         # answer is "one of these is not a head any witness could have signed". Say which.
         malformed = [side for side, anc in (("a", a), ("b", b)) if not anchor_binds_its_fields(anc)]
         # undetermined: no decidable inconsistency AND the heads differ in size, so append-only-vs-fork
-        # cannot be settled from signed tree heads alone — run verify_consistency against a replica.
+        # cannot be settled from signed head commitments alone — run verify_consistency against a replica.
         undetermined = (not inconsistent) and diff_size
         return {"fork": bool(inconsistent and common), "inconsistent": inconsistent, "undetermined": undetermined,
                 "at": where, "evidence": common, "both_cosigned": bool(va["ok"] and vb["ok"]),
@@ -9406,6 +9484,15 @@ class _TenantView:
         # tenant to get wrong. (The methods that SELECT the records it scores -- close_session,
         # session_context, _session_entries -- are rebound on the view, not listed here.)
         "session_salience",
+        # The RFC 6962 transparency surface. Store-level on purpose and after checking what the leaf
+        # actually carries: `_chain_core` is {seq, ts, memory_id, commit, prev}, where `commit` is a
+        # dict of SHA-256 digests -- ids, counters and hashes, never record text. A transparency log
+        # is whole-log by construction (that is what makes an inclusion proof mean anything, and why
+        # CT logs are public), and `anchor` -- which commits to the same history -- has been listed
+        # here all along. `verify_inclusion` is a pure static verifier over a bundle handed to it.
+        # These are still SWEPT by the tenant/agent leak tests via _ARGS, not exempted from them:
+        # the classification says "no tenant to get wrong", the sweep is what proves it.
+        "merkle_root", "inclusion_proof", "merkle_consistency_proof", "verify_inclusion",
     })
 
     def __getattr__(self, name):

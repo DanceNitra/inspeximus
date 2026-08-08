@@ -23,7 +23,7 @@ _CONTROLS = [
     ("EU AI Act (Reg (EU) 2024/1689)", "Art. 12", "Record-keeping (automatic logging over the lifetime)",
      "High-risk AI systems must technically allow the automatic recording of events (logs) over the system's "
      "lifetime, ensuring a level of traceability appropriate to the intended purpose.",
-     "Every write is a hash-linked, timestamped receipt; anchor() emits a signed tree head committing to the "
+     "Every write is a hash-linked, timestamped receipt; anchor() emits a signed head commitment over the "
      "whole history; the log is portable and INDEPENDENTLY verifiable offline (audit-build / audit-verify).",
      "write_receipts"),
     ("EU AI Act (Reg (EU) 2024/1689)", "Art. 19", "Automatically generated logs (kept/retained)",

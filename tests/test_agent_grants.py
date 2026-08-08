@@ -171,6 +171,10 @@ def test_issuing_a_grant_does_not_change_what_the_operator_reads():
 
 # ── THE SWEEP: every public method, not a curated list of read surfaces ──────────────────────────────
 _ARGS = {
+    # The RFC 6962 transparency surface: swept, not exempted. inclusion_proof returns a LEAF, so this
+    # is the test that would catch it carrying another agent's content if the leaf ever grew a text field.
+    "inclusion_proof": (0,), "merkle_consistency_proof": (0,), "merkle_root": (),
+    "verify_inclusion": ({"leaf": "x", "index": 0, "tree_size": 1, "audit_path": [], "root": "00" * 32},),
     "history": ("payout::wallet",), "provenance": ("payout::wallet",), "as_of": ("payout::wallet", 9e9),
     "why_recalled": (f"ALICE_SECRET {SECRET}",), "revert": ("payout::wallet",),
     "verify_claim": (f"ALICE_SECRET {SECRET}",), "recall": (f"ALICE_SECRET {SECRET}",),

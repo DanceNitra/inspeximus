@@ -231,7 +231,7 @@ def _witness_cmd(a) -> int:
       0 = the check passed (co-signed, or verified at threshold, or no split view)
       1 = the check FAILED (below threshold, or a split view was proven)
       2 = the witness REFUSED to co-sign (a fork/rollback — the defence firing, not an error), or usage
-      3 = undetermined (heads of different sizes: not decidable from tree heads alone)
+      3 = undetermined (heads of different sizes: not decidable from head commitments alone)
       4 = Ed25519 unavailable
     """
     rc = _need_ed25519()
@@ -589,8 +589,9 @@ def main(argv=None):
     # These existed as Python + an HTTP server since 1.34.0 and were reachable from no shell command at all,
     # so the strongest operator-adversarial property in the package was invisible to anyone who did not read
     # the source. See docs/TRANSPARENCY.md.
-    an = sub.add_parser("anchor", help="emit the SIGNED TREE HEAD (RFC-6962 style) committing to the whole "
-                                       "write+erasure history - publish it where the operator cannot alter it")
+    an = sub.add_parser("anchor", help="emit the SIGNED HEAD COMMITMENT over the whole write+erasure history "
+                                       "- publish it where the operator cannot alter it (CT witnessing model, "
+                                       "hash chain not a Merkle tree: no inclusion proofs)")
     an.add_argument("--out", default=None, help="write the anchor json here (default: stdout)")
 
     wt = sub.add_parser("witness", help="witness network: independent co-signers that make a SPLIT VIEW "
@@ -755,7 +756,7 @@ def main(argv=None):
         # nobody can attribute, discovered only when the auditor pins a key months later.
         print(f"cannot read the receipt key: {e}", file=sys.stderr)
         return 2
-    # `anchor` joins the forced-receipts list: the signed tree head IS the receipt+tombstone chain's
+    # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
                                                         "provenance", "erasure-certificate", "anchor"),

@@ -2,7 +2,7 @@
 
 anchor()/verify_consistency() catch a rewrite on ONE timeline; a compromised store operator can still show
 DIFFERENT histories to different clients (a split-view / fork). The 1.34.0 primitives (witness_cosign,
-verify_cosigned_anchor, detect_split_view) close that IF independent witnesses co-sign the signed tree head.
+verify_cosigned_anchor, detect_split_view) close that IF independent witnesses co-sign the signed head.
 This module turns those primitives into a runnable pool:
 
   - `Witness` — an INDEPENDENT party that co-signs a store's `anchor()` head AND remembers, per store, the last
