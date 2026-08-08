@@ -1472,8 +1472,8 @@
   {
     "name": "the MCP server reads the observe flag and never passes it to the store",
     "file": "inspeximus/mcp_server.py",
-    "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL)",
-    "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS)",
+    "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY)",
+    "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  writer_key=_WRITER_KEY)",
     "tests": [
       "tests/test_mcp_observe_recall.py"
     ]

@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.2.2"
+__version__ = "2.3.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -819,7 +819,8 @@ class Inspeximus:
                  support_authorities: list | None = None, persist_vectors: bool = False,
                  embed_query=None, embed_id: str | None = None,
                  infer_lineage: float = 0.0, echo_guard: bool | None = None,
-                 agent: str | None = None, observe_recall: bool = False):
+                 agent: str | None = None, observe_recall: bool = False,
+                 writer_key: str | None = None):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -1067,7 +1068,7 @@ class Inspeximus:
         # an EXPLICIT argument always wins (a caller who names a posture gets it, env or no env), else the
         # env var, else ON.
         self.echo_guard = _resolve_echo_guard(echo_guard)
-        # STRICT corroboration (OPT-IN, default OFF -> identical legacy behavior). The corroboration bar
+        # STRICT corroboration (OPT-IN, default OFF). The corroboration bar
         # (episodic->semantic graduation AND the recall influence gate) counts ">=2 distinct sources". By
         # default a "source" is a canonical STRING (entity-resolved), which collapses honest sybil variants
         # ("Wikipedia"/"wikipedia.org"/URL) but is still SPOOFABLE by an attacker who supplies two unrelated
@@ -1076,14 +1077,64 @@ class Inspeximus:
         # Ed25519 public keys an attacker cannot forge, so N sybil variants of one origin collapse to one
         # witness unless the attacker holds N distinct keys (a costly identity, Douceur 2002). This binds the
         # "independence" rail to the "origin-signed" rail; it does NOT make a claim TRUE (an attested source
-        # can still sign a false claim), only makes manufactured independence expensive. Reversible: OFF.
+        # can still sign a false claim), only makes manufactured independence expensive. Reversible: set False.
+        #
+        # WHY THIS STAYS OPT-IN, measured 2026-08-08 -- and the argument for flipping it is better than the
+        # reason it cannot be flipped, so read the number before proposing it again.
+        # The argument FOR: with this OFF, `corroborated` means "the writer typed two different source
+        # strings", and our own replication on recovering provenance from content ruled FAILED with the
+        # conclusion that the only signal that holds is metadata the writer cannot set.
+        # The number AGAINST: across every store this deployment runs -- 111,264 records --
+        # `attested_key` coverage is **0. Zero. 0.0000%**, while 96,716 records (86.9%) carry >=2 links.
+        # `_distinct_verified_keys` counts only links whose record carries an attested_key, so flipping this
+        # default would move every one of those 96,716 records from `corroborated` to `unwarranted` and the
+        # tier would simply stop occurring. That is not a hardened default, it is a tier deleted by
+        # omission -- the same shape as `slash(scope='source')` returning ok on 261,673 records because its
+        # default scope resolved on a field no writer ever set.
+        # THE REAL GAP IS COVERAGE, NOT THE DEFAULT: nothing in the deployment writes attestations. Ship
+        # attestation coverage first; flip this after, and re-measure both numbers on the same day.
+        # WRITER IDENTITY (optional). An Ed25519 secret (hex) this store signs its OWN writes with, so
+        # `attested_key` is populated by ordinary operation instead of by every caller doing crypto by hand.
+        #
+        # WHY IT EXISTS, measured 2026-08-08: across every store this deployment runs -- 111,264 records --
+        # `attested_key` coverage was 0.0000%. Not low. Zero. The only way to attest a write was for the
+        # CALLER to hold a keypair and sign each claim, so nobody ever did, ourselves included, and the two
+        # flags that read the field (`strict_corroboration`, and the distinct-key rail generally) could not
+        # fire for a single record in production. Machinery with no path to it is machinery that is not there.
+        #
+        # HONEST SCOPE, and it is why this is not a trust root:
+        #   * it attests AUTHORSHIP, not truth -- a key-holder can sign a false claim (see attest()).
+        #   * it raises manufactured independence from "type two different source strings" to "hold two
+        #     distinct persisted keys". Real cost, but a process free to mint keys can still mint witnesses;
+        #     pin the writers you actually trust with `trust_seeds` ("key:<pubkey>") when you need more.
+        #   * a compromised writer keeps its key.
+        # An explicit remember(attestation=...) always wins: a claim signed by its real source must never be
+        # relabelled with the local writer's key.
+        self.writer_key = writer_key
+        self.writer_pubkey = None
+        if writer_key:
+            if not _HAVE_ED:
+                raise RuntimeError("writer_key needs the `cryptography` package (pip install cryptography)")
+            self.writer_pubkey = _Ed25519SK.from_private_bytes(
+                bytes.fromhex(writer_key)).public_key().public_bytes_raw().hex()
         self.strict_corroboration = False
-        # EXOGENOUS-WARRANT credit (OPT-IN, default False -> identical legacy behavior). Closes the MINJA
+        # EXOGENOUS-WARRANT credit (OPT-IN, default False). Closes the MINJA
         # self-graded-outcome hole (arXiv:2503.03704): the influence gate's earned-outcome path counts only
         # good credited with an exogenous `warrant` (an outcome the record did not author itself), so an
         # agent that self-grades its own recalled reasoning cannot corroborate a poisoned bridge into the
         # influence set. MEASURED (inspeximus/probes/minja_influence_gate.py): self-graded MINJA ASR 80% -> 0%
-        # with this on, legit utility preserved when the app passes a real warrant. Reversible: False = legacy.
+        # with this on, legit utility preserved when the app passes a real warrant. Reversible: set False.
+        #
+        # WHY THIS STAYS OPT-IN, measured 2026-08-08 -- same shape as strict_corroboration above.
+        # The argument FOR flipping it: with this OFF, `earned` -- the top tier recall() reports -- is driven
+        # by an outcome counter an agent can advance by grading its own recalled reasoning, i.e. the exact
+        # attack this flag was built for (80% -> 0%), and opt-in leaves the forgeable configuration as the
+        # one everybody gets.
+        # The number AGAINST: `good_warranted > 0` coverage across the live stores is **0 of 60,077 records
+        # (0.0000%)**, against `good > 0` at 96 (0.16%). Flipping it would make `earned` unreachable rather
+        # than un-self-gradable. Both flags flipped together would report `unwarranted` for all 111,264
+        # records -- a tier system with no positive state left, which reads as a broken feature, not a strict
+        # one. Write warrants first, then flip.
         self.credit_requires_warrant = False
         # CREDIT BURST COLLAPSE (OPT-IN, default None -> OFF -> identical legacy behavior). Corroborating
         # LINKS already get this treatment: `temporal_gate` collapses co-arriving witnesses to one anchor,
@@ -1687,6 +1738,16 @@ class Inspeximus:
             except Exception as e:
                 raise ValueError("attestation signature does not verify for this claim/source") from e
             rec["attested_key"] = pubkey_hex
+            # KEEP THE SIGNATURE. It used to be verified here and then discarded, so the record carried a
+            # public key and no way to re-check it: an auditor reading the store later had to take the
+            # write path's word for it, and a non-repudiable identity you cannot re-verify is not one.
+            rec["attested_sig"] = sig_hex
+        elif self.writer_key:
+            # No explicit attestation: this store signs its own write with its writer identity.
+            src_doc = source.get("doc") if isinstance(source, dict) else (source if isinstance(source, str) else None)
+            rec["attested_sig"] = _Ed25519SK.from_private_bytes(
+                bytes.fromhex(self.writer_key)).sign(_attest_message(text, src_doc)).hex()
+            rec["attested_key"] = self.writer_pubkey
         if self.embed:
             try:
                 rec["vec"] = list(self.embed(text))
@@ -6713,6 +6774,21 @@ class Inspeximus:
                     _o["warrant"] = "corroborated"
                 else:
                     _o["warrant"] = "unwarranted"
+                # NO SILENT MASKING. `warrant` is one scalar and `earned` is tested first, so a record
+                # backed by BOTH channels reported only the outcome one and the corroboration vanished
+                # -- two independent facts collapsed into a total order. That is also why describing the
+                # tiers as "channels, not levels" was untrue of this code. The two channels are now
+                # reported separately alongside the tier: `earned` and `corroborated` are different
+                # KINDS of evidence (an outcome the record did not author vs. independent witnesses),
+                # and which one a consumer should weigh more depends on which is anchored in their
+                # deployment -- `credit_requires_warrant` for the first, `strict_corroboration` for the
+                # second. The scalar stays for back-compat and keeps its precedence.
+                _o["warrant_earned"] = bool(
+                    (_good_earned > 0 and _good >= _bad)
+                    or (r.get("mtype") == "semantic"
+                        and (r.get("meta") or {}).get("graduated_from_episodic")))
+                _o["warrant_corroborated"] = bool(_distinct >= 2)
+                _o["warrant_sources"] = int(_distinct)
             if r.get("pii"):
                 _o["pii"] = list(r["pii"])          # surface which PII types this record carries (audit/branch)
             # PII MASKING (OPT-IN redact_pii): mask detected PII in the RETURNED text only — the stored record is

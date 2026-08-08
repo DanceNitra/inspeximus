@@ -207,8 +207,28 @@ _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
 # call followed by a `remember`/`remember_decision` call is the same agent, causally linked. The library
 # feature shipped with no consumer for exactly one release.
 _OBSERVE_RECALL = os.environ.get("INSPEXIMUS_OBSERVE_RECALL", "").strip().lower() in ("1", "true", "yes", "on")
+# WRITER IDENTITY. `INSPEXIMUS_WRITER_KEY_FILE` (preferred — a secret belongs in a gitignored file, not
+# in the process environment) or `INSPEXIMUS_WRITER_KEY` (hex). With one set, this server signs its own
+# writes, so `attested_key` is populated by ordinary use.
+#
+# This exists because the field was measured at 0.0000% coverage across 111,264 records on 2026-08-08 --
+# every store this deployment runs -- which made `strict_corroboration` unable to fire anywhere. The
+# library could attest since long before; nothing could reach it, this server included, and we dogfood
+# through this server. That is the same failure the note above records for observe_recall: a library
+# feature with no consumer. Mint one with `python -m inspeximus.cli writer-key --new`.
+def _writer_key_from_env():
+    f = os.environ.get("INSPEXIMUS_WRITER_KEY_FILE", "").strip()
+    if f:
+        try:
+            return open(f, encoding="utf-8").read().strip() or None
+        except OSError:
+            return None                       # absent/unreadable key file: run unattested, never crash
+    return os.environ.get("INSPEXIMUS_WRITER_KEY", "").strip() or None
+
+
+_WRITER_KEY = _writer_key_from_env()
 _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
-                  observe_recall=_OBSERVE_RECALL)
+                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY)
 
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
 
@@ -250,6 +270,11 @@ def _compact(rec: dict, snippet_chars: int) -> dict:
            "value": rec.get("value"), "tags": rec.get("tags") or []}
     if truncated:
         out["truncated"] = True
+    # The warrant TIER survives the projection when the caller asked for it. It is the one field here
+    # whose entire purpose is to be branched on -- dropping it would leave the caller with `score`
+    # alone, which is exactly the "a low number reads as a weak yes" failure the tier exists to prevent.
+    if rec.get("warrant") is not None:
+        out["warrant"] = rec["warrant"]
     return out
 
 
@@ -417,7 +442,7 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
            mmr: float | None = None, trusted_only: bool = False,
            user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
            rerank_by: str | None = None, resolve_conflicts: bool | None = None,
-           all_projects: bool = False) -> list[dict]:
+           all_projects: bool = False, with_warrant: bool = False) -> list[dict]:
     """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
     knowledge before reasoning.
 
@@ -436,6 +461,15 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     surviving hit carries `resolved_over` ids. Deterministic, zero-LLM.
     (Standard progressive-disclosure / small-to-big retrieval practice, not a inspeximus-specific technique.)
 
+    `with_warrant=True` adds a `warrant` tier to every hit — `earned` (outcome credit that did not come
+    from the record grading itself, or a memory that GRADUATED to semantic through the corroboration
+    bar), `corroborated` (>=2 distinct sources, or distinct verified keys under strict_corroboration,
+    but no outcome credit yet), or `unwarranted` (single self-asserted, no lineage, or retracted).
+    BRANCH ON IT: `unwarranted` means no independent channel backs this memory, so it may inform your
+    reasoning but should not by itself drive an action. It is deliberately a discrete state rather than
+    a low score, because a low score reads downstream as a weak "yes" and gets acted on anyway.
+    Additive: ordering, membership and every other field are identical with it on or off.
+
     PROJECT SCOPE: when this server runs with `--project <name>`, recall returns only that project's memories
     plus any memory carrying no project stamp (memories written before you adopted a scope stay reachable —
     adopting one narrows what you see without hiding what you already had). `all_projects=True` is the escape
@@ -447,7 +481,7 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
         resolve_conflicts = os.environ.get("INSPEXIMUS_READ_RESOLVER", "0").strip() == "1"
     hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
                        user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by,
-                       resolve_conflicts=resolve_conflicts,
+                       resolve_conflicts=resolve_conflicts, with_warrant=with_warrant,
                        project=None if all_projects else _PROJECT) or []
     if all_projects:
         # Say WHERE each cross-project hit came from. A search that deliberately crosses scopes and then

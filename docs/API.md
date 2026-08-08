@@ -739,6 +739,45 @@ recalled into an irreversible action binds that action's budget **against itself
 the consequential slice rather than the whole store. Both opt-in (`with_warrant=False` / `provenance_lo=None` =
 legacy). Receipt: `probes/legible_warrant_scoped_budget_probe.py`.
 
+**2.3.0 — three corrections to the above, all found by asking whether the mechanism was reachable.**
+
+1. **The top tier used to be settable by the writer.** `mtype="semantic"` is an accepted argument to
+   `remember()`, and the tier read `... or r.get("mtype") == "semantic"`, so a record written that way
+   reported `earned` with no credit, no corroboration and no lineage. It now requires the
+   `graduated_from_episodic` marker, i.e. a memory that ARRIVED at semantic through the corroboration
+   bar. Credit is read through the warrant-gated counter, so `credit_requires_warrant` reaches the tier.
+2. **The tier is available over MCP.** `recall(with_warrant=True)` had no MCP parameter and the default
+   projection dropped the field, so no agent could obtain the state this section is about. It is now a
+   parameter on the MCP `recall`, and the projection carries `warrant` when asked for.
+3. **Nothing is masked any more.** `warrant` is a single scalar and `earned` is tested first, so a record
+   backed by both channels reported only the outcome one. Recall now also returns `warrant_earned`,
+   `warrant_corroborated` and `warrant_sources` — a record with 24 links but no attestations no longer
+   reads identically to one with no links at all.
+
+**Before you turn `strict_corroboration` on, measure your own coverage.** It counts distinct VERIFIED
+KEYS, so it only works where writes are attested. Ours were not: `attested_key` was populated on
+**0 of 111,264 records** across every store we run, which made the flag unable to fire anywhere. Use
+`writer_key` (below) to give writes an identity, or the strict flag will silently move every
+multi-source record to `unwarranted` rather than hardening it.
+
+### Give writes an identity: `Inspeximus(writer_key=...)` (2.3.0)
+Attesting a write used to require the CALLER to hold an Ed25519 keypair and sign each claim — so in
+practice nobody did, and the distinct-verified-key rail had no input. A store opened with `writer_key`
+(hex secret) signs its own writes: records carry `attested_key`, and now also `attested_sig`, so the
+attestation stays **re-verifiable** instead of being checked once at write time and discarded.
+
+    inspeximus writer-key --new --out .writer.key     # mint one (keep it out of git)
+    INSPEXIMUS_WRITER_KEY_FILE=.writer.key            # the MCP server picks it up
+
+An explicit `remember(attestation=...)` always wins — a claim signed by its real source is never
+relabelled with the local writer's key, and a forged signature is still rejected loudly.
+
+**Honest scope.** This attests AUTHORSHIP, not truth: a key-holder can sign a false claim. What it buys
+is that manufactured independence costs *distinct persisted keys* rather than distinct source strings —
+two names from one key collapse to one witness — and that a caught liar is a non-repudiable identity you
+can revoke. It is not a trust root: a process free to mint keys can still mint witnesses, and a
+compromised writer keeps its key. Pin the writers you actually trust with `trust_seeds={"key:<pubkey>"}`.
+
 ### Require earned outcome for the irreversible tail: `spend_irreversible(require_earned=True)` (0.6.7)
 By default `spend_irreversible(provenance_lo=...)` grants the full irreversible budget to any *corroborated*
 source — and in the default (non-strict) config corroboration accepts ≥2 distinct **source strings**, which the

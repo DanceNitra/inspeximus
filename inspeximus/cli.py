@@ -469,6 +469,13 @@ def main(argv=None):
 
     sub.add_parser("stats", help="store summary")
 
+    wk = sub.add_parser("writer-key",
+                        help="mint a writer identity so this store signs its own writes (attested_key)")
+    wk.add_argument("--new", action="store_true", help="mint a fresh Ed25519 keypair")
+    wk.add_argument("--out", default=None,
+                    help="write the SECRET to this file (referenced by INSPEXIMUS_WRITER_KEY_FILE); "
+                         "printed to stdout if omitted")
+
     br = sub.add_parser("browse", help="render a self-contained offline HTML memory browser")
     br.add_argument("--out", default="inspeximus_browser.html", help="output HTML file")
     br.add_argument("--open", action="store_true", help="open it in the default browser after writing")
@@ -1056,6 +1063,29 @@ def main(argv=None):
                 k = f" [key={r['key']}]" if r.get("key") else ""
                 print(f"- {r.get('text','')}{k}")
 
+    elif a.cmd == "writer-key":
+        # A writer identity is how `attested_key` stops being 0.0000% (measured across 111,264 live
+        # records on 2026-08-08). Minting it needs a command, not a paragraph telling someone to.
+        import pathlib
+        from .core import new_source_keypair
+        if not a.new:
+            print("nothing to do: pass --new to mint a keypair")
+            return 2
+        sk, pk = new_source_keypair()
+        if a.out:
+            p = pathlib.Path(a.out)
+            p.write_text(sk + "\n", encoding="utf-8")
+            try:                                   # best-effort: keep the secret off other accounts
+                os.chmod(p, 0o600)
+            except OSError:
+                pass
+            print(f"secret written to {p} (0600)\npublic key: {pk}\n\n"
+                  f"point the server at it:  INSPEXIMUS_WRITER_KEY_FILE={p}\n"
+                  f"pin this writer as trusted with trust_seeds={{'key:{pk}'}}\n"
+                  f"KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.")
+        else:
+            print(f"secret: {sk}\npublic: {pk}\n\n"
+                  f"KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.")
     elif a.cmd == "stats":
         items = getattr(m, "items", [])
         active = sum(1 for r in items if r.get("status") == "active")
