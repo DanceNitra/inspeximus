@@ -6683,14 +6683,31 @@ class Inspeximus:
             if with_warrant:    # OPT-IN: a LEGIBLE warrant tier a consumer can BRANCH ON, so "no independent
                 # channel" is an explicit state, not a quiet low score a downstream reads as a soft yes (the
                 # silent-weight-0-decays-to-"unverified-but-present" failure; jacksonxly, r/RAG 2026-07). Tiers:
-                #   'earned'       -- un-self-gradable outcome credit (good>0>=bad) OR a graduated semantic memory
+                #   'earned'       -- un-self-gradable outcome credit (good>0>=bad) OR a semantic memory that
+                #                     GRADUATED there through the corroboration bar
                 #   'corroborated' -- >=2 distinct sources/verified-keys, but not yet outcome-earned (weaker)
                 #   'unwarranted'  -- single self-asserted, orphan (no lineage), or slashed -> DO NOT treat as a
                 #                     confirmation; weight it ~0 and, critically, mark it so downstream sees the abstention.
+                #
+                # THE TOP TIER MUST NOT BE SETTABLE BY THE WRITER. `mtype="semantic"` is an accepted
+                # argument to remember(), so the bare `mtype == "semantic"` test handed `earned` to any
+                # record whose author simply asked for it -- good=None, bad=None, links=[] and still the
+                # highest tier we report. Measured 2026-08-08 (research/probes/warrant_tier_adversarial.py
+                # in the agora repo, A1). The influence gate below already refused exactly this and says so
+                # in its own comment at the `require_warrant` branch; the LABEL was left behind, which is
+                # the same one-call-site-over drift that this file has been bitten by before. So gate the
+                # semantic clause on the graduation marker the code already stamps, and read credit through
+                # `_good_earned` so `credit_requires_warrant` reaches the tier too (it computed the value
+                # and then discarded it -- A2). Same definition as _graduation_corroborated: one rule, one
+                # answer. Nothing changes by default for outcome credit, since _good_earned IS _good until
+                # the flag is on; what changes is that a DECLARED semantic no longer outranks a corroborated
+                # one.
                 _good, _bad, _good_earned, _distinct = self._corroboration_facts(r, _by_id)
                 if (r.get("meta") or {}).get("slashed") or r.get("orphan"):
                     _o["warrant"] = "unwarranted"
-                elif (_good > 0 and _good >= _bad) or r.get("mtype") == "semantic":
+                elif ((_good_earned > 0 and _good >= _bad)
+                      or (r.get("mtype") == "semantic"
+                          and (r.get("meta") or {}).get("graduated_from_episodic"))):
                     _o["warrant"] = "earned"
                 elif _distinct >= 2:
                     _o["warrant"] = "corroborated"
