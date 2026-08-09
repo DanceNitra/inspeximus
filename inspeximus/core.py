@@ -7353,7 +7353,22 @@ class Inspeximus:
         """A warrant vouches for an outcome the record did NOT author itself. Exogenous = a non-empty token
         that is neither the record's own canonical source nor any tenant/source in its transitive lineage.
         Conservative by design: an absent warrant is never exogenous, so self-graded credit (the MINJA path)
-        earns no warranted-good."""
+        earns no warranted-good.
+
+        BOTH SIDES ARE CANONICALIZED, and that is the whole fix. `_rec_sources()` returns
+        `_canon_source(doc)` -- `"crucible/claim-17"` becomes `"crucible"`, `"https://x.com/a/b"` becomes
+        `"x"` -- while this compared the RAW warrant against that canonical set. The two normalizations
+        never met, so the one concrete protection the docstring names ("not the record's own source") was
+        dead for every realistic source: any path, URL, or `arxiv:`-style id slipped straight through and a
+        record could vouch for ITSELF. Only a single-token source like `"plainword"` ever matched.
+        Measured 2026-08-09: source `{"doc": "crucible/claim-17"}` credited with
+        `warrant="crucible/claim-17"` earned `good_warranted=1.0` -- the exact MINJA self-grade that
+        `credit_requires_warrant` exists to refuse.
+
+        Comparing canonical-to-canonical is deliberately the CONSERVATIVE direction: a warrant that
+        canonicalizes onto the record's own source is now refused even when the raw strings differ. For a
+        guard, a false refusal costs a credit; a false acceptance costs the guarantee.
+        """
         if not warrant:
             return False
         w = str(warrant).strip().lower()
@@ -7361,7 +7376,8 @@ class Inspeximus:
             return False
         own = {str(s).strip().lower() for s in Inspeximus._rec_sources(rec) if s}
         own.discard("")
-        if w in own:
+        w_canon = str(Inspeximus._canon_source(w) or "").strip().lower()
+        if w in own or (w_canon and w_canon in own):
             return False
         auth = getattr(self, "warrant_authorities", None)
         if auth is not None and w not in {str(a).strip().lower() for a in auth}:

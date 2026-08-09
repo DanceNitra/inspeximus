@@ -92,3 +92,47 @@ def test_full_suite_backcompat_influence_recall():
     m.credit([a], "good")
     hits = m.recall("what is the payments vendor", k=3, influence_only=True)
     assert any(h["id"] == a for h in hits)
+
+
+# ── the self-vouching hole: both sides of the comparison must be canonicalized ──────────────────
+#
+# Measured 2026-08-09. `_rec_sources()` returns `_canon_source(doc)` — "crucible/claim-17" becomes
+# "crucible", "https://x.com/a/b" becomes "x" — while `_warrant_is_exogenous` compared the RAW warrant
+# against that canonical set. The two normalizations never met, so the one concrete protection the
+# docstring names ("not the record's own source") was dead for every realistic source. Only a
+# single-token source such as "plainword" ever matched. A record could vouch for ITSELF and earn
+# warranted good, which is the exact MINJA self-grade this whole file exists to refuse.
+
+def test_a_warrant_naming_the_records_own_path_source_is_not_exogenous():
+    """THE REGRESSION. Before the fix this returned True and good_warranted rose to 1.0."""
+    m = Inspeximus()
+    m.credit_requires_warrant = True
+    mid = m.remember("a claim it will vouch for itself", mtype="episodic",
+                     source={"doc": "crucible/claim-17"})
+    m.credit([mid], "good", warrant="crucible/claim-17")
+    rec = {r["id"]: r for r in m.items}[mid]
+    assert float(rec.get("good_warranted", 0) or 0) == 0, "a record must not warrant itself"
+    assert _corr(m, mid) is False
+
+
+def test_a_url_source_cannot_warrant_itself_either():
+    """The same hole through the other canonicalization path (scheme/host stripping)."""
+    m = Inspeximus()
+    m.credit_requires_warrant = True
+    mid = m.remember("a sourced claim from the web", mtype="episodic",
+                     source={"doc": "https://x.com/a/b"})
+    m.credit([mid], "good", warrant="https://x.com/c/d")   # same canonical host -> same origin
+    assert _corr(m, mid) is False
+
+
+def test_a_genuinely_external_warrant_still_counts():
+    """THE CONTROL, and the one that matters most: tightening the comparison must not refuse a real
+    external verdict. A guard that rejects everything would pass both tests above."""
+    m = Inspeximus()
+    m.credit_requires_warrant = True
+    mid = m.remember("a claim graded by an outside run", mtype="episodic",
+                     source={"doc": "crucible/claim-17"})
+    m.credit([mid], "good", warrant="lab:9f2c1a")
+    rec = {r["id"]: r for r in m.items}[mid]
+    assert float(rec.get("good_warranted", 0) or 0) > 0
+    assert _corr(m, mid) is True
