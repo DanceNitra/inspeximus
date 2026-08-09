@@ -3,7 +3,7 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
-## 2.3.2 - DATA LOSS: UPGRADE NOW IF YOU BIND A HANDLE TO A TENANT OR PROJECT
+## 2.3.2 - UPGRADE IF YOU BIND A HANDLE TO A TENANT OR PROJECT: a scoped save dropped every other tenant's rows
 
 **A tenant-scoped handle's save wrote only its own rows and dropped every other tenant's records from
 the file.** If you construct `Inspeximus(path=..., tenant=...)` — or any scoped handle — and two of them

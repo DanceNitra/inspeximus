@@ -52,13 +52,16 @@ re-runs on every invocation -- none of them is quoted from a note.
           RETIRES A's record. Afterwards A sees 0 of its own facts and 1 of B's; add a `scope=` read
           filter and A sees 0 and 0, i.e. its own answer is silently blank. A read-side scope filter
           over a global key space turns a leak into data loss.
-        * SAVE: the only hard isolation on offer DESTROYS DATA. `items` is a tenant-filtered VIEW
-          (core.py:3288) and `_save` serialises `self.items` (core.py:7809), so a tenant-bound handle's
-          save writes only its own rows. Measured: **0 of 3** of project A's records survive project
-          B's first `flush()`; two UNBOUND handles on the same file keep both. `StoreChangedOnDisk`
-          does not fire, because B loaded after A's flush -- a legitimate sequential handoff. The
-          `items` SETTER already refuses exactly this move; the persist path reads the same view and
-          was missed.
+        * SAVE: HOLDS as of 2.3.2 (was FAILS, and DESTROYED DATA, from 1.89.0). `items` is a
+          tenant-filtered VIEW and `_save` serialised `self.items`, so a tenant-bound handle's save
+          wrote only its own rows. Measured at 2.3.1: **0 of 3** of project A's records survived
+          project B's first `flush()`; two UNBOUND handles on the same file kept both.
+          `StoreChangedOnDisk` did not fire, because B loaded after A's flush -- a legitimate
+          sequential handoff. The `items` SETTER already refused exactly this move; the persist path
+          read the same view and was missed. 2.3.2 persists `_items`, the strict xfail here went XPASS
+          and the marker was REMOVED -- this suite working as designed, for the second time (see P7b).
+          The property is now asserted, and it sat marked-and-shipped for eight days, which is the
+          argument for reading this file's markers as a to-do list rather than a record.
 
   P5  READ PURITY ..... FAILS
       A documented read is a persisted write. Measured on a 20-record store:
@@ -593,14 +596,6 @@ def test_p4_a_second_projects_write_cannot_supersede_the_firsts():
         f"project A's own fact is gone after project B wrote the same key; A now sees {mine}"
 
 
-@broken("MEASURED 1.89.0, and this one DESTROYS DATA: the only hard isolation on offer (`tenant=`) makes "
-        "`items` a tenant-filtered VIEW (core.py:3288) while `_save` serialises `self.items` "
-        "(core.py:7809) -- so a tenant-bound handle's save writes ONLY its own rows and the other "
-        "tenant's records are gone from the file. Measured: 0 of 3 of project A's rows survive project "
-        "B's first flush(); two UNBOUND handles on the same file keep both. The single-writer guard does "
-        "not fire, because B loaded after A's flush -- a legitimate sequential handoff. The `items` "
-        "SETTER already refuses this exact move ('a whole-list write from a tenant-bound store would "
-        "drop every other tenant's records'); the persist path reads the same view and was missed.")
 def test_p4_a_second_projects_save_cannot_destroy_the_firsts_records():
     """The severest form of a scope failure: not a leak, an erasure."""
     p = _path("shared.json")
