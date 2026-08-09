@@ -82,3 +82,51 @@ def test_asking_for_the_tier_does_not_change_what_is_returned():
             a = [h["id"] for h in mod.recall(q)]
             b = [h["id"] for h in mod.recall(q, with_warrant=True)]
             assert a == b, f"with_warrant changed ordering/membership through MCP for {q!r}"
+
+
+# ── the WRITE half of the same surface gap ────────────────────────────────────────────────────────
+#
+# `recall(with_warrant=...)` was the read side. `credit(..., warrant=...)` is the write side and it
+# was missing in exactly the same way: the library has accepted `warrant=` all along, and this tool
+# dropped it, so every credit an agent could make over MCP was unwarranted BY CONSTRUCTION. Measured
+# 2026-08-09 on a real deployment: `good` populated on 470 records, `good_warranted` on 0 of 220,213.
+# Since `credit_requires_warrant` counts good_warranted to block the MINJA self-graded-outcome loop,
+# the guard's input could never arrive through the surface we ourselves use.
+
+def _rec(mod, mid):
+    return next((r for r in mod._MEM.items if r.get("id") == mid), {})
+
+
+def test_mcp_credit_forwards_an_exogenous_warrant():
+    with tempfile.TemporaryDirectory() as td:
+        mod = _fresh_module(td)
+        mid = mod.remember("the orion pipeline retries three times before alerting",
+                           source="runbooks/orion")["id"]
+        mod.credit([mid], "good", warrant="ticket:INC-4417")
+        rec = _rec(mod, mid)
+        assert float(rec.get("good", 0)) > 0, "the fixture did not credit; the test proves nothing"
+        assert float(rec.get("good_warranted", 0) or 0) > 0, (
+            "warrant did not reach the library: the MCP tool dropped the argument")
+
+
+def test_mcp_credit_without_a_warrant_earns_no_warranted_good():
+    """THE CONTROL. A surface that stamped every credit as warranted would pass the test above while
+    destroying the only thing the field means."""
+    with tempfile.TemporaryDirectory() as td:
+        mod = _fresh_module(td)
+        mid = mod.remember("a conclusion the agent graded itself",
+                           source="runbooks/orion")["id"]
+        mod.credit([mid], "good")
+        rec = _rec(mod, mid)
+        assert float(rec.get("good", 0)) > 0
+        assert float(rec.get("good_warranted", 0) or 0) == 0, (
+            "an unwarranted credit earned warranted good — the MINJA guard is a rubber stamp")
+
+
+def test_mcp_credit_rejects_a_self_vouching_warrant():
+    """The surface must not be a way around the canonicalization fix either."""
+    with tempfile.TemporaryDirectory() as td:
+        mod = _fresh_module(td)
+        mid = mod.remember("a claim vouching for itself", source="runbooks/orion")["id"]
+        mod.credit([mid], "good", warrant="runbooks/orion")
+        assert float(_rec(mod, mid).get("good_warranted", 0) or 0) == 0

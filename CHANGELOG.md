@@ -3,6 +3,39 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.3.1 - UPGRADE IF YOU USE `credit_requires_warrant`: a record could vouch for ITSELF, and MCP could not warrant at all
+
+Two halves of one hole, both in the exogenous-warrant guard (`credit_requires_warrant`, the MINJA
+self-graded-outcome defence). Neither was found by auditing the guard — both surfaced while wiring a
+CALLER up to it, which is the only thing that ever tests whether the input arrives.
+
+**FIXED — self-vouching.** `_warrant_is_exogenous` promised the warrant is "neither the record's own
+CANONICAL source nor any tenant/source in its transitive lineage", then compared a **raw** warrant
+against `_rec_sources()`, which returns `_canon_source(doc)`. `_canon_source("crucible/claim-17")` is
+`"crucible"`; `"https://x.com/a/b"` is `"x"`. The two normalizations never met, so the one concrete
+protection the docstring names was DEAD for every realistic source — any path, URL or scheme-prefixed
+id — and alive only for a single-token source like `"plainword"`. Measured: a record with
+`source={"doc": "crucible/claim-17"}` credited with `warrant="crucible/claim-17"` earned
+`good_warranted=1.0`. Both sides are now canonicalized.
+
+  Deliberately the CONSERVATIVE direction: a warrant that canonicalizes onto the record's own source
+  is refused even when the raw strings differ. For a guard, a false refusal costs a credit; a false
+  acceptance costs the guarantee. **The only behaviour that changes is that a self-vouching warrant no
+  longer earns warranted-good** — nothing that was refused before is accepted now.
+
+**FIXED — the MCP `credit` tool had no `warrant` parameter.** The library has accepted `warrant=` all
+along; the tool dropped it, so every credit an agent could make over MCP was unwarranted BY
+CONSTRUCTION. This is the identical shape as `with_warrant` missing from `recall` in 2.3.0: the
+mechanism works given its input, and the surface never delivered the input. Measured on a real
+deployment before the fix: `good` populated on 470 records, `good_warranted` on **0 of 220,213**.
+
+**UPGRADE IF** you rely on `credit_requires_warrant`. Before 2.3.1 it could be satisfied by a record
+naming its own provenance, and could not be satisfied at all through MCP.
+
+Tests are paired throughout, and mutation-checked: dropping the fix turns the regression tests red
+while "a genuinely external warrant still counts" and "an unwarranted credit earns nothing" stay
+green — which is what separates a working guard from one that refuses everything or stamps everything.
+
 ## 2.3.0 - UPGRADE IF YOU BRANCH ON `recall(with_warrant=...)`: the top tier was settable by the writer
 
 Three findings from one afternoon, and they are the same finding: **a mechanism that is correct and

@@ -766,13 +766,28 @@ def value_by_cohort() -> dict:
 
 
 @mcp.tool()
-def credit(ids: list[str], outcome: str, weight: float = 1.0) -> dict:
+def credit(ids: list[str], outcome: str, weight: float = 1.0, warrant: str = "") -> dict:
     """Close the accuracy loop: when the work some recalled memories fed gets a real verdict — a forecast
     resolves, a claim is ruled correct/wrong, a plan succeeds/fails — call credit(those ids, outcome) so
     each memory's track record updates. Future `recall` then ranks by WAS-IT-RIGHT (a Beta good/bad
     posterior), not merely by being-recalled. `outcome`: 'good'/'right'/'correct' vs 'bad'/'wrong'/'failed'
-    (or pass a bool / a signed number). Counts only grow; raw text is never edited. Returns what updated."""
-    return _MEM.credit(ids, outcome, weight=weight)
+    (or pass a bool / a signed number). Counts only grow; raw text is never edited. Returns what updated.
+
+    `warrant` NAMES THE EXOGENOUS ARTIFACT that produced the verdict — a resolved ticket, a graded
+    forecast, an external run: ground truth the credited memory did NOT author itself. Only a warranted
+    good raises `good_warranted`, which `credit_requires_warrant` counts to block the MINJA
+    self-graded-outcome loop (an agent crediting its own recalled poison as a success).
+
+    It exists on this surface because it did not, and that was the whole bug. The library has accepted
+    `warrant=` all along; this tool dropped it, so every credit an agent could make over MCP was
+    unwarranted BY CONSTRUCTION. Measured 2026-08-09 on a real deployment: `good` on 470 records,
+    `good_warranted` on **0 of 220,213**. Same shape as `with_warrant` missing from `recall` — the
+    mechanism works given its input, and the surface never delivered the input.
+
+    PASS IT ONLY FOR A RE-CHECKABLE ARTIFACT. Empty is the correct value when you graded the outcome
+    yourself; a token invented to make the field non-zero forges precisely the signal the guard tests.
+    """
+    return _MEM.credit(ids, outcome, weight=weight, warrant=(warrant or None))
 
 
 @mcp.tool()
