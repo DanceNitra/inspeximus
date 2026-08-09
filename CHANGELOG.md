@@ -3,6 +3,31 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.3.2 - DATA LOSS: UPGRADE NOW IF YOU BIND A HANDLE TO A TENANT OR PROJECT
+
+**A tenant-scoped handle's save wrote only its own rows and dropped every other tenant's records from
+the file.** If you construct `Inspeximus(path=..., tenant=...)` — or any scoped handle — and two of them
+write the same store in sequence, the second flush erases the first tenant's data. Measured: projA
+writes 3 records and flushes; a projB-bound handle on the same path then flushes; projA is left with
+**0 of 3**. Unbound handles were never affected, so this bit only once a handle was scoped, which is
+exactly when isolation is supposed to be protecting you.
+
+`items` is a TENANT-SCOPED property over the real list (`_items`) — that is the structural half of
+tenant isolation and it is correct. `_save` serialised `self.items`, so the view became the file. The
+`items` SETTER already refuses this exact move ("Route deliberate whole-list writes to `_items`"); the
+persist path read the same property and was missed. One guarantee, two implementations, one unchecked.
+
+The fix persists `_items`. Paired tests: a scoped flush must keep the other tenant's rows, and an
+unbound handle must still write the whole store — without the second, a persist path that wrote nothing
+at all would pass the first by leaving the earlier file untouched. Mutation-verified against the
+`_save` line specifically (the first attempt mutated an identically-spelled line 5,800 lines away and
+reported a false survival).
+
+Not a 2.3.1 regression: the line dates to 2026-07-21. Every release since carries it.
+
+**If you have run scoped handles against a shared store, check your file before upgrading** — the lost
+rows are not recoverable from the store itself.
+
 ## 2.3.1 - UPGRADE IF YOU USE `credit_requires_warrant`: a record could vouch for ITSELF, and MCP could not warrant at all
 
 Two halves of one hole, both in the exogenous-warrant guard (`credit_requires_warrant`, the MINJA

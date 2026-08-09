@@ -738,7 +738,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.3.1"
+__version__ = "2.3.2"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -9424,8 +9424,19 @@ class Inspeximus:
             # GIL for many seconds - which froze the whole event loop even from a worker thread (the
             # frozen-world bug, 2026-06-20). Vectors stay in self.items (RAM) so recall is unaffected this
             # session; on reload they are re-embedded lazily. Keeps the store file small + the save fast.
-            slim = self.items if self._persist_vectors else \
-                [{k: v for k, v in r.items() if k != "vec"} for r in self.items]
+            # PERSIST THE WHOLE STORE, NOT THIS HANDLE'S VIEW. `self.items` is TENANT-SCOPED when the
+            # handle is bound, so serialising it wrote only the bound tenant's rows and dropped every
+            # other tenant's records from the file. Measured on 2.3.1: projA writes 3 records and
+            # flushes; a projB-bound handle on the same path then flushes; projA is left with 0. The
+            # control -- the same sequence through two UNBOUND handles -- keeps both, so it bites only
+            # once a handle is scoped, which is exactly when isolation is supposed to be protecting you.
+            #
+            # The `items` SETTER already refuses this move ("Route deliberate whole-list writes to
+            # `_items`"). The persist path read the same property and was missed: one guarantee, two
+            # implementations, one of them unchecked.
+            rows = self._items
+            slim = list(rows) if self._persist_vectors else \
+                [{k: v for k, v in r.items() if k != "vec"} for r in rows]
             # Atomic write: a partial/interleaved write can't corrupt the store (crash- and
             # concurrent-writer-safe — last writer wins, never a torn JSON file).
             if self._file_sig is not None and self._stat_sig() != self._file_sig:

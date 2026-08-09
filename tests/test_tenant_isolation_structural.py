@@ -245,3 +245,59 @@ def test_a_whole_list_assignment_cannot_silently_drop_other_tenants():
     with pytest.raises(AttributeError, match="_items"):
         a.items = []
     assert len(s._items) == 3
+
+
+# ── the SETTER's missing sibling: the PERSIST path read the same scoped view ──────────────────────
+#
+# The test above guards `self.items = [...]`. `_save` serialised `self.items` — the same tenant-scoped
+# property — so a bound handle's flush wrote only its own rows and dropped every other tenant's records
+# from the file. One guarantee, two implementations, and only one of them checked.
+#
+# Measured on 2.3.1 against a real file (not a shared in-memory list): projA writes 3 and flushes; a
+# projB-bound handle on the same path then flushes; projA is left with 0 of 3. It bites only once a
+# handle is scoped — which is exactly when isolation is supposed to be protecting you.
+
+def _rows_on_disk(path):
+    import io, json
+    return json.load(io.open(path, encoding="utf-8", errors="replace"))
+
+
+def _count(path, tenant):
+    return sum(1 for r in _rows_on_disk(path) if r.get("tenant") == tenant)
+
+
+def test_a_scoped_handle_flush_keeps_the_other_tenants_rows(tmp_path):
+    """THE REGRESSION. Two bound handles, one real file, sequential handoff — the shape a project- or
+    tenant-scoped deployment actually runs."""
+    p = str(tmp_path / "store.json")
+    a = Inspeximus(path=p, tenant="projA")
+    for i in range(3):
+        a.remember("record %d belonging to project A" % i)
+    a.flush()
+    assert _count(p, "projA") == 3, "fixture did not seed; the test would prove nothing"
+
+    b = Inspeximus(path=p, tenant="projB")
+    for i in range(3):
+        b.remember("record %d belonging to project B" % i)
+    b.flush()
+
+    assert _count(p, "projA") == 3, (
+        "a projB-bound flush dropped projA's rows: the persist path serialised the scoped view")
+    assert _count(p, "projB") == 3
+
+
+def test_an_unbound_handle_still_persists_everything(tmp_path):
+    """THE CONTROL. Without it, a persist path that wrote nothing at all would pass the test above by
+    leaving the earlier file untouched."""
+    p = str(tmp_path / "store.json")
+    one = Inspeximus(path=p)
+    for i in range(3):
+        one.remember("control record %d from the first writer" % i)
+    one.flush()
+    assert len(_rows_on_disk(p)) == 3
+
+    two = Inspeximus(path=p)
+    for i in range(3):
+        two.remember("control record %d from the second writer" % i)
+    two.flush()
+    assert len(_rows_on_disk(p)) == 6, "an unbound handle must still write the whole store"
