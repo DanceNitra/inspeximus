@@ -33,6 +33,30 @@ the answer is "internally consistent", which any forger holding any key also sat
 carrying no attestations is reported as a FAILURE, not a pass**, because an empty check that reads as
 green is the defect this release is about.
 
+**The compatibility choice was a downgrade channel, and it is closed.** Omitting the tenant for unbound
+stores is what keeps old signatures valid — and the verifier tried the record's tenant and *then*
+no-tenant for every key alike, so a row signed while unbound and later GIVEN a tenant still verified.
+Measured before the fix: placing an unbound-signed row into `beta` returned `ok=True`, zero problems —
+a promotion into a tenant it was never signed for. The no-tenant fallback now belongs only to keys that
+had an excuse for omitting it: for a key this store can NAME (its own `writer_pubkey`, or one pinned
+through `expected_key`) the bound form is the only form accepted, while a foreign signer keeps both
+candidates. Caught by red-teaming this note before publishing it, not by a user.
+
+**What this does NOT do, since the pitch is easy to over-hear.** A signature attests to the records
+that are PRESENT; tenant binding was built in answer to a data-LOSS incident (2.3.2) and does not
+address it. A row that is gone carries no failing signature: delete every `acme` row from a signed
+five-record store and `verify_attestations()` returns `ok=True` with zero problems, while relocating a
+single row in the same run returns `ok=False` — so the verifier is demonstrably alive and simply
+cannot see absence. **`verify_writes()` is the check for that**: with receipts on it names the vanished
+ids ("written but missing from the store (deleted out-of-band)"). Signature for placement, receipt
+chain for cardinality; offering the first as protection against loss would be a category error, and
+both limits are now pinned by tests so they cannot quietly become claims we do not have.
+
+None of the above is a new idea. Binding the audience into the signed message is Abadi & Needham's
+principle 3 (*Prudent Engineering Practice for Cryptographic Protocols*, IEEE TSE 22(1):6–15, 1996);
+the familiar instances are JWT's `aud` (RFC 7519 §4.1.3), X.509 name constraints (RFC 5280 §4.2.1.10)
+and Macaroons' first-party caveats. We had not applied it.
+
 ## 2.3.2 - UPGRADE IF YOU BIND A HANDLE TO A TENANT OR PROJECT: a scoped save dropped every other tenant's rows
 
 **A tenant-scoped handle's save wrote only its own rows and dropped every other tenant's records from

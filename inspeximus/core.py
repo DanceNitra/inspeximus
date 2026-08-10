@@ -1965,6 +1965,17 @@ class Inspeximus:
         verify identically in any tenant and this reports them as valid. Records with no attestation at
         all are skipped and counted, not failed -- most stores have none, and failing them would make
         the check useless where it matters. And a valid signature attests AUTHORSHIP, never truth.
+
+        THIS BINDS PLACEMENT, NOT CARDINALITY, and the distinction is not academic here: the failure
+        that motivated tenant binding was tenant-scoped data LOSS (2.3.2 -- a scoped handle's save
+        serialised its own filtered view). A row that is GONE carries no failing signature, so this
+        answers `ok` on a store that just lost a tenant. Measured: delete every acme row from a signed
+        five-record store and this returns ok=True with zero problems, while relocating one row returns
+        ok=False -- the same run, so the verifier is demonstrably alive. **`verify_writes()` is the
+        check for absence**: with receipts on it names the vanished ids ("written but missing from the
+        store (deleted out-of-band)"). Signature for placement, receipt chain for cardinality; neither
+        substitutes for the other, and offering this one as protection against loss would be a
+        category error.
         """
         problems: list[str] = []
         checked = skipped = 0
@@ -1987,11 +1998,23 @@ class Inspeximus:
             src = r.get("source")
             src_doc = src.get("doc") if isinstance(src, dict) else (src if isinstance(src, str) else None)
             text = r.get("text", "")
-            # Try WITH the record's tenant first, then without: a self-signed write from a bound store
-            # carries the binding, an externally-attested one never does, and both are legitimate. Trying
-            # both is what keeps this from failing every external attestation as a false alarm.
+            # THE NO-TENANT FALLBACK IS A DOWNGRADE CHANNEL, so it is not offered to a key that had no
+            # excuse for omitting the tenant. An unbound store leaves the field out of the message --
+            # that omission is what keeps pre-2.4.0 signatures verifying -- and this loop first tried
+            # the record's tenant and THEN no-tenant for every key alike. So a row signed while unbound
+            # and later GIVEN a tenant still verified: measured, placing an unbound-signed row into
+            # `beta` returned ok=True with zero problems, which is a row being promoted into a tenant it
+            # was never signed for.
+            #
+            # Our own writer always knows the tenant it is writing under, so for a key we can NAME --
+            # this store's `writer_pubkey`, or one pinned through `expected_key` -- the bound form is
+            # the only form accepted. A foreign signer genuinely cannot bind a tenant it never saw, so
+            # those keep both candidates; that residual is precisely why `expected_key` exists, and
+            # verifying from a store that knows neither key cannot tell the two apart.
+            nameable = {k for k in (getattr(self, "writer_pubkey", None), expected_key) if k}
+            _tn = r.get("tenant")
             ok_any = False
-            for cand in ((r.get("tenant"),) if r.get("tenant") is None else (r.get("tenant"), None)):
+            for cand in ((_tn,) if (_tn is None or key in nameable) else (_tn, None)):
                 try:
                     _Ed25519PK.from_public_bytes(bytes.fromhex(key)).verify(
                         bytes.fromhex(sig), _attest_message(text, src_doc, cand))
@@ -9692,11 +9715,15 @@ class _TenantView:
         "verify_attribution", "register_erasure_target", "explain_growth",
         # `verify_attestations` is store-level for a REASON, not by resemblance to its neighbours above.
         # 2.4.0 binds the tenant into the signed message so that a record MOVED BETWEEN TENANTS stops
-        # verifying — that relocation is the headline thing it detects. Scoped to one tenant it could
-        # never see it: a row moved from acme to beta simply leaves acme's slice, and the check would
-        # report a clean store while the evidence sat one row away. What it returns is ids, key prefixes
-        # and counts — never record text — which is the same bar `merkle_root`/`inclusion_proof` are
-        # listed under below. It is still swept by the tenant and agent leak tests, not exempted.
+        # verifying. Scoped to one tenant that check would be ONE-SIDED -- not blind, which is what an
+        # earlier version of this comment claimed and measurement disproved: the DESTINATION slice does
+        # fail the moved row, identically to a store-level run. It is the SOURCE that goes quiet, because
+        # the row simply leaves its slice and the tenant reads clean. So detection would depend on
+        # somebody running the check for wherever the row landed -- including the untagged `tenant=None`
+        # slice, which no tenant-bound handle covers at all. Store-level is the only run guaranteed to
+        # cover every destination. What it returns is ids, key prefixes and counts -- never record text --
+        # which is the same bar `merkle_root`/`inclusion_proof` are listed under below. It is still swept
+        # by the tenant and agent leak tests, not exempted.
         "verify_attestations",
         "detect_split_view", "check_self_narration", "classify_reversion",
         "restore_intent", "revert_intent", "revert_capability",

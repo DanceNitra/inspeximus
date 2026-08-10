@@ -190,3 +190,68 @@ def test_a_store_with_no_attestations_reports_that_it_checked_nothing(tmp_path):
     ok, problems = s.verify_attestations()
     assert not ok, "a store with nothing to verify reported OK"
     assert any("verified NOTHING" in p for p in problems), problems
+
+
+# ── the compatibility choice was a downgrade channel (caught pre-release, folded into 2.4.0) ──────────────────────────────────────
+# Found by red-teaming the 2.4.0 note before publishing it, not by a user. An unbound store OMITS the
+# tenant from the signed message -- that omission is exactly what keeps pre-2.4.0 signatures valid --
+# and the verifier tried the record's tenant and THEN no-tenant for every key alike. So a row signed
+# while unbound and later GIVEN a tenant verified: an unsigned promotion into a tenant it was never
+# signed for. The fallback now belongs only to keys that had an excuse.
+
+def test_an_unbound_signed_row_cannot_be_promoted_into_a_tenant(tmp_path):
+    """THE FIX. Sign with no tenant, then write a tenant onto the row: it must stop verifying."""
+    sk, _pk = new_ed25519_keypair()
+    s = Inspeximus(path=str(tmp_path / "d.json"), embed=None, writer_key=sk)
+    s.remember("a fact signed while the store was unbound", source={"doc": "runbook"})
+    ok, problems = s.verify_attestations()
+    assert ok, "the unbound baseline must verify first, or the negative below proves nothing: %s" % problems
+
+    rec = next(r for r in s._items if r.get("attested_sig"))
+    rec["tenant"] = "beta"                        # the promotion
+    ok, problems = s.verify_attestations()
+    assert not ok, ("an unbound-signed row was accepted after being placed into a tenant -- the "
+                    "no-tenant fallback is a downgrade channel")
+
+
+def test_a_foreign_signer_keeps_the_no_tenant_fallback(tmp_path):
+    """THE CONTROL that the fix did not over-reach. An outside signer cannot bind a tenant it never
+    saw, so an externally-attested row must still verify wherever it legitimately sits. Without this,
+    closing the downgrade would silently start failing every third-party attestation."""
+    src_sk, src_pk = new_ed25519_keypair()
+    w_sk, _w_pk = new_ed25519_keypair()
+    s = Inspeximus(path=str(tmp_path / "f.json"), embed=None, tenant="acme", writer_key=w_sk)
+    text = "a claim signed by its actual source"
+    s.remember(text, source={"doc": "acme-docs"}, attestation=(src_pk, attest(text, src_sk, "acme-docs")))
+    ok, problems = s.verify_attestations()
+    assert ok, "a foreign attestation inside a tenant-bound store must still verify: %s" % problems
+
+
+def test_the_signature_cannot_see_a_row_that_is_gone(tmp_path):
+    """THE HONEST LIMIT, asserted so it cannot quietly change into a claim we do not have.
+
+    Tenant binding was built in answer to a data-LOSS incident, and it does not address it: a deleted
+    row carries no failing signature. This pins that, and pins the counterpart -- verify_writes, which
+    reads the receipt chain, DOES name the vanished ids. Signature for placement, receipts for
+    cardinality.
+    """
+    sk, _pk = new_ed25519_keypair()
+    p = tmp_path / "g.json"
+    s = Inspeximus(path=str(p), embed=None, writer_key=sk, receipts=True)
+    a, b = s.for_tenant("acme"), s.for_tenant("beta")
+    for i in range(3):
+        a.remember(f"acme fact {i}")
+    b.remember("beta fact")
+    s.flush()
+    gone = [r["id"] for r in s._items if r.get("tenant") == "acme"]
+    assert len(gone) == 3
+
+    s._items[:] = [r for r in s._items if r.get("tenant") != "acme"]   # the loss, out of band
+    ok, problems = s.verify_attestations()
+    assert ok, ("attestation now reports the deletion (%s) -- if that is a real improvement, rewrite "
+                "the HONEST LIMITS note; until then this pins what the check actually covers" % problems)
+
+    ok_w, prob_w = s.verify_writes()
+    assert not ok_w, "the receipt chain did not notice three deleted records"
+    assert all(any(g in str(p_) for p_ in prob_w) for g in gone), (
+        "verify_writes failed, but not about the rows that vanished: %s" % prob_w)
