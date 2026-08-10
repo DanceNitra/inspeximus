@@ -191,9 +191,17 @@ _RESERVED_META = frozenset({
     "hub_coverage",
     "needs_rederivation", "objectless_blocked", "pre_slash", "promoted_from_candidate",
     "rederived_to", "reopened_contradiction", "reopened_meta", "reopened_reason",
-    "reopened_surfaced_prior", "retracted_reason", "revert_nonce", "scope", "session_seq",
+    "reopened_surfaced_prior", "retracted_reason", "revert_nonce", "session_seq",
     "slashed", "superseded_by_policy", "superseded_by_toggle", "truncated_from",
 })
+
+#: READ BY THE LIBRARY, WRITTEN BY THE CALLER -- and therefore NOT reserved. The threat is a caller
+#: forging something the library believes it stamped itself; a field the library only ever READS is
+#: the caller's data by design, and reserving it deletes a feature. `scope` is the case that taught
+#: this: it was reserved on the "the library reads it" rule, and 25 grant tests went red because
+#: `recall(scope=...)` filters on a scope the CALLER sets. Declared here rather than special-cased in
+#: the guard, so the next one is a visible decision instead of a silent exception.
+_CALLER_META = frozenset({"scope"})
 
 #: The same problem with a different remedy. These four ALSO have named parameters on `remember()`
 #: (`user_id`, `agent_id`, `session_id`, `project`), and passing them through `meta` reached the same
@@ -4058,7 +4066,7 @@ class Inspeximus:
             # reaffirm=True on purpose: grant -> revoke -> grant is a LEGITIMATE reversal, and without it the
             # echo guard would retire the re-grant on arrival as a restatement of a superseded value. Access
             # genuinely comes back; that is the case reaffirm exists for.
-            mid = self.remember(text, key=k, object=state, mtype="procedural", value=0.0,
+            mid = self._stamp(text, key=k, object=state, mtype="procedural", value=0.0,
                                 meta=meta, reaffirm=True)
         finally:
             self._acl_writing -= 1

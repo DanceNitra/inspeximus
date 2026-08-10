@@ -273,11 +273,13 @@ def test_every_meta_key_the_library_reads_is_reserved():
     reserved or explicitly aliased."""
     import pathlib
     import re as _re
-    from inspeximus.core import _RESERVED_META, _META_ALIASED_PARAM
+    from inspeximus.core import _RESERVED_META, _META_ALIASED_PARAM, _CALLER_META
     src = pathlib.Path(inspeximus_core_file()).read_text(encoding="utf-8")
     read = set(_re.findall(r'\.get\("meta"(?:, \{\})?\)\s*or\s*\{\}\)\.get\("([a-z_]+)"', src))
     read |= set(_re.findall(r'\.get\("meta", \{\}\)\.get\("([a-z_]+)"', src))
-    unguarded = sorted(read - set(_RESERVED_META) - set(_META_ALIASED_PARAM))
+    # _CALLER_META is the DECLARED exception: read by us, written by the caller. Anything else that
+    # the library reads must be closed to callers, or a writer can forge what we think we stamped.
+    unguarded = sorted(read - set(_RESERVED_META) - set(_META_ALIASED_PARAM) - set(_CALLER_META))
     assert read, "INSTRUMENT DEAD: the scan found no meta reads at all, so it guards nothing"
     assert not unguarded, (
         "these meta keys are read by the library but a caller can still set them: %s" % unguarded)
@@ -286,3 +288,36 @@ def test_every_meta_key_the_library_reads_is_reserved():
 def inspeximus_core_file():
     import inspeximus.core as _c
     return _c.__file__
+
+
+def test_every_internal_write_of_a_reserved_key_uses_the_privileged_path():
+    """THE GUARD THAT WOULD HAVE SAVED A 23-MINUTE RUN.
+
+    `remember()` strips the reserved meta keyspace, and the library writes those same keys through
+    it, so an internal call that forgets `_stamp()` silently loses its own marker. Enumerated by hand
+    this was wrong three times in one change -- the third time cost 25 failing grant tests, because
+    `_acl_write` builds its meta into a LOCAL VARIABLE and every hand-written scan looked for an
+    inline `meta={`. So the enumeration is a test now.
+    """
+    import inspeximus.core as _c
+    import pathlib
+    import re as _re
+    src = pathlib.Path(_c.__file__).read_text(encoding="utf-8")
+    lines = src.splitlines()
+    offenders = []
+    for m in _re.finditer(r"self\.(remember|remember_dedup|_stamp)\(", src):
+        ln = src[:m.start()].count("\n")
+        depth, k = 1, m.end()
+        while depth and k < len(src):
+            depth += (src[k] == "(") - (src[k] == ")")
+            k += 1
+        keys = set(_re.findall(r'"([a-z_]+)":', src[m.start():k]))
+        above = "\n".join(lines[max(0, ln - 14):ln])
+        for blk in _re.findall(r"meta\s*=\s*\{(.*?)\}", above, _re.S):
+            keys |= set(_re.findall(r'"([a-z_]+)":', blk))
+        if (keys & set(_c._RESERVED_META)) and m.group(1) != "_stamp":
+            offenders.append("line %d: %s passes %s"
+                             % (ln + 1, m.group(1), sorted(keys & set(_c._RESERVED_META))))
+    assert not offenders, (
+        "these internal writes pass a reserved meta key through the caller-facing path, so the "
+        "library strips its own marker: %s" % offenders)
