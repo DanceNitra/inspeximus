@@ -3,6 +3,48 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.5.0 - UPGRADE IF YOUR MEMORIES COME FROM SOURCES THAT CHANGE: decay was temporal, and time is the wrong question
+
+`check_sources()` answers the causal question instead of the chronological one: **did the thing this
+memory is about actually change?** Age cannot tell a fact that has been true for five years from one
+that rotted in a week. Four verdicts per record — FRESH, DRIFTED, ORPHANED, and UNCHECKABLE — and the
+report leads with the last one.
+
+**This is a gap we measured on ourselves rather than imagined.** On 2026-08-10, across our own
+deployment: 210,544 records, `source` coverage **98.3%**, sources resolving to anything re-checkable
+**0.01%** — twenty-four records. The field held `agent:scholar`: the identity of the WRITER, not the
+origin of the content. So source reconciliation here was not unimplemented, it was impossible, because
+there was no key to diff against. The probe is public
+(`research/probes/can_we_reconcile_our_own_index.py` in the agora repo) and carries its own control,
+since a 0% can be a broken classifier.
+
+Credit where it is due: the causal framing is the right one and we saw it done first elsewhere.
+OmniMemory (SinghAbhinav04) flags a memory stale only when *its symbol — or a symbol that calls it —
+changed in git*, rather than when a file was touched. Anchoring to git gives that design the
+re-checkable key by construction. `remember(source={"doc": <path>})` now fingerprints the source with
+SHA-256 at write time when the doc is a file that exists, which is the same idea reached through a
+different door.
+
+**The fingerprint is NOT stored in `source`.** That dict is the caller's, verbatim — a digest a writer
+can set is a drift check the writer can defeat, which is exactly the trust-tier hole closed in 2.4.1.
+It lives in the reserved meta keyspace, which callers cannot write. A mutation that moves it back into
+`source` turns three tests red.
+
+**A report that cannot flatter.** `ok` is False whenever nothing was checkable, and the report says
+"this verified NOTHING" — because zero drifted over zero checked is the same sentence as a clean store
+and must not read like one. This is the `verify_attestations` rule pointed at the outside world. It
+matters most on stores like ours, where 98.3% of records are UNCHECKABLE and a naive report would have
+returned a clean bill.
+
+**Scoped, unlike `verify_attestations`.** That one is store-level because a record relocated between
+tenants is only visible whole-store. Drift is per-record and per-source, so a tenant's report is
+complete inside its own slice — and the report carries record ids, which is precisely what must not
+cross a tenant boundary.
+
+`resolver` is an optional callable taking the source doc and returning bytes (or None if gone), so this
+can be pointed at a git object store, S3 or HTTP. The default reads local files only, deliberately:
+guessing how to fetch an arbitrary identifier is how a checker starts inventing ORPHANED verdicts.
+
 ## 2.4.1 - UPGRADE IF YOU RELY ON THE `warrant` TIER: the top tier could be asked for through `meta`
 
 Raised by yun520-1 (openclaw/openclaw#7707): "any design where the tier is set by the writer has a

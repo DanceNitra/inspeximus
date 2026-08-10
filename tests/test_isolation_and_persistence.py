@@ -321,3 +321,75 @@ def test_every_internal_write_of_a_reserved_key_uses_the_privileged_path():
     assert not offenders, (
         "these internal writes pass a reserved meta key through the caller-facing path, so the "
         "library strips its own marker: %s" % offenders)
+
+
+# ── causal staleness: did the SOURCE change, not how old is the record ───────────────────────────
+# Our decay is temporal (a half-life on age) and age cannot tell a fact true for five years from one
+# that rotted in a week. The causal question needs a source you can re-fetch -- measured 2026-08-10
+# on our own deployment, 0.01% of 210,544 records carried one. check_sources() is that half.
+
+def test_an_unchanged_source_is_fresh_and_a_changed_one_drifts(tmp_path):
+    """THE FEATURE, with its own control: the same store must report FRESH before and DRIFTED after,
+    or the verdict is about something other than the source."""
+    doc = tmp_path / "runbook.md"
+    doc.write_text("the release cadence is fortnightly", encoding="utf-8")
+    s = Inspeximus(path=str(tmp_path / "s.json"), embed=None)
+    s.remember("cadence is fortnightly", source={"doc": str(doc)})
+
+    before = s.check_sources()
+    assert before["counts"]["FRESH"] == 1 and before["ok"], before      # CONTROL
+    doc.write_text("the release cadence is weekly", encoding="utf-8")
+    after = s.check_sources()
+    assert after["counts"]["DRIFTED"] == 1 and not after["ok"], after
+
+
+def test_a_deleted_source_is_orphaned_not_fresh(tmp_path):
+    """The half that never self-heals: a source that is gone emits one event and no later one."""
+    doc = tmp_path / "policy.md"
+    doc.write_text("old policy", encoding="utf-8")
+    s = Inspeximus(path=str(tmp_path / "o.json"), embed=None)
+    s.remember("the policy says X", source={"doc": str(doc)})
+    assert s.check_sources()["counts"]["FRESH"] == 1                    # CONTROL
+    doc.unlink()
+    rep = s.check_sources()
+    assert rep["counts"]["ORPHANED"] == 1 and not rep["ok"], rep
+
+
+def test_a_store_with_no_fetchable_sources_reports_that_it_checked_NOTHING(tmp_path):
+    """THE HONEST DENOMINATOR. `agent:scholar` is a writer, not a document -- exactly what 98.3% of
+    our own records carry. Zero drifted over zero checked must not read like a clean store."""
+    s = Inspeximus(path=str(tmp_path / "n.json"), embed=None)
+    s.remember("a fact", source={"doc": "agent:scholar"})
+    rep = s.check_sources()
+    assert rep["counts"]["UNCHECKABLE"] == 1
+    assert rep["checked"] == 0 and rep["checkable_fraction"] == 0.0
+    assert not rep["ok"], "a store that verified nothing reported ok"
+    assert "verified NOTHING" in rep.get("problem", "")
+
+
+def test_the_writer_cannot_forge_the_source_fingerprint(tmp_path):
+    """The fingerprint lives in the reserved keyspace for the same reason the trust tier does: a
+    digest the writer can set is a drift check the writer can defeat."""
+    doc = tmp_path / "spec.md"
+    doc.write_text("v1", encoding="utf-8")
+    s = Inspeximus(path=str(tmp_path / "f.json"), embed=None)
+    s.remember("claims about the spec", source={"doc": str(doc)})
+    doc.write_text("v2 — changed underneath", encoding="utf-8")
+    rec = next(r for r in s._items if (r.get("meta") or {}).get("source_sha256"))
+    forged = __import__("hashlib").sha256(doc.read_bytes()).hexdigest()
+    s.remember("a second record trying to declare itself fresh",
+               source={"doc": str(doc)}, meta={"source_sha256": forged, "source_seen_at": 0})
+    rec2 = [r for r in s._items if r.get("text", "").startswith("a second record")][0]
+    assert (rec2.get("meta") or {}).get("source_seen_at") != 0, "a caller set source_seen_at"
+    assert s.check_sources()["counts"]["DRIFTED"] == 1, "the first record must still read DRIFTED"
+
+
+def test_a_tenants_source_report_never_counts_another_tenants_records(tmp_path):
+    """Scoped, unlike verify_attestations: the report carries record ids."""
+    doc = tmp_path / "shared.md"
+    doc.write_text("v1", encoding="utf-8")
+    s = Inspeximus(path=str(tmp_path / "t.json"), embed=None)
+    s.for_tenant("acme").remember("acme note", source={"doc": str(doc)})
+    s.for_tenant("beta").remember("beta note", source={"doc": str(doc)})
+    assert s.for_tenant("acme").check_sources()["total"] == 1
+    assert s.check_sources()["total"] == 2          # the unbound view still sees everything

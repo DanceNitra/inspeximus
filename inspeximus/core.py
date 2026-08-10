@@ -192,6 +192,7 @@ _RESERVED_META = frozenset({
     "needs_rederivation", "objectless_blocked", "pre_slash", "promoted_from_candidate",
     "rederived_to", "reopened_contradiction", "reopened_meta", "reopened_reason",
     "reopened_surfaced_prior", "retracted_reason", "revert_nonce", "session_seq",
+    "source_seen_at", "source_sha256",
     "slashed", "superseded_by_policy", "superseded_by_toggle", "truncated_from",
 })
 
@@ -807,7 +808,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.4.1"
+__version__ = "2.5.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1668,8 +1669,22 @@ class Inspeximus:
                "ts": now, "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "valid_from": float(valid_from) if valid_from is not None else now,  # event-time (bi-temporal); defaults to ingest-time
                "source": Inspeximus._check_source(source),   # re-checkable origin (e.g. {"doc": id, "span": [start, end]}) so a recalled fact can be traced back, not trusted blind
+               # FINGERPRINT THE SOURCE IF IT IS ACTUALLY FETCHABLE. Written into the reserved meta
+               # keyspace below, never into `source` -- that dict comes from the caller, and a digest
+               # a writer can set is a drift check the writer can defeat. See check_sources().
                "mtype": mtype or _infer_type(text), "last_access": now,
                "status": "active", "links": [], "meta": dict(meta or {})}
+        # SOURCE FINGERPRINT (see check_sources): only when the doc is a path that exists right now.
+        # Reserved keyspace, so a later writer cannot forge freshness for content it changed.
+        _sdoc = Inspeximus._raw_source(rec)
+        if _sdoc and isinstance(_sdoc, str):
+            try:
+                if os.path.exists(_sdoc) and os.path.isfile(_sdoc):
+                    with open(_sdoc, "rb") as _fh:
+                        rec["meta"]["source_sha256"] = hashlib.sha256(_fh.read()).hexdigest()
+                    rec["meta"]["source_seen_at"] = now
+            except Exception:
+                pass                       # an unreadable source is UNCHECKABLE, never a failed write
         if not rec_asserts_change:
             rec["meta"]["asserts_change"] = False       # a restatement, not a correction (see extractor block)
         if _trunc_from is not None:
@@ -2033,6 +2048,80 @@ class Inspeximus:
                 # store certified an integrity it could no longer demonstrate.
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
         return r
+
+    def check_sources(self, resolver=None) -> dict:
+        """Has the SOURCE each memory came from changed, or gone? Returns a report, never a boolean.
+
+        WHY THIS EXISTS, and it is a gap we measured on ourselves rather than imagined. Decay in this
+        library is TEMPORAL -- a half-life on age. Age cannot tell a fact that has been true for five
+        years from one that rotted in a week; the question that can is CAUSAL: *did the thing this
+        memory is about actually change?* Answering it needs a source you can go back to, and on
+        2026-08-10 we measured our own deployment: 210,544 records, `source` coverage 98.3%, sources
+        resolving to anything re-checkable **0.01%** -- twenty-four records. The field held
+        `agent:scholar`, the identity of the WRITER. So reconciliation was not unimplemented here, it
+        was impossible, and this method is the half that makes it possible.
+
+        THE FINGERPRINT IS NOT IN `source`. `remember(source=...)` takes a caller's dict verbatim, so a
+        digest stored there would be settable by the writer whose drift it is meant to detect -- the
+        exact shape of the trust-tier hole closed in 2.4.1. It lives in the reserved meta keyspace,
+        which the caller cannot write.
+
+        VERDICTS, per record:
+          FRESH        the source resolves and its content still hashes to what we recorded
+          DRIFTED      it resolves and the content changed -> re-read it, do not serve it blind
+          ORPHANED     it does not resolve any more -> the source is gone
+          UNCHECKABLE  no fingerprint: either no source, or one that names a writer rather than a
+                       document. This is the honest denominator and the report LEADS with it.
+
+        A REPORT THAT CANNOT FLATTER. `ok` is False whenever nothing was checkable, because "0 drifted"
+        over 0 checked is the same sentence as a clean store and must not read like one. This is the
+        `verify_attestations` rule applied to the outside world: an empty check is not a passing one.
+
+        `resolver` is an optional callable taking the source doc and returning bytes (or None if it is
+        gone), so a caller can point this at a git object store, an S3 bucket or an HTTP fetch. The
+        default reads local files only -- deliberately, because guessing how to fetch an arbitrary
+        identifier is how a checker starts inventing ORPHANED verdicts.
+        """
+        counts = {"FRESH": 0, "DRIFTED": 0, "ORPHANED": 0, "UNCHECKABLE": 0}
+        drifted, orphaned = [], []
+        # SCOPED, unlike verify_attestations. That one is store-level because relocation between
+        # tenants is only visible whole-store; drift is per-record and per-source, so a tenant's
+        # report is complete inside its own slice -- and the report carries record ids, which is
+        # exactly what must not cross a tenant boundary.
+        for r in self.items:
+            fp = (r.get("meta") or {}).get("source_sha256")
+            doc = Inspeximus._raw_source(r)
+            if not fp or not doc:
+                counts["UNCHECKABLE"] += 1
+                continue
+            try:
+                blob = resolver(doc) if resolver else (
+                    open(doc, "rb").read() if os.path.exists(doc) else None)
+            except Exception:
+                blob = None
+            if blob is None:
+                counts["ORPHANED"] += 1
+                orphaned.append(r.get("id"))
+                continue
+            if hashlib.sha256(blob).hexdigest() == fp:
+                counts["FRESH"] += 1
+            else:
+                counts["DRIFTED"] += 1
+                drifted.append(r.get("id"))
+        checked = counts["FRESH"] + counts["DRIFTED"] + counts["ORPHANED"]
+        total = sum(counts.values())
+        report = {
+            "counts": counts, "checked": checked, "total": total,
+            "checkable_fraction": round(checked / total, 4) if total else 0.0,
+            "drifted": drifted[:200], "orphaned": orphaned[:200],
+            "ok": bool(checked) and not drifted and not orphaned,
+        }
+        if not checked:
+            report["problem"] = (
+                "%d records carry no re-checkable source fingerprint, so this verified NOTHING. "
+                "Pass source={'doc': <a path/URL you can fetch again>} at write time; a source that "
+                "names the writer cannot answer whether the content changed." % total)
+        return report
 
     def verify_attestations(self, expected_key: str | None = None) -> tuple[bool, list[str]]:
         """Re-check every stored attestation against the record it sits on. Returns (ok, problems).
@@ -9893,6 +9982,7 @@ class _TenantView:
     def grade(self, *a, **k):                 return Inspeximus.grade(self, *a, **k)
     def erasure_certificate(self, *a, **k):   return Inspeximus.erasure_certificate(self, *a, **k)
     def sleep(self, *a, **k):           return Inspeximus.sleep(self, *a, **k)
+    def check_sources(self, *a, **k):  return Inspeximus.check_sources(self, *a, **k)
     def remember(self, *a, **k):        return Inspeximus.remember(self, *a, **k)
     def history(self, *a, **k):             return Inspeximus.history(self, *a, **k)
     def provenance(self, *a, **k):          return Inspeximus.provenance(self, *a, **k)

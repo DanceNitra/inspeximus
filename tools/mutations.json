@@ -1549,5 +1549,32 @@
   "tests": [
    "tests/test_session_digest.py"
   ]
+ },
+ {
+  "name": "check_sources calls a store with nothing checkable OK (empty check reads clean)",
+  "file": "inspeximus/core.py",
+  "old": "\"ok\": bool(checked) and not drifted and not orphaned,",
+  "new": "\"ok\": not drifted and not orphaned,",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "the source fingerprint goes into the caller-writable source dict instead of reserved meta",
+  "file": "inspeximus/core.py",
+  "old": "                    rec[\"meta\"][\"source_sha256\"] = hashlib.sha256(_fh.read()).hexdigest()",
+  "new": "                    rec[\"source\"][\"sha256\"] = hashlib.sha256(_fh.read()).hexdigest()",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "check_sources reads the raw list, leaking other tenants into a tenant's report",
+  "file": "inspeximus/core.py",
+  "old": "        for r in self.items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
+  "new": "        for r in self._items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
  }
 ]
