@@ -203,3 +203,86 @@ def test_subject_resolution_lives_in_one_place():
         f"{inlined} inlined subject resolutions — use self._resolve_subject(), which carries the "
         f"collision guard. Allowed: _resolve_subject itself, forget_subject, and the read-only "
         f"erasure_audit.")
+
+
+# ── 2.4.1: the meta dict was a second route into the library's own state ─────────────────────────
+# `remember(meta=...)` copies the caller's dict onto the record verbatim, and the library reads its
+# OWN decisions back out of that same dict. Measured on the published 2.4.0: mtype="semantic" alone
+# correctly yields `unwarranted`, but adding meta={"graduated_from_episodic": True} yields `earned` --
+# the top tier we report, on a record with no credit, no links and no witnesses. 2.4.0 had closed the
+# mtype route and the hole simply moved one level down, which is why the fix is a keyspace.
+
+def _first(store, mark):
+    hits = store.recall(mark, k=10, with_warrant=True) or []
+    assert hits, "INSTRUMENT DEAD: recall returned nothing, so a tier assertion would be vacuous"
+    return hits[0]
+
+
+def test_the_graduation_marker_is_not_writer_settable(tmp_path):
+    """THE FIX. The top tier must not be reachable by asking for it."""
+    s = Inspeximus(path=str(tmp_path / "g.json"), embed=None)
+    s.remember("quorum-lattice claimed graduation", mtype="semantic",
+               meta={"graduated_from_episodic": True})
+    assert _first(s, "quorum-lattice").get("warrant") != "earned", (
+        "a caller-supplied graduation marker reached the top trust tier")
+
+
+def test_an_ordinary_meta_key_still_survives(tmp_path):
+    """THE CONTROL. Reserving the library's keyspace must not swallow the caller's own metadata --
+    without this, stripping everything would pass the test above and destroy the feature."""
+    s = Inspeximus(path=str(tmp_path / "o.json"), embed=None)
+    rid = s.remember("an ordinary record", meta={"ticket": "OPS-412", "confidence": 0.9})
+    rec = next(r for r in s._items if r.get("id") == rid)
+    assert (rec.get("meta") or {}).get("ticket") == "OPS-412"
+    assert (rec.get("meta") or {}).get("confidence") == 0.9
+
+
+@pytest.mark.parametrize("key,value", [("slashed", False), ("echo_blocked", False),
+                                       ("objectless_blocked", False), ("needs_rederivation", False),
+                                       ("superseded_by_toggle", True), ("revert_nonce", "forged"),
+                                       ("acl", {"agent": "attacker", "state": "granted"})])
+def test_no_library_decision_key_arrives_from_the_caller(tmp_path, key, value):
+    """The CLASS, not the instance: every reserved key, one case each, so a new caller-settable
+    decision key cannot be added without a red test."""
+    s = Inspeximus(path=str(tmp_path / ("r_%s.json" % key)), embed=None)
+    rid = s.remember("a record carrying %s" % key, meta={key: value})
+    rec = next(r for r in s._items if r.get("id") == rid)
+    assert key not in (rec.get("meta") or {}), "%s arrived from the caller" % key
+
+
+def test_an_aliased_key_is_routed_not_dropped(tmp_path):
+    """Aliases keep working: dropping them would break a caller who is getting what they intended."""
+    s = Inspeximus(path=str(tmp_path / "a.json"), embed=None)
+    rid = s.remember("aliased", meta={"aid": "analyst-7", "project": "orion"})
+    rec = next(r for r in s._items if r.get("id") == rid)
+    assert (rec.get("meta") or {}).get("aid") == "analyst-7"
+    assert (rec.get("meta") or {}).get("project") == "orion"
+
+
+def test_the_explicit_parameter_wins_over_the_meta_alias(tmp_path):
+    """Two routes into one field need a stated precedence, or the answer depends on dict order."""
+    s = Inspeximus(path=str(tmp_path / "p.json"), embed=None)
+    rid = s.remember("conflict", meta={"aid": "from-meta"}, agent_id="from-parameter")
+    rec = next(r for r in s._items if r.get("id") == rid)
+    assert (rec.get("meta") or {}).get("aid") == "from-parameter"
+
+
+def test_every_meta_key_the_library_reads_is_reserved():
+    """THE DRIFT GUARD. A decision key added tomorrow and read out of meta would re-open this hole
+    silently. Scan the source: anything the library reads back out of a record's meta must be either
+    reserved or explicitly aliased."""
+    import pathlib
+    import re as _re
+    from inspeximus.core import _RESERVED_META, _META_ALIASED_PARAM
+    src = pathlib.Path(inspeximus_core_file()).read_text(encoding="utf-8")
+    read = set(_re.findall(r'\.get\("meta"(?:, \{\})?\)\s*or\s*\{\}\)\.get\("([a-z_]+)"', src))
+    read |= set(_re.findall(r'\.get\("meta", \{\}\)\.get\("([a-z_]+)"', src))
+    unguarded = sorted(read - set(_RESERVED_META) - set(_META_ALIASED_PARAM))
+    assert read, "INSTRUMENT DEAD: the scan found no meta reads at all, so it guards nothing"
+    assert not unguarded, (
+        "these meta keys are read by the library but a caller can still set them: %s" % unguarded)
+
+
+def inspeximus_core_file():
+    import inspeximus.core as _c
+    return _c.__file__

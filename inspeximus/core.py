@@ -167,6 +167,51 @@ def _is_acl_record(rec) -> bool:
     return (rec.get("key") or "").startswith(_ACL_PREFIX)
 
 
+#: meta keys the LIBRARY stamps and then READS to make a decision. `remember(meta=...)` copies the
+#: caller's dict onto the record verbatim, and these are read back out of that same dict -- so before
+#: 2.4.1 a writer could hand itself any of them.
+#:
+#: THIS IS THE SECOND TIME THIS HOLE WAS CLOSED. 2.4.0 stopped `mtype="semantic"` from reaching the
+#: top trust tier by additionally requiring `meta.graduated_from_episodic`, which the library stamps
+#: at the corroboration bar. Measured on the published 2.4.0: `remember(mtype="semantic",
+#: meta={"graduated_from_episodic": True})` returns `warrant="earned"` -- the highest tier we report,
+#: to a record with no credit, no links and no witnesses. The fix had moved the hole one level down
+#: rather than closing it, which is why this is a keyspace and not another single condition.
+#:
+#: Raised externally by yun520-1 (openclaw/openclaw#7707): "any design where the tier is set by the
+#: writer has a forgeable top tier, because the writer is motivated to mark itself highest." He was
+#: right in the general form, and further than the specific case he named.
+#:
+#: NOT an ACL bypass, checked before saying otherwise: a grant is identified by the reserved `key`
+#: prefix through `_is_acl_record`, which `remember()` already refuses to mint, so a caller-supplied
+#: `meta["acl"]` never becomes a grant. It is reserved here because the library reads it, not because
+#: it was exploitable.
+_RESERVED_META = frozenset({
+    "acl", "asserts_change", "echo_blocked", "entries", "graduated_from_episodic", "hub",
+    "hub_coverage",
+    "needs_rederivation", "objectless_blocked", "pre_slash", "promoted_from_candidate",
+    "rederived_to", "reopened_contradiction", "reopened_meta", "reopened_reason",
+    "reopened_surfaced_prior", "retracted_reason", "revert_nonce", "scope", "session_seq",
+    "slashed", "superseded_by_policy", "superseded_by_toggle", "truncated_from",
+})
+
+#: The same problem with a different remedy. These four ALSO have named parameters on `remember()`
+#: (`user_id`, `agent_id`, `session_id`, `project`), and passing them through `meta` reached the same
+#: stamped fields by a second, unmaintained route. Silently dropping them would break a caller who is
+#: today getting exactly the behaviour they intended, so they are ROUTED to the named parameter rather
+#: than discarded: one path into these fields instead of two, and the explicit parameter wins on
+#: conflict.
+#:
+#: WHAT THIS DOES NOT DO, measured rather than assumed. An earlier version of this note said the route
+#: "reaches the SAME validated path it skipped". That was false and a control caught it:
+#: `remember(agent_id="*")` stores `*` unchecked, exactly as the meta route did, because
+#: `_check_agent_id` guards the GRANT path and `remember()` never calls it. So this converges two
+#: routes into one; it does not add validation, and `*` -- reserved in the grant keyspace -- is still
+#: an accepted agent id here. Whether it should be is a separate question from the reserved keyspace,
+#: and is not silently answered by this release.
+_META_ALIASED_PARAM = {"uid": "user_id", "aid": "agent_id", "sid": "session_id", "project": "project"}
+
+
 def _canon(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
@@ -912,6 +957,12 @@ class Inspeximus:
         self.agent = Inspeximus._check_agent_id(agent) if agent is not None else None
         self._acl_rev = 0                 # bumped by grant()/revoke() so a cached scoped view cannot go stale
         self._acl_writing = 0             # >0 only inside grant()/revoke(); the reserved-keyspace write gate
+        # >0 only while the LIBRARY is stamping its own meta (sessions, revert). Same shape as
+        # `_acl_writing` above and for the same reason: the reserved meta keyspace is closed to callers,
+        # and the library writes those keys through the very `remember()` that enforces it. Without this
+        # the fix silently breaks close_session() and revert(), whose markers would be stripped as if a
+        # caller had sent them -- measured, not hypothetical: four internal call sites stamp reserved keys.
+        self._meta_privileged = 0
         self._acl_problems: list = []     # bounded log of grants that could NOT be evaluated (each one denied)
         # PII AUTO-DETECTION (OPT-IN, default OFF -> zero behavior change). When True, remember() runs the
         # zero-dependency regex detector (detect_pii) over each write and stamps rec['pii'] = [types...] so PII
@@ -1465,6 +1516,21 @@ class Inspeximus:
             self._save(force=True)
 
     # ── capture ──────────────────────────────────────────────────────────────
+    def _stamp(self, *a, **kw) -> str:
+        """remember() for the LIBRARY's own markers, which live in the reserved meta keyspace.
+
+        `remember()` strips reserved keys because a caller must not be able to hand itself the top
+        trust tier (see _RESERVED_META). The library writes those same keys -- revert nonces, session
+        sequence numbers, digest entries -- through that identical entry point, so it needs the same
+        escape hatch `grant()`/`revoke()` already use for the reserved KEY prefix. Anything routed
+        here is trusted by construction; nothing reachable from a caller may call it.
+        """
+        self._meta_privileged = getattr(self, "_meta_privileged", 0) + 1
+        try:
+            return self.remember(*a, **kw)
+        finally:
+            self._meta_privileged -= 1
+
     def remember(self, text: str, tags=None, value: float = 1.0, meta: dict | None = None,
                  mtype: str | None = None, valid_from: float | None = None,
                  source: dict | None = None, key: str | None = None,
@@ -1566,6 +1632,28 @@ class Inspeximus:
             raise ValueError(
                 f"{_ACL_PREFIX!r} is the reserved access-control keyspace: a grant may only be written by "
                 f"grant()/revoke(), never through remember(). Otherwise any writer could authorise itself.")
+        # RESERVED META KEYSPACE (see _RESERVED_META). The caller's dict is about to be copied onto the
+        # record, and the library reads its own decisions back out of that dict, so anything it stamps
+        # must not be arrivable from outside. Stripped silently rather than raising: a writer probing
+        # for the top tier gets no error and no privilege, which is the behaviour we want, and an
+        # honest caller was never setting these.
+        if meta and not getattr(self, "_meta_privileged", 0):
+            _aliased = {}
+            for _k in list(meta):
+                if _k in _META_ALIASED_PARAM:
+                    _aliased[_META_ALIASED_PARAM[_k]] = meta[_k]
+            meta = {k: v for k, v in meta.items()
+                    if k not in _RESERVED_META and k not in _META_ALIASED_PARAM}
+            # Route, do not discard: the named parameter wins when both are given, since it is the
+            # explicit one, and otherwise the meta value reaches the SAME validated path it skipped.
+            if _aliased.get("user_id") is not None and user_id is None:
+                user_id = _aliased["user_id"]
+            if _aliased.get("agent_id") is not None and agent_id is None:
+                agent_id = _aliased["agent_id"]
+            if _aliased.get("session_id") is not None and session_id is None:
+                session_id = _aliased["session_id"]
+            if _aliased.get("project") is not None and project is None:
+                project = _aliased["project"]
         mid = uuid.uuid4().hex[:10]
         now = time.time()
         rec = {"id": mid, "text": text, "tags": list(tags or []), "value": float(value),
@@ -5263,7 +5351,7 @@ class Inspeximus:
             if not prev:
                 return {"ok": False, "reason": "no superseded predecessor for key"}
             tgt = max(prev, key=lambda r: r.get("valid_from", r["ts"]))
-            rid = self.remember(tgt["text"], tags=tgt.get("tags"), value=tgt.get("value", 1.0),
+            rid = self._stamp(tgt["text"], tags=tgt.get("tags"), value=tgt.get("value", 1.0),
                                 mtype=tgt.get("mtype"), key=key, object=tgt.get("object"),
                                 reaffirm=True, capability=_SANCTIONED, derived_from=[tgt["id"]],
                                 meta={"revert_of": tgt["id"], "reverted_from": cur["id"],
@@ -5300,7 +5388,7 @@ class Inspeximus:
         src_rec = rec if rec is not None else max(
             (r for r in self.items if r.get("key") == key and r.get("object") == target),
             key=lambda r: r.get("valid_from", r.get("ts", 0.0)), default=None)
-        rid = self.remember(f"restore {key} to {target}", key=key, object=target,
+        rid = self._stamp(f"restore {key} to {target}", key=key, object=target,
                             reaffirm=True, capability=_SANCTIONED,
                             derived_from=([src_rec["id"]] if src_rec else None),
                             meta={"routed": "revert_named_instream", "revert_nonce": nonce,
@@ -8853,7 +8941,7 @@ class Inspeximus:
         seq = len(self._session_digests()) + 1
         sid = str(session_id) if session_id else f"s{seq}"
         at_open = self.state_digest()
-        mid = self.remember(
+        mid = self._stamp(
             f"SESSION {seq} OPEN ({sid})", key=self.SESSION_OPEN_KEY, object=f"{seq}:{sid}",
             tags=["session-boundary"], mtype="episodic",
             meta={"kind": "session_open", "session_seq": seq, "sid": sid, "label": label,
@@ -9038,7 +9126,7 @@ class Inspeximus:
             report["written"] = False
             report["id"] = None
             return report
-        mid = self.remember(
+        mid = self._stamp(
             text, key=self.SESSION_DIGEST_KEY,
             object=hashlib.sha256(text.encode("utf-8")).hexdigest()[:16],
             tags=["session-digest"], mtype="semantic", value=3.0,
