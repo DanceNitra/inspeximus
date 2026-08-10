@@ -537,3 +537,44 @@ def test_skipping_the_suite_can_never_exit_zero(tmp_path):
     release_check.check_tests(rep, tmp_path, skip=True)
     assert rep.status("test suite") == release_check.SKIP
     assert rep.exit_code() == 2
+
+
+def _init_repo(tmp_path):
+    """A real git checkout with one tracked file, so the fingerprint has something to read."""
+    d = tmp_path / "tree"
+    d.mkdir()
+    (d / "kept.py").write_text("x = 1\n", encoding="utf-8")
+    (d / "probes").mkdir()
+    (d / "probes" / "r.result.json").write_text("{}", encoding="utf-8")
+    env = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+    for a in (("init", "-q"), ("add", "-A"), ("commit", "-qm", "base")):
+        subprocess.run(("git",) + a, cwd=str(d), env=env, capture_output=True, text=True)
+    return d
+
+
+def test_the_tree_fingerprint_sees_a_change_and_ignores_our_own_receipts(tmp_path):
+    """The 2.5.0 run began before an MCP commit landed and ended after it: the `mcp server imports` leg
+    PASSED on 67 tools while the suite -- 23 minutes later -- FAILED against 68, and the report read as
+    one verdict about one tree. The guard added for that has to fire on a real edit, and must NOT fire
+    on the probe receipts this gate rewrites itself, or it would refuse every run it performs correctly.
+    Both directions, because a guard exercised only one way cannot tell "quiescent" from "not looking"."""
+    d = _init_repo(tmp_path)
+    base = release_check._tree_fingerprint(d)
+    assert base is not None, "a real checkout must fingerprint; None here would mean the guard is off"
+
+    (d / "probes" / "r.result.json").write_text('{"n": 1}', encoding="utf-8")
+    assert release_check._tree_fingerprint(d) == base, (
+        "our own probe receipts must NOT trip the guard -- this gate rewrites them by design")
+
+    (d / "kept.py").write_text("x = 2\n", encoding="utf-8")
+    assert release_check._tree_fingerprint(d) != base, (
+        "a tracked source edit mid-run MUST trip the guard -- that is the whole point")
+
+
+def test_the_fingerprint_says_None_rather_than_guessing_outside_a_checkout(tmp_path):
+    """Not-a-checkout is UNKNOWN, not clean. An empty fingerprint would compare equal to itself and
+    report a quiescent tree for a tree it never managed to read."""
+    plain = tmp_path / "nogit"
+    plain.mkdir()
+    assert release_check._tree_fingerprint(plain) is None

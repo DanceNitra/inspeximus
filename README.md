@@ -1058,7 +1058,7 @@ checkout until the files land.
 
 ## Status
 
-`v2.5.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 67 tools) and a
+`v2.5.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 68 tools) and a
 deterministic supersession key (`remember(..., key=...)`) that closes the embedding *supersession blind
 spot*. Roadmap: pluggable vector stores, a hosted tier. Open-core; the core stays free.
 

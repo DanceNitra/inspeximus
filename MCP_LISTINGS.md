@@ -1,6 +1,6 @@
 # inspeximus MCP — registry listing pack
 
-`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 67 tools). Registry manifest:
+`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 68 tools). Registry manifest:
 [`server.json`](server.json). Zero code — pure distribution.
 
 *(The tool count is checked, not typed: `python claims_audit.py --numbers` counts `@mcp.tool()` in
@@ -28,12 +28,12 @@ inspeximus-mcp            # stdio; persists to ./inspeximus_memory.json (set INS
 
 Or let the CLI write it: `inspeximus install --ide claude` (also cursor, windsurf, codex, cline).
 
-**Tools (67):** provenance and verification first, because that is what people ask for; the ordinary
+**Tools (68):** provenance and verification first, because that is what people ask for; the ordinary
 memory operations follow. The count and the names are both checked against `@mcp.tool()` in
 `inspeximus/mcp_server.py` (`python claims_audit.py --numbers`, plus `tests/test_readme_capabilities.py`),
 so this list cannot drift from the server again.
 
-*Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · state_digest · selection_integrity · index_coherence
+*Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · check_sources · state_digest · selection_integrity · index_coherence
 
 *Memory operations:* remember · remember_decision · recall · recall_iterative · recall_followup · get · neighbors · as_of · token_report · route · observe · reopened · resolve_reopened · revert · check_conflict · contradictions · consolidate · consolidate_clusters · sleep · credit · value_by_cohort · where_am_i · projects
 

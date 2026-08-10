@@ -89,6 +89,45 @@ NOT_STANDALONE = {
 }
 
 
+_URL = re.compile(r"https?://\S+")
+_PROBE_PATH = re.compile(r"probes/([a-z_0-9]+\.py)")
+#: The path segment that identifies THIS repository inside a github URL.
+_THIS_REPO = "/inspeximus/"
+
+
+def _local_probe_citations(text):
+    """Probe filenames the text claims are in THIS repository.
+
+    A bare `probes/x.py` is exactly that claim, and stays fully checked. A FULLY-QUALIFIED URL into a
+    DIFFERENT repository is not: it says where the file actually lives, which is what a reader following
+    it needs. That distinction is what lets CHANGELOG credit a probe that lives in the agora repo --
+    because it measures that deployment and could not run here -- without this guard reporting it as
+    missing evidence.
+
+    The hole this exemption could open is a URL into our OWN repo naming a probe we never committed, so
+    that case is deliberately NOT exempt and `test_the_foreign_url_exemption_still_has_teeth` holds it
+    down. An exemption without a control is how a guard stops seeing its target while still reporting
+    green.
+    """
+    for url in _URL.findall(text):
+        if _PROBE_PATH.search(url) and _THIS_REPO not in url:
+            text = text.replace(url, " ")
+    return set(_PROBE_PATH.findall(text))
+
+
+def test_the_foreign_url_exemption_still_has_teeth():
+    """A control for the exemption in _local_probe_citations: it must exempt foreign repos and nothing else."""
+    missing = "definitely_not_in_this_repo.py"
+    assert missing in _local_probe_citations("see probes/%s for the receipt" % missing), \
+        "a BARE path is a claim about this repo and must still be checked"
+    ours = "https://github.com/DanceNitra/inspeximus/blob/main/probes/" + missing
+    assert missing in _local_probe_citations(ours), \
+        "a URL into our OWN repo must still be checked -- the exemption is for foreign repos only"
+    foreign = "https://github.com/DanceNitra/agora/blob/main/research/probes/" + missing
+    assert _local_probe_citations(foreign) == set(), \
+        "a fully-qualified URL into another repo makes no claim about this one"
+
+
 def _cited():
     """Every probe filename the docs or README point at."""
     # CHANGELOG.md is IN SCOPE. It was not, and it was never declared out of scope either -- so probes
@@ -105,7 +144,7 @@ def _cited():
         if not os.path.exists(path):
             continue
         with open(path, encoding="utf-8") as fh:
-            names |= set(re.findall(r"probes/([a-z_0-9]+\.py)", fh.read()))
+            names |= _local_probe_citations(fh.read())
     return sorted(names)
 
 
@@ -235,6 +274,34 @@ KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
 }
 
 
+#: Seconds a probe gets before the runner calls it hung. DECLARED per probe, not inferred, because the
+#: default is a HANG detector and a probe that legitimately takes minutes turns it into a performance
+#: test that fails whenever the box is busy.
+#:
+#: Measured 2026-08-10: `reinforce_accuracy_ablation.py` takes 173.8s on an idle machine against a flat
+#: 180s limit -- 3% of headroom. It passed alone and FAILED in the release run, where ten mutation
+#: workers had the CPU. Nothing was broken; the guard was reporting the load average. Raising the flat
+#: limit for everything would have been the wrong fix: it would blind the hang detector for the other
+#: 150 probes to buy margin for one.
+_SLOW_PROBES = {
+    "reinforce_accuracy_ablation.py": 600,   # 173.8s idle; LoCoMo corpora x 2, bootstrap CIs
+}
+_DEFAULT_PROBE_TIMEOUT = 180
+
+
+def _budget(probe):
+    return _SLOW_PROBES.get(probe, _DEFAULT_PROBE_TIMEOUT)
+
+
+def test_the_slow_probe_budget_names_real_probes():
+    """A budget for a probe that no longer exists is a silent no-op, and the next slow probe inherits the
+    flat limit with nobody noticing. Same shape as the exemption control above: a declared list has to be
+    held against reality or it decays into decoration."""
+    on_disk = {f for f in os.listdir(PROBES) if f.endswith(".py")}
+    unknown = sorted(set(_SLOW_PROBES) - on_disk)
+    assert not unknown, "the slow-probe budget names probes that are not on disk: %r" % unknown
+
+
 def _missing_module(stderr):
     # No `str | None` annotation: the CI matrix includes Python 3.9, where that is a runtime TypeError at
     # import unless the module opts into postponed evaluation. Local 3.13 can never show it.
@@ -252,7 +319,7 @@ def test_a_standalone_cited_probe_still_runs(probe):
     green whenever an optional dependency is in reach -- a lesson this repository had already written
     down and I repeated anyway. The skip below is therefore narrow and declared."""
     r = subprocess.run([sys.executable, os.path.join("probes", probe)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=180,
+                       cwd=ROOT, capture_output=True, text=True, timeout=_budget(probe),
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
                             + os.environ.get("PYTHONPATH", "")})
@@ -384,7 +451,7 @@ def test_an_uncited_probe_still_runs(probe):
     anything else is a defect. An uncited probe that fails is either rot or -- as it turned out twice --
     a live product bug wearing a rotten probe's clothes."""
     r = subprocess.run([sys.executable, os.path.join("probes", probe)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=180,
+                       cwd=ROOT, capture_output=True, text=True, timeout=_budget(probe),
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
                             + os.environ.get("PYTHONPATH", "")})

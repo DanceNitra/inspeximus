@@ -655,22 +655,22 @@ NUMBER_CLAIMS = [
        "The bedrock synthesis was checked from ~8 directions", "EXTERNAL", "",
        "A count of the analytical directions taken, not a measurement. Left in because the sentence "
        "labels itself 'a synthesis over those cases, not a proof'."),
-    _c("readme-mcp-tools", "README.md", ["67"],
-       "`inspeximus-mcp`, 67 tools",
-       "The MCP server exposes 67 tools", "REPRODUCIBLE",
+    _c("readme-mcp-tools", "README.md", ["68"],
+       "`inspeximus-mcp`, 68 tools",
+       "The MCP server exposes 68 tools", "REPRODUCIBLE",
        'python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'
        "'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))\"",
        "Checked against the live @mcp.tool() count by _live_consistency(), not by reading it here."),
 
     # ---------------------------------------------------------- MCP_LISTINGS.md
-    _c("mcp-tool-count", "MCP_LISTINGS.md", ["67"],
-       "`inspeximus-mcp`, 67 tools",
-       "The MCP server exposes 67 tools", "REPRODUCIBLE",
+    _c("mcp-tool-count", "MCP_LISTINGS.md", ["68"],
+       "`inspeximus-mcp`, 68 tools",
+       "The MCP server exposes 68 tools", "REPRODUCIBLE",
        "python claims_audit.py --numbers",
        "Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 "
        "in another. Three surfaces, one server, no error anywhere. Now read from the code."),
-    _c("mcp-tool-list", "MCP_LISTINGS.md", ["67"],
-       "**Tools (67):**",
+    _c("mcp-tool-list", "MCP_LISTINGS.md", ["68"],
+       "**Tools (68):**",
        "The enumerated tool list matches the server", "REPRODUCIBLE",
        "python claims_audit.py --numbers"),
     _c("mcp-stale-30", "MCP_LISTINGS.md", ["30", "26", "2026"],
@@ -679,14 +679,14 @@ NUMBER_CLAIMS = [
        "WITHDRAWN", "python claims_audit.py --numbers"),
 
     # -------------------------------------------------------------- index.html
-    _c("site-mcp-tools-counter", "index.html", ["67", "0"],
-       'data-count="67">0</b><span>MCP tools',
-       "Homepage counter: 67 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("site-mcp-tools-counter", "index.html", ["68", "0"],
+       'data-count="68">0</b><span>MCP tools',
+       "Homepage counter: 68 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- "
        "which is why the scanner hoists data-count out of the tag before stripping tags."),
-    _c("site-mcp-tools-heading", "index.html", ["67"],
-       "67 tools any MCP host can call",
-       "Homepage heading: 67 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
+    _c("site-mcp-tools-heading", "index.html", ["68"],
+       "68 tools any MCP host can call",
+       "Homepage heading: 68 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
     _c("site-adapters", "index.html", ["9", "0"],
        'data-count="9">0</b><span>framework adapters',
        "Homepage counter: 9 framework adapters", "REPRODUCIBLE",

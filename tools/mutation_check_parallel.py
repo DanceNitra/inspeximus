@@ -150,6 +150,16 @@ def main() -> int:
         print(f"!! {len(dirty)} tracked file(s) differ from HEAD; workers would test HEAD, not these:")
         for d in dirty[:20]:
             print(f"     {d}")
+        # NAME THE COMMON CAUSE instead of leaving the next person to work it out. release_check
+        # rewrites probe receipts in THIS tree while it runs. The two gates are safe to execute at the
+        # same time -- workers each get their own worktree -- but this check reads the MAIN tree, so a
+        # concurrent release run makes it refuse over files that are transient rather than wrong.
+        # Measured 2026-08-10: exactly that, and --allow-dirty would have been the wrong answer,
+        # because the receipts were mid-rewrite and HEAD was one commit behind the tree anyway.
+        if any(d.replace("\\", "/").startswith("probes/") and d.endswith(".json") for d in dirty):
+            print("   NOTE: probe receipts are dirty. If tools/release_check.py is running right now,")
+            print("         that is the cause -- wait for it to finish and re-run. Do NOT pass")
+            print("         --allow-dirty: a receipt caught mid-rewrite is not a transient difference.")
         if not args.allow_dirty:
             print("   commit them, or pass --allow-dirty if you know the difference is transient.")
             return 2

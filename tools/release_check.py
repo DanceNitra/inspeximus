@@ -500,10 +500,35 @@ def check_tests(rep, root=ROOT, skip=False):
 
 # --------------------------------------------------------------------------- main
 
+def _tree_fingerprint(root):
+    """What tree the checks are about to read: HEAD plus every tracked modification.
+
+    Deliberately EXCLUDES the probe receipts this run rewrites itself (they are snapshotted and restored
+    below), so the guard fires on someone else's edit and not on our own bookkeeping.
+    """
+    def _git(*a):
+        try:
+            return subprocess.run(("git",) + a, cwd=str(root), capture_output=True,
+                                  text=True, errors="replace").stdout.strip()
+        except Exception:
+            return ""
+    head = _git("rev-parse", "HEAD")
+    if not head:
+        return None                      # not a checkout; nothing to compare, say so rather than guess
+    # NOT a fixed offset. `_git` strips, which eats the leading space of porcelain's FIRST line only,
+    # so `l[3:]` cut one character into that one path and it stopped matching the receipt filter --
+    # the guard would then have refused every run it performs correctly. Caught by its own control.
+    paths = [l.split(None, 1)[-1] for l in
+             _git("status", "--porcelain", "--untracked-files=no").splitlines() if l.strip()]
+    dirty = sorted(f for f in paths if not (f.startswith("probes/") and f.endswith(".json")))
+    return (head, tuple(dirty))
+
+
 def run(root=ROOT, skip_tests=False):
     print("pre-release checklist for inspeximus %s" % pyproject_version(root))
     print("  tree: %s\n" % root)
     rep = Report()
+    before = _tree_fingerprint(root)
     snapshot = _probe_snapshot(root)
     try:
         check_version_carriers(rep, root)
@@ -520,6 +545,21 @@ def run(root=ROOT, skip_tests=False):
         if restored:
             print("\n  (restored %d probe receipt(s) this run rewrote: %s)"
                   % (len(restored), ", ".join(restored)))
+    # THE RUN MUST BE ABOUT ONE TREE. Measured 2026-08-10: this gate began before an MCP commit landed
+    # and finished after it, so `mcp server imports` PASSED on 67 tools while the suite -- 23 minutes
+    # later -- failed against 68. Neither leg was wrong; they were about different code, and the report
+    # read as one verdict. A checklist that cannot say which tree it measured has measured nothing.
+    after = _tree_fingerprint(root)
+    if before is not None and after != before:
+        print("")
+        print("!! the working tree CHANGED while this ran, so the checks above are not all about the")
+        print("   same code. Re-run on a quiescent tree; do not read the result above as a verdict.")
+        if before[0] != after[0]:
+            print("     HEAD %s -> %s" % (before[0][:7], after[0][:7]))
+        for f in sorted(set(before[1]) ^ set(after[1]))[:10]:
+            print("     changed: %s" % f)
+        return 3
+
     code = rep.exit_code()
     print("")
     if code == 0:

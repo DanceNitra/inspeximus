@@ -15,7 +15,8 @@ deployment: 210,544 records, `source` coverage **98.3%**, sources resolving to a
 **0.01%** — twenty-four records. The field held `agent:scholar`: the identity of the WRITER, not the
 origin of the content. So source reconciliation here was not unimplemented, it was impossible, because
 there was no key to diff against. The probe is public
-(`research/probes/can_we_reconcile_our_own_index.py` in the agora repo) and carries its own control,
+(https://github.com/DanceNitra/agora/blob/main/research/probes/can_we_reconcile_our_own_index.py —
+it lives in the agora repo, since it measures that deployment) and carries its own control,
 since a 0% can be a broken classifier.
 
 Credit where it is due: the causal framing is the right one and we saw it done first elsewhere.
