@@ -3,6 +3,36 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.4.0 - UPGRADE IF YOU RUN TENANT- OR PROJECT-SCOPED STORES: the signature did not cover which tenant a record belonged to, and nothing could re-check it anyway
+
+Two gaps, one raised by an external reviewer and one found while closing it.
+
+**The tenant is now part of the signed message.** A writer-key signature covered `{text, source}`, so
+it stayed valid after a record was moved into another tenant's rows — the one fact tenant isolation
+most needs to be non-repudiable was the one the signature did not cover. Raised by yun520-1
+(NousResearch/hermes-agent#34352), who signs the binding in their own design for exactly this reason.
+`tenant=None` is OMITTED rather than serialised as null, so **unbound stores produce a byte-identical
+message to every earlier version and their existing signatures keep verifying**. A record moved
+between the two regimes now fails in both directions.
+
+The asymmetry that remains, stated rather than buried: **externally-attested records are not
+tenant-bound.** An outside source signs "I authored this text, as this source" before it ever reaches
+a store and cannot sign a binding to a tenant it has never heard of, so `remember(..., attestation=...)`
+rows still verify in any tenant. That is not closable from this side.
+
+**`verify_attestations()` — because until now the signature was written and never read.** 2.3.0 began
+storing `attested_sig` precisely so an auditor would not have to take the write path's word for it; its
+changelog says "a non-repudiable identity you cannot re-verify is not one" — and then shipped no way to
+re-verify it. Across the whole library the field was set in two places and checked in none; the only
+verification anywhere was hand-rolled inside a test. Binding the tenant without a verifier would have
+been unenforceable, so both land together.
+
+It re-checks text, canonical source and tenant against each stored signature, catches a signature
+present without its key (or the reverse), and takes an optional `expected_key` to pin WHO — without it
+the answer is "internally consistent", which any forger holding any key also satisfies. **A store
+carrying no attestations is reported as a FAILURE, not a pass**, because an empty check that reads as
+green is the defect this release is about.
+
 ## 2.3.2 - UPGRADE IF YOU BIND A HANDLE TO A TENANT OR PROJECT: a scoped save dropped every other tenant's rows
 
 **A tenant-scoped handle's save wrote only its own rows and dropped every other tenant's records from

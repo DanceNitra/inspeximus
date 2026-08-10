@@ -133,3 +133,60 @@ def test_one_writer_cannot_manufacture_two_witnesses_by_renaming_its_source():
         by_id = {r.get("id"): r for r in s.items}
         assert Inspeximus._distinct_verified_keys([i1, i2], by_id) == 1, (
             "two source strings from ONE key must collapse to one witness")
+
+
+# ── 2.4.0: the tenant is part of the binding, and the binding is re-checkable ──────────────────────
+#
+# Raised externally (yun520-1, NousResearch/hermes-agent#34352): we signed text+source and not the
+# tenant, so a signature stayed valid after a record was moved into another tenant's rows -- the one
+# fact tenant isolation most needs to be non-repudiable was the one the signature did not cover.
+#
+# And the deeper half, found while fixing it: `attested_sig` was WRITTEN and NEVER READ. There was no
+# API to re-verify a stored signature anywhere in the library; the only check was hand-rolled in this
+# file. 2.3.0's changelog says "a non-repudiable identity you cannot re-verify is not one" and then
+# shipped no verifier. Binding the tenant without one would have been unenforceable.
+
+def test_a_record_moved_between_tenants_fails_verification(tmp_path):
+    """THE REGRESSION. Move a row into another tenant and the signature must stop verifying."""
+    sk, _pk = new_ed25519_keypair()
+    s = Inspeximus(path=str(tmp_path / "s.json"), embed=None, tenant="acme", writer_key=sk)
+    s.remember("the release cadence is fortnightly", source={"doc": "runbook"})
+    ok, problems = s.verify_attestations()
+    assert ok, "a freshly signed record must verify: %s" % problems
+
+    rec = next(r for r in s._items if r.get("attested_sig"))
+    rec["tenant"] = "globex"                      # the out-of-band edit an isolation bug would make
+    ok, problems = s.verify_attestations()
+    assert not ok, "a record relocated to another tenant still verified -- the binding is not covered"
+    assert any("tenant" in p for p in problems), problems
+
+
+def test_an_unbound_store_still_verifies(tmp_path):
+    """THE CONTROL, and the back-compatibility guarantee: tenant=None is omitted from the message, so
+    an unbound store signs exactly what every earlier version signed."""
+    sk, _pk = new_ed25519_keypair()
+    s = Inspeximus(path=str(tmp_path / "u.json"), embed=None, writer_key=sk)
+    s.remember("an unscoped fact about the schedule", source={"doc": "runbook"})
+    ok, problems = s.verify_attestations()
+    assert ok, "an unbound store must verify unchanged: %s" % problems
+
+
+def test_tampered_text_fails_verification(tmp_path):
+    """The verifier must catch the ordinary case too, or the tenant test above proves only one path."""
+    sk, _pk = new_ed25519_keypair()
+    s = Inspeximus(path=str(tmp_path / "t.json"), embed=None, tenant="acme", writer_key=sk)
+    s.remember("the original claim", source={"doc": "runbook"})
+    rec = next(r for r in s._items if r.get("attested_sig"))
+    rec["text"] = "a claim someone substituted later"
+    ok, problems = s.verify_attestations()
+    assert not ok and problems
+
+
+def test_a_store_with_no_attestations_reports_that_it_checked_nothing(tmp_path):
+    """An empty check must not read as a pass -- the defect this whole file is about, applied to the
+    verifier itself."""
+    s = Inspeximus(path=str(tmp_path / "n.json"), embed=None)
+    s.remember("a plain unsigned record")
+    ok, problems = s.verify_attestations()
+    assert not ok, "a store with nothing to verify reported OK"
+    assert any("verified NOTHING" in p for p in problems), problems

@@ -245,11 +245,27 @@ def new_source_keypair():
     return new_receipt_keypair()
 
 
-def _attest_message(text: str, source_doc) -> bytes:
+def _attest_message(text: str, source_doc, tenant=None) -> bytes:
     """Canonical message an attestation signs: the claim text bound to its canonical source, so a signature
-    for 'X by source S' cannot be replayed as 'X by source T' or attached to a different claim."""
+    for 'X by source S' cannot be replayed as 'X by source T' or attached to a different claim.
+
+    THE TENANT IS PART OF THE BINDING when the writing store is scoped. Without it a signature says only
+    "this text, from this source" and stays valid after the record is moved into another tenant's rows --
+    so the one thing tenant isolation most needs to be non-repudiable, WHICH tenant a record was written
+    for, was the one thing the signature did not cover. Raised by an external reviewer (yun520-1,
+    NousResearch/hermes-agent#34352, 2026-08-10) who signs the binding for exactly this reason.
+
+    `tenant=None` is OMITTED rather than serialised as null, so unbound stores produce a byte-identical
+    message to every version before this one and their existing signatures keep verifying. A record moved
+    between the two regimes fails in BOTH directions: bound->unbound recomputes without `n` and mismatches,
+    unbound->bound recomputes with it and mismatches. That is the property, and it is asserted rather than
+    assumed -- see tests/test_writes_can_carry_their_own_key.py.
+    """
     canon_src = Inspeximus._canon_source(source_doc) if source_doc else ""
-    return _canon({"t": text, "s": canon_src})
+    msg = {"t": text, "s": canon_src}
+    if tenant is not None:
+        msg["n"] = str(tenant)
+    return _canon(msg)
 
 
 def attest(text: str, source_sk_hex: str, source_doc=None) -> str:
@@ -738,7 +754,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.3.2"
+__version__ = "2.4.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1743,10 +1759,18 @@ class Inspeximus:
             # write path's word for it, and a non-repudiable identity you cannot re-verify is not one.
             rec["attested_sig"] = sig_hex
         elif self.writer_key:
-            # No explicit attestation: this store signs its own write with its writer identity.
+            # No explicit attestation: this store signs its own write with its writer identity, and it
+            # knows which tenant it is bound to, so the binding goes INTO the signed message.
+            #
+            # The externally-attested branch above deliberately does NOT do this, and the asymmetry is
+            # real rather than an oversight: an outside source signs "I authored this text, as this
+            # source" before it ever reaches a store, and cannot sign a binding to a tenant it has never
+            # heard of. So an externally-attested record stays movable between tenants with its
+            # signature intact. That is a residual, it is not closable from this side, and the honest
+            # thing is to write it down rather than let the field look uniformly protective.
             src_doc = source.get("doc") if isinstance(source, dict) else (source if isinstance(source, str) else None)
             rec["attested_sig"] = _Ed25519SK.from_private_bytes(
-                bytes.fromhex(self.writer_key)).sign(_attest_message(text, src_doc)).hex()
+                bytes.fromhex(self.writer_key)).sign(_attest_message(text, src_doc, self.tenant)).hex()
             rec["attested_key"] = self.writer_pubkey
         if self.embed:
             try:
@@ -1913,6 +1937,76 @@ class Inspeximus:
                 # store certified an integrity it could no longer demonstrate.
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
         return r
+
+    def verify_attestations(self, expected_key: str | None = None) -> tuple[bool, list[str]]:
+        """Re-check every stored attestation against the record it sits on. Returns (ok, problems).
+
+        THIS EXISTED NOWHERE UNTIL 2.4.0, which was the defect. 2.3.0 started keeping `attested_sig`
+        precisely so an auditor would not have to take the write path's word for it -- its own changelog
+        says "a non-repudiable identity you cannot re-verify is not one" -- and then shipped no way to
+        re-verify it. Across this library the signature was written and never read: the only check
+        anywhere was a hand-rolled one inside a test. A field nobody can re-compute is a claim, not an
+        attestation.
+
+        What it catches, and each is a real edit an out-of-band writer can make to the JSON:
+          * the text changed under a signature (the signature covers the text);
+          * the source relabelled (it covers the canonical source, so 'X by S' cannot be replayed as
+            'X by T');
+          * a record MOVED BETWEEN TENANTS, for writes this store signed itself -- 2.4.0 binds the
+            tenant into the message, so relocating a row invalidates it;
+          * a signature present with no key, or a key with no signature.
+
+        `expected_key` additionally pins WHO: every attestation must carry that public key. Without it
+        this answers "is each signature internally consistent", which a forger holding any key can also
+        satisfy -- so a run with no `expected_key` is an integrity check, not an identity one.
+
+        HONEST LIMITS. Externally-attested records (`remember(..., attestation=...)`) are NOT
+        tenant-bound: an outside signer cannot sign a binding to a tenant it never saw, so those rows
+        verify identically in any tenant and this reports them as valid. Records with no attestation at
+        all are skipped and counted, not failed -- most stores have none, and failing them would make
+        the check useless where it matters. And a valid signature attests AUTHORSHIP, never truth.
+        """
+        problems: list[str] = []
+        checked = skipped = 0
+        for r in self._items:
+            key, sig = r.get("attested_key"), r.get("attested_sig")
+            if not key and not sig:
+                skipped += 1
+                continue
+            rid = r.get("id", "?")
+            if bool(key) != bool(sig):
+                problems.append("%s carries %s without the other -- an attestation that cannot be checked"
+                                % (rid, "attested_key" if key else "attested_sig"))
+                continue
+            if expected_key and key != expected_key:
+                problems.append("%s is attested by %s..., not the expected %s..."
+                                % (rid, str(key)[:12], str(expected_key)[:12]))
+            if not _HAVE_ED:
+                problems.append("%s cannot be verified: the `cryptography` package is not installed" % rid)
+                continue
+            src = r.get("source")
+            src_doc = src.get("doc") if isinstance(src, dict) else (src if isinstance(src, str) else None)
+            text = r.get("text", "")
+            # Try WITH the record's tenant first, then without: a self-signed write from a bound store
+            # carries the binding, an externally-attested one never does, and both are legitimate. Trying
+            # both is what keeps this from failing every external attestation as a false alarm.
+            ok_any = False
+            for cand in ((r.get("tenant"),) if r.get("tenant") is None else (r.get("tenant"), None)):
+                try:
+                    _Ed25519PK.from_public_bytes(bytes.fromhex(key)).verify(
+                        bytes.fromhex(sig), _attest_message(text, src_doc, cand))
+                    ok_any = True
+                    break
+                except Exception:
+                    continue
+            checked += 1
+            if not ok_any:
+                problems.append("%s: the stored signature does not verify -- its text, source or tenant "
+                                "changed after it was signed" % rid)
+        if not checked and not problems:
+            problems.append("no record carries an attestation, so this verified NOTHING (%d skipped). "
+                            "An empty check is not a passing one." % skipped)
+        return (not problems), problems
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
                       legacy_strict: bool = True, value_strict: bool = True) -> tuple[bool, list[str]]:
