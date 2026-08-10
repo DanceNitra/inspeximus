@@ -9690,6 +9690,14 @@ class _TenantView:
         "flush", "reload", "reembed", "anchor", "witness", "ratify", "admit",
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
         "verify_attribution", "register_erasure_target", "explain_growth",
+        # `verify_attestations` is store-level for a REASON, not by resemblance to its neighbours above.
+        # 2.4.0 binds the tenant into the signed message so that a record MOVED BETWEEN TENANTS stops
+        # verifying — that relocation is the headline thing it detects. Scoped to one tenant it could
+        # never see it: a row moved from acme to beta simply leaves acme's slice, and the check would
+        # report a clean store while the evidence sat one row away. What it returns is ids, key prefixes
+        # and counts — never record text — which is the same bar `merkle_root`/`inclusion_proof` are
+        # listed under below. It is still swept by the tenant and agent leak tests, not exempted.
+        "verify_attestations",
         "detect_split_view", "check_self_narration", "classify_reversion",
         "restore_intent", "revert_intent", "revert_capability",
         # `believed_at` is NOT store-level: it is a read surface that returns a record's plaintext as of a
