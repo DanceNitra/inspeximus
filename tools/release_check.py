@@ -181,7 +181,7 @@ def check_import_version(rep, root=ROOT):
     """
     code = "import json, inspeximus; print(json.dumps([inspeximus.__version__, inspeximus.__file__]))"
     proc = subprocess.run([sys.executable, "-c", code], cwd=str(root),
-                          capture_output=True, text=True)
+                          capture_output=True, text=True, errors="replace")
     if proc.returncode != 0:
         last = (proc.stderr.strip().splitlines() or ["<no stderr>"])[-1]
         rep.add("import inspeximus", FAIL, "import failed: %s" % last)
@@ -285,7 +285,7 @@ sys.meta_path.insert(0, Blocker())
 
 def _blocked_run(root, body):
     code = _BLOCKER + "\n" + body
-    return subprocess.run([sys.executable, "-c", code], cwd=str(root), capture_output=True, text=True)
+    return subprocess.run([sys.executable, "-c", code], cwd=str(root), capture_output=True, text=True, errors="replace")
 
 
 def check_zero_dependencies(rep, root=ROOT):
@@ -320,7 +320,7 @@ def check_zero_dependencies(rep, root=ROOT):
     control = None
     for cand in ("pytest", "yaml", "cryptography", "mcp", "numpy", "setuptools"):
         normal = subprocess.run([sys.executable, "-c", "import %s" % cand], cwd=str(root),
-                                capture_output=True, text=True)
+                                capture_output=True, text=True, errors="replace")
         if normal.returncode == 0:
             control = cand
             break
@@ -344,14 +344,14 @@ def check_mcp_server(rep, root=ROOT):
     An absent `mcp` is a SKIP, never a PASS: not being able to look is not the same as having looked.
     """
     have = subprocess.run([sys.executable, "-c", "import mcp"], cwd=str(root),
-                          capture_output=True, text=True)
+                          capture_output=True, text=True, errors="replace")
     if have.returncode != 0:
         rep.add("mcp server imports", SKIP,
                 "the `mcp` extra is not installed here; install `.[mcp]` to clear this check")
         return
     code = ("import inspeximus.mcp_server as s, re, inspect;"
             "print(len(re.findall(r'^@mcp\\.tool\\(\\)', inspect.getsource(s), re.M)))")
-    proc = subprocess.run([sys.executable, "-c", code], cwd=str(root), capture_output=True, text=True)
+    proc = subprocess.run([sys.executable, "-c", code], cwd=str(root), capture_output=True, text=True, errors="replace")
     if proc.returncode != 0:
         last = (proc.stderr.strip().splitlines() or ["<no stderr>"])[-1]
         rep.add("mcp server imports", FAIL, "import inspeximus.mcp_server failed: %s" % last)
@@ -373,7 +373,7 @@ def check_release_notes(rep, root=ROOT):
         rep.add("release notes", FAIL, "tools/release_notes.py is missing")
         return
     proc = subprocess.run([sys.executable, str(notes), "--check"], cwd=str(root),
-                          capture_output=True, text=True)
+                          capture_output=True, text=True, errors="replace")
     if proc.returncode != 0:
         detail = (proc.stdout + proc.stderr).strip().splitlines()
         rep.add("release notes", FAIL, "; ".join(detail[-3:]) or "generator exited %d" % proc.returncode)
@@ -402,7 +402,7 @@ def check_audits(rep, root=ROOT):
             rep.add("audits", FAIL, "%s is missing; the release workflow runs it and this cannot" % script)
             return
         proc = subprocess.run([sys.executable, script, "--local"], cwd=str(root),
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, errors="replace")
         if proc.returncode != 0:
             tail = [ln for ln in (proc.stdout + proc.stderr).strip().splitlines() if "FAIL" in ln]
             rep.add("audits", FAIL, "%s exited %d: %s" % (script, proc.returncode,
@@ -412,7 +412,7 @@ def check_audits(rep, root=ROOT):
 
     env = dict(os.environ, GOV_FALSIFY="1")
     control = subprocess.run([sys.executable, "governance_audit.py", "--local", "--repeats", "1"],
-                             cwd=str(root), capture_output=True, text=True, env=env)
+                             cwd=str(root), capture_output=True, text=True, errors="replace", env=env)
     if control.returncode == 0:
         rep.add("audits", FAIL,
                 "GOV_FALSIFY=1 still PASSED -- the governance audit cannot detect its own defect, "
@@ -473,12 +473,27 @@ def check_tests(rep, root=ROOT, skip=False):
     if skip:
         rep.add("test suite", SKIP, "--skip-tests was passed; this run does NOT clear a release")
         return
-    proc = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q"], cwd=str(root),
-                          capture_output=True, text=True)
+    # `-rfE` so the run NAMES its failures and errors. Without it this reported "pytest exited 1:
+    # 1 failed, 2702 passed" and nothing else -- a 20-minute check whose failure message does not
+    # say what failed, which cost exactly one more 20-minute run to find out. `errors="replace"`
+    # because a probe printed a cp1250 byte and the decode blew up inside subprocess's reader
+    # thread, which loses the output the same way silence does.
+    proc = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-rfE"], cwd=str(root),
+                          capture_output=True, text=True, errors="replace")
     tail = [ln for ln in (proc.stdout or "").strip().splitlines() if ln.strip()]
     summary = tail[-1] if tail else "no output"
     if proc.returncode != 0:
-        rep.add("test suite", FAIL, "pytest exited %d: %s" % (proc.returncode, summary))
+        named = [ln.strip() for ln in tail if ln.startswith(("FAILED ", "ERROR "))]
+        detail = "pytest exited %d: %s" % (proc.returncode, summary)
+        if named:
+            detail += "\n" + "\n".join("      " + n for n in named[:15])
+            if len(named) > 15:
+                detail += "\n      ... and %d more" % (len(named) - 15)
+        else:
+            # A non-zero exit with nothing named is its own finding: a crash, a collection error or
+            # a hang killed the run before the summary. Say so rather than implying a clean failure.
+            detail += " (no FAILED/ERROR lines -- the run did not reach a summary)"
+        rep.add("test suite", FAIL, detail)
         return
     rep.add("test suite", PASS, summary)
 
