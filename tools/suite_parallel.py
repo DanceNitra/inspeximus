@@ -98,14 +98,26 @@ def main() -> int:
     ap.add_argument("--keep", action="store_true")
     args = ap.parse_args()
 
-    # UNTRACKED files count. `--untracked-files=no` reports a tree as clean while a new file sits in
-    # it, and a new source file can change the collected test set (this tool did exactly that), so the
-    # "clean" answer would have been used to justify a denominator taken from a different tree.
+    # WHAT ACTUALLY CHANGES THE DENOMINATOR. `--untracked-files=no` calls a tree clean while a new
+    # file sits in it, and a new SOURCE file can change the collected test set -- this tool did
+    # exactly that, adding a case to test_no_pep604_annotation_without_postponed_evaluation. So
+    # untracked files are not ignored. But refusing on ALL of them was too blunt to survive contact
+    # with a real working tree: a first run was blocked by benchmark .json output and a NOTES.md,
+    # neither of which can add a test, and a guard people route around with a flag is worse than none.
+    # Modified tracked files and untracked *.py refuse; anything else is named and the run proceeds.
     dirty = [ln for ln in _git("status", "--porcelain").stdout.splitlines() if ln.strip()]
-    if dirty:
-        print("!! the working tree differs from HEAD; workers test HEAD, not these:")
-        for d in dirty[:20]:
-            print("   ", d.strip())
+    blocking, benign = [], []
+    for d in dirty:
+        path = d[3:].strip().strip('"')
+        (blocking if (not d.startswith("??") or path.endswith(".py")) else benign).append(d.strip())
+    if benign:
+        print("note: %d untracked non-source path(s) ignored (they cannot change the test set): %s"
+              % (len(benign), ", ".join(b[3:] for b in benign[:6])))
+    if blocking:
+        print("!! the working tree differs from HEAD in ways that CAN change what is collected;")
+        print("   workers test HEAD, not these:")
+        for d in blocking[:20]:
+            print("   ", d)
         return 2
 
     files = sorted(f"tests/{f}" for f in os.listdir(os.path.join(ROOT, "tests"))
