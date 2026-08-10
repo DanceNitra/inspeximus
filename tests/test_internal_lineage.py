@@ -197,7 +197,9 @@ def test_the_owned_sites_are_declared_and_the_rest_are_not():
     lines = src.split("\n")
     owned, passthrough = set(), set()
     for i, l in enumerate(lines, 1):
-        if re.search(r"self\.remember\(", l):
+        # `_stamp(` is remember() with the reserved-meta flag set (2.4.1); it is the SAME write
+        # site and must stay visible to this audit, or renaming a call hides it from lineage.
+        if re.search(r"self\.(?:remember|_stamp)\(", l):
             fn = "?"
             for j in range(i - 1, 0, -1):
                 mm = re.match(r"    def (\w+)", lines[j - 1])

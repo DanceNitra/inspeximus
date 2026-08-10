@@ -799,7 +799,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.4.0"
+__version__ = "2.4.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -9860,6 +9860,16 @@ class _TenantView:
     @property
     def _items(self) -> list:
         return self._parent._items              # the real, shared list (writes and audits go here)
+
+    def _stamp(self, *a, **k):
+        """MUST be rebound, not forwarded. `__getattr__` sends private names straight to the PARENT,
+        so a forwarded `_stamp` runs with the parent as `self` -- tenant None -- and every internal
+        marker it writes lands unscoped. Measured while adding it: a tenant's session digest came back
+        EMPTY, because close_session() had stamped that digest outside the tenant entirely. Rebinding
+        keeps `self` the VIEW, so the privileged write goes through the view's own remember() and stays
+        where it belongs. The private-name forward is documented at the top of this class; it is still
+        the trap it says it is."""
+        return Inspeximus._stamp(self, *a, **k)
 
     def for_tenant(self, tenant: str):           # re-scope from the same shared store
         # KEEP the agent binding. Re-scoping the tenant must never drop the ACL: `view.for_tenant(t)` that

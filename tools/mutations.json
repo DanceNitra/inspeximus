@@ -1531,5 +1531,23 @@
   "tests": [
    "tests/test_writes_can_carry_their_own_key.py"
   ]
+ },
+ {
+  "name": "reserved meta keys reach the record again (top tier askable)",
+  "file": "inspeximus/core.py",
+  "old": "                    if k not in _RESERVED_META and k not in _META_ALIASED_PARAM}",
+  "new": "                    if k not in _META_ALIASED_PARAM}",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "the tenant view forwards _stamp to the parent (internal writes unscoped)",
+  "file": "inspeximus/core.py",
+  "old": "        return Inspeximus._stamp(self, *a, **k)",
+  "new": "        return self._parent._stamp(*a, **k)",
+  "tests": [
+   "tests/test_session_digest.py"
+  ]
  }
 ]

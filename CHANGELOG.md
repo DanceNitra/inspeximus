@@ -3,6 +3,55 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.4.1 - UPGRADE IF YOU RELY ON THE `warrant` TIER: the top tier could be asked for through `meta`
+
+Raised by yun520-1 (openclaw/openclaw#7707): "any design where the tier is set by the writer has a
+forgeable top tier, because the writer is motivated to mark itself highest." Correct in the general
+form, and further than the specific case named.
+
+**2.4.0 closed the front door and the hole moved one level down.** That release stopped
+`mtype="semantic"` from reaching the top tier by additionally requiring `meta.graduated_from_episodic`,
+which the library stamps at the corroboration bar. Measured on the published 2.4.0:
+
+```
+remember(mtype="semantic")                                          -> unwarranted
+remember(mtype="semantic", meta={"graduated_from_episodic": True})  -> earned      <-- the hole
+remember("a plain record")                                          -> unwarranted   [control]
+```
+
+`earned` is the strongest tier we report, and it was reachable on a record with no outcome credit, no
+links and no witnesses — by asking. The cause is structural rather than local: `remember(meta=...)`
+copies the caller's dict onto the record verbatim, and the library reads its own decisions back out of
+that same dict. So the fix is a **reserved keyspace**, not another condition: 23 keys the library
+stamps and then reads are stripped from caller-supplied meta. Stripped silently, not refused — a
+writer probing for the tier gets no error and no privilege, and no honest caller was setting them.
+
+**Not an ACL bypass**, checked before saying otherwise: a grant is identified by the reserved `key`
+prefix through `_is_acl_record`, which `remember()` already refuses to mint, so a caller-supplied
+`meta["acl"]` never becomes a grant. It is reserved because the library reads it.
+
+`uid`/`aid`/`sid`/`project` are **routed** to their named parameters rather than dropped: passing them
+through `meta` worked, so someone may depend on it, and silently discarding their value would break a
+caller who is getting the behaviour they intended. The explicit parameter wins on conflict. This
+converges two routes into one; it does **not** add validation — `remember(agent_id="*")` stores `*`
+unchecked too, because `_check_agent_id` guards the grant path and `remember()` never calls it.
+
+**The library writes these keys through the same door**, so four internal call sites — two revert
+paths, session open, session digest — go through `_stamp()`, the escape hatch `grant()`/`revoke()`
+already use for the reserved key prefix. Closing this broke two things on the way, both caught by the
+existing suite rather than by the tests written for the fix:
+
+* `_stamp` is a private name, and `_TenantView` forwards private names to the PARENT — so every
+  internal marker was written with `tenant=None` and a tenant's session digest came back EMPTY. It is
+  now rebound on the view.
+* renaming `self.remember(` to `self._stamp(` hid a write site from the internal-lineage audit, which
+  scans for the call by name. The scanner now recognises both.
+
+**The drift guard is the part meant to outlive this release.**
+`test_every_meta_key_the_library_reads_is_reserved` scans the source and fails if the library reads a
+meta key a caller can still set. It earned its place on first run by finding `entries`, a key dismissed
+as a regex artefact while the list was being assembled by hand.
+
 ## 2.4.0 - UPGRADE IF YOU RUN TENANT- OR PROJECT-SCOPED STORES: the signature did not cover which tenant a record belonged to, and nothing could re-check it anyway
 
 Two gaps, one raised by an external reviewer and one found while closing it.
