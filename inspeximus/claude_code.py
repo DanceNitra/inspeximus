@@ -42,7 +42,7 @@ or a per-project .inspeximus/config.json: {"embed": {"url": "http://localhost:11
 "model": "nomic-embed-text"}}. Writes stay verbatim, keyed and no-LLM; the embedder only builds a retrieval
 index and fails open (a down endpoint silently degrades to lexical, never drops a capture).
 """
-import sys, os, json, hashlib
+import sys, os, re, json, hashlib
 
 
 def _cfg(cwd):
@@ -766,6 +766,84 @@ def uninstall(cwd=None):
     print(f"inspeximus: removed Claude Code hooks from {p}")
 
 
+
+# ── PreToolUse: surface the decision BEFORE the action that would contradict it ──────────────────────
+#
+# WHY THIS EVENT AND NOT THE ONE WE ALREADY HAD. recall() runs on UserPromptSubmit -- when the human
+# speaks. The action that violates a recorded decision happens forty tool calls later, by which time
+# that block is far up the context and nobody is thinking about it. Measured on this deployment,
+# 2026-08-11: a decision reading "check whether the thing already has its own repo before creating a
+# new artifact" was in the store, had been written after making that exact mistake once, and did not
+# prevent it being made again -- because nothing consulted it at the moment a file was created in the
+# wrong repository. A memory that must be QUERIED fails precisely when you do not know you need it.
+#
+# It prints, it does not block. A guard that blocks on a keyword match is wrong often enough to get
+# switched off, and a switched-off guard protects nothing.
+
+#: (pattern, the question to force). Every entry is a mistake actually made here, not a hazard someone
+#: imagined -- a list of hypotheticals trains the reader to skim past the real ones.
+_PRE_PATTERNS = [
+    (r"git\s+add\s+(-f|--force)\b",
+     "a path needing -f is IGNORED ON PURPOSE. An ignore is a decision about where things belong, and "
+     "forcing past it is how work lands in the wrong repository. Does this artifact have a home of its own?"),
+    (r"git\s+add\s+(-A|--all|\.)(\s|$)",
+     "staging everything has deleted real work here -- the vault's NTFS-illegal filenames stage as "
+     "deletions. Name the files."),
+    (r"git\s+(reset|checkout)\s+--hard",
+     "this discards uncommitted work irreversibly. Look at the tree first."),
+    (r"git\s+push\s+.*--force",
+     "a force push can make a commit SHA cited in a published artifact unreachable."),
+    (r"\brm\s+-rf\b",
+     "irreversible. Confirm the target resolves to what you think it does."),
+]
+
+
+def pre_tool_use(ev):
+    """Print any recorded decision bearing on the action about to run.
+
+    Two channels, because they fail differently: a DECLARED pattern list catches actions known to go
+    wrong even when nothing was ever written down about them, and a recall over the store catches the
+    ones nobody thought to declare. Either alone leaves the other class silent.
+    """
+    tool = ev.get("tool_name") or ""
+    ti = ev.get("tool_input") or {}
+    if tool == "Bash":
+        subject = str(ti.get("command") or "")
+    elif tool in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
+        subject = str(ti.get("file_path") or "")
+    else:
+        return
+    if not subject.strip():
+        return
+
+    lines = ["  ! " + why for pat, why in _PRE_PATTERNS if re.search(pat, subject, re.I)]
+    if tool == "Write" and not os.path.exists(subject):
+        lines.append("  ! creating a NEW file. If this is a component of an existing product (a "
+                     "benchmark, a tool, a package) it probably belongs in that product's own "
+                     "repository, not beside whatever you happen to be standing in.")
+
+    hits = []
+    try:
+        m = _store(ev.get("cwd") or os.getcwd())
+        for h in (m.recall(subject[:400], k=3) or []):
+            if "decision" in (h.get("tags") or []):
+                t = " ".join((h.get("text") or "").split())
+                if t:
+                    hits.append("  - " + t[:200])
+    except Exception:
+        pass
+
+    if not lines and not hits:
+        return
+    print("[inspeximus] before this action:")
+    for l in lines:
+        print(l)
+    if hits:
+        print("  decided before, on something like this:")
+        for h in hits:
+            print(h)
+
+
 def main():
     # A HOOK MUST NEVER BE SILENCED BY THE CONSOLE CODEPAGE, AND THIS ONE WAS.
     #
@@ -799,7 +877,9 @@ def main():
         return
     try:
         name = ev.get("hook_event_name", "")
-        if name == "PostToolUse":
+        if name == "PreToolUse":
+            pre_tool_use(ev)
+        elif name == "PostToolUse":
             capture(ev)
         elif name == "UserPromptSubmit":
             recall(ev)
@@ -807,8 +887,16 @@ def main():
             session_start(ev)
         elif name == "SessionEnd":
             session_end(ev)
-    except Exception:
-        pass
+    except Exception as exc:
+        # A HANDLER BUG MUST NOT LOOK LIKE SILENCE. This was a bare `pass`, and a missing import in
+        # pre_tool_use() produced an EMPTY stdout and exit 0 -- indistinguishable from 'no relevant
+        # memory found', the same failure the cp1250 note above records for encoding. stderr, never
+        # stdout: stdout is injected as context by the host, so a traceback there joins the prompt.
+        try:
+            sys.stderr.write("[inspeximus] hook %s failed: %s: %s" % (
+                ev.get("hook_event_name", "?"), type(exc).__name__, exc) + chr(10))
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
