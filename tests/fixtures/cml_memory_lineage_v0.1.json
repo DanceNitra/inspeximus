@@ -1,0 +1,168 @@
+{
+  "schema_version": "cml-memory-lineage-fixtures-v0.1",
+  "now": "2026-08-11T12:00:00Z",
+  "benchmark_contract": {
+    "negative_control_required": true,
+    "exclusion_accounting_required": true,
+    "expected_included": 5,
+    "expected_excluded": 1
+  },
+  "source": {
+    "locator": "https://example.test/derived-summary",
+    "refetchable": true,
+    "exists": true,
+    "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "stored_environment": {},
+  "current_environment": {},
+  "cases": [
+    {
+      "id": "parent-superseded",
+      "lineage": [
+        {
+          "dependency_id": "dep-a",
+          "state": "superseded",
+          "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "observed_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "expected_status": "REVALIDATE",
+      "expected_reasons": [
+        "lineage_invalidated:dep-a:superseded"
+      ],
+      "negative_control": {
+        "lineage": [
+          {
+            "dependency_id": "dep-a",
+            "state": "active",
+            "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "expected_status": "MATCH"
+      }
+    },
+    {
+      "id": "parent-erased",
+      "lineage": [
+        {
+          "dependency_id": "dep-a",
+          "state": "erased",
+          "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "observed_digest": null
+        }
+      ],
+      "expected_status": "REVALIDATE",
+      "expected_reasons": [
+        "lineage_invalidated:dep-a:erased"
+      ],
+      "negative_control": {
+        "lineage": [
+          {
+            "dependency_id": "dep-a",
+            "state": "active",
+            "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "expected_status": "MATCH"
+      }
+    },
+    {
+      "id": "one-of-many-retired",
+      "lineage": [
+        {
+          "dependency_id": "dep-a",
+          "state": "active",
+          "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "dependency_id": "dep-b",
+          "state": "retired",
+          "expected_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "observed_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "expected_status": "REVALIDATE",
+      "expected_reasons": [
+        "lineage_invalidated:dep-b:retired"
+      ],
+      "negative_control": {
+        "lineage": [
+          {
+            "dependency_id": "dep-a",
+            "state": "active",
+            "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "dependency_id": "dep-b",
+            "state": "active",
+            "expected_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "observed_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "expected_status": "MATCH"
+      }
+    },
+    {
+      "id": "parent-content-changed",
+      "lineage": [
+        {
+          "dependency_id": "dep-a",
+          "state": "active",
+          "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "observed_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "expected_status": "REVALIDATE",
+      "expected_reasons": [
+        "lineage_changed:dep-a"
+      ],
+      "negative_control": {
+        "lineage": [
+          {
+            "dependency_id": "dep-a",
+            "state": "active",
+            "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "expected_status": "MATCH"
+      }
+    },
+    {
+      "id": "parent-lineage-unverifiable",
+      "lineage": [
+        {
+          "dependency_id": "dep-a",
+          "state": "active",
+          "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "observed_digest": null
+        }
+      ],
+      "expected_status": "REVALIDATE",
+      "expected_reasons": [
+        "lineage_unverifiable:dep-a"
+      ],
+      "negative_control": {
+        "lineage": [
+          {
+            "dependency_id": "dep-a",
+            "state": "active",
+            "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "expected_status": "MATCH"
+      }
+    },
+    {
+      "id": "lineage-adapter-unavailable",
+      "exclude": true,
+      "exclusion_reason": "lineage_adapter_unavailable"
+    }
+  ]
+}

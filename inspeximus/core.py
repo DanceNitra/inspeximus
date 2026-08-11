@@ -914,6 +914,19 @@ APPLICABILITY_STRICT = ("repository", "commit_sha")
 #: Keys a CALLER may never set: the library must not read its own verification state back out of a dict
 #: the caller controls. Ours are stripped silently at write time (see _RESERVED_META); the contract also
 #: names an explicit set, and both are refused here so a shared fixture agrees on the outcome.
+#: Upstream states that invalidate a DERIVED record regardless of its own source integrity. This is the
+#: dimension we raised on claude-code#34556 and safal207 froze into a contract (CML#272): the most common
+#: reason a memory of ours stops being safe to act on is that a record it was derived FROM was retired or
+#: erased -- neither source drift nor environment change, but the store's own history. It has a practical
+#: advantage over every environment dimension: it needs no external fetch and no adapter, so it still
+#: works when refetch_verification_coverage is zero, which on our own production store it effectively is.
+#:
+#: STATE IS CHECKED BEFORE DIGEST, and the fixture makes the difference visible: an `erased` dependency
+#: also has no observed digest, so a digest-first reading would report it as merely unverifiable and lose
+#: the fact that the parent was deliberately removed.
+APPLICABILITY_DEAD_STATES = ("superseded", "retired", "erased", "revoked")
+
+
 APPLICABILITY_RESERVED = frozenset({
     "warrant", "environment_verified", "provenance_verified", "source_verified", "applicability_verdict",
 })
@@ -934,7 +947,7 @@ def _iso_to_epoch(s):
 
 
 def evaluate_applicability(source, stored_environment=None, current_environment=None,
-                           caller_metadata=None, now=None) -> dict:
+                           caller_metadata=None, now=None, lineage=None) -> dict:
     """May this historical evidence drive an action in the CURRENT environment?
 
     Returns {"status": one of APPLICABILITY_PRECEDENCE, "reasons": [...]}. Pure: no store, no I/O, no
@@ -964,6 +977,23 @@ def evaluate_applicability(source, stored_environment=None, current_environment=
         return {"status": "DRIFT", "reasons": ["source_digest_changed"]}
 
     reasons = []
+
+    # LINEAGE, after source integrity and before the environment. A derived record whose own source
+    # still matches can be unsafe because an upstream one was retired; that is a different failure from
+    # drift, with a different remedy (re-derive or refuse), and it maps to REVALIDATE rather than to a
+    # seventh verdict -- the contract's choice, and the right one: the caller's action is the same.
+    for dep in (lineage or []):
+        did = dep.get("dependency_id")
+        state = (dep.get("state") or "active").lower()
+        if state in APPLICABILITY_DEAD_STATES:
+            reasons.append("lineage_invalidated:%s:%s" % (did, state))
+            continue
+        obs = dep.get("observed_digest")
+        if obs is None:
+            reasons.append("lineage_unverifiable:%s" % did)
+        elif obs != dep.get("expected_digest"):
+            reasons.append("lineage_changed:%s" % did)
+
     for dim in APPLICABILITY_STRICT:
         if current.get(dim) is not None and stored.get(dim) is None:
             reasons.append("environment_unbound:%s" % dim)
