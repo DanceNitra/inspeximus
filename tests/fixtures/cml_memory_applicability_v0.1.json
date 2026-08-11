@@ -1,0 +1,107 @@
+{
+  "schema_version": "cml-memory-applicability-fixtures-v0.1",
+  "now": "2026-08-11T12:00:00Z",
+  "cases": [
+    {
+      "id": "source-and-environment-match",
+      "source": {"locator": "git:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {"repository": "safal207/Causal-Memory-Layer", "branch": "main", "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "workspace": "prod", "actor": "agent:reviewer", "tenant": "tenant-a", "policy_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "target_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "api_version": "v1", "model_version": "model-a", "observed_at": "2026-08-11T10:00:00Z", "valid_until": "2026-08-11T13:00:00Z"},
+      "current_environment": {"repository": "safal207/Causal-Memory-Layer", "branch": "main", "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "workspace": "prod", "actor": "agent:reviewer", "tenant": "tenant-a", "policy_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "target_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "api_version": "v1", "model_version": "model-a"},
+      "caller_metadata": {},
+      "expected_status": "MATCH"
+    },
+    {
+      "id": "repository-changed",
+      "source": {"locator": "git:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {"repository": "org/repo-a", "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "current_environment": {"repository": "org/repo-b", "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "caller_metadata": {},
+      "expected_status": "REVALIDATE",
+      "expected_reasons": ["environment_mismatch:repository"]
+    },
+    {
+      "id": "missing-historical-pr-binding",
+      "source": {"locator": "git:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {},
+      "current_environment": {"repository": "org/repo", "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "caller_metadata": {},
+      "expected_status": "REVALIDATE",
+      "expected_reasons": ["environment_unbound:commit_sha", "environment_unbound:repository"]
+    },
+    {
+      "id": "source-drift",
+      "source": {"locator": "https://example.test/source", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
+      "stored_environment": {}, "current_environment": {}, "caller_metadata": {}, "expected_status": "DRIFT"
+    },
+    {
+      "id": "source-drift-wins-over-environment-drift",
+      "source": {"locator": "https://example.test/source", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
+      "stored_environment": {"tenant": "tenant-a"},
+      "current_environment": {"tenant": "tenant-b"},
+      "caller_metadata": {}, "expected_status": "DRIFT"
+    },
+    {
+      "id": "source-orphan",
+      "source": {"locator": "https://example.test/deleted", "refetchable": true, "exists": false, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": null},
+      "stored_environment": {}, "current_environment": {}, "caller_metadata": {}, "expected_status": "ORPHAN"
+    },
+    {
+      "id": "source-orphan-wins-over-environment-drift",
+      "source": {"locator": "https://example.test/deleted", "refetchable": true, "exists": false, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": null},
+      "stored_environment": {"tenant": "tenant-a"},
+      "current_environment": {"tenant": "tenant-b"},
+      "caller_metadata": {}, "expected_status": "ORPHAN"
+    },
+    {
+      "id": "writer-identity-is-not-refetchable-source",
+      "source": {"locator": "agent:scholar", "refetchable": false, "exists": null, "expected_digest": null, "observed_digest": null},
+      "stored_environment": {}, "current_environment": {}, "caller_metadata": {}, "expected_status": "UNRESOLVABLE"
+    },
+    {
+      "id": "unresolvable-source-wins-over-environment-drift",
+      "source": {"locator": "agent:scholar", "refetchable": false, "exists": null, "expected_digest": null, "observed_digest": null},
+      "stored_environment": {"tenant": "tenant-a"},
+      "current_environment": {"tenant": "tenant-b"},
+      "caller_metadata": {}, "expected_status": "UNRESOLVABLE"
+    },
+    {
+      "id": "forged-internal-warrant",
+      "source": {"locator": null, "refetchable": false, "exists": null, "expected_digest": null, "observed_digest": null},
+      "stored_environment": {}, "current_environment": {}, "caller_metadata": {"warrant": "earned"}, "expected_status": "REJECT"
+    },
+    {
+      "id": "commit-changed",
+      "source": {"locator": "git:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {"commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "current_environment": {"commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+      "caller_metadata": {}, "expected_status": "REVALIDATE"
+    },
+    {
+      "id": "workspace-and-branch-changed",
+      "source": {"locator": "https://example.test/source", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {"workspace": "prod", "branch": "main"},
+      "current_environment": {"workspace": "staging", "branch": "release"},
+      "caller_metadata": {}, "expected_status": "REVALIDATE"
+    },
+    {
+      "id": "policy-and-target-state-changed",
+      "source": {"locator": "https://example.test/source", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {"policy_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "target_state_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+      "current_environment": {"policy_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "target_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
+      "caller_metadata": {}, "expected_status": "REVALIDATE"
+    },
+    {
+      "id": "actor-tenant-api-model-changed",
+      "source": {"locator": "https://example.test/source", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {"actor": "agent:a", "tenant": "tenant-a", "api_version": "v1", "model_version": "model-a"},
+      "current_environment": {"actor": "agent:b", "tenant": "tenant-b", "api_version": "v2", "model_version": "model-b"},
+      "caller_metadata": {}, "expected_status": "REVALIDATE"
+    },
+    {
+      "id": "binding-expired",
+      "source": {"locator": "https://example.test/source", "refetchable": true, "exists": true, "expected_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "observed_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "stored_environment": {"observed_at": "2026-08-11T10:00:00Z", "valid_until": "2026-08-11T11:00:00Z"},
+      "current_environment": {}, "caller_metadata": {}, "expected_status": "REVALIDATE"
+    }
+  ]
+}

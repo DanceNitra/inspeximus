@@ -39,6 +39,7 @@ MIT-licensed. Part of Agora (https://github.com/DanceNitra/agora).
 """
 from __future__ import annotations
 
+import calendar
 import hashlib
 import hmac
 import json
@@ -194,6 +195,10 @@ _RESERVED_META = frozenset({
     "reopened_surfaced_prior", "retracted_reason", "revert_nonce", "session_seq",
     "source_seen_at", "source_sha256",
     "slashed", "superseded_by_policy", "superseded_by_toggle", "truncated_from",
+
+    # Read by check_sources() for environment_binding_coverage, so the library owns it: a caller
+    # able to set it could inflate the very coverage number that reports whether it is set.
+    "environment_binding",
 })
 
 #: READ BY THE LIBRARY, WRITTEN BY THE CALLER -- and therefore NOT reserved. The threat is a caller
@@ -876,6 +881,104 @@ def _resolve_echo_guard(explicit: bool | None = None) -> bool:
     if explicit is not None:
         return bool(explicit)
     return os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
+
+
+# ── Current-State Applicability (CML memory-applicability v0.1) ──────────────────────────────────────
+#
+# Historical truth is not current authority. A record can be perfectly valid evidence of what happened
+# and still be unsafe to drive an action here, now: the branch moved, the policy changed, the tenant
+# differs, the window expired. check_sources() answers "is the SOURCE still what it was"; this answers
+# "may this still act", and they are different questions with different remedies.
+#
+# The contract is safal207's (Causal-Memory-Layer#270, discussed on anthropics/claude-code#34556). We
+# implement it rather than propose a variant, because a contract with one implementation is a proposal
+# and the useful thing to be is the second one. The frozen fixture is consumed verbatim by the tests.
+
+#: Fail-closed order. A source-integrity failure must never be masked by a weaker environment verdict:
+#: a record whose origin cannot be verified is broken for everyone, while one that is inapplicable here
+#: may be fine elsewhere. Different scopes of invalidation, not different severities.
+APPLICABILITY_PRECEDENCE = ("REJECT", "UNRESOLVABLE", "ORPHAN", "DRIFT", "REVALIDATE", "MATCH")
+
+#: Every dimension the contract compares.
+APPLICABILITY_DIMENSIONS = ("repository", "branch", "commit_sha", "workspace", "actor", "tenant",
+                            "policy_digest", "target_state_digest", "api_version", "model_version")
+
+#: STRICT dimensions. If current authoritative state supplies one of these and the stored evidence
+#: never bound it, that absence forces REVALIDATE instead of MATCH. The rule in one line, and it is the
+#: sharpest thing in the contract: ABSENCE OF HISTORICAL CONTEXT IS NOT PERMISSION TO ASSUME CONTINUITY.
+#: Without it, evidence detached from the pull-request head it was reviewed at silently regains
+#: authority in a different code context, on the strength of a source digest that never moved.
+APPLICABILITY_STRICT = ("repository", "commit_sha")
+
+#: Keys a CALLER may never set: the library must not read its own verification state back out of a dict
+#: the caller controls. Ours are stripped silently at write time (see _RESERVED_META); the contract also
+#: names an explicit set, and both are refused here so a shared fixture agrees on the outcome.
+APPLICABILITY_RESERVED = frozenset({
+    "warrant", "environment_verified", "provenance_verified", "source_verified", "applicability_verdict",
+})
+
+
+def _iso_to_epoch(s):
+    """Minimal ISO-8601 parse for the contract's timestamps. Returns None on anything unparseable --
+    never a guess, because a mis-parsed expiry silently grants authority it should have revoked."""
+    if not s or not isinstance(s, str):
+        return None
+    try:
+        return calendar.timegm(time.strptime(s.replace("Z", "UTC"), "%Y-%m-%dT%H:%M:%S%Z"))
+    except Exception:
+        try:
+            return calendar.timegm(time.strptime(s[:19], "%Y-%m-%dT%H:%M:%S"))
+        except Exception:
+            return None
+
+
+def evaluate_applicability(source, stored_environment=None, current_environment=None,
+                           caller_metadata=None, now=None) -> dict:
+    """May this historical evidence drive an action in the CURRENT environment?
+
+    Returns {"status": one of APPLICABILITY_PRECEDENCE, "reasons": [...]}. Pure: no store, no I/O, no
+    clock of its own -- `now` is passed in, so the same inputs always produce the same verdict and a
+    fixture can be replayed years later.
+
+    `source` carries the observation, not a promise: {"locator", "refetchable", "exists",
+    "expected_digest", "observed_digest"}. `refetchable` is EXPLICIT because a populated locator is not
+    evidence of re-fetchability -- `agent:scholar` is a writer identity and stays UNRESOLVABLE. We
+    measured that distinction on our own store at 98.3% locator coverage against 0.01% re-fetchable.
+    """
+    source = source or {}
+    stored = stored_environment or {}
+    current = current_environment or {}
+    meta = caller_metadata or {}
+
+    forged = sorted(k for k in meta
+                    if k in APPLICABILITY_RESERVED or k in _RESERVED_META or k.startswith("_cml_"))
+    if forged:
+        return {"status": "REJECT", "reasons": ["forged_reserved_key:%s" % k for k in forged]}
+
+    if not source.get("refetchable") or not source.get("locator"):
+        return {"status": "UNRESOLVABLE", "reasons": ["source_not_refetchable"]}
+    if source.get("exists") is False:
+        return {"status": "ORPHAN", "reasons": ["source_missing"]}
+    if source.get("expected_digest") != source.get("observed_digest"):
+        return {"status": "DRIFT", "reasons": ["source_digest_changed"]}
+
+    reasons = []
+    for dim in APPLICABILITY_STRICT:
+        if current.get(dim) is not None and stored.get(dim) is None:
+            reasons.append("environment_unbound:%s" % dim)
+    for dim in APPLICABILITY_DIMENSIONS:
+        s_val, c_val = stored.get(dim), current.get(dim)
+        if s_val is not None and c_val is not None and s_val != c_val:
+            reasons.append("environment_mismatch:%s" % dim)
+
+    until = _iso_to_epoch(stored.get("valid_until"))
+    _now = _iso_to_epoch(now) if isinstance(now, str) else now
+    if until is not None and _now is not None and _now > until:
+        reasons.append("binding_expired")
+
+    if reasons:
+        return {"status": "REVALIDATE", "reasons": sorted(reasons)}
+    return {"status": "MATCH", "reasons": []}
 
 
 class Inspeximus:
