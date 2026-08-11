@@ -316,7 +316,7 @@ NOT_TESTABLE_HERE = [
 # non-claim (a citation year, an article number, an example literal) with a reason and an exact count.
 # An unregistered number fails this audit and fails CI. Adding one is meant to be inconvenient.
 
-SURFACE = ("README.md", "MCP_LISTINGS.md", "index.html")
+SURFACE = ("README.md", "docs/DEEP_DIVE.md", "MCP_LISTINGS.md", "index.html")
 
 #: statuses a quantitative claim can carry.
 STATUSES = (
@@ -328,7 +328,7 @@ STATUSES = (
 )
 
 #: Numbers we KNOW are unbacked or unscoped, and that this audit does NOT enforce, because they live
-#: outside the three token-enforced files. Listed rather than omitted: "not in the table" and "not a
+#: outside the token-enforced files (see SURFACE). Listed rather than omitted: "not in the table" and "not a
 #: problem" are different statements, and only one of them is true here. Each is a standing invitation
 #: to either scope it, wire it to a harness, or delete it -- and none of them may be promoted onto the
 #: reader-facing surface while it says PENDING-HARNESS.
@@ -384,54 +384,134 @@ def _c(id, file, tokens, pin, claim, status, command="", note=""):
 #: gone describes nothing, so the registry cannot quietly outlive the sentence it audits.
 NUMBER_CLAIMS = [
     # ---------------------------------------------------------------- README.md
-    _c("readme-erasure-fanout-hero", "README.md", ["0.17", "1.00"],
+    # ---- README.md (the short one; the long-form numbers live in docs/DEEP_DIVE.md) ----
+    # ONE ROW PER LINE. The audit requires a claim's pin to be on the same source line as each token
+    # it owns, which is correct: a number is claimed by the sentence it appears in. A four-row table
+    # therefore needs four rows here, not one pinned to its first line.
+    # ---- index.html: the 2.5.0 section and the corrected echo caveat ----
+    # One row per LINE again: the audit requires the pin on the same source line as each token, which
+    # is why a five-line caveat needs five pins and not one.
+    _c("site-echo-n", "index.html", ["30"],
+       "own native configuration (n=30)",
+       "Sample size for the native-config echo run", "REPRODUCIBLE-WITH-DEPS",
+       "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    _c("site-echo-row", "index.html", ["0", "13.3", "46.7"],
+       "inspeximus 0%, Graphiti 13.3%, mem0 46.7%",
+       "Corrected-fact resurrection per system on their native configs",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo",
+       "Replaced a STALE caveat claiming all three tie on this cell; the later run separates them."),
+    _c("site-echo-control", "index.html", ["100"],
+       "guard disabled we resurrect 100% of the time",
+       "The control: with our guard off we resurrect every time, so the number is the mechanism",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    _c("site-mem0-version", "index.html", ["2.0.11", "2026"],
+       "mem0 measured at 2.0.11 (2026-07)",
+       "The exact competitor version and date measured, stated rather than implied as current",
+       "REPRODUCIBLE", "curl -s https://pypi.org/pypi/mem0ai/json"),
+    _c("site-source-coverage-populated", "index.html", ["98.3"],
+       "98.3% populated",
+       "Our own store: fraction of records carrying a source field", "REPRODUCIBLE-WITH-DEPS",
+       "curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py"),
+    _c("site-source-coverage-refetch", "index.html", ["0.01"],
+       "and 0.01% re-fetchable",
+       "Our own store: fraction whose source actually resolves", "REPRODUCIBLE-WITH-DEPS",
+       "curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py"),
+    _c("readme-mutations-survived", "README.md", ["0"],
+       "killed, 0 survived**",
+       "Mutation gate: zero seeded defects survived",
+       "REPRODUCIBLE", "python tools/mutation_check_parallel.py"),
+    _c("readme-zero-deps-badge", "README.md", ["0"],
+       "badge/dependencies-0",
+       "Zero required dependencies -- every requirement in the wheel is an optional extra",
+       "REPRODUCIBLE", "curl -s https://pypi.org/pypi/inspeximus/json"),
+    _c("readme-echo-trials", "README.md", ["30"],
+       "same task, same 30 trials",
+       "Sample size: 30 trials per system",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    _c("readme-echo-ours", "README.md", ["100", "0"],
+       "| **inspeximus** | **100%** | **0%** |",
+       "inspeximus keeps a corrected fact 100% of the time; it never resurrects the old value",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    _c("readme-echo-graphiti", "README.md", ["0", "86.7", "13.3", "95", "3.3", "26.7"],
+       "| Graphiti 0.x (Neo4j + OpenAI) |",
+       "Graphiti keeps the correction 86.7% of the time; resurrection 13.3%, 95% CI [3.3, 26.7]",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo",
+       "Measured on the vendor's own native config (Neo4j + OpenAI), n=30."),
+    _c("readme-echo-mem0", "README.md", ["2.0.11", "53.3", "46.7", "95", "30.0", "63.3"],
+       "| mem0 2.0.11 (OpenAI native) |",
+       "mem0 2.0.11 keeps the correction 53.3%; resurrection 46.7%, 95% CI [30.0, 63.3]",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo",
+       "Version-stamped on purpose: mem0 is on 2.0.18 as of 2026-08-11 and we have NOT re-run it."),
+    _c("readme-echo-control", "README.md", ["0"],
+       "| inspeximus, guard disabled | 0% |",
+       "The control: with the guard off we score zero, so the number is the mechanism",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    _c("readme-echo-n-and-version", "README.md", ["30", "2.0.11", "2026", "2.0.18"],
+       "n = 30 per system",
+       "Sample size per system, and the exact competitor version measured",
+       "REPRODUCIBLE", "curl -s https://pypi.org/pypi/mem0ai/json"),
+    _c("readme-mcp-tool-count", "README.md", ["68"],
+       "**68 tools**",
+       "The MCP server exposes 68 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+       "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
+    _c("readme-own-source-coverage", "README.md", ["98.3", "0.01"],
+       "98.3% populated and 0.01% re-fetchable",
+       "Our own production store: source populated vs actually re-checkable",
+       "REPRODUCIBLE-WITH-DEPS",
+       "curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py",
+       "Published as our own failure, not a product claim. 210,499 records across ten stores."),
+    _c("readme-tests-and-mutations", "README.md", ["2,800", "175"],
+       "**2,800+ tests**",
+       "Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed",
+       "REPRODUCIBLE", "python tools/mutation_check_parallel.py"),
+    _c("readme-erasure-fanout-hero", "docs/DEEP_DIVE.md", ["0.17", "1.00"],
        "soft delete scores 0.17 and names the five leaking stores",
        "A soft delete leaves the value recoverable in 5 of 6 stores (0.17); a wired hard delete scores 1.00",
        "REPRODUCIBLE", "python probes/forget_verification_bench.py"),
-    _c("readme-erasure-fanout-table", "README.md", ["1.00", "0.17"],
+    _c("readme-erasure-fanout-table", "docs/DEEP_DIVE.md", ["1.00", "0.17"],
        "a wired hard delete scores **1.00** with a verifying signed receipt",
        "Same six-store fan-out measurement, restated in the four-operations table",
        "REPRODUCIBLE", "python probes/forget_verification_bench.py",
        "Replaced a 'measured 15/15 on a verified-forgetting severe-test' for which no artifact in this "
        "repository produces a 15/15 of anything. The bench that DOES exist scores 0.17 / 1.00 over six "
        "stores, so the sentence now cites the number the committed code prints."),
-    _c("readme-vault-hero", "README.md", ["10,000"],
+    _c("readme-vault-hero", "docs/DEEP_DIVE.md", ["10,000"],
        "run it daily over a private ~10,000-note vault",
        "inspeximus has run daily over a ~10,000-note vault",
        "EXTERNAL", "",
        "Our own private Obsidian vault. There is no command; the text now says so instead of implying "
        "the reader could check it."),
-    _c("readme-vault-contradictions", "README.md", ["10,000"],
+    _c("readme-vault-contradictions", "docs/DEEP_DIVE.md", ["10,000"],
        "runs in production over the 10,000-note vault",
        "Contradiction detection runs in production over the ~10,000-note vault",
        "EXTERNAL", "", "Same private deployment as the hero line."),
-    _c("readme-audit-summary", "README.md", ["13", "0", "5"],
+    _c("readme-audit-summary", "docs/DEEP_DIVE.md", ["13", "0", "5"],
        "13 passed · 0 FAILED · 0 skipped · 5 not testable here",
        "The example claims_audit run: 13 checks pass, 5 are not testable from this package",
        "REPRODUCIBLE", "python claims_audit.py --local",
        "Self-referential, so it is checked against len(CHECKS) and len(NOT_TESTABLE_HERE) rather than "
        "trusted. The block used to name inspeximus-1.24.1 while the package was at 1.89.0; the version "
        "line was dropped rather than pinned, because it would go stale on every release."),
-    _c("readme-memops-scenarios", "README.md", ["24", "50"],
+    _c("readme-memops-scenarios", "docs/DEEP_DIVE.md", ["24", "50"],
        "long-context scenarios (24 scenarios, ~50 sessions each)",
        "MemOps: 24 long-context scenarios, ~50 sessions each",
        "EXTERNAL", "", "Harness lives in the Agora repo (agora_output/lab/memops), already linked in place."),
-    _c("readme-memops-cost", "README.md", ["519", "917", "606", "24"],
+    _c("readme-memops-cost", "docs/DEEP_DIVE.md", ["519", "917", "606", "24"],
        "**519–917 s of LLM extraction** (median 606 s, n=24)",
        "mem0's default pipeline spends 519-917 s (median 606) of LLM extraction per MemOps scenario",
        "EXTERNAL", "", "Agora MemOps harness; needs mem0 + an LLM budget, so it cannot ship here."),
-    _c("readme-memops-acc-ours", "README.md", ["0.593"],
+    _c("readme-memops-acc-ours", "docs/DEEP_DIVE.md", ["0.593"],
        "indistinguishable** — inspeximus 0.593",
        "MemOps answer accuracy: inspeximus 0.593", "EXTERNAL", ""),
-    _c("readme-memops-acc-others", "README.md", ["0.592", "0.544", "2"],
+    _c("readme-memops-acc-others", "docs/DEEP_DIVE.md", ["0.592", "0.544", "2"],
        "a naive keep-all store 0.592, mem0 0.544",
        "MemOps answer accuracy: keep-all 0.592, mem0 0.544; ~2% of mem0 extractions failed to parse",
        "EXTERNAL", ""),
-    _c("readme-locomo-denominator", "README.md", ["1536"],
+    _c("readme-locomo-denominator", "docs/DEEP_DIVE.md", ["1536"],
        "n=1536), with the built-in tuned recipe",
        "The LOCOMO question denominator behind the retrieval pair",
        "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only"),
-    _c("readme-locomo-headline", "README.md", ["25", "0.83", "0.70"],
+    _c("readme-locomo-headline", "docs/DEEP_DIVE.md", ["25", "0.83", "0.70"],
        "retrieval-recall@25 is 0.83** (a supporting turn is retrieved) / **0.70**",
        "LOCOMO retrieval-recall@25 = 0.83 (any evidence turn) / 0.70 (all), n=1536, reinforce=False",
        "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only",
@@ -443,11 +523,11 @@ NUMBER_CLAIMS = [
        "prefer=speaker, reinforce=false. WITH-DEPS because LOCOMO is not ours to redistribute -- the "
        "command needs locomo10.json downloaded (sha256 pinned in config.json), though the committed "
        "result is readable without it."),
-    _c("readme-locomo-command", "README.md", ["0.83", "0.70"],
+    _c("readme-locomo-command", "docs/DEEP_DIVE.md", ["0.83", "0.70"],
        "--retrieval-only   # ~0.83 / 0.70, no model calls",
        "The copy-paste command with its expected output inline",
        "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only"),
-    _c("readme-locomo-old-pair", "README.md", ["0.7839", "0.6484", "0.783", "0.648", "1536"],
+    _c("readme-locomo-old-pair", "docs/DEEP_DIVE.md", ["0.7839", "0.6484", "0.783", "0.648", "1536"],
        "0.7839 / 0.6484 against the published 0.783 / 0.648, on the identical 1536-question denominator",
        "The OLD published pair reproduces exactly at its own operating point (reinforce=True)",
        "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only",
@@ -456,15 +536,15 @@ NUMBER_CLAIMS = [
        "by a store the previous queries had modified and the score depended on question order. Pinning "
        "reinforce=False makes the run deterministic and scores 4-5 points HIGHER. A number that moves "
        "when you fix the instrument is exactly what an unreproducible number hides."),
-    _c("readme-locomo-caveat-dates", "README.md", ["2026", "0.78", "0.65"],
+    _c("readme-locomo-caveat-dates", "docs/DEEP_DIVE.md", ["2026", "0.78", "0.65"],
        "**The old pair was 0.78 / 0.65, and it reproduces exactly**",
        "The superseded pair, quoted inside the note that discharges its caveat",
        "REPRODUCIBLE-WITH-DEPS", "python benchmarks/locomo/run.py --subset full --retrieval-only"),
-    _c("readme-locomo-n", "README.md", ["1536,"],
+    _c("readme-locomo-n", "docs/DEEP_DIVE.md", ["1536,"],
        "on one LoCoMo config (n=1536, deterministic",
        "The LoCoMo config size behind recall_any@1", "PENDING-HARNESS",
        "python probes/retrieval_recall_locomo.py --k 25"),
-    _c("readme-competitor-judges", "README.md", ["66.9", "71.2"],
+    _c("readme-competitor-judges", "docs/DEEP_DIVE.md", ["66.9", "71.2"],
        "mem0 reports 66.9% and Zep 71.2% under their own judges",
        "mem0 and Zep's self-reported LLM-judged QA scores", "EXTERNAL", "",
        "Other projects' published numbers, cited as not comparable across harnesses -- which is the "
@@ -473,39 +553,39 @@ NUMBER_CLAIMS = [
     # from the MemOps harness, which lives outside this repository and therefore could never be re-run
     # here. The sentence that carried them is gone, so the row goes with it rather than pinning nothing.
     # What replaced it is measured IN this repo and has a command, so it is a claim, not an external.
-    _c("readme-time-gap-fixture", "README.md", ["80"],
+    _c("readme-time-gap-fixture", "docs/DEEP_DIVE.md", ["80"],
        "Four LOCOMO conversations, 80 questions each",
        "The time-gap measurement runs on four LOCOMO conversations, 80 questions sampled from each",
        "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
-    _c("readme-time-gap-movement", "README.md", ["64", "83", "320"],
+    _c("readme-time-gap-movement", "docs/DEEP_DIVE.md", ["64", "83", "320"],
        "between 64 and 83 of 320 top-1 answers differ",
        "Reading the same untouched store twice ~2s apart moves 64-83 of 320 top-1 answers "
        "(four LOCOMO conversations, 80 questions each, reinforce=False)",
        "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
-    _c("readme-time-gap-cause", "README.md", ["0", "80"],
+    _c("readme-time-gap-cause", "docs/DEEP_DIVE.md", ["0", "80"],
        "at a zero gap 0 of 80 differ",
        "GAP CONTROL: 0 of 80 top-1 answers move when the two reads are not separated at all",
        "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py",
        "Registered deliberately rather than dropped: without a zero-gap arm, 'the ranking depends on "
        "when you ask' is only an observation about two reads and names no cause."),
-    _c("readme-time-gap-saturates", "README.md", ["16", "80"],
+    _c("readme-time-gap-saturates", "docs/DEEP_DIVE.md", ["16", "80"],
        "16 of 80 move at two seconds and the same count at ten seconds",
        "The effect saturates: 16 of 80 move at a two-second gap and the same count at ten",
        "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
-    _c("readme-time-gap-tie-band", "README.md", ["0.847"],
+    _c("readme-time-gap-tie-band", "docs/DEEP_DIVE.md", ["0.847"],
        "same score (0.847 against 0.847)",
        "Every top-1 answer that moved across the gap moved between records reported at the same "
        "score, e.g. 0.847 against 0.847",
        "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
-    _c("readme-time-gap-tie-band-share", "README.md", ["100", "6"],
+    _c("readme-time-gap-tie-band-share", "docs/DEEP_DIVE.md", ["100", "6"],
        "100% of them, in all six insert orders tried",
        "100% of the moved answers stayed inside a displayed tie, across all six insert orders",
        "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
-    _c("readme-time-gap-no-direction", "README.md", ["0.0094"],
+    _c("readme-time-gap-no-direction", "docs/DEEP_DIVE.md", ["0.0094"],
        "the hit@1 change runs +0.0094 to",
        "Across five randomised insertion orders the hit@1 change over the gap runs +0.0094 to -0.0219",
        "REPRODUCIBLE-WITH-DEPS", "python probes/recall_over_a_time_gap.py"),
-    _c("readme-time-gap-spread-low", "README.md", ["-0.0219", "2", "5", "-0.0062"],
+    _c("readme-time-gap-spread-low", "docs/DEEP_DIVE.md", ["-0.0219", "2", "5", "-0.0062"],
        "-0.0219, negative in 2 of 5. Natural conversation order alone reads -0.0062",
        "The hit@1 change is negative in only 2 of 5 randomised insert orders; natural conversation "
        "order alone reads -0.0062",
@@ -513,30 +593,30 @@ NUMBER_CLAIMS = [
        "The natural-order figure is registered beside the spread on purpose: alone it reproduces to "
        "four decimals every run and reads as a systematic loss, which is the fixture (LOCOMO gold "
        "turns skew late, so gold records are newer) and not a property of the store."),
-    _c("readme-fixed-instant-determinism", "README.md", ["0.0000"],
+    _c("readme-fixed-instant-determinism", "docs/DEEP_DIVE.md", ["0.0000"],
        "arm (a) of the reinforce ablation measures 0.0000 on every corpus",
        "Run-to-run determinism at a fixed instant: arm (a) divergence 0.0000 on every corpus",
        "REPRODUCIBLE-WITH-DEPS", "python probes/reinforce_accuracy_ablation.py"),
-    _c("readme-session-digest-fixture", "README.md", ["2,606", "1.000"],
+    _c("readme-session-digest-fixture", "docs/DEEP_DIVE.md", ["2,606", "1.000"],
        "Measured on an 8-session, 2,606-record fixture",
        "SessionEnd digest -> SessionStart injection, 8-session / 2,606-record fixture: injection recall "
        "1.000 of a session's conclusions reach the next session",
        "REPRODUCIBLE", "python probes/session_digest_multisession.py"),
-    _c("readme-session-digest-rejection", "README.md", ["1.0000"],
+    _c("readme-session-digest-rejection", "docs/DEEP_DIVE.md", ["1.0000"],
        "**1.0000** of below-threshold items stay out",
        "Below-threshold rejection 1.0000 on the same fixture",
        "REPRODUCIBLE", "python probes/session_digest_multisession.py"),
-    _c("readme-session-digest-control", "README.md", ["0.2213"],
+    _c("readme-session-digest-control", "docs/DEEP_DIVE.md", ["0.2213"],
        "collapses to **0.2213**",
        "NEGATIVE CONTROL: with the salience bar removed, rejection collapses to 0.2213",
        "REPRODUCIBLE", "python probes/session_digest_multisession.py",
        "Registered deliberately rather than dropped: without it a rejection of 1.0000 cannot be told "
        "apart from a fixture that contained nothing to reject."),
-    _c("readme-session-digest-cost", "README.md", ["7"],
+    _c("readme-session-digest-cost", "docs/DEEP_DIVE.md", ["7"],
        "`close_session` costs 7 ms at that size",
        "close_session costs 7 ms on the 2,606-record fixture",
        "REPRODUCIBLE", "python probes/session_digest_multisession.py"),
-    _c("readme-chain-binding", "README.md", ["15", "18", "60", "2", "9", "1", "0", "8", "4"],
+    _c("readme-chain-binding", "docs/DEEP_DIVE.md", ["15", "18", "60", "2", "9", "1", "0", "8", "4"],
        "| correction chains that collapse to one record holding the final value | 2/15 |",
        "regex_extractor chain binding on benchmarks/chain_binding/ (15 chains, 18 unrelated pairs, "
        "60 prose sentences): chains collapsing to one record 2/15 -> 9/15; false binds on unrelated "
@@ -546,116 +626,116 @@ NUMBER_CLAIMS = [
        "not quoted from elsewhere. The false-bind row is the control: a keyer that binds everything "
        "scores a perfect 15/15 while tripping all 18 negative pairs, which is why the bind rate alone "
        "is not evidence."),
-    _c("readme-ramr-echo", "README.md", ["0.00", "0.57", "1.00"],
+    _c("readme-ramr-echo", "docs/DEEP_DIVE.md", ["0.00", "0.57", "1.00"],
        "(keyed-without-guard 0.00, an add-based system 0.57, guard 1.00)",
        "RAMR ECHO-RESISTANCE: keyed-without-guard 0.00, add-based 0.57, echo_guard 1.00",
        "EXTERNAL", "",
        "From RAMR, a separate repository. The README presented these as if produced here; it now says "
        "where they come from AND points at this repo's own echo cell, which measures a different "
        "quantity and does NOT flatter us."),
-    _c("readme-integrity-echo-cell", "README.md", ["0.00", "0.05"],
+    _c("readme-integrity-echo-cell", "docs/DEEP_DIVE.md", ["0.00", "0.05"],
        "0.00, mem0 0.05, Graphiti 0.00",
        "In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00",
        "REPRODUCIBLE-WITH-DEPS", "python probes/integrity_bench_echo.py --systems inspeximus",
        "The inspeximus column runs locally and free; the mem0/Graphiti columns need OPENAI_API_KEY and a "
        "live neo4j, which is why this is WITH-DEPS rather than REPRODUCIBLE."),
-    _c("readme-recall-any1", "README.md", ["0.397"],
+    _c("readme-recall-any1", "docs/DEEP_DIVE.md", ["0.397"],
        "lands recall_any@1 at 0.397",
        "recall_any@1 = 0.397 with nomic task prefixes on one LoCoMo config",
        "PENDING-HARNESS", "python probes/retrieval_recall_locomo.py --k 1",
        "Same dataset blocker as the headline pair; already flagged in place as not reproducible here."),
-    _c("readme-locomo-confound", "README.md", ["0.19", "0.29"],
+    _c("readme-locomo-confound", "docs/DEEP_DIVE.md", ["0.19", "0.29"],
        "0.19→0.29 delta was contaminated",
        "A withdrawn 0.19->0.29 delta, cited as an example of a confound we found and corrected",
        "EXTERNAL", "",
        "Kept deliberately: it is a retraction, not a claim. Removing it would erase the correction."),
-    _c("readme-lexical-decay", "README.md", ["5", "0.94", "0.25"],
+    _c("readme-lexical-decay", "docs/DEEP_DIVE.md", ["5", "0.94", "0.25"],
        "lexical `recall@5` decays from **0.94** (small store) to **0.25**",
        "Lexical recall@5 decays 0.94 -> 0.25 as the store grows", "EXTERNAL", "",
        "Agora Lab b4c260, cited in place. No probe in this repository reproduces it."),
-    _c("readme-semantic-hold", "README.md", ["0.65", "2.6"],
+    _c("readme-semantic-hold", "docs/DEEP_DIVE.md", ["0.65", "2.6"],
        "while semantic **holds at ~0.65** — ≈**2.6×** at full scale",
        "Semantic recall@5 holds ~0.65 at full scale, ~2.6x lexical", "EXTERNAL", "",
        "Agora Lab b4c260."),
-    _c("readme-paraphrase", "README.md", ["5", "0.86", "0.20"],
+    _c("readme-paraphrase", "docs/DEEP_DIVE.md", ["5", "0.86", "0.20"],
        "semantic `recall@5` is **0.86 vs 0.20** lexical",
        "On paraphrase queries semantic recall@5 is 0.86 vs 0.20 lexical", "EXTERNAL", "",
        "Agora Lab 3501f1."),
-    _c("readme-hub-prune", "README.md", ["20"],
+    _c("readme-hub-prune", "docs/DEEP_DIVE.md", ["20"],
        "lifts **lexical** recall ~20% only when a store is link-spammed",
        "Pruning hub notes lifts lexical recall ~20% on a link-spammed store only", "EXTERNAL", ""),
-    _c("readme-consolidation-half", "README.md", ["1.8"],
+    _c("readme-consolidation-half", "docs/DEEP_DIVE.md", ["1.8"],
        "the budget shrinks** (≈1.8× at half",
        "Value-ranked consolidation beats FIFO by ~1.8x at half budget", "EXTERNAL", ""),
-    _c("readme-consolidation-eighth", "README.md", ["4"],
+    _c("readme-consolidation-eighth", "docs/DEEP_DIVE.md", ["4"],
        "budget → ≈4× at one-eighth",
        "...and by ~4x at one-eighth budget", "EXTERNAL", ""),
-    _c("readme-retention-cold", "README.md", ["30", "2.8"],
+    _c("readme-retention-cold", "docs/DEEP_DIVE.md", ["30", "2.8"],
        "At a 30% keep-budget the access-decay policy retained only **2.8%**",
        "At a 30% keep-budget, access-decay retains 2.8% of high-value/low-frequency memories",
        "EXTERNAL", "", "Agora Lab 19d802."),
-    _c("readme-retention-value", "README.md", ["20", "100", "64"],
+    _c("readme-retention-value", "docs/DEEP_DIVE.md", ["20", "100", "64"],
        "and **20%** of total value, vs **100%** and **64%** for",
        "...20% of total value, vs 100% and 64% for the value-aware blend", "EXTERNAL", ""),
-    _c("readme-retention-gap", "README.md", ["3", "2.2", "7"],
+    _c("readme-retention-gap", "docs/DEEP_DIVE.md", ["3", "2.2", "7"],
        "about **3× more value kept** (the gap persists, ≈2.2× retained value, even at a 7%",
        "~3x more value kept, persisting at ~2.2x even at a 7% budget", "EXTERNAL", ""),
-    _c("readme-supersession-auroc", "README.md", ["0.61"],
+    _c("readme-supersession-auroc", "docs/DEEP_DIVE.md", ["0.61"],
        "scores **AUROC ~0.61**",
        "A cosine classifier separating a contradiction from a rephrase scores AUROC ~0.61",
        "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py",
        "Re-run 2026-08-01: AUROC 0.613. Needs a local nomic-embed-text (Ollama) and numpy."),
-    _c("readme-supersession-stale", "README.md", ["42"],
+    _c("readme-supersession-stale", "docs/DEEP_DIVE.md", ["42"],
        "serves the **stale value ~42% of the time**",
        "A similarity-based store serves the stale value ~42% of the time",
        "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py",
        "Re-run 2026-08-01: 41.7%."),
-    _c("readme-supersession-zero", "README.md", ["0"],
+    _c("readme-supersession-zero", "docs/DEEP_DIVE.md", ["0"],
        "to **0%**. Re-run it: `python probes/supersession_replication.py`",
        "The deterministic SRO key drives the stale-value rate to 0%",
        "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py"),
-    _c("readme-supersession-rerun", "README.md", ["0.613", "41.7", "0.0"],
+    _c("readme-supersession-rerun", "docs/DEEP_DIVE.md", ["0.613", "41.7", "0.0"],
        "reproduced AUROC 0.613, stale-fact-error 41.7% under pure cosine and 0.0% under the SRO key",
        "The 2026-08-01 re-run of that probe, quoted with its date",
        "REPRODUCIBLE-WITH-DEPS", "python probes/supersession_replication.py"),
-    _c("readme-supersession-8of8-withdrawn", "README.md", ["0", "8"],
+    _c("readme-supersession-8of8-withdrawn", "docs/DEEP_DIVE.md", ["0", "8"],
        "0/24, no artifact here produces an 8/8, and that figure has been withdrawn",
        "WITHDRAWN: 'severe-test 8/8' -- the probe reports 0/24 and nothing here produces an 8/8",
        "WITHDRAWN", "python probes/supersession_replication.py"),
-    _c("readme-memops-parsefail", "README.md", ["2"],
+    _c("readme-memops-parsefail", "docs/DEEP_DIVE.md", ["2"],
        "About 2% of mem0's extraction calls failed to parse",
        "~2% of mem0's MemOps extraction calls failed to parse", "EXTERNAL", ""),
-    _c("readme-operating-cosine", "README.md", ["42"],
+    _c("readme-operating-cosine", "docs/DEEP_DIVE.md", ["42"],
        "store scores **42%** (fine on stable, but blind to",
        "Operating-point trap: a cosine top-1 store scores 42%",
        "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py",
        "Needs a local nomic-embed-text (Ollama)."),
-    _c("readme-operating-recency", "README.md", ["0", "8", "67"],
+    _c("readme-operating-recency", "docs/DEEP_DIVE.md", ["0", "8", "67"],
        "supersession — **0/8** on updated facts — and fooled by repeated lies); a **recency** store **67%**",
        "...0/8 on updated facts; a recency store scores 67%",
        "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py"),
-    _c("readme-operating-poison", "README.md", ["0", "8"],
+    _c("readme-operating-poison", "docs/DEEP_DIVE.md", ["0", "8"],
        "*freshest lie* — **0/8** on poison)",
        "...and 0/8 on poison", "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py"),
-    _c("readme-operating-layered", "README.md", ["100"],
+    _c("readme-operating-layered", "docs/DEEP_DIVE.md", ["100"],
        "value-ranking — is **100%**, robust across all three",
        "The layered store scores 100% across all three operating points",
        "REPRODUCIBLE-WITH-DEPS", "python probes/operating_point_memory.py"),
-    _c("readme-cohort-power", "README.md", ["0.36"],
+    _c("readme-cohort-power", "docs/DEEP_DIVE.md", ["0.36"],
        "reached only ~0.36 power at realistic sample sizes",
        "Per-memory outcome attribution reaches only ~0.36 power at n-of-1", "EXTERNAL", ""),
-    _c("readme-sybil-attack", "README.md", ["0.9", "10"],
+    _c("readme-sybil-attack", "docs/DEEP_DIVE.md", ["0.9", "10"],
        "(~0.9 attack-success across 10 models",
        "Content-declared corroboration falls to a sybil at ~0.9 attack-success across 10 models",
        "REPRODUCIBLE-WITH-DEPS", "python probes/memory_defense_layer_probe.py",
        "The harness is committed; reproducing the number needs ten models and a judge, which no "
        "checkout can ship."),
-    _c("readme-bedrock-directions", "README.md", ["8"],
+    _c("readme-bedrock-directions", "docs/DEEP_DIVE.md", ["8"],
        "Checked from ~8 directions",
        "The bedrock synthesis was checked from ~8 directions", "EXTERNAL", "",
        "A count of the analytical directions taken, not a measurement. Left in because the sentence "
        "labels itself 'a synthesis over those cases, not a proof'."),
-    _c("readme-mcp-tools", "README.md", ["68"],
+    _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["68"],
        "`inspeximus-mcp`, 68 tools",
        "The MCP server exposes 68 tools", "REPRODUCIBLE",
        'python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'
@@ -735,6 +815,18 @@ NUMBER_CLAIMS = [
 #: in NUMBER_CLAIMS with a command instead.
 NON_CLAIM_TOKENS = {
     "README.md": {
+        # Declared, with the reason, because a token nobody claims is not the same as a token nobody
+        # looked at -- and this file was briefly outside SURFACE, where the audit passed by not reading it.
+        "30": (1, "the rhetorical heading 'The 30 seconds that matter', not a quantity"),
+        "0": (2, "Python list indices [0] in the code example, not measurements"),
+        "12": (1, "EU AI Act ARTICLE number in the docs table, not a quantity"),
+        "68,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '68'"),
+        # The DOI. `10.5281` is the Zenodo registrant prefix and the rest is a record id -- an ADDRESS,
+        # not a measurement. Declared with a count so that adding a second DOI has to be declared too,
+        # rather than being absorbed silently by a bare name.
+        "10.5281": (1, "Zenodo DOI registrant prefix in the citation link, an identifier not a quantity"),
+    },
+    "docs/DEEP_DIVE.md": {
         # The quickstart names the five examples that need Ed25519 by FILENAME, so their
         # numeric prefixes are published tokens. They are file names, not measurements.
         "04": (1, "the `04_encryption` example filename in the quickstart"),
@@ -994,6 +1086,46 @@ def audit_numbers(root=None):
     return problems, stats
 
 
+_COLLECTED = {}   # process-level cache: collection costs ~18s, and several tests audit the same root
+
+
+def _collected_test_count(root):
+    """How many tests this repo ACTUALLY collects, by collecting them.
+
+    Registered-and-reproducible is not the same as still-true. The registry checks that a number has an
+    entry, that its pin resolves, and that its command names a real file -- it never runs the command, so
+    a count that was right when it was written stays green forever after it stops being right. Measured:
+    the README published 2,793 while the suite collected 2,797, and every gate was green, because nothing
+    in the chain re-derived the figure. Counting `def test_` statically would not do it either: parametrize
+    multiplies cases, so the static number is a different quantity that happens to look like this one.
+
+    Returns None when it cannot count, and None must NOT be read as agreement -- the caller says so.
+    """
+    if root in _COLLECTED:
+        return _COLLECTED[root]
+    # ONLY this repository. `audit_numbers` is also run against temp COPIES of the whole tree -- the
+    # mutation-score test makes one per mutant -- and collecting a copied suite costs ~20 minutes each,
+    # for an answer about a tree nobody publishes. Measured: it turned a 20-minute suite into one that
+    # was 10% done after 25. The published numbers belong to this checkout, so this counts this checkout.
+    if pathlib.Path(root).resolve() != _repo_root().resolve():
+        return None
+    tests = root / "tests"
+    if not tests.is_dir():
+        _COLLECTED[root] = None
+        return None
+    try:
+        r = subprocess.run([sys.executable, "-m", "pytest", str(tests), "-q", "--collect-only",
+                            "-p", "no:randomly", "--continue-on-collection-errors"],
+                           cwd=str(root), capture_output=True, text=True, timeout=600,
+                           env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    except (OSError, subprocess.SubprocessError):
+        _COLLECTED[root] = None
+        return None
+    m = re.search(r"(\d+) tests? collected", r.stdout or "")
+    _COLLECTED[root] = int(m.group(1)) if m else None
+    return _COLLECTED[root]
+
+
 def _live_consistency(root):
     """Figures that describe THIS repo must equal what this repo actually contains.
 
@@ -1010,7 +1142,7 @@ def _live_consistency(root):
                        ("MCP_LISTINGS.md", r"\*\*Tools \((\d+)\):\*\*"),
                        ("index.html", r'data-count="(\d+)">0</b><span>MCP tools'),
                        ("index.html", r">(\d+) tools any MCP host can call<"),
-                       ("README.md", r"`inspeximus-mcp`, (\d+) tools")):
+                       ("docs/DEEP_DIVE.md", r"`inspeximus-mcp`, (\d+) tools")):
         p = root / fname
         if not p.exists():
             continue
@@ -1019,6 +1151,40 @@ def _live_consistency(root):
             out.append(("LIVE-MISMATCH", fname, f"expected a tool count matching {pat!r}; found none"))
         elif int(m.group(1)) != live:
             out.append(("LIVE-MISMATCH", fname, f"publishes {m.group(1)} MCP tools; the server registers {live}"))
+
+    # The suite size, counted by collecting it. BOTH surfaces that carry it are checked, including the
+    # badge -- the badge number lives inside a URL, and scan_numbers deliberately does not read URLs, so
+    # `tests-2793` was a published figure that no gate had ever looked at. The most-read number on the
+    # page was the one number outside the system.
+    collected = _collected_test_count(root)
+    # In scope when this IS the repository whose numbers are published, or when a caller seeded the count
+    # explicitly (the controls do, so they exercise the comparison without paying for a collection). A
+    # temp COPY of the tree is neither: nobody publishes its README, and counting it would say nothing
+    # about ours. Scoping is not skipping -- for the real repo, "could not count" stays loud below.
+    in_scope = pathlib.Path(root).resolve() == _repo_root().resolve() or root in _COLLECTED
+    if in_scope and (root / "tests").is_dir():
+        if collected is None:
+            out.append(("LIVE-MISMATCH", "tests/",
+                        "the suite could not be collected, so the published test count was NOT checked "
+                        "-- which is not the same as checked"))
+        else:
+            # A FLOOR, not an equality. An exact published count is unstable under its own maintenance:
+            # adding the eight controls below this check moved it 2797 -> 2804, and removing one moved it
+            # again, so the number was wrong twice in ten minutes purely because it was being guarded.
+            # "2,800+" is the honest form -- it stays true as the suite grows, and it still FAILS the
+            # moment the suite shrinks past it, which is the direction that would be a lie.
+            for fname, pat, what in (("README.md", r"badge/tests-([\d,]+)%2B-", "the tests badge"),
+                                     ("README.md", r"\*\*([\d,]+)\+ tests\*\*", "the prose test count")):
+                p = root / fname
+                if not p.exists():
+                    continue
+                m = re.search(pat, p.read_text(encoding="utf-8", errors="replace"))
+                if m is None:
+                    out.append(("LIVE-MISMATCH", fname, f"{what} is gone; it can no longer be checked"))
+                elif collected < int(m.group(1).replace(",", "")):
+                    out.append(("LIVE-MISMATCH", fname,
+                                f"{what} publishes a floor of {m.group(1)}; the suite collects only "
+                                f"{collected}"))
 
     # The integration counts come from the ledger the conformance runner writes, for the same reason the
     # tool count comes from the server: the homepage said "Drop-in for" nine frameworks with no qualifier
@@ -1044,25 +1210,25 @@ def _live_consistency(root):
                             f"publishes {m.group(1)}/{m.group(2)} verified and {m.group(3)} broken; the "
                             f"ledger records {len(rows) - broken}/{len(rows)} and {broken}"))
 
-    readme = root / "README.md"
+    readme = root / "docs/DEEP_DIVE.md"
     if readme.exists():
         m = re.search(r"(\d+) passed · (\d+) FAILED · (\d+) skipped · (\d+) not testable here",
                       readme.read_text(encoding="utf-8", errors="replace"))
         if m is None:
-            out.append(("LIVE-MISMATCH", "README.md", "the example audit summary is gone; it cannot be checked"))
+            out.append(("LIVE-MISMATCH", "docs/DEEP_DIVE.md", "the example audit summary is gone; it cannot be checked"))
         else:
             if int(m.group(1)) != len(CHECKS):
-                out.append(("LIVE-MISMATCH", "README.md",
+                out.append(("LIVE-MISMATCH", "docs/DEEP_DIVE.md",
                             f"the example run shows {m.group(1)} passing checks; this file defines {len(CHECKS)}"))
             if int(m.group(4)) != len(NOT_TESTABLE_HERE):
-                out.append(("LIVE-MISMATCH", "README.md",
+                out.append(("LIVE-MISMATCH", "docs/DEEP_DIVE.md",
                             f"the example run shows {m.group(4)} not-testable claims; this file lists "
                             f"{len(NOT_TESTABLE_HERE)}"))
             # The middle two counts were captured and never read -- so the page could advertise an
             # example run with failures in it and this check would have shrugged. Four numbers on that
             # line, two of them checked, is not "the line is checked".
             if (int(m.group(2)), int(m.group(3))) != (0, 0):
-                out.append(("LIVE-MISMATCH", "README.md",
+                out.append(("LIVE-MISMATCH", "docs/DEEP_DIVE.md",
                             f"the example run advertises {m.group(2)} FAILED / {m.group(3)} skipped; the "
                             f"example is supposed to show a clean run"))
     return out
@@ -1093,7 +1259,8 @@ def render_claims_doc(root=None):
     A("")
     A("## The ratio")
     A("")
-    A(f"- **{stats['published']}** numeric tokens are published across the three enforced files.")
+    A(f"- **{stats['published']}** numeric tokens are published across the "
+      f"{len(SURFACE)} enforced files: {', '.join(SURFACE)}.")
     A(f"- **{stats['claims']}** of those are quantitative claims, in **{n}** registry rows below.")
     A(f"- **{repro}** rows ({repro}/{n}) are reproducible by a command committed to this repository")
     A("  (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or")
@@ -1125,7 +1292,8 @@ def render_claims_doc(root=None):
     A("")
     A("## Known unenforced numbers")
     A("")
-    A("These are outside the three token-enforced files, so the guard above does **not** cover them.")
+    A(f"These are outside the {len(SURFACE)} token-enforced files, so the guard above does "
+      "**not** cover them.")
     A("They are listed because \"absent from the table\" and \"not a problem\" are different statements,")
     A("and here only the first one is true. None may be promoted onto the reader-facing surface while it")
     A("still says `PENDING-HARNESS`.")

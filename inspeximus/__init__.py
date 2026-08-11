@@ -24,6 +24,10 @@ from .core import (
     detect_pii,
     redact_pii,
     new_encryption_key,
+    # 2.5.0. The README and the site advertise this as a headline capability while it existed only
+    # as inspeximus.core.evaluate_applicability -- not exported, not a method, not an MCP tool. A
+    # reader following the obvious import would have hit ImportError on the feature we led with.
+    evaluate_applicability,
     __version__,
 )
 
@@ -46,5 +50,6 @@ __all__ = [
     "detect_pii",
     "redact_pii",
     "new_encryption_key",
+    "evaluate_applicability",
     "__version__",
 ]

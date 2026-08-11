@@ -188,6 +188,10 @@ def _seed(tmp_path):
     (tmp_path / "inspeximus").mkdir()
     shutil.copy(os.path.join(ROOT, "inspeximus", "core.py"), tmp_path / "inspeximus" / "core.py")
     shutil.copy(os.path.join(ROOT, "README.md"), tmp_path / "README.md")
+    # The version a reader meets in prose lives in the long-form document now. The README carries only
+    # a LIVE PyPI badge, which cannot drift and therefore must not be pinned.
+    (tmp_path / "docs").mkdir(exist_ok=True)
+    shutil.copy(os.path.join(ROOT, "docs", "DEEP_DIVE.md"), tmp_path / "docs" / "DEEP_DIVE.md")
     return tmp_path
 
 
@@ -211,10 +215,15 @@ def test_the_pinner_pins_the_version_a_user_reads(tmp_path):
     assert f'__version__ = "{target}"' in core, "core.py __version__ was not pinned"
     assert core.count("__version__ = ") == 1, "more than one __version__ assignment; pinning is ambiguous"
 
-    readme = (root / "README.md").read_text(encoding="utf-8")
-    assert f"v{target}" in readme, "the README version badge was not pinned"
+    doc = (root / "docs" / "DEEP_DIVE.md").read_text(encoding="utf-8")
+    assert f"v{target}" in doc, "docs/DEEP_DIVE.md version was not pinned"
     assert not re.search(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])',
-                         readme.replace(f"v{target}", "")), "a vX.Y.Z token was left behind"
+                         doc.replace(f"v{target}", "")), "a vX.Y.Z token was left behind"
+    # The landing page must stay version-free, so nothing there can rot unpinned. Asserted rather than
+    # assumed: this is the whole reason the carrier moved instead of being dropped.
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    assert not re.search(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', readme), (
+        "README.md carries a hardcoded version; it has a live PyPI badge and nothing pins prose there")
 
 
 def test_the_pinner_refuses_a_core_that_lost_its_version_line(tmp_path):

@@ -47,7 +47,10 @@ REQUIRED_CARRIERS = (
     "server.json",
     ".claude-plugin/plugin.json",
     ".claude-plugin/marketplace.json",
-    "README.md",
+    # The version moved with the content. README.md is a landing page now and carries no
+    # version: its PyPI badge is live, so it cannot go stale and there is nothing to pin.
+    # The long-form document is the carrier, and the reader moved with it.
+    "docs/DEEP_DIVE.md",
     "glama.json",
 )
 
@@ -120,8 +123,13 @@ def _read_carrier(root, rel):
             d = json.loads(path.read_text(encoding="utf-8"))
             return [("plugins[%d].version" % i, e["version"])
                     for i, e in enumerate(d.get("plugins", [])) if "version" in e], None
-        if rel == "README.md":
+        if rel == "docs/DEEP_DIVE.md":
             toks = re.findall(r'(?<![\w.])v(\d+\.\d+\.\d+)(?![\w.])', path.read_text(encoding="utf-8"))
+            if not toks:
+                # A REQUIRED version carrier with no version in it has not agreed with anything; it has
+                # stopped carrying. An empty list would let the checklist pass on a document stating no
+                # version at all -- the same failure shape the glama.json note below is about.
+                return [], "declares no version, but it is required to carry one"
             return [("badge[%d]" % i, v) for i, v in enumerate(toks)], None
         if rel == "glama.json":
             # It declares no version today. That is fine and it is REPORTED rather than passed over in

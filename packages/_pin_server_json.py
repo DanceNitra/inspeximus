@@ -147,20 +147,36 @@ def main(argv: list[str]) -> int:
             p.write_text(new, encoding="utf-8")
         print(f"index.html softwareVersion + hero eyebrow pinned to {version}")
 
-    # The README badge is the first version a reader sees, and it is prose, so it gets a NARROW
-    # pattern: only the standalone `v<semver>` token, never a bare number that might be a citation,
-    # a DOI fragment or a dependency bound. If the token is absent the pinner says so and moves on
-    # rather than inventing a place to write.
-    p = ROOT / "README.md"
+    # The long-form document carries the version a reader sees in prose, and it is prose, so it gets a
+    # NARROW pattern: only the standalone `v<semver>` token, never a bare number that might be a
+    # citation, a DOI fragment or a dependency bound. If the token is absent the pinner says so and
+    # moves on rather than inventing a place to write.
+    #
+    # It reads docs/DEEP_DIVE.md, not README.md: the README was cut to a landing page whose only
+    # version is a LIVE PyPI badge. Pinning is for numbers that can go stale, and a shields.io badge
+    # resolves at request time -- writing a hardcoded version next to it would create the drift this
+    # pinner exists to prevent. README.md is still checked below, so "no version here" stays a fact
+    # this tool asserts rather than one it assumes.
+    p = ROOT / "docs" / "DEEP_DIVE.md"
     if p.exists():
         text = p.read_text(encoding="utf-8")
         new, n = re.subn(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', f"v{version}", text)
         if n:
             if new != text:
                 p.write_text(new, encoding="utf-8")
-            print(f"README.md version badge pinned to v{version} ({n} occurrence(s))")
+            print(f"docs/DEEP_DIVE.md version pinned to v{version} ({n} occurrence(s))")
         else:
-            print("README.md carries no vX.Y.Z badge; nothing pinned there")
+            print("docs/DEEP_DIVE.md carries no vX.Y.Z token; nothing pinned there")
+
+    # And assert the landing page really is version-free. If a hardcoded version ever reappears there,
+    # nothing above would pin it and it would rot silently on the most-read page in the project.
+    readme = ROOT / "README.md"
+    if readme.exists():
+        stray = re.findall(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', readme.read_text(encoding="utf-8"))
+        if stray:
+            print(f"README.md carries hardcoded version(s) {stray} that nothing pins; "
+                  f"use the live PyPI badge or move the statement into docs/DEEP_DIVE.md")
+            return 1
 
     return 0
 

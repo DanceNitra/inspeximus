@@ -650,10 +650,15 @@ def test_readme_locomo_numbers_come_from_the_committed_result():
     that stops the published figure and the reproducible figure drifting apart again."""
     r = _committed("full_retrieval.json")
     got = r["retrieval"]["pinned"]
-    with open(os.path.join(REPO, "README.md"), encoding="utf-8") as fh:
+    # docs/DEEP_DIVE.md, not README.md: the README is a landing page now and the LoCoMo section moved
+    # with the rest of the long-form content. The split below is what caught it -- a section that is
+    # not there yields one part, and one part is indistinguishable from a section full of wrong numbers.
+    doc = os.path.join(REPO, "docs", "DEEP_DIVE.md")
+    assert os.path.exists(doc), "docs/DEEP_DIVE.md is missing; the published LoCoMo pair is unchecked"
+    with open(doc, encoding="utf-8") as fh:
         readme = fh.read()
     block = readme.split("## And it doesn't cost you recall", 1)
-    assert len(block) == 2, "the README section this test guards has been renamed"
+    assert len(block) == 2, "the section this test guards has been renamed or moved again"
     section = block[1][:2600]
     for metric in ("recall_any", "recall_all"):
         assert f"{got[metric]:.2f}" in section, (

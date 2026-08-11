@@ -54,11 +54,17 @@ def sandbox(tmp_path):
     dst = tmp_path / "repo"
     dst.mkdir()
     for name in ca.SURFACE:
+        # SURFACE entries carry a path, not just a filename. This used to assume flat names, and the day
+        # the long-form README moved to docs/DEEP_DIVE.md the copy raised for a missing parent -- which
+        # ERRORED thirteen controls at setup rather than failing them. An erroring control still reads as
+        # "not a failure" in a summary line, so make the parent instead of assuming it.
+        (dst / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / name, dst / name)
+        assert (dst / name).exists(), f"{name} did not reach the sandbox; every control over it is vacuous"
     (dst / "inspeximus").mkdir()
     shutil.copy2(ROOT / "inspeximus" / "mcp_server.py", dst / "inspeximus" / "mcp_server.py")
     for sub in ("probes", "docs", "tools", "benchmarks"):
-        (dst / sub).mkdir()
+        (dst / sub).mkdir(exist_ok=True)   # docs/ now already exists: a SURFACE file lives in it
     # Everything a reproduction command can name has to exist here, or BROKEN-COMMAND fires on an
     # untouched sandbox and every control that asserts "clean before, dirty after" measures nothing.
     for src, pat in ((ROOT / "probes", "*.py"), (ROOT / "tools", "*.py")):
@@ -239,9 +245,14 @@ def test_the_scanner_sees_a_unit_glued_number(sandbox):
     the second occurrence -- guard and target computed by the same broken rule. This asserts the shape
     is readable now, not that one file happens to contain it.
     """
-    found = [t for _ln, t, _src in ca.scan_numbers(sandbox / "README.md")]
+    # The unit-glued token lives in the long-form document since the README was cut to a landing page.
+    doc = sandbox / "docs" / "DEEP_DIVE.md"
+    assert "90d" in doc.read_text(encoding="utf-8"), (
+        "fixture no longer reproduces: the unit-glued `90d` is gone, so this scanner test would pass "
+        "without ever exercising the shape it was written for")
+    found = [t for _ln, t, _src in ca.scan_numbers(doc)]
     assert "90" in found
-    p = sandbox / "README.md"
+    p = doc
     p.write_text(p.read_text(encoding="utf-8") + "\n\nA latency of 4242ms was observed.\n", encoding="utf-8")
     assert "UNREGISTERED" in _kinds(sandbox), "a unit-glued number is still invisible to the scanner"
 
@@ -287,9 +298,12 @@ def test_CONTROL_a_second_occurrence_of_a_REGISTERED_token_is_caught(sandbox):
 
 def test_CONTROL_moving_a_pinned_sentence_is_caught(sandbox):
     """A registry row whose sentence is gone describes nothing, and would keep reporting PASS."""
-    p = sandbox / "README.md"
-    p.write_text(p.read_text(encoding="utf-8").replace(
-        "13 passed · 0 FAILED · 0 skipped · 5 not testable here", "the audit passed"), encoding="utf-8")
+    p = sandbox / "docs" / "DEEP_DIVE.md"
+    before = p.read_text(encoding="utf-8")
+    after = before.replace(
+        "13 passed · 0 FAILED · 0 skipped · 5 not testable here", "the audit passed")
+    assert after != before, "fixture no longer reproduces: the pinned sentence has moved or changed"
+    p.write_text(after, encoding="utf-8")
     kinds = _kinds(sandbox)
     assert "STALE-PIN" in kinds and "LIVE-MISMATCH" in kinds
 
@@ -432,3 +446,90 @@ def test_CONTROL_a_deleted_coverage_promise_is_caught():
     assert deleted != real, "fixture no longer reproduces: the promise sentence has changed"
     assert not _PROMISE.findall(deleted), (
         "a README with the guarantee deleted still looked like one that carries it")
+
+
+# ── the published SUITE SIZE, and the controls that make its guard visible ──────────────────────────
+# The badge lives inside a URL and scan_numbers does not read URLs, so `tests-2793` was published on the
+# most-read line of the README with no gate over it at all. Registered-and-reproducible was never the
+# same as still-true: the registry checks that a number has an entry and a resolving pin, and never runs
+# the command, so 2,793 stayed green after the suite reached 2,797.
+def _mini_root(tmp_path, readme_text, collected=2797):
+    """A root carrying only what _live_consistency needs, with the count PRE-SEEDED.
+
+    Seeded rather than collected: an 18-second subprocess per control would buy nothing here, because
+    what these controls test is the comparison, not the counter. The counter has its own test below,
+    which runs it for real against this repo.
+    """
+    root = tmp_path / "mini"
+    (root / "inspeximus").mkdir(parents=True)
+    (root / "tests").mkdir()
+    shutil.copy2(ROOT / "inspeximus" / "mcp_server.py", root / "inspeximus" / "mcp_server.py")
+    (root / "README.md").write_text(readme_text, encoding="utf-8")
+    ca._COLLECTED[root] = collected
+    return root
+
+
+def _live_msgs(root):
+    return [m for kind, _where, m in ca._live_consistency(root) if kind == "LIVE-MISMATCH"]
+
+
+def test_the_counter_really_counts_this_repo():
+    """The counter itself, run for real. Everything below stubs it, so something must not."""
+    n = ca._collected_test_count(ROOT)
+    assert n is not None, "the suite could not be collected; the published count is unverified"
+    assert n > 2000, f"the collected count came back as {n}, which is not a plausible size for this suite"
+
+
+def _floor(kind):
+    """Read the FLOOR the README publishes right now, rather than remembering a number.
+
+    The first version of these controls pinned 2797 into the fixture. Eight new tests later the README
+    legitimately said 2,804 and every control failed -- a guard about stale published numbers, carrying
+    one. The repo already learned this on a control that hardcoded 56 MCP tools.
+    """
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
+    m = re.search(r"badge/tests-([\d,]+)%2B-" if kind == "badge" else r"\\*\\*([\d,]+)\+ tests\\*\\*", text)
+    assert m, f"fixture no longer reproduces: the {kind} test floor is not in the README"
+    return m.group(1)
+
+
+def test_the_counter_really_counts_this_repo():
+    """The counter itself, run for real. Every control below stubs it, so something must not."""
+    n = ca._collected_test_count(ROOT)
+    assert n is not None, "the suite could not be collected; the published floor is unverified"
+    assert n >= int(_floor("badge").replace(",", "")), (
+        f"the suite collects {n}, below the floor this README publishes")
+
+
+def test_CONTROL_a_suite_that_shrank_past_the_floor_is_caught(tmp_path):
+    """The direction that would be a lie: fewer tests than we claim."""
+    floor = int(_floor("badge").replace(",", ""))
+    root = _mini_root(tmp_path, (ROOT / "README.md").read_text(encoding="utf-8"), collected=floor - 1)
+    assert any("collects only" in m for m in _live_msgs(root)), _live_msgs(root)
+
+
+def test_CONTROL_a_deleted_badge_does_not_read_as_clean(tmp_path):
+    """Removing the number must not look like publishing a correct one."""
+    now = _floor("badge")
+    root = _mini_root(tmp_path, (ROOT / "README.md").read_text(encoding="utf-8")
+                      .replace(f"badge/tests-{now}%2B-", "badge/tests-passing-"),
+                      collected=int(now.replace(",", "")))
+    assert any("tests badge is gone" in m for m in _live_msgs(root)), _live_msgs(root)
+
+
+def test_CONTROL_an_uncountable_suite_does_not_read_as_agreement(tmp_path):
+    """The failure this whole file is about: silence reported as a pass.
+
+    If collection breaks, the honest output is "NOT checked". Reporting nothing would let a broken
+    counter certify every number it never compared.
+    """
+    root = _mini_root(tmp_path, (ROOT / "README.md").read_text(encoding="utf-8"), collected=None)
+    assert any("was NOT checked" in m for m in _live_msgs(root)), _live_msgs(root)
+
+
+def test_CONTROL_a_suite_above_the_floor_produces_no_complaint(tmp_path):
+    """The negative control. Without it, a guard that fires on everything passes every test above --
+    and a floor that fired when the suite GREW would push us to understate it forever."""
+    floor = int(_floor("badge").replace(",", ""))
+    root = _mini_root(tmp_path, (ROOT / "README.md").read_text(encoding="utf-8"), collected=floor + 500)
+    assert not [m for m in _live_msgs(root) if "test count" in m or "tests badge" in m], _live_msgs(root)

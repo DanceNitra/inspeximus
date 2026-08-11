@@ -20,12 +20,24 @@ from inspeximus.audit_bundle import bind_content, build_bundle
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 README = os.path.join(ROOT, "README.md")
+DEEP_DIVE = os.path.join(ROOT, "docs", "DEEP_DIVE.md")
 SECRET = "alice@example.com"
 
 
 def _readme():
-    with open(README, encoding="utf-8") as fh:
-        return fh.read()
+    """The whole documentation surface a reader lands on, not one file of it.
+
+    The guarantee these tests carry is "a capability we removed cannot keep being advertised". That is a
+    property of what the project PUBLISHES, so when the long-form content moved to docs/DEEP_DIVE.md and
+    this kept reading README.md alone, every claim it guards became invisible to it -- and invisible
+    reads as absent, which is how a guard against lying copy turns into a guard against nothing.
+    """
+    out = ""
+    for path in (README, DEEP_DIVE):
+        assert os.path.exists(path), f"{path} is missing; the surface it documents would go unchecked"
+        with open(path, encoding="utf-8") as fh:
+            out += fh.read() + "\n\n"
+    return out
 
 
 def test_snippet_1_cli_residue_exits_nonzero_and_names_the_kinds():

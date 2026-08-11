@@ -1,9 +1,12 @@
 <!doctype html>
 <html lang="en">
-  <head>
+  <head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>inspeximus — Agent memory that keeps a corrected fact corrected</title>
+    <!-- Category first, brand last. "inspeximus" is a word nobody searches, and on a page with no brand
+         equity the first words are the only ones that can win an impression. The social cards below keep
+         the longer, more distinctive line, because a shared card is read by someone who already clicked. -->
+    <title>Agent memory that stays correct — Python + MCP | inspeximus</title>
     <meta
       name="description"
       content="Self-correcting memory for AI agents: correct a fact once and recall keeps it corrected. Zero-dependency Python + MCP server — a deterministic mem0 alternative."
@@ -86,6 +89,7 @@
         <a href="#measured">Measured</a>
         <a href="#features">Features</a>
         <a href="#mcp">MCP</a>
+        <a href="#provenance">Provenance</a>
         <a href="#langgraph">LangGraph</a>
         <a href="#governance">Governance</a>
         <a href="ai-act.html">EU AI Act</a>
@@ -198,6 +202,51 @@
         </div>
       </section>
 
+      <!-- Provenance / applicability (2.5.0) -->
+      <section class="section" id="provenance">
+        <div class="section__head reveal">
+          <p class="eyebrow">new in 2.5.0</p>
+          <h2 class="section__title">Is this memory still true &mdash; and may it still act?</h2>
+          <p class="section__lede">
+            Two questions most memory layers cannot answer at all. A stored fact can be perfectly
+            recorded and quietly wrong, because the thing it describes has changed since.
+          </p>
+        </div>
+        <div class="cards reveal">
+          <article class="card spotlight">
+            <h3>check_sources()</h3>
+            <p>
+              Re-reads each record&rsquo;s origin and compares a fingerprint stamped at write time:
+              <code>FRESH</code>, <code>DRIFTED</code>, <code>ORPHANED</code>, <code>UNCHECKABLE</code>.
+              When nothing is checkable it reports <em>ok = false</em> and says it verified nothing &mdash;
+              a clean report over an empty scope is the failure it exists to prevent.
+            </p>
+          </article>
+          <article class="card spotlight">
+            <h3>Four coverage numbers, kept apart</h3>
+            <p>
+              Can the evidence point back to an origin? Can that origin be re-read? Can deletions be
+              detected? Is the record bound to a context? We measured our own store at 98.3% populated
+              and 0.01% re-fetchable &mdash; one collapsed number would have called that fully covered.
+            </p>
+          </article>
+          <article class="card spotlight">
+            <h3>Current-state applicability</h3>
+            <p>
+              Historical truth is not current authority. <code>evaluate_applicability()</code> asks whether
+              evidence may drive an action <em>here, now</em> &mdash; the branch moved, the policy changed,
+              the tenant differs, the window expired &mdash; and returns <code>REVALIDATE</code> instead of
+              letting stale evidence acquire present authority.
+            </p>
+          </article>
+        </div>
+        <p class="bench__caveat reveal">
+          Implements a vendor-neutral contract with a second, independent implementation: both agree on
+          every case of its frozen fixture, including the reasons. Absence of historical context is not
+          permission to assume continuity.
+        </p>
+      </section>
+
       <!-- Benchmark -->
       <section class="section" id="measured">
         <div class="section__head reveal">
@@ -226,10 +275,13 @@
           </div>
         </div>
         <p class="bench__caveat reveal">
-          Honest scope: this is a narrow adversarial cut, not a general memory-quality score. On the separate
-          echo-resurrection cell all three systems tie. Run it yourself —
-          <a href="https://github.com/DanceNitra/inspeximus" target="_blank" rel="noopener">the harness is open</a>.
-        </p>
+          Honest scope: this is a narrow adversarial cut, not a general memory-quality score. A separate
+          run on each vendor&rsquo;s own native configuration (n=30) measures the neighbouring question &mdash;
+          does a <em>corrected</em> fact come back? inspeximus 0%, Graphiti 13.3%, mem0 46.7%; with our
+          guard disabled we resurrect 100% of the time, which is how you can tell the number is the
+          mechanism and not the benchmark being kind to us. mem0 measured at 2.0.11 (2026-07) and not
+          re-run since. Run it yourself &mdash;
+          <a href="https://github.com/DanceNitra/ramr" target="_blank" rel="noopener">the harness is open</a>.</p>
       </section>
 
       <!-- Features -->

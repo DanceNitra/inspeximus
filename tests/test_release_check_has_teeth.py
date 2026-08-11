@@ -30,14 +30,19 @@ import release_notes  # noqa: E402
 
 
 # ── a minimal but REAL tree ─────────────────────────────────────────────────────────────────────────
-CARRIER_FILES = ("pyproject.toml", "CITATION.cff", "server.json", "glama.json", "README.md",
-                 "CHANGELOG.md")
+CARRIER_FILES = ("pyproject.toml", "CITATION.cff", "server.json", "glama.json",
+                 "docs/DEEP_DIVE.md", "CHANGELOG.md")
 
 
 def _tree(tmp_path):
     """Copy every file the checklist reads. Real content, so a defect has to be introduced on purpose."""
     for rel in CARRIER_FILES:
-        shutil.copy(os.path.join(ROOT, rel), tmp_path / rel)
+        # Carriers carry a PATH now, not just a name: the prose version moved into docs/ when the README
+        # became a landing page. Copying by basename would have put DEEP_DIVE.md at the root, where the
+        # checker does not look -- a tree that is "missing" a carrier it was just handed.
+        dest = tmp_path / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(os.path.join(ROOT, rel), dest)
     shutil.copytree(os.path.join(ROOT, ".claude-plugin"), tmp_path / ".claude-plugin")
     (tmp_path / "inspeximus").mkdir()
     shutil.copy(os.path.join(ROOT, "inspeximus", "core.py"), tmp_path / "inspeximus" / "core.py")
@@ -45,7 +50,7 @@ def _tree(tmp_path):
     # regardless of `root`, so a temp tree silently borrowed it and the notes were assembled from two
     # different checkouts at once; `template_for()` now refuses that, which is what made this line
     # necessary.
-    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs").mkdir(exist_ok=True)   # a carrier lives in docs/ now, so it may already exist
     shutil.copy(os.path.join(ROOT, "docs", "RELEASE_NOTES_TEMPLATE.md"),
                 tmp_path / "docs" / "RELEASE_NOTES_TEMPLATE.md")
     return tmp_path
@@ -77,7 +82,7 @@ def test_the_carrier_check_passes_on_a_consistent_tree(tmp_path):
     # Exactly the mistake each release actually made, one at a time.
     ("CITATION.cff", lambda t: re.sub(r'^version:.*$', "version: 1.1.0", t, count=1, flags=re.M)),
     ("inspeximus/core.py", lambda t: t.replace('__version__ = "', '__version__ = "9.9.9+', 1)),
-    ("README.md", lambda t: re.sub(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', "v1.85.0", t, count=1)),
+    ("docs/DEEP_DIVE.md", lambda t: re.sub(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', "v1.85.0", t, count=1)),
     ("server.json", lambda t: t.replace('"version": "', '"version": "0.0.0-', 1)),
     (".claude-plugin/plugin.json", lambda t: t.replace('"version": "', '"version": "0.0.0-', 1)),
 ])

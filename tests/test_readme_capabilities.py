@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 README = os.path.join(ROOT, "README.md")
+DEEP_DIVE = os.path.join(ROOT, "docs", "DEEP_DIVE.md")
 LISTINGS = os.path.join(ROOT, "MCP_LISTINGS.md")
 DOCS = os.path.join(ROOT, "docs")
 
@@ -72,6 +73,22 @@ BUILTINS = {
 def _read(path):
     with open(path, encoding="utf-8") as fh:
         return fh.read()
+
+
+def _surface():
+    """README.md AND docs/DEEP_DIVE.md — the pages a reader actually lands on.
+
+    These checks guarantee that what we ADVERTISE exists. That is a property of the published surface,
+    not of one filename, so when the long-form content moved into docs/ this stopped seeing most of the
+    claims it guards: the capability extractor fell from 20+ tokens to 7 and the shell-claim extractor
+    to 1. Each has a floor that caught it, which is the only reason this is a fix and not a discovery
+    six months from now.
+    """
+    out = ""
+    for path in (README, DEEP_DIVE):
+        assert os.path.exists(path), f"{path} is missing; the claims it carries would go unchecked"
+        out += _read(path) + "\n\n"
+    return out
 
 
 # --------------------------------------------------------------------------------------------------
@@ -216,7 +233,7 @@ def unknown_capabilities(text, surface):
 # the checks
 # --------------------------------------------------------------------------------------------------
 def test_readme_names_only_capabilities_that_exist():
-    text = _read(README)
+    text = _surface()
     surface = public_surface()
     toks = capability_tokens(text)
     assert len(toks) >= 20, (
@@ -241,7 +258,7 @@ def test_docs_name_only_capabilities_that_exist(doc):
 
 
 def test_readme_shell_claims_resolve_to_real_subcommands():
-    text = _read(README)
+    text = _surface()
     subs = cli_subcommands()
     claimed = shell_claims(text)
     assert len(claimed) >= 5, "extracted only %d shell claims -- extraction misaimed" % len(claimed)
@@ -275,7 +292,7 @@ def test_mcp_listings_tool_count_matches_the_server():
 
 def test_readme_internal_anchors_resolve():
     """Five 'Jump to' links pointed at headings that had been renamed away."""
-    text = _read(README)
+    text = _surface()
     heads = [l for l in text.split("\n") if re.match(r"^#{2,4} ", l)]
     assert len(heads) > 10, "parsed %d headings -- anchor check is misaimed" % len(heads)
 
@@ -301,7 +318,7 @@ def test_the_guard_fires_on_an_invented_capability():
     matching anything -- the failure mode this whole file was written about.
     """
     surface = public_surface()
-    text = _read(README) + "\n\nNew in 2.0: `quantum_recall()` re-ranks across timelines.\n"
+    text = _surface() + "\n\nNew in 2.0: `quantum_recall()` re-ranks across timelines.\n"
     missing = unknown_capabilities(text, surface)
     assert "quantum_recall" in missing, (
         "the guard did NOT catch an invented capability -- it is measuring nothing")
@@ -310,7 +327,7 @@ def test_the_guard_fires_on_an_invented_capability():
 def test_the_guard_fires_on_an_invented_attribute_form():
     """The `m.name` shape has to be caught too, not just `name(`."""
     surface = public_surface()
-    text = _read(README) + "\n\nCall `m.telepathy` for the rest.\n"
+    text = _surface() + "\n\nCall `m.telepathy` for the rest.\n"
     assert "telepathy" in unknown_capabilities(text, surface)
 
 
