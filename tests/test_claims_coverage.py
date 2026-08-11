@@ -533,3 +533,37 @@ def test_CONTROL_a_suite_above_the_floor_produces_no_complaint(tmp_path):
     floor = int(_floor("badge").replace(",", ""))
     root = _mini_root(tmp_path, (ROOT / "README.md").read_text(encoding="utf-8"), collected=floor + 500)
     assert not [m for m in _live_msgs(root) if "test count" in m or "tests badge" in m], _live_msgs(root)
+
+
+def test_CONTROL_an_absent_pytest_is_out_of_scope_and_a_present_one_is_not(tmp_path, monkeypatch):
+    """The exemption, and the thing it must not swallow.
+
+    The audit job installs no test extras, so demanding a collection there turned a healthy repository
+    red for the absence of pytest. "The counting tool is not installed" and "the count failed" are
+    different facts and only the second is a defect -- but an exemption without a control is how a guard
+    stops seeing its target while still reporting green, so both directions are pinned here.
+    """
+    real = ca.importlib.util.find_spec
+
+    monkeypatch.setattr(ca.importlib.util, "find_spec",
+                        lambda name, *a, **k: None if name == "pytest" else real(name, *a, **k))
+    root = _mini_root(tmp_path, (ROOT / "README.md").read_text(encoding="utf-8"), collected=None)
+    assert not [m for m in _live_msgs(root) if "NOT checked" in m], (
+        "with pytest absent the count is out of scope, not a failure")
+
+    monkeypatch.setattr(ca.importlib.util, "find_spec", real)
+    assert any("NOT checked" in m for m in _live_msgs(root)), (
+        "with pytest PRESENT, a count that could not be produced is still a defect -- the exemption "
+        "must not extend to it")
+
+
+def test_the_published_floor_holds_in_the_leanest_environment_we_run():
+    """The floor is a property of the repository; the COUNT is a property of the repository AND the
+    environment. Measured: 2,804 locally with every optional extra, 2,637 on a CI runner without them,
+    because modules that importorskip at module level are never collected at all. A floor set from the
+    richest environment therefore calls a healthy lean one a shrinking suite -- which it did, on CI,
+    for exactly one commit. This pins the headroom so the next person sees why the number understates."""
+    floor = int(_floor("badge").replace(",", ""))
+    assert floor <= 2637, (
+        f"the published floor {floor} exceeds the 2,637 a runner without optional extras collects; "
+        f"a floor must be true in the LEANEST environment we run, not the richest")

@@ -7,7 +7,7 @@ deterministically, with no LLM in the loop.
 [![PyPI](https://img.shields.io/pypi/v/inspeximus?color=2563eb&label=pypi)](https://pypi.org/project/inspeximus/)
 [![Python](https://img.shields.io/pypi/pyversions/inspeximus)](https://pypi.org/project/inspeximus/)
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-2563eb)](https://pypi.org/project/inspeximus/)
-[![Tests](https://img.shields.io/badge/tests-2800%2B-2563eb)](#how-this-is-tested)
+[![Tests](https://img.shields.io/badge/tests-2600%2B-2563eb)](#how-this-is-tested)
 [![License](https://img.shields.io/pypi/l/inspeximus)](LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21708778.svg)](https://doi.org/10.5281/zenodo.21708778)
 
@@ -110,7 +110,7 @@ needs nothing. The MCP server, encryption and framework adapters are all opt-in 
 
 ## How this is tested
 
-**2,800+ tests**, and a mutation gate that is the reason to believe them: 175 seeded defects, **175
+**2,600+ tests**, and a mutation gate that is the reason to believe them: 175 seeded defects, **175
 killed, 0 survived**. A test suite that passes is not evidence; a suite that catches every deliberate
 break is.
 

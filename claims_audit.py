@@ -23,6 +23,7 @@ passes.
 import argparse
 import collections
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -460,8 +461,8 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE-WITH-DEPS",
        "curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py",
        "Published as our own failure, not a product claim. 210,499 records across ten stores."),
-    _c("readme-tests-and-mutations", "README.md", ["2,800", "175"],
-       "**2,800+ tests**",
+    _c("readme-tests-and-mutations", "README.md", ["2,600", "175"],
+       "**2,600+ tests**",
        "Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed",
        "REPRODUCIBLE", "python tools/mutation_check_parallel.py"),
     _c("readme-erasure-fanout-hero", "docs/DEEP_DIVE.md", ["0.17", "1.00"],
@@ -1113,6 +1114,13 @@ def _collected_test_count(root):
     if not tests.is_dir():
         _COLLECTED[root] = None
         return None
+    if importlib.util.find_spec("pytest") is None:
+        # The counting TOOL is absent, which is a different fact from "the count failed", and the caller
+        # treats it differently. The audit job installs no test extras, so demanding a collection there
+        # made a green repository red for the absence of pytest. The guarantee still binds where it can
+        # be evaluated: the test job has pytest and enforces it there.
+        _COLLECTED[root] = None
+        return None
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", str(tests), "-q", "--collect-only",
                             "-p", "no:randomly", "--continue-on-collection-errors"],
@@ -1163,15 +1171,24 @@ def _live_consistency(root):
     # about ours. Scoping is not skipping -- for the real repo, "could not count" stays loud below.
     in_scope = pathlib.Path(root).resolve() == _repo_root().resolve() or root in _COLLECTED
     if in_scope and (root / "tests").is_dir():
-        if collected is None:
+        if collected is None and importlib.util.find_spec("pytest") is None:
+            pass          # no pytest here: out of scope, not a failure. See _collected_test_count.
+        elif collected is None:
             out.append(("LIVE-MISMATCH", "tests/",
-                        "the suite could not be collected, so the published test count was NOT checked "
-                        "-- which is not the same as checked"))
+                        "pytest is here but the suite could not be collected, so the published test "
+                        "count was NOT checked -- which is not the same as checked"))
         else:
             # A FLOOR, not an equality. An exact published count is unstable under its own maintenance:
             # adding the eight controls below this check moved it 2797 -> 2804, and removing one moved it
             # again, so the number was wrong twice in ten minutes purely because it was being guarded.
-            # "2,800+" is the honest form -- it stays true as the suite grows, and it still FAILS the
+            #
+            # And the floor must hold in the LEANEST environment, not the richest. Measured on CI: this
+            # checkout collects 2,804 locally with every optional extra installed and 2,637 on a runner
+            # without them, because modules that importorskip at module level are never collected at all.
+            # A floor of 2,800 therefore called a perfectly healthy CI a shrinking suite. The published
+            # number is a property of the repository; the count is a property of the repository AND the
+            # environment. So publish a floor that is true everywhere and let a full install exceed it --
+            # understating is safe, overstating is a lie. The floor still FAILS the
             # moment the suite shrinks past it, which is the direction that would be a lie.
             for fname, pat, what in (("README.md", r"badge/tests-([\d,]+)%2B-", "the tests badge"),
                                      ("README.md", r"\*\*([\d,]+)\+ tests\*\*", "the prose test count")):

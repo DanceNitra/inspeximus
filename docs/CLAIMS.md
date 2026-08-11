@@ -49,7 +49,7 @@ Counts by status:
 | 10 | `README.md` | `68` | The MCP server exposes 68 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 11 | `README.md` | `0` | Mutation gate: zero seeded defects survived | **REPRODUCIBLE** | `python tools/mutation_check_parallel.py` |
 | 12 | `README.md` | `98.3` `0.01` | Our own production store: source populated vs actually re-checkable | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
-| 13 | `README.md` | `2,800` `175` | Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed | **REPRODUCIBLE** | `python tools/mutation_check_parallel.py` |
+| 13 | `README.md` | `2,600` `175` | Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed | **REPRODUCIBLE** | `python tools/mutation_check_parallel.py` |
 | 14 | `README.md` | `0` | Zero required dependencies -- every requirement in the wheel is an optional extra | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/inspeximus/json` |
 | 15 | `docs/DEEP_DIVE.md` | `13` `0` `5` | The example claims_audit run: 13 checks pass, 5 are not testable from this package | **REPRODUCIBLE** | `python claims_audit.py --local` |
 | 16 | `docs/DEEP_DIVE.md` | `8` | The bedrock synthesis was checked from ~8 directions | **EXTERNAL** | — |
