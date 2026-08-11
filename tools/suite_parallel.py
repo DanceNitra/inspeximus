@@ -78,7 +78,14 @@ def _worker(idx: int, files: list[str], base: str, keep: bool) -> dict:
            "PYTHONIOENCODING": "utf-8", "PYTHONUNBUFFERED": "1"}
     t0 = time.time()
     p = subprocess.run([sys.executable, "-X", "utf8", "-m", "pytest", *files,
-                        "-q", "--no-header", "--tb=short", "-rfE", "-p", "no:randomly"],
+                        # --continue-on-collection-errors, because ONE unimportable file killed a whole
+                        # shard. Measured: worker 7 exited after 17.6s with 0 passed and 1 error, and
+                        # its 432 tests were never run -- the reconciliation guard caught it as
+                        # UNACCOUNTED, which is the guard working, but the right answer is to run the
+                        # other 431 rather than to report the loss well. The error is still surfaced;
+                        # it just no longer takes the shard down with it.
+                        "-q", "--no-header", "--tb=short", "-rfE", "-p", "no:randomly",
+                        "--continue-on-collection-errors"],
                        cwd=wt, capture_output=True, text=True, errors="replace", timeout=3600, env=env)
     out = p.stdout or ""
     fails = [ln for ln in out.splitlines() if ln.startswith(("FAILED ", "ERROR "))]

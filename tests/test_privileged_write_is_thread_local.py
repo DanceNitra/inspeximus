@@ -77,3 +77,28 @@ def test_the_window_closes_on_its_own_thread_after_an_exception():
         pass
     assert not _survived(ix, ix.remember("caller", mtype="semantic", meta=dict(FORGED))), \
         "a raised privileged write left the reserved-key window open on this thread"
+
+
+def test_the_store_is_still_copyable_and_a_copy_starts_unprivileged():
+    """A thread-local cannot be pickled or deep-copied, so making the window per-thread broke
+    `copy.deepcopy(store)` -- caught by an anchor test that copies a store to simulate an operator
+    rewriting it behind the library's back. Copying is something callers legitimately do.
+
+    The copy must also start with a CLOSED window. That is the safe direction and it is asserted rather
+    than assumed: a copy taken while some thread holds privilege open must not begin life privileged,
+    or copying becomes a way to smuggle the window across."""
+    import copy as _copy
+    import pickle as _pickle
+
+    ix = Inspeximus(path=None)
+    ix.remember("a record")
+
+    deep = _copy.deepcopy(ix)
+    assert len(deep.items) == 1
+    assert not _survived(deep, deep.remember("caller", mtype="semantic", meta=dict(FORGED))), \
+        "a deep copy began life inside a privileged window"
+
+    rt = _pickle.loads(_pickle.dumps(ix))
+    assert len(rt.items) == 1
+    assert not _survived(rt, rt.remember("caller", mtype="semantic", meta=dict(FORGED))), \
+        "a pickled round-trip began life inside a privileged window"

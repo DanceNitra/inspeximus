@@ -1667,6 +1667,24 @@ class Inspeximus:
             self._save(force=True)
 
     # ── capture ──────────────────────────────────────────────────────────────
+    # A THREAD-LOCAL MADE THE STORE UNCOPYABLE, and copying it is something callers legitimately do.
+    # `threading.local()` cannot be pickled or deep-copied, so making the privilege window per-thread
+    # broke `copy.deepcopy(store)` with TypeError -- caught by an anchor test that copies a store to
+    # simulate an operator rewriting it behind the library's back. The security fix was right; storing
+    # its holder as ordinary instance state was not.
+    #
+    # A COPY GETS A FRESH, CLOSED WINDOW rather than an inherited one, and that is the safe direction:
+    # a copy taken while some thread held privilege open must not start life privileged. Copying is not
+    # a way to smuggle the window across.
+    def __getstate__(self):
+        state = dict(self.__dict__)
+        state.pop("_priv", None)
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._priv = threading.local()
+
     def _stamp(self, *a, **kw) -> str:
         """remember() for the LIBRARY's own markers, which live in the reserved meta keyspace.
 
