@@ -49,6 +49,7 @@ import math
 import os
 import random as _random
 import re
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -1074,7 +1075,15 @@ class Inspeximus:
         # and the library writes those keys through the very `remember()` that enforces it. Without this
         # the fix silently breaks close_session() and revert(), whose markers would be stripped as if a
         # caller had sent them -- measured, not hypothetical: four internal call sites stamp reserved keys.
-        self._meta_privileged = 0
+        # THREAD-LOCAL, and the reason is measured. This used to be a plain instance attribute, so
+        # one thread's privileged write opened a window EVERY other thread's caller write walked
+        # through: on an in-memory store shared by two threads, a forged reserved key survived on
+        # 400 of 400 caller writes made during the window. The call-path argument -- 'only the
+        # library can open this door' -- is about WHICH CODE opens it and says nothing about who
+        # else is standing in it while it is open. File-backed stores never reached the race only
+        # because the single-writer guard refuses a second writer first, which is protection by
+        # accident rather than by design.
+        self._priv = threading.local()
         self._acl_problems: list = []     # bounded log of grants that could NOT be evaluated (each one denied)
         # PII AUTO-DETECTION (OPT-IN, default OFF -> zero behavior change). When True, remember() runs the
         # zero-dependency regex detector (detect_pii) over each write and stamps rec['pii'] = [types...] so PII
@@ -1637,11 +1646,11 @@ class Inspeximus:
         escape hatch `grant()`/`revoke()` already use for the reserved KEY prefix. Anything routed
         here is trusted by construction; nothing reachable from a caller may call it.
         """
-        self._meta_privileged = getattr(self, "_meta_privileged", 0) + 1
+        self._priv.n = getattr(self._priv, "n", 0) + 1
         try:
             return self.remember(*a, **kw)
         finally:
-            self._meta_privileged -= 1
+            self._priv.n -= 1
 
     def remember(self, text: str, tags=None, value: float = 1.0, meta: dict | None = None,
                  mtype: str | None = None, valid_from: float | None = None,
@@ -1749,7 +1758,7 @@ class Inspeximus:
         # must not be arrivable from outside. Stripped silently rather than raising: a writer probing
         # for the top tier gets no error and no privilege, which is the behaviour we want, and an
         # honest caller was never setting these.
-        if meta and not getattr(self, "_meta_privileged", 0):
+        if meta and not getattr(getattr(self, "_priv", None), "n", 0):
             _aliased = {}
             for _k in list(meta):
                 if _k in _META_ALIASED_PARAM:
