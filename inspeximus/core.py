@@ -2151,6 +2151,18 @@ class Inspeximus:
         all are skipped and counted, not failed -- most stores have none, and failing them would make
         the check useless where it matters. And a valid signature attests AUTHORSHIP, never truth.
 
+        IT ALSO BINDS NO TIME, and this is a note for whoever adds a backfill rather than a live defect:
+        there is no such path today, so every signature here was made at write time. The moment one
+        exists -- and "sign my historical records" is a natural thing to want -- a signature made during
+        a migration will attest that the store holds this content NOW, not that the content is what it
+        was when the record was written, and NOTHING in the record distinguishes the two. The weaker
+        guarantee then inherits the stronger one's appearance, silently, which is the shape of every
+        defect in this file's history. RFC 3161 is the gap: a timestamp token supplies "this datum
+        existed before time T" and a backfilled signature cannot. If you build that path, carry
+        `signed_at` separately from the record's own timestamp and have this verifier report the two
+        cases differently -- custody-attested is not attested-since-creation. (Raised with a
+        collaborator hitting it first, on NousResearch/hermes-agent#34352, 2026-08-11.)
+
         THIS BINDS PLACEMENT, NOT CARDINALITY, and the distinction is not academic here: the failure
         that motivated tenant binding was tenant-scoped data LOSS (2.3.2 -- a scoped handle's save
         serialised its own filtered view). A row that is GONE carries no failing signature, so this
