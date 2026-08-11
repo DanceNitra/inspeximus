@@ -393,3 +393,123 @@ def test_a_tenants_source_report_never_counts_another_tenants_records(tmp_path):
     s.for_tenant("beta").remember("beta note", source={"doc": str(doc)})
     assert s.for_tenant("acme").check_sources()["total"] == 1
     assert s.check_sources()["total"] == 2          # the unbound view still sees everything
+
+
+# ── the PRIVATE half of the tenant surface ──────────────────────────────────────────────────────────
+#
+# `test_every_public_method_is_classified` filters on `not n.startswith("_")`, so the private surface was
+# never enumerated -- and the private surface is where this bit. `_stamp` forwarded to the parent, wrote
+# the library's own markers unscoped, and a tenant's session digest came back EMPTY.
+#
+# The obvious criterion misses it. `_stamp` never mentions `self.tenant`; it calls `self.remember(...)`,
+# and remember is tenant-aware. Scanning for "self.tenant" finds 4 private methods, all already rebound,
+# and reports a clean bill over the exact defect that motivated the scan. The criterion has to be
+# TRANSITIVE: a method is tenant-sensitive if it reaches a tenant-sensitive method through `self`,
+# because when it runs parent-bound the callee runs parent-bound too.
+
+#: Private, transitively tenant-sensitive, and deliberately NOT rebound. Each entry is a decision with a
+#: measurement behind it, not a silencer. Measured 2026-08-11: `A._resolve_subject("Alice Smith")` from a
+#: tenant view resolves ids that include ANOTHER tenant's row (1 vs 2 depending on whether the other
+#: tenant holds the subject) -- but no tenant-visible surface differs, because every caller re-filters:
+#: `forget_subject(dry_run=True)` returns the same single own-tenant id either way, and a live
+#: `forget_subject` erased 2 own rows and left the other tenant's intact. So this is latent, not live.
+#: It is listed rather than fixed because rebinding changes resolution semantics (collision detection
+#: included) and that deserves its own change with its own tests -- but it is listed so the NEXT one
+#: cannot arrive unnoticed.
+_PRIVATE_UNREBOUND_BY_DECISION = {
+    "_evict_to_capacity",         # reaches forget(); capacity is a store-level property, not per-tenant
+    "_resolve_subject",           # see above: unscoped resolution, every caller re-filters (measured)
+    "_retired_values",
+    "_revert_authorized",
+    "_verified_support_classes",
+}
+
+
+#: The CRITERION, separated from the collection so it can be exercised on a synthetic call graph. It had
+#: to be: the first negative control planted a method with exec, `inspect.getsource` raised on it, the
+#: scan skipped it silently, and the guard passed. That left "the guard is blind" and "my way of planting
+#: the defect is unreadable" indistinguishable -- which is the exact failure this file exists to prevent,
+#: committed inside the control meant to prove it does not happen.
+def _closure(src, rebound):
+    """{name: source} + the rebound set -> every name reaching the tenant surface through self."""
+    import re as _re
+    call = _re.compile(r"self\.(_?[a-zA-Z][a-zA-Z0-9_]*)\s*\(")
+    calls = {n: {m for m in call.findall(s) if m in src} for n, s in src.items()}
+    sensitive = {n for n, s in src.items() if "self.tenant" in s} | (rebound & set(src))
+    changed = True
+    while changed:
+        changed = False
+        for n, cs in calls.items():
+            if n not in sensitive and (cs & sensitive):
+                sensitive.add(n)
+                changed = True
+    return sensitive
+
+
+def _read_sources():
+    """The COLLECTION. A method whose source cannot be read is NOT dropped silently: it comes back as
+    unreadable, because "I could not look" and "I looked and it was clean" are different answers and
+    only one of them is a pass."""
+    import inspect as _inspect
+    src, unreadable = {}, []
+    for n in dir(Inspeximus):
+        if n.startswith("__") or not callable(getattr(Inspeximus, n, None)):
+            continue
+        try:
+            src[n] = _inspect.getsource(getattr(Inspeximus, n))
+        except Exception:
+            unreadable.append(n)
+    return src, unreadable
+
+
+def _tenant_sensitive_transitively():
+    src, unreadable = _read_sources()
+    rebound = {n for n in _TenantView.__dict__ if not n.startswith("__")}
+    return _closure(src, rebound), rebound, src, unreadable
+
+
+def test_the_criterion_fires_on_a_synthetic_unrebound_helper():
+    """BOTH DIRECTIONS, on a call graph this test builds, so nothing here depends on getsource."""
+    rebound = {"remember"}
+    clean = {"remember": "def remember(self): self.tenant", "_helper": "def _helper(self): return 1"}
+    assert _closure(clean, rebound) == {"remember"}, "flagged a helper that touches nothing"
+    dirty = dict(clean, _helper="def _helper(self): return self.remember(1)")
+    assert "_helper" in _closure(dirty, rebound), (
+        "the criterion MISSED a private helper reaching the tenant surface -- it cannot fire at all")
+
+
+def test_an_unreadable_method_is_reported_rather_than_skipped():
+    """A source the scanner cannot read must not pass as clean. The planted-defect control failed exactly
+    here: getsource raised, the name left the graph, and the guard reported green."""
+    _s, _r, _src, unreadable = _tenant_sensitive_transitively()
+    assert not unreadable, (
+        "these methods could not be read, so nothing below examined them: %r" % unreadable)
+
+
+def test_the_transitive_criterion_sees_the_method_that_actually_broke():
+    """A CONTROL for the guard below. `_stamp` is the defect this enumeration exists for, and it does not
+    mention `self.tenant` -- so a criterion that cannot flag it is measuring nothing, however green."""
+    sensitive, _rebound, src, _u = _tenant_sensitive_transitively()
+    assert "self.tenant" not in src["_stamp"], (
+        "_stamp now mentions self.tenant, so this control no longer exercises the transitive case")
+    assert "_stamp" in sensitive, (
+        "the criterion missed _stamp -- the method whose parent-forwarding emptied a session digest")
+
+
+def test_every_private_tenant_sensitive_method_is_rebound_or_declared():
+    """The private half of the classification guard. A private helper reached through __getattr__ runs
+    PARENT-bound, so a new one touching the tenant surface leaks silently -- no exception, no test, just
+    rows in the wrong slice. Adding one now forces a decision here."""
+    sensitive, rebound, _src, _u = _tenant_sensitive_transitively()
+    private = {n for n in sensitive if n.startswith("_") and not n.startswith("__")}
+    unclassified = sorted(private - rebound - _PRIVATE_UNREBOUND_BY_DECISION)
+    assert not unclassified, (
+        "these private methods reach the tenant surface but are neither rebound on _TenantView nor "
+        "declared in _PRIVATE_UNREBOUND_BY_DECISION: %r" % unclassified)
+
+
+def test_the_declared_exemptions_still_exist():
+    """A declaration naming a method that is gone stops guarding anything, and the next method to take
+    that name inherits an exemption nobody granted it."""
+    stale = sorted(n for n in _PRIVATE_UNREBOUND_BY_DECISION if not hasattr(Inspeximus, n))
+    assert not stale, "declared-unrebound names no longer on Inspeximus: %r" % stale
