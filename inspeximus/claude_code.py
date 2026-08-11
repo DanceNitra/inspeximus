@@ -793,6 +793,17 @@ _PRE_PATTERNS = [
      "this discards uncommitted work irreversibly. Look at the tree first."),
     (r"git\s+push\s+.*--force",
      "a force push can make a commit SHA cited in a published artifact unreachable."),
+    # OUTREACH. Anything that posts to another person's repository, or edits what was posted. The
+    # rule it enforces was given twice on 2026-08-11 and broken twice the same day, which is the whole
+    # argument for it being a hook rather than a resolution: a rule I have to remember is a rule I
+    # will break at the moment I feel most certain. The three factual errors that went out that day
+    # were all the same shape -- a generalisation from a sample nobody sized ("43 comments" when it
+    # was 23, "every metric calls recall" when it was 12 of 25, "createVerify appears once" when it
+    # was twice) -- and each was found within a minute of someone asking whether I had counted.
+    (r"gh\s+(issue|pr)\s+comment\b|gh\s+api[^|]*\bcomments\b",
+     "this POSTS TO SOMEONE ELSE'S REPOSITORY. Before it goes: has the owner seen the draft, and has "
+     "every number and every claim about their code been COUNTED rather than sampled? A generalisation "
+     "checked on two files is the failure that has gone out three times."),
     (r"\brm\s+-rf\b",
      "irreversible. Confirm the target resolves to what you think it does."),
 ]
