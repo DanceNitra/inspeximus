@@ -2110,9 +2110,40 @@ class Inspeximus:
                 drifted.append(r.get("id"))
         checked = counts["FRESH"] + counts["DRIFTED"] + counts["ORPHANED"]
         total = sum(counts.values())
+
+        # ---- THE FOUR COVERAGE METRICS, kept separate on purpose (CML / claude-code#34556).
+        # safal207 measured his own corpus at 5/5 records carrying a source locator and declined to call
+        # that "stale-check coverage", because a locator you cannot RE-FETCH answers a different
+        # question. Collapsing them is how a schema gets reported as a guarantee: our own deployment has
+        # 98.3% locator coverage and 0.01% that re-fetches. Four numbers, four different remedies.
+        _n = len(self.items) or 0
+        _with_locator = 0
+        _bound_env = 0
+        for _r in self.items:
+            if Inspeximus._raw_source(_r):
+                _with_locator += 1
+            if ((_r.get("meta") or {}).get("environment_binding")):
+                _bound_env += 1
+        coverage = {
+            # can the evidence point back to an origin at all?
+            "locator_coverage": round(_with_locator / _n, 4) if _n else 0.0,
+            # can that origin be re-read and deterministically compared? (fingerprint present AND read)
+            "refetch_verification_coverage": round(checked / _n, 4) if _n else 0.0,
+            # can the AUTHORITATIVE source be enumerated, so deletions are detectable at all? An
+            # index-side scan can never answer this: it reports what is present, and a deleted document
+            # emits exactly one event that nothing later mentions. Without an enumerator this is not a
+            # low number, it is an UNKNOWN, and it says so rather than reporting 0.0 as if measured.
+            "source_enumeration_coverage": None,
+            # is the record bound to an environment (repo/commit/tenant/policy/model/TTL)? We do not
+            # write that binding anywhere yet, so this is honestly 0.0 rather than absent -- the
+            # REVALIDATE half of the contract is unbuilt here.
+            "environment_binding_coverage": round(_bound_env / _n, 4) if _n else 0.0,
+        }
+
         report = {
             "counts": counts, "checked": checked, "total": total,
             "checkable_fraction": round(checked / total, 4) if total else 0.0,
+            "coverage": coverage,
             "drifted": drifted[:200], "orphaned": orphaned[:200],
             "ok": bool(checked) and not drifted and not orphaned,
         }

@@ -513,3 +513,57 @@ def test_the_declared_exemptions_still_exist():
     that name inherits an exemption nobody granted it."""
     stale = sorted(n for n in _PRIVATE_UNREBOUND_BY_DECISION if not hasattr(Inspeximus, n))
     assert not stale, "declared-unrebound names no longer on Inspeximus: %r" % stale
+
+
+# ── the four coverage metrics must not collapse into one ────────────────────────────────────────────
+#
+# safal207 (claude-code#34556, Causal-Memory-Layer#270) measured his own corpus at 5/5 records carrying
+# a source locator and refused to call that "stale-check coverage", because a locator you cannot
+# RE-FETCH answers a different question. Our own deployment is the same gap at scale: 98.3% locator
+# coverage, 0.01% that re-fetches. These tests exist so a later refactor cannot quietly make one number
+# stand for the other -- which is the only way this reports a schema as a guarantee.
+
+def test_locator_and_refetch_coverage_are_different_numbers(tmp_path):
+    """A source that names the WRITER is a locator and is not re-fetchable. If these two ever come out
+    equal on this fixture, one of them has stopped measuring what it claims."""
+    src = tmp_path / "doc.txt"
+    src.write_text("the staging database is db-7", encoding="utf-8")
+    ix = Inspeximus(path=str(tmp_path / "s.json"))
+    ix.remember("has a real source", source={"doc": str(src)})
+    ix.remember("has a writer label", source={"doc": "agent:scholar"})
+    ix.remember("has no source at all")
+
+    cov = ix.check_sources()["coverage"]
+    assert cov["locator_coverage"] > cov["refetch_verification_coverage"], (
+        "locator and refetch coverage came out equal (%r) -- on a store holding a writer-label source "
+        "they cannot be, so one of them is no longer measuring its own question" % cov)
+    assert abs(cov["locator_coverage"] - 2 / 3) < 1e-3, cov      # reported rounded to 4 dp
+    assert abs(cov["refetch_verification_coverage"] - 1 / 3) < 1e-3, cov
+
+
+def test_enumeration_coverage_is_UNKNOWN_not_zero(tmp_path):
+    """An index-side scan cannot answer 'can the authoritative source be enumerated' -- it reports what
+    is PRESENT, and a deleted document emits one event nothing later mentions. Reporting 0.0 would be a
+    measurement we never made; None says we did not look."""
+    ix = Inspeximus(path=str(tmp_path / "s.json"))
+    ix.remember("anything")
+    assert ix.check_sources()["coverage"]["source_enumeration_coverage"] is None
+
+
+def test_environment_binding_coverage_is_an_honest_zero(tmp_path):
+    """We do not write an environment binding yet, so this is 0.0 rather than absent. The distinction
+    matters to the shared contract: 0.0 says 'measured, and we have none'; a missing key would let a
+    reader assume the dimension does not apply."""
+    ix = Inspeximus(path=str(tmp_path / "s.json"))
+    ix.remember("anything")
+    cov = ix.check_sources()["coverage"]
+    assert "environment_binding_coverage" in cov
+    assert cov["environment_binding_coverage"] == 0.0
+
+
+def test_coverage_survives_an_empty_store(tmp_path):
+    """No records is not a division by zero, and it is not a clean bill either."""
+    ix = Inspeximus(path=str(tmp_path / "s.json"))
+    r = ix.check_sources()
+    assert r["ok"] is False
+    assert r["coverage"]["locator_coverage"] == 0.0
