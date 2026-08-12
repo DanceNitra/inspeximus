@@ -698,7 +698,12 @@ _HOOK = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_c
 # than losing the session.
 _HOOK_SESSION_END = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_code",
                                 "timeout": 15}]}
-_EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END}
+# PreToolUse needs a MATCHER -- without one it does not fire, and the guard would be installed and
+# silent, which is worse than absent because it reads as protection. "Bash" is the tool every guarded
+# pattern runs through: git add -A, rm -rf, a force push, and `gh issue comment`.
+_HOOK_PRE_TOOL = {"matcher": "Bash",
+                  "hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
+_EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END, "PreToolUse": _HOOK_PRE_TOOL}
 
 # Hooks written before the 1.25.0 rename invoke `python -m inspeximus.claude_code`, which still works
 # through the compatibility alias. Both spellings must be RECOGNISED, or install() would add a second
@@ -737,7 +742,12 @@ def install(cwd=None):
             print("            Fix the file (a trailing comma is the usual cause) and re-run --install.")
             return False
     hooks = cfg.setdefault("hooks", {})
-    for evt in ("PostToolUse", "UserPromptSubmit", "SessionStart", "SessionEnd"):
+    # PreToolUse was MISSING from this tuple, which is the whole reason the outreach guard never
+    # fired. The handler was written, tested and committed; the installer was never told the event
+    # exists, so `--install` produced a settings.json with four hooks and no guard. A mechanism is
+    # not shipped when it is written -- it is shipped when something invokes it, and for three
+    # outreach posts in one day nothing did.
+    for evt in ("PreToolUse", "PostToolUse", "UserPromptSubmit", "SessionStart", "SessionEnd"):
         existing = json.dumps(hooks.get(evt, []))
         if not any(mark in existing for mark in _HOOK_MARKERS):
             hooks.setdefault(evt, []).append(dict(_EVENT_HOOK.get(evt, _HOOK)))
