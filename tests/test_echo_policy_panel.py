@@ -25,6 +25,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 
+# SHARED ARTIFACT: this module and tests/test_probes_cited_by_docs.py both execute
+# probes/echo_policy_panel.py, which writes ONE probes/echo_policy_panel_result.json.
+# Serial they queue; under xdist they raced and clobbered it. Same worker, so they cannot
+# overlap. The mark goes on the TESTS -- a mark on a fixture has no effect and pytest errors.
+pytestmark = pytest.mark.xdist_group("echo_policy_panel")
+
 @pytest.fixture(scope="module")
 def panel():
     r = subprocess.run([sys.executable, os.path.join("probes", "echo_policy_panel.py")],

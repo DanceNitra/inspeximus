@@ -7478,11 +7478,31 @@ class Inspeximus:
     def _distinct_sources(links, by_id) -> int:
         """Count DISTINCT canonical sources among corroborating links — entity resolution BEFORE counting,
         so 'three names for one source' sybil variants count as one. A link whose record carries no source
-        counts as its own id, so genuinely source-less corroboration is not penalised (no regression)."""
+        counts as its own id, so genuinely source-less corroboration is not penalised (no regression).
+
+        LINEAGE BEATS THE DOCUMENT NAME (2.5.1). yun520-1 raised this on DeepSeek-V3#1462: corroborating
+        sources must point at different UPSTREAM EVIDENCE CHAINS, because otherwise "two links are one
+        belief's echo". He credited our '>=2 distinct-source links' wording with capturing it. Measured
+        (probes/corroboration_counts_an_echo_as_two_witnesses.py, three controls holding): it did not.
+        One memo restated into two documents passed as two independent witnesses, because this counted
+        `source.doc` STRINGS and never looked at `derived_from`.
+
+        So a link that declares ancestry is now identified BY that ancestry rather than by the name of
+        the document it was restated into: two restatements of one parent collapse to one witness, two
+        genuinely separate chains stay two, and a link with no lineage keeps exactly its previous
+        identity — which is why this costs nothing on existing data (measured across 84 stores /
+        240,810 records: 198,086 carry >=2 links, 108 carry any lineage, 0 would lose corroboration).
+        That last number is also the warning: the rail is correct and, today, almost unreached. The
+        remaining work is lineage COVERAGE, not this function.
+        """
         keys = set()
         for lid in (links or []):
             lr = by_id.get(lid)
             if lr is None:
+                continue
+            parents = lr.get("derived_from") or []
+            if parents:
+                keys.add(("lineage",) + tuple(sorted(str(p) for p in parents)))
                 continue
             src = lr.get("source")
             doc = src.get("doc") if isinstance(src, dict) else (src if isinstance(src, str) else None)

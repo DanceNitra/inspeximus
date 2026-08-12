@@ -27,6 +27,12 @@ import tempfile
 
 import pytest
 
+#: Drives the in-place source-mutation harness. NEVER under xdist -- it edits the very tree
+#: the other workers are importing. Measured as a parallel-only failure that passes alone.
+#: Run this set with:  pytest tests/ -n 0 -m mutation
+pytestmark = pytest.mark.mutation
+
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CORE = os.path.join("inspeximus", "core.py")
 

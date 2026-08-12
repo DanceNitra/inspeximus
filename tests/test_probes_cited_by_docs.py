@@ -445,6 +445,11 @@ def test_every_probe_on_disk_is_covered_somehow():
     assert len(_uncited()) + len(_cited()) >= 60, "the sweep must not collapse to a handful"
 
 
+# SHARED ARTIFACT. This and tests/test_echo_policy_panel.py both execute
+# probes/echo_policy_panel.py, which writes ONE probes/echo_policy_panel_result.json.
+# Serial they queue; under xdist they raced and clobbered it (1 failed + 4 errors that
+# do not occur serially). Same worker, so they cannot overlap.
+@pytest.mark.xdist_group("echo_policy_panel")
 @pytest.mark.parametrize("probe", _uncited())
 def test_an_uncited_probe_still_runs(probe):
     """Same standard as the cited half, same skip rule: a declared optional dependency excuses the run,

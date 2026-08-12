@@ -1,0 +1,10 @@
+{
+  "results": {
+    "A_genuinely_independent": true,
+    "B_echo_of_one_parent": false,
+    "C_naming_sybil": false,
+    "D_single_witness": false
+  },
+  "controls_ok": true,
+  "verdict": "ECHO-REJECTED"
+}

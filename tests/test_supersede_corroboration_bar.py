@@ -170,3 +170,59 @@ def test_a_corroborated_overturn_does_not_leave_a_review_flag():
     assert not m.reopened(), (
         "a properly corroborated correction left the old record flagged for review; the queue will "
         "fill with resolved cases and stop being read")
+
+
+# ── lineage beats the document name (2.5.1) ─────────────────────────────────────────────────────────
+# yun520-1, DeepSeek-V3#1462: corroborating sources must point at different UPSTREAM EVIDENCE CHAINS,
+# or "two links are one belief's echo". He credited our ">=2 distinct-source links" wording with
+# capturing it. Measured: it did not. `_distinct_sources` counted source.doc STRINGS and never read
+# `derived_from`, so one memo restated into two documents passed as two independent witnesses.
+def _linked(m, link_ids):
+    claim = m.remember("The staging DB is db-7", source={"doc": "summary"})
+    rec = next(r for r in m.items if r["id"] == claim)
+    rec["links"] = list(link_ids)
+    return rec, {r["id"]: r for r in m.items}
+
+
+def test_an_echo_of_one_parent_is_one_witness_not_two(tmp_path):
+    """THE DEFECT, as a regression. Two restatements of one memo, two document names, one belief."""
+    m = Inspeximus(path=str(tmp_path / "m.json"))
+    parent = m.remember("Original memo: staging DB is db-7", source={"doc": "memo-original"})
+    a = m.remember("Restated", source={"doc": "slack-thread"}, derived_from=[parent])
+    b = m.remember("Restated again", source={"doc": "wiki-copy"}, derived_from=[parent])
+    rec, by_id = _linked(m, [a, b])
+    assert Inspeximus._distinct_sources([a, b], by_id) == 1, \
+        "two restatements of ONE parent must count as one witness, whatever they are called"
+    assert Inspeximus._is_corroborated(rec, by_id) is False
+
+
+def test_two_separate_chains_still_corroborate(tmp_path):
+    """THE NEGATIVE CONTROL. Without it, a rail that collapsed everything would pass the test above."""
+    m = Inspeximus(path=str(tmp_path / "m.json"))
+    p1 = m.remember("Runbook says db-7", source={"doc": "runbook"})
+    p2 = m.remember("Incident says db-7", source={"doc": "incident-4412"})
+    a = m.remember("From runbook", source={"doc": "note-a"}, derived_from=[p1])
+    b = m.remember("From incident", source={"doc": "note-b"}, derived_from=[p2])
+    rec, by_id = _linked(m, [a, b])
+    assert Inspeximus._distinct_sources([a, b], by_id) == 2
+    assert Inspeximus._is_corroborated(rec, by_id) is True
+
+
+def test_links_without_lineage_keep_their_previous_identity(tmp_path):
+    """NO REGRESSION. A link that declares no ancestry must be counted exactly as before -- this is
+    why the change costs nothing on existing data (0 of 198,086 records with >=2 links lose it)."""
+    m = Inspeximus(path=str(tmp_path / "m.json"))
+    a = m.remember("The staging DB is db-7", source={"doc": "runbook.md"})
+    b = m.remember("The staging DB is db-7", source={"doc": "incident-4412"})
+    rec, by_id = _linked(m, [a, b])
+    assert Inspeximus._distinct_sources([a, b], by_id) == 2
+    assert Inspeximus._is_corroborated(rec, by_id) is True
+
+
+def test_the_naming_sybil_rail_still_works(tmp_path):
+    """The rail that ALREADY worked must not be broken by the one being added."""
+    m = Inspeximus(path=str(tmp_path / "m.json"))
+    a = m.remember("db-7", source={"doc": "Reuters"})
+    b = m.remember("db-7", source={"doc": "reuters.com"})
+    _rec, by_id = _linked(m, [a, b])
+    assert Inspeximus._distinct_sources([a, b], by_id) == 1

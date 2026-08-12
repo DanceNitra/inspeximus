@@ -1,0 +1,8 @@
+{
+  "stores": 84,
+  "records": 240882,
+  "with_two_links": 198094,
+  "any_link_has_lineage": 108,
+  "links_share_a_parent": 0,
+  "verdict": "RAIL-WOULD-BE-UNREACHED"
+}

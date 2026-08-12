@@ -24,6 +24,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 
 import mutation_check  # noqa: E402
 
+import pytest
+
+#: Drives the in-place source-mutation harness. NEVER under xdist -- it edits the very tree
+#: the other workers are importing. Measured as a parallel-only failure that passes alone.
+#: Run this set with:  pytest tests/ -n 0 -m mutation
+pytestmark = pytest.mark.mutation
+
+
 CASES = {
     "lf": b"alpha\nbeta\ngamma\n",
     "crlf": b"alpha\r\nbeta\r\ngamma\r\n",
