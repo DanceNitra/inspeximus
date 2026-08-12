@@ -829,6 +829,19 @@ def _is_run(subject, start):
     """Is the match at `start` a command being invoked, or a string being mentioned?"""
     return bool(_CMD_POS.search(subject[:start]))
 
+
+#: `gh api .../comments` is a GET unless something makes it a write. Measured within minutes of the
+#: first real use of this guard: it blocked `gh api repos/.../issues/comments/<id>` -- READING BACK the
+#: comment we had just posted, to verify it. Blocking a read teaches you to route around the guard,
+#: which is the failure mode that matters more than the one it was defending against.
+_API_WRITE = re.compile(r"-X\s*(POST|PATCH|PUT|DELETE)\b|(^|\s)(-f|-F|--field|--raw-field|--input)\b",
+                        re.I)
+
+
+def _api_is_write(subject, matched):
+    """True unless this is a plain read. `gh issue/pr comment` is always a write; `gh api` may not be."""
+    return not matched.lower().startswith("gh api") or bool(_API_WRITE.search(subject))
+
 #: (pattern, severity, the question to force). Every entry is a mistake actually made here, not a
 #: hazard someone imagined -- a list of hypotheticals trains the reader to skim past the real ones.
 #: severity "block" stops the call; "warn" arrives in context and does not.
@@ -884,10 +897,10 @@ def pre_tool_use(ev):
             continue
         if sev != "block":
             lines.append("  ! " + why)
-        elif not _is_run(subject, m.start()):
-            lines.append("  ! this command MENTIONS a post to someone else's repository without "
-                         "running one, so it is a warning and not a block. If it does post, the "
-                         "owner has to have seen the draft first.")
+        elif not _is_run(subject, m.start()) or not _api_is_write(subject, m.group(0)):
+            lines.append("  ! this command touches someone else's repository but does not appear to "
+                         "POST to it (a mention, or a read). Warning, not a block. If it does write, "
+                         "the owner has to have seen the draft first.")
         elif not approved:
             blocks.append("  ! " + why)
         else:

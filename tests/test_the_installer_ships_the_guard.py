@@ -155,6 +155,27 @@ def test_a_post_in_COMMAND_POSITION_blocks_however_it_is_reached(command):
 
 
 @pytest.mark.parametrize("command", [
+    "gh api repos/o/r/issues/comments/123",                            # GET: reading a comment back
+    "gh api repos/o/r/issues/1/comments --jq '.[].body'",              # GET: listing them
+])
+def test_CONTROL_reading_a_comment_is_not_posting_one(command):
+    """Measured minutes after the guard's first real use: it blocked us READING BACK the comment we
+    had just posted, to verify it. `gh api ... comments` is a GET unless a write flag says otherwise,
+    and a guard that blocks reads teaches you to route around it."""
+    r = _fire(command)
+    assert r.returncode == 0, "a read must not block: %r" % command
+    assert "does not appear to" in _delivered(r)
+
+
+@pytest.mark.parametrize("command", [
+    "gh api repos/o/r/issues/1/comments -X POST -f body=hi",           # explicit method
+    "gh api repos/o/r/issues/1/comments -f body=@draft.md",            # -f implies POST
+])
+def test_a_WRITE_through_gh_api_still_blocks(command):
+    assert _fire(command).returncode == 2, "gh api write slipped through: %r" % command
+
+
+@pytest.mark.parametrize("command", [
     """python -c "print('gh issue comment is the pattern')" """,       # quoted in a diagnostic
     "grep -rn 'gh issue comment' inspeximus/",                         # searching for it
 ])
@@ -164,7 +185,7 @@ def test_CONTROL_merely_MENTIONING_a_post_warns_and_does_not_block(command):
     itself is one that gets removed, so a mention warns -- it still arrives, it just does not wall."""
     r = _fire(command)
     assert r.returncode == 0, "a mention must not block: %r" % command
-    assert "MENTIONS a post" in _delivered(r), "a mention must still be delivered: %r" % command
+    assert "does not appear to" in _delivered(r), "a mention must still be delivered: %r" % command
 
 
 def test_CONTROL_an_ordinary_command_stays_silent():
