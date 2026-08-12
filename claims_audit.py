@@ -317,7 +317,10 @@ NOT_TESTABLE_HERE = [
 # non-claim (a citation year, an article number, an example literal) with a reason and an exact count.
 # An unregistered number fails this audit and fails CI. Adding one is meant to be inconvenient.
 
-SURFACE = ("README.md", "docs/DEEP_DIVE.md", "MCP_LISTINGS.md", "index.html")
+SURFACE = ("README.md", "docs/DEEP_DIVE.md", "MCP_LISTINGS.md", "index.html",
+           # New pages join the SURFACE in the same commit that creates them. A published
+           # page outside the audit is exactly the hole the tests badge sat in.
+           "compare.html", "claude-code.html")
 
 #: statuses a quantitative claim can carry.
 STATUSES = (
@@ -383,6 +386,10 @@ def _c(id, file, tokens, pin, claim, status, command="", note=""):
 
 #: Quantitative claims. `pin` is an exact substring that MUST still be in the file -- a row whose pin is
 #: gone describes nothing, so the registry cannot quietly outlive the sentence it audits.
+#: The one command behind every echo-resistance figure. Named once so eleven rows cannot drift.
+CMD = "python ramr_echo_resistance_backends.py  # RAMR repo"
+
+
 NUMBER_CLAIMS = [
     # ---------------------------------------------------------------- README.md
     # ---- README.md (the short one; the long-form numbers live in docs/DEEP_DIVE.md) ----
@@ -425,6 +432,62 @@ NUMBER_CLAIMS = [
        "badge/dependencies-0",
        "Zero required dependencies -- every requirement in the wheel is an optional extra",
        "REPRODUCIBLE", "curl -s https://pypi.org/pypi/inspeximus/json"),
+    # ---- compare.html: the measurement page ----------------------------------------------------
+    # Every figure here is one already registered for README.md/index.html; this page is a new
+    # SURFACE for the same measurement, not a new claim. It is registered per line anyway, because a
+    # published page outside the audit is the hole the tests badge sat in for months.
+    _c("cmp-schema-n", "compare.html", ["30"],
+       "n=30 per system, each on its own native configuration",
+       "Sample size, stated in the page's own structured data so the two cannot drift",
+       "REPRODUCIBLE-WITH-DEPS", CMD),
+    _c("cmp-schema-version", "compare.html", ["2026"],
+       "mem0 was measured at 2.0.11 in 2026-07",
+       "The competitor version and month measured, in the structured data",
+       "REPRODUCIBLE", "curl -s https://pypi.org/pypi/mem0ai/json"),
+    _c("cmp-n", "compare.html", ["30"],
+       "n = 30 per system",
+       "Trials per system", "REPRODUCIBLE-WITH-DEPS", CMD),
+    _c("cmp-ours", "compare.html", ["100", "0"],
+       "<tr class=\"us\"><td>inspeximus</td>",
+       "inspeximus keeps the correction 100% of the time and resurrects the old value 0%",
+       "REPRODUCIBLE-WITH-DEPS", CMD),
+    _c("cmp-graphiti", "compare.html", ["0", "86.7", "13.3", "95", "3.3", "26.7"],
+       "<tr><td>Graphiti 0.x",
+       "Graphiti keeps the correction 86.7%; resurrection 13.3%, 95% CI [3.3, 26.7]",
+       "REPRODUCIBLE-WITH-DEPS", CMD,
+       "The bare 0 on this line is the MAJOR VERSION in \"Graphiti 0.x\", not a measurement. It is "
+       "listed rather than excused, because declaring \"0\" a non-claim file-wide would also excuse "
+       "the two real zeros this page publishes."),
+    _c("cmp-mem0", "compare.html", ["53.3", "46.7", "95", "30.0", "63.3"],
+       "<tr><td>mem0 2.0.11",
+       "mem0 2.0.11 keeps the correction 53.3%; resurrection 46.7%, 95% CI [30.0, 63.3]",
+       "REPRODUCIBLE-WITH-DEPS", CMD,
+       "Version-stamped deliberately: mem0 is on 2.0.18 and we have NOT re-run it."),
+    _c("cmp-control", "compare.html", ["0"],
+       "&mdash; guard disabled",
+       "The control: with our own guard off, we keep the correction 0% of the time",
+       "REPRODUCIBLE-WITH-DEPS", CMD),
+    _c("cmp-scope-version", "compare.html", ["2026"],
+       "(2026-07) and has <b>not</b> been re-run since",
+       "The month the competitor figure was measured, said in prose next to the claim",
+       "REPRODUCIBLE", "curl -s https://pypi.org/pypi/mem0ai/json"),
+    _c("cmp-trials-and-guard", "compare.html", ["30", "0"],
+       "a 30-trial proportion is not a point",
+       "Why intervals are shown; and our 0% with the guard on",
+       "REPRODUCIBLE-WITH-DEPS", CMD),
+    _c("cmp-guard-off", "compare.html", ["100"],
+       "guard on and 100% with it off",
+       "The control restated: guard off resurrects 100% of the time",
+       "REPRODUCIBLE-WITH-DEPS", CMD),
+    _c("cmp-faq-hundred", "compare.html", ["100"],
+       "Isn&rsquo;t 100% just a benchmark you designed to win?",
+       "The objection names our own headline number", "REPRODUCIBLE-WITH-DEPS", CMD),
+
+    # ---- claude-code.html: the MCP setup page ---------------------------------------------------
+    _c("cc-tool-count", "claude-code.html", ["68"],
+       "<h2>68 tools any MCP host can call</h2>",
+       "The MCP server exposes 68 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+       "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
     _c("readme-echo-trials", "README.md", ["30"],
        "same task, same 30 trials",
        "Sample size: 30 trials per system",

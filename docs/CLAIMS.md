@@ -15,9 +15,9 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **320** numeric tokens are published across the 4 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html.
-- **160** of those are quantitative claims, in **87** registry rows below.
-- **62** rows (62/87) are reproducible by a command committed to this repository
+- **343** numeric tokens are published across the 6 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html.
+- **183** of those are quantitative claims, in **99** registry rows below.
+- **74** rows (74/99) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 25 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
@@ -27,8 +27,8 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 Counts by status:
 
-- `REPRODUCIBLE` — 22
-- `REPRODUCIBLE-WITH-DEPS` — 40
+- `REPRODUCIBLE` — 25
+- `REPRODUCIBLE-WITH-DEPS` — 49
 - `PENDING-HARNESS` — 2
 - `EXTERNAL` — 21
 - `WITHDRAWN` — 2
@@ -51,79 +51,91 @@ Counts by status:
 | 12 | `README.md` | `98.3` `0.01` | Our own production store: source populated vs actually re-checkable | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 13 | `README.md` | `2,600` `175` | Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed | **REPRODUCIBLE** | `python tools/mutation_check_parallel.py` |
 | 14 | `README.md` | `0` | Zero required dependencies -- every requirement in the wheel is an optional extra | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/inspeximus/json` |
-| 15 | `docs/DEEP_DIVE.md` | `13` `0` `5` | The example claims_audit run: 13 checks pass, 5 are not testable from this package | **REPRODUCIBLE** | `python claims_audit.py --local` |
-| 16 | `docs/DEEP_DIVE.md` | `8` | The bedrock synthesis was checked from ~8 directions | **EXTERNAL** | — |
-| 17 | `docs/DEEP_DIVE.md` | `15` `18` `60` `2` `9` `1` `0` `8` `4` | regex_extractor chain binding on benchmarks/chain_binding/ (15 chains, 18 unrelated pairs, 60 prose sentences): chains collapsing to one record 2/15 -> 9/15; false binds on unrelated pairs 1/18 -> 0/18; non-declarative prose keyed 8/60 -> 4/60 | **REPRODUCIBLE** | `python benchmarks/chain_binding/probe.py` |
-| 18 | `docs/DEEP_DIVE.md` | `0.36` | Per-memory outcome attribution reaches only ~0.36 power at n-of-1 | **EXTERNAL** | — |
-| 19 | `docs/DEEP_DIVE.md` | `66.9` `71.2` | mem0 and Zep's self-reported LLM-judged QA scores | **EXTERNAL** | — |
-| 20 | `docs/DEEP_DIVE.md` | `4` | ...and by ~4x at one-eighth budget | **EXTERNAL** | — |
-| 21 | `docs/DEEP_DIVE.md` | `1.8` | Value-ranked consolidation beats FIFO by ~1.8x at half budget | **EXTERNAL** | — |
-| 22 | `docs/DEEP_DIVE.md` | `0.17` `1.00` | A soft delete leaves the value recoverable in 5 of 6 stores (0.17); a wired hard delete scores 1.00 | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
-| 23 | `docs/DEEP_DIVE.md` | `1.00` `0.17` | Same six-store fan-out measurement, restated in the four-operations table | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
-| 24 | `docs/DEEP_DIVE.md` | `0.0000` | Run-to-run determinism at a fixed instant: arm (a) divergence 0.0000 on every corpus | **REPRODUCIBLE-WITH-DEPS** | `python probes/reinforce_accuracy_ablation.py` |
-| 25 | `docs/DEEP_DIVE.md` | `20` | Pruning hub notes lifts lexical recall ~20% on a link-spammed store only | **EXTERNAL** | — |
-| 26 | `docs/DEEP_DIVE.md` | `0.00` `0.05` | In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_echo.py --systems inspeximus` |
-| 27 | `docs/DEEP_DIVE.md` | `5` `0.94` `0.25` | Lexical recall@5 decays 0.94 -> 0.25 as the store grows | **EXTERNAL** | — |
-| 28 | `docs/DEEP_DIVE.md` | `2026` `0.78` `0.65` | The superseded pair, quoted inside the note that discharges its caveat | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 29 | `docs/DEEP_DIVE.md` | `0.83` `0.70` | The copy-paste command with its expected output inline | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 30 | `docs/DEEP_DIVE.md` | `0.19` `0.29` | A withdrawn 0.19->0.29 delta, cited as an example of a confound we found and corrected | **EXTERNAL** | — |
-| 31 | `docs/DEEP_DIVE.md` | `1536` | The LOCOMO question denominator behind the retrieval pair | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 32 | `docs/DEEP_DIVE.md` | `25` `0.83` `0.70` | LOCOMO retrieval-recall@25 = 0.83 (any evidence turn) / 0.70 (all), n=1536, reinforce=False | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 33 | `docs/DEEP_DIVE.md` | `1536,` | The LoCoMo config size behind recall_any@1 | **PENDING-HARNESS** | `python probes/retrieval_recall_locomo.py --k 25` |
-| 34 | `docs/DEEP_DIVE.md` | `0.7839` `0.6484` `0.783` `0.648` `1536` | The OLD published pair reproduces exactly at its own operating point (reinforce=True) | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 35 | `docs/DEEP_DIVE.md` | `68` | The MCP server exposes 68 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
-| 36 | `docs/DEEP_DIVE.md` | `0.592` `0.544` `2` | MemOps answer accuracy: keep-all 0.592, mem0 0.544; ~2% of mem0 extractions failed to parse | **EXTERNAL** | — |
-| 37 | `docs/DEEP_DIVE.md` | `0.593` | MemOps answer accuracy: inspeximus 0.593 | **EXTERNAL** | — |
-| 38 | `docs/DEEP_DIVE.md` | `519` `917` `606` `24` | mem0's default pipeline spends 519-917 s (median 606) of LLM extraction per MemOps scenario | **EXTERNAL** | — |
-| 39 | `docs/DEEP_DIVE.md` | `2` | ~2% of mem0's MemOps extraction calls failed to parse | **EXTERNAL** | — |
-| 40 | `docs/DEEP_DIVE.md` | `24` `50` | MemOps: 24 long-context scenarios, ~50 sessions each | **EXTERNAL** | — |
-| 41 | `docs/DEEP_DIVE.md` | `42` | Operating-point trap: a cosine top-1 store scores 42% | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
-| 42 | `docs/DEEP_DIVE.md` | `100` | The layered store scores 100% across all three operating points | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
-| 43 | `docs/DEEP_DIVE.md` | `0` `8` | ...and 0/8 on poison | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
-| 44 | `docs/DEEP_DIVE.md` | `0` `8` `67` | ...0/8 on updated facts; a recency store scores 67% | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
-| 45 | `docs/DEEP_DIVE.md` | `5` `0.86` `0.20` | On paraphrase queries semantic recall@5 is 0.86 vs 0.20 lexical | **EXTERNAL** | — |
-| 46 | `docs/DEEP_DIVE.md` | `0.00` `0.57` `1.00` | RAMR ECHO-RESISTANCE: keyed-without-guard 0.00, add-based 0.57, echo_guard 1.00 | **EXTERNAL** | — |
-| 47 | `docs/DEEP_DIVE.md` | `0.397` | recall_any@1 = 0.397 with nomic task prefixes on one LoCoMo config | **PENDING-HARNESS** | `python probes/retrieval_recall_locomo.py --k 1` |
-| 48 | `docs/DEEP_DIVE.md` | `30` `2.8` | At a 30% keep-budget, access-decay retains 2.8% of high-value/low-frequency memories | **EXTERNAL** | — |
-| 49 | `docs/DEEP_DIVE.md` | `3` `2.2` `7` | ~3x more value kept, persisting at ~2.2x even at a 7% budget | **EXTERNAL** | — |
-| 50 | `docs/DEEP_DIVE.md` | `20` `100` `64` | ...20% of total value, vs 100% and 64% for the value-aware blend | **EXTERNAL** | — |
-| 51 | `docs/DEEP_DIVE.md` | `0.65` `2.6` | Semantic recall@5 holds ~0.65 at full scale, ~2.6x lexical | **EXTERNAL** | — |
-| 52 | `docs/DEEP_DIVE.md` | `0.2213` | NEGATIVE CONTROL: with the salience bar removed, rejection collapses to 0.2213 | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
-| 53 | `docs/DEEP_DIVE.md` | `7` | close_session costs 7 ms on the 2,606-record fixture | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
-| 54 | `docs/DEEP_DIVE.md` | `2,606` `1.000` | SessionEnd digest -> SessionStart injection, 8-session / 2,606-record fixture: injection recall 1.000 of a session's conclusions reach the next session | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
-| 55 | `docs/DEEP_DIVE.md` | `1.0000` | Below-threshold rejection 1.0000 on the same fixture | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
-| 56 | `docs/DEEP_DIVE.md` | `0` `8` | WITHDRAWN: 'severe-test 8/8' -- the probe reports 0/24 and nothing here produces an 8/8 | **WITHDRAWN** | `python probes/supersession_replication.py` |
-| 57 | `docs/DEEP_DIVE.md` | `0.61` | A cosine classifier separating a contradiction from a rephrase scores AUROC ~0.61 | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 58 | `docs/DEEP_DIVE.md` | `0.613` `41.7` `0.0` | The 2026-08-01 re-run of that probe, quoted with its date | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 59 | `docs/DEEP_DIVE.md` | `42` | A similarity-based store serves the stale value ~42% of the time | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 60 | `docs/DEEP_DIVE.md` | `0` | The deterministic SRO key drives the stale-value rate to 0% | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
-| 61 | `docs/DEEP_DIVE.md` | `0.9` `10` | Content-declared corroboration falls to a sybil at ~0.9 attack-success across 10 models | **REPRODUCIBLE-WITH-DEPS** | `python probes/memory_defense_layer_probe.py` |
-| 62 | `docs/DEEP_DIVE.md` | `0` `80` | GAP CONTROL: 0 of 80 top-1 answers move when the two reads are not separated at all | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 63 | `docs/DEEP_DIVE.md` | `80` | The time-gap measurement runs on four LOCOMO conversations, 80 questions sampled from each | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 64 | `docs/DEEP_DIVE.md` | `64` `83` `320` | Reading the same untouched store twice ~2s apart moves 64-83 of 320 top-1 answers (four LOCOMO conversations, 80 questions each, reinforce=False) | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 65 | `docs/DEEP_DIVE.md` | `0.0094` | Across five randomised insertion orders the hit@1 change over the gap runs +0.0094 to -0.0219 | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 66 | `docs/DEEP_DIVE.md` | `16` `80` | The effect saturates: 16 of 80 move at a two-second gap and the same count at ten | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 67 | `docs/DEEP_DIVE.md` | `-0.0219` `2` `5` `-0.0062` | The hit@1 change is negative in only 2 of 5 randomised insert orders; natural conversation order alone reads -0.0062 | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 68 | `docs/DEEP_DIVE.md` | `0.847` | Every top-1 answer that moved across the gap moved between records reported at the same score, e.g. 0.847 against 0.847 | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 69 | `docs/DEEP_DIVE.md` | `100` `6` | 100% of the moved answers stayed inside a displayed tie, across all six insert orders | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
-| 70 | `docs/DEEP_DIVE.md` | `10,000` | Contradiction detection runs in production over the ~10,000-note vault | **EXTERNAL** | — |
-| 71 | `docs/DEEP_DIVE.md` | `10,000` | inspeximus has run daily over a ~10,000-note vault | **EXTERNAL** | — |
-| 72 | `index.html` | `9` `0` | Homepage counter: 9 framework adapters | **REPRODUCIBLE** | `python -c "import pathlib;print(sorted(p.stem for p in pathlib.Path('inspeximus/integrations').glob('*.py')))"` |
-| 73 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
-| 74 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 75 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
-| 76 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 77 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 78 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 79 | `index.html` | `9` `12` `3` | 9 of 12 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
-| 80 | `index.html` | `68` `0` | Homepage counter: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 81 | `index.html` | `68` | Homepage heading: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 82 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
-| 83 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 84 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 85 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
-| 86 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
-| 87 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
+| 15 | `claude-code.html` | `68` | The MCP server exposes 68 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 16 | `compare.html` | `0` | The control: with our own guard off, we keep the correction 0% of the time | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 17 | `compare.html` | `100` | The objection names our own headline number | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 18 | `compare.html` | `0` `86.7` `13.3` `95` `3.3` `26.7` | Graphiti keeps the correction 86.7%; resurrection 13.3%, 95% CI [3.3, 26.7] | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 19 | `compare.html` | `100` | The control restated: guard off resurrects 100% of the time | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 20 | `compare.html` | `53.3` `46.7` `95` `30.0` `63.3` | mem0 2.0.11 keeps the correction 53.3%; resurrection 46.7%, 95% CI [30.0, 63.3] | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 21 | `compare.html` | `30` | Trials per system | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 22 | `compare.html` | `100` `0` | inspeximus keeps the correction 100% of the time and resurrects the old value 0% | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 23 | `compare.html` | `30` | Sample size, stated in the page's own structured data so the two cannot drift | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 24 | `compare.html` | `2026` | The competitor version and month measured, in the structured data | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
+| 25 | `compare.html` | `2026` | The month the competitor figure was measured, said in prose next to the claim | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
+| 26 | `compare.html` | `30` `0` | Why intervals are shown; and our 0% with the guard on | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 27 | `docs/DEEP_DIVE.md` | `13` `0` `5` | The example claims_audit run: 13 checks pass, 5 are not testable from this package | **REPRODUCIBLE** | `python claims_audit.py --local` |
+| 28 | `docs/DEEP_DIVE.md` | `8` | The bedrock synthesis was checked from ~8 directions | **EXTERNAL** | — |
+| 29 | `docs/DEEP_DIVE.md` | `15` `18` `60` `2` `9` `1` `0` `8` `4` | regex_extractor chain binding on benchmarks/chain_binding/ (15 chains, 18 unrelated pairs, 60 prose sentences): chains collapsing to one record 2/15 -> 9/15; false binds on unrelated pairs 1/18 -> 0/18; non-declarative prose keyed 8/60 -> 4/60 | **REPRODUCIBLE** | `python benchmarks/chain_binding/probe.py` |
+| 30 | `docs/DEEP_DIVE.md` | `0.36` | Per-memory outcome attribution reaches only ~0.36 power at n-of-1 | **EXTERNAL** | — |
+| 31 | `docs/DEEP_DIVE.md` | `66.9` `71.2` | mem0 and Zep's self-reported LLM-judged QA scores | **EXTERNAL** | — |
+| 32 | `docs/DEEP_DIVE.md` | `4` | ...and by ~4x at one-eighth budget | **EXTERNAL** | — |
+| 33 | `docs/DEEP_DIVE.md` | `1.8` | Value-ranked consolidation beats FIFO by ~1.8x at half budget | **EXTERNAL** | — |
+| 34 | `docs/DEEP_DIVE.md` | `0.17` `1.00` | A soft delete leaves the value recoverable in 5 of 6 stores (0.17); a wired hard delete scores 1.00 | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
+| 35 | `docs/DEEP_DIVE.md` | `1.00` `0.17` | Same six-store fan-out measurement, restated in the four-operations table | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
+| 36 | `docs/DEEP_DIVE.md` | `0.0000` | Run-to-run determinism at a fixed instant: arm (a) divergence 0.0000 on every corpus | **REPRODUCIBLE-WITH-DEPS** | `python probes/reinforce_accuracy_ablation.py` |
+| 37 | `docs/DEEP_DIVE.md` | `20` | Pruning hub notes lifts lexical recall ~20% on a link-spammed store only | **EXTERNAL** | — |
+| 38 | `docs/DEEP_DIVE.md` | `0.00` `0.05` | In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_echo.py --systems inspeximus` |
+| 39 | `docs/DEEP_DIVE.md` | `5` `0.94` `0.25` | Lexical recall@5 decays 0.94 -> 0.25 as the store grows | **EXTERNAL** | — |
+| 40 | `docs/DEEP_DIVE.md` | `2026` `0.78` `0.65` | The superseded pair, quoted inside the note that discharges its caveat | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
+| 41 | `docs/DEEP_DIVE.md` | `0.83` `0.70` | The copy-paste command with its expected output inline | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
+| 42 | `docs/DEEP_DIVE.md` | `0.19` `0.29` | A withdrawn 0.19->0.29 delta, cited as an example of a confound we found and corrected | **EXTERNAL** | — |
+| 43 | `docs/DEEP_DIVE.md` | `1536` | The LOCOMO question denominator behind the retrieval pair | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
+| 44 | `docs/DEEP_DIVE.md` | `25` `0.83` `0.70` | LOCOMO retrieval-recall@25 = 0.83 (any evidence turn) / 0.70 (all), n=1536, reinforce=False | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
+| 45 | `docs/DEEP_DIVE.md` | `1536,` | The LoCoMo config size behind recall_any@1 | **PENDING-HARNESS** | `python probes/retrieval_recall_locomo.py --k 25` |
+| 46 | `docs/DEEP_DIVE.md` | `0.7839` `0.6484` `0.783` `0.648` `1536` | The OLD published pair reproduces exactly at its own operating point (reinforce=True) | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
+| 47 | `docs/DEEP_DIVE.md` | `68` | The MCP server exposes 68 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
+| 48 | `docs/DEEP_DIVE.md` | `0.592` `0.544` `2` | MemOps answer accuracy: keep-all 0.592, mem0 0.544; ~2% of mem0 extractions failed to parse | **EXTERNAL** | — |
+| 49 | `docs/DEEP_DIVE.md` | `0.593` | MemOps answer accuracy: inspeximus 0.593 | **EXTERNAL** | — |
+| 50 | `docs/DEEP_DIVE.md` | `519` `917` `606` `24` | mem0's default pipeline spends 519-917 s (median 606) of LLM extraction per MemOps scenario | **EXTERNAL** | — |
+| 51 | `docs/DEEP_DIVE.md` | `2` | ~2% of mem0's MemOps extraction calls failed to parse | **EXTERNAL** | — |
+| 52 | `docs/DEEP_DIVE.md` | `24` `50` | MemOps: 24 long-context scenarios, ~50 sessions each | **EXTERNAL** | — |
+| 53 | `docs/DEEP_DIVE.md` | `42` | Operating-point trap: a cosine top-1 store scores 42% | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
+| 54 | `docs/DEEP_DIVE.md` | `100` | The layered store scores 100% across all three operating points | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
+| 55 | `docs/DEEP_DIVE.md` | `0` `8` | ...and 0/8 on poison | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
+| 56 | `docs/DEEP_DIVE.md` | `0` `8` `67` | ...0/8 on updated facts; a recency store scores 67% | **REPRODUCIBLE-WITH-DEPS** | `python probes/operating_point_memory.py` |
+| 57 | `docs/DEEP_DIVE.md` | `5` `0.86` `0.20` | On paraphrase queries semantic recall@5 is 0.86 vs 0.20 lexical | **EXTERNAL** | — |
+| 58 | `docs/DEEP_DIVE.md` | `0.00` `0.57` `1.00` | RAMR ECHO-RESISTANCE: keyed-without-guard 0.00, add-based 0.57, echo_guard 1.00 | **EXTERNAL** | — |
+| 59 | `docs/DEEP_DIVE.md` | `0.397` | recall_any@1 = 0.397 with nomic task prefixes on one LoCoMo config | **PENDING-HARNESS** | `python probes/retrieval_recall_locomo.py --k 1` |
+| 60 | `docs/DEEP_DIVE.md` | `30` `2.8` | At a 30% keep-budget, access-decay retains 2.8% of high-value/low-frequency memories | **EXTERNAL** | — |
+| 61 | `docs/DEEP_DIVE.md` | `3` `2.2` `7` | ~3x more value kept, persisting at ~2.2x even at a 7% budget | **EXTERNAL** | — |
+| 62 | `docs/DEEP_DIVE.md` | `20` `100` `64` | ...20% of total value, vs 100% and 64% for the value-aware blend | **EXTERNAL** | — |
+| 63 | `docs/DEEP_DIVE.md` | `0.65` `2.6` | Semantic recall@5 holds ~0.65 at full scale, ~2.6x lexical | **EXTERNAL** | — |
+| 64 | `docs/DEEP_DIVE.md` | `0.2213` | NEGATIVE CONTROL: with the salience bar removed, rejection collapses to 0.2213 | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 65 | `docs/DEEP_DIVE.md` | `7` | close_session costs 7 ms on the 2,606-record fixture | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 66 | `docs/DEEP_DIVE.md` | `2,606` `1.000` | SessionEnd digest -> SessionStart injection, 8-session / 2,606-record fixture: injection recall 1.000 of a session's conclusions reach the next session | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 67 | `docs/DEEP_DIVE.md` | `1.0000` | Below-threshold rejection 1.0000 on the same fixture | **REPRODUCIBLE** | `python probes/session_digest_multisession.py` |
+| 68 | `docs/DEEP_DIVE.md` | `0` `8` | WITHDRAWN: 'severe-test 8/8' -- the probe reports 0/24 and nothing here produces an 8/8 | **WITHDRAWN** | `python probes/supersession_replication.py` |
+| 69 | `docs/DEEP_DIVE.md` | `0.61` | A cosine classifier separating a contradiction from a rephrase scores AUROC ~0.61 | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 70 | `docs/DEEP_DIVE.md` | `0.613` `41.7` `0.0` | The 2026-08-01 re-run of that probe, quoted with its date | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 71 | `docs/DEEP_DIVE.md` | `42` | A similarity-based store serves the stale value ~42% of the time | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 72 | `docs/DEEP_DIVE.md` | `0` | The deterministic SRO key drives the stale-value rate to 0% | **REPRODUCIBLE-WITH-DEPS** | `python probes/supersession_replication.py` |
+| 73 | `docs/DEEP_DIVE.md` | `0.9` `10` | Content-declared corroboration falls to a sybil at ~0.9 attack-success across 10 models | **REPRODUCIBLE-WITH-DEPS** | `python probes/memory_defense_layer_probe.py` |
+| 74 | `docs/DEEP_DIVE.md` | `0` `80` | GAP CONTROL: 0 of 80 top-1 answers move when the two reads are not separated at all | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 75 | `docs/DEEP_DIVE.md` | `80` | The time-gap measurement runs on four LOCOMO conversations, 80 questions sampled from each | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 76 | `docs/DEEP_DIVE.md` | `64` `83` `320` | Reading the same untouched store twice ~2s apart moves 64-83 of 320 top-1 answers (four LOCOMO conversations, 80 questions each, reinforce=False) | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 77 | `docs/DEEP_DIVE.md` | `0.0094` | Across five randomised insertion orders the hit@1 change over the gap runs +0.0094 to -0.0219 | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 78 | `docs/DEEP_DIVE.md` | `16` `80` | The effect saturates: 16 of 80 move at a two-second gap and the same count at ten | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 79 | `docs/DEEP_DIVE.md` | `-0.0219` `2` `5` `-0.0062` | The hit@1 change is negative in only 2 of 5 randomised insert orders; natural conversation order alone reads -0.0062 | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 80 | `docs/DEEP_DIVE.md` | `0.847` | Every top-1 answer that moved across the gap moved between records reported at the same score, e.g. 0.847 against 0.847 | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 81 | `docs/DEEP_DIVE.md` | `100` `6` | 100% of the moved answers stayed inside a displayed tie, across all six insert orders | **REPRODUCIBLE-WITH-DEPS** | `python probes/recall_over_a_time_gap.py` |
+| 82 | `docs/DEEP_DIVE.md` | `10,000` | Contradiction detection runs in production over the ~10,000-note vault | **EXTERNAL** | — |
+| 83 | `docs/DEEP_DIVE.md` | `10,000` | inspeximus has run daily over a ~10,000-note vault | **EXTERNAL** | — |
+| 84 | `index.html` | `9` `0` | Homepage counter: 9 framework adapters | **REPRODUCIBLE** | `python -c "import pathlib;print(sorted(p.stem for p in pathlib.Path('inspeximus/integrations').glob('*.py')))"` |
+| 85 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
+| 86 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 87 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
+| 88 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 89 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 90 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 91 | `index.html` | `9` `12` `3` | 9 of 12 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
+| 92 | `index.html` | `68` `0` | Homepage counter: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 93 | `index.html` | `68` | Homepage heading: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 94 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
+| 95 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 96 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 97 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
+| 98 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
+| 99 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
 
 ## Notes
 
@@ -132,6 +144,9 @@ Counts by status:
 - **readme-echo-mem0** — Version-stamped on purpose: mem0 is on 2.0.18 as of 2026-08-11 and we have NOT re-run it.
 - **readme-mcp-tool-count** — Checked against the live @mcp.tool() count by _live_consistency(), not read from here.
 - **readme-own-source-coverage** — Published as our own failure, not a product claim. 210,499 records across ten stores.
+- **cc-tool-count** — Checked against the live @mcp.tool() count by _live_consistency(), not read from here.
+- **cmp-graphiti** — The bare 0 on this line is the MAJOR VERSION in "Graphiti 0.x", not a measurement. It is listed rather than excused, because declaring "0" a non-claim file-wide would also excuse the two real zeros this page publishes.
+- **cmp-mem0** — Version-stamped deliberately: mem0 is on 2.0.18 and we have NOT re-run it.
 - **readme-audit-summary** — Self-referential, so it is checked against len(CHECKS) and len(NOT_TESTABLE_HERE) rather than trusted. The block used to name inspeximus-1.24.1 while the package was at 1.89.0; the version line was dropped rather than pinned, because it would go stale on every release.
 - **readme-bedrock-directions** — A count of the analytical directions taken, not a measurement. Left in because the sentence labels itself 'a synthesis over those cases, not a proof'.
 - **readme-chain-binding** — The 'before' column is measured against `git show main:inspeximus/core.py` on the same fixture, not quoted from elsewhere. The false-bind row is the control: a keyer that binds everything scores a perfect 15/15 while tripping all 18 negative pairs, which is why the bind rate alone is not evidence.
@@ -168,7 +183,7 @@ Counts by status:
 
 ## Known unenforced numbers
 
-These are outside the 4 token-enforced files, so the guard above does **not** cover them.
+These are outside the 6 token-enforced files, so the guard above does **not** cover them.
 They are listed because "absent from the table" and "not a problem" are different statements,
 and here only the first one is true. None may be promoted onto the reader-facing surface while it
 still says `PENDING-HARNESS`.

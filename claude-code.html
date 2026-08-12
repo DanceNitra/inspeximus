@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Persistent memory for Claude Code — MCP server, one line | inspeximus</title>
+  <meta name="description" content="An MCP memory server for Claude Code, Cursor, Windsurf, Codex and Cline. The next session starts knowing what the last one decided, and surfaces it before the action that contradicts it." />
+  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/claude-code.html" />
+  <meta property="og:title" content="Persistent memory for Claude Code, in one line" />
+  <meta property="og:description" content="An MCP memory server with 68 tools and three hooks. Your agent starts each session knowing what the last one decided — no CLAUDE.md editing, no re-explaining." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/claude-code.html" />
+  <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Persistent memory for Claude Code, in one line" />
+  <meta name="twitter:description" content="An MCP memory server with 68 tools and three hooks. Your agent starts each session knowing what the last one decided — no CLAUDE.md editing, no re-explaining." />
+  <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
+  <meta name="theme-color" content="#0d7d84" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": "Persistent memory for Claude Code, in one line",
+        "description": "Install an MCP memory server for Claude Code, Cursor, Windsurf, Codex and Cline. Decisions made in one session are surfaced in the next, and before the action that contradicts them.",
+        "url": "https://dancenitra.github.io/inspeximus/claude-code.html",
+        "author": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" },
+        "publisher": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How is this different from putting notes in CLAUDE.md?",
+            "acceptedAnswer": { "@type": "Answer", "text": "CLAUDE.md is a file you maintain by hand, and it grows until it is skimmed. This captures decisions as they happen, keyed by topic, and a later correction retires the earlier decision instead of sitting next to it. Nothing has to be edited or pruned by you." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does it work outside Claude Code?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The same install command targets Cursor, Windsurf, Codex and Cline, and any MCP host can call the server directly." }
+          },
+          {
+            "@type": "Question",
+            "name": "What does it need installed?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Python and the package. The core library is a single zero-dependency file; the MCP server is an opt-in extra. There is no database to run and no API key to supply." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+<style>
+  :root{
+    --ink:#16202a; --ink-2:#38434e; --muted:#5d6b74;
+    --ground:#f6f7f5; --panel:#ffffff; --line:#dfe3dd; --line-2:#e9ece6;
+    --teal:#0d7d84; --teal-deep:#0a5f65; --teal-wash:#e7f1f0;
+    --ok:#1a7f54; --ok-wash:#e6f2ea; --amber:#8a5a12; --amber-wash:#f6edda;
+    --seal:#7a2e2a;
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ink:#e8ece8; --ink-2:#c3ccc7; --muted:#8b9a93;
+      --ground:#0f1512; --panel:#161d19; --line:#293530; --line-2:#212b27;
+      --teal:#4bb8ba; --teal-deep:#7fd0d0; --teal-wash:#132623;
+      --ok:#57c98c; --ok-wash:#12241a; --amber:#d9ac5a; --amber-wash:#241d10;
+      --seal:#c67c76;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e8ece8; --ink-2:#c3ccc7; --muted:#8b9a93;
+    --ground:#0f1512; --panel:#161d19; --line:#293530; --line-2:#212b27;
+    --teal:#4bb8ba; --teal-deep:#7fd0d0; --teal-wash:#132623;
+    --ok:#57c98c; --ok-wash:#12241a; --amber:#d9ac5a; --amber-wash:#241d10;
+    --seal:#c67c76;
+  }
+  :root[data-theme="light"]{
+    --ink:#16202a; --ink-2:#38434e; --muted:#5d6b74;
+    --ground:#f6f7f5; --panel:#ffffff; --line:#dfe3dd; --line-2:#e9ece6;
+    --teal:#0d7d84; --teal-deep:#0a5f65; --teal-wash:#e7f1f0;
+    --ok:#1a7f54; --ok-wash:#e6f2ea; --amber:#8a5a12; --amber-wash:#f6edda;
+    --seal:#7a2e2a;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;letter-spacing:.005em;line-height:1.15}
+  a{color:var(--teal-deep);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,kbd,.mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted)}
+  .rule{height:1px;background:var(--line);border:0;margin:0}
+
+  /* ---- top bar ---- */
+  header.bar{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+    background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+  .brand{font-family:var(--serif);font-size:1.15rem;font-weight:600;letter-spacing:.01em}
+  .brand small{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);display:block;margin-top:-2px}
+  .bar nav{display:flex;gap:8px;align-items:center}
+  .btn{font-family:var(--sans);font-size:.86rem;font-weight:600;padding:.5rem .9rem;border-radius:7px;
+    border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+  .btn.solid{background:var(--teal);border-color:var(--teal);color:#fff}
+  @media (prefers-color-scheme:dark){.btn.solid{color:#04211f}}
+  :root[data-theme="dark"] .btn.solid{color:#04211f}
+  :root[data-theme="light"] .btn.solid{color:#fff}
+  .btn:hover{text-decoration:none;border-color:var(--teal)}
+
+  /* ---- hero ---- */
+  .hero{padding:72px 0 40px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:48px;align-items:center}
+  .deadline{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.74rem;
+    letter-spacing:.08em;color:var(--teal-deep);background:var(--teal-wash);border:1px solid var(--line);
+    padding:.35rem .7rem;border-radius:999px;margin-bottom:20px}
+  .deadline .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 25%,transparent)}
+  h1.head{font-size:clamp(2.1rem,4.6vw,3.35rem);margin:0 0 18px;letter-spacing:-.01em}
+  h1.head em{font-style:normal;color:var(--teal-deep);
+    box-shadow:inset 0 -.14em 0 color-mix(in srgb,var(--teal) 22%,transparent)}
+  .lede{font-size:1.12rem;color:var(--ink-2);max-width:60ch;margin:0 0 26px}
+  .lede b{color:var(--ink);font-weight:600}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .fineprint{font-size:.82rem;color:var(--muted);margin-top:16px;max-width:56ch}
+
+  /* ---- seal ---- */
+  .seal-wrap{display:flex;justify-content:center;align-items:center}
+  .seal{width:230px;height:230px;position:relative;color:var(--seal)}
+  .seal svg{width:100%;height:100%;display:block}
+  .seal .core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center}
+  .seal .core .ins{font-family:var(--serif);font-size:1.5rem;font-weight:600;letter-spacing:.02em;color:var(--ink)}
+  .seal .core .sub{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--muted);margin-top:4px}
+  .seal .core .chk{margin-top:10px;font-family:var(--mono);font-size:.62rem;color:var(--ok);
+    background:var(--ok-wash);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent);
+    padding:.2rem .5rem;border-radius:999px}
+
+  /* ---- section frame ---- */
+  section{padding:56px 0}
+  .sec-head{margin:0 0 8px}
+  .sec-head h2{font-size:clamp(1.5rem,3vw,2.05rem);margin:6px 0 0}
+  .sec-sub{color:var(--muted);max-width:64ch;margin:10px 0 0;font-size:1rem}
+
+  /* ---- gap table ---- */
+  .tablecard{margin-top:26px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .tscroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+  thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);text-align:left;padding:14px 16px;background:var(--line-2);font-weight:600;white-space:nowrap}
+  tbody td{padding:13px 16px;border-top:1px solid var(--line);vertical-align:middle;color:var(--ink-2)}
+  tbody td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  tr.us td{background:var(--teal-wash)}
+  tr.us td:first-child{color:var(--teal-deep)}
+  .mk{display:inline-flex;align-items:center;gap:7px;font-size:.86rem}
+  .mk.no{color:var(--muted)}
+  .mk.yes{color:var(--ok);font-weight:600}
+  .mk .g{width:15px;height:15px;flex:0 0 auto}
+  .tnote{padding:13px 16px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);background:var(--panel)}
+
+  /* ---- pillars ---- */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+  .pillar{border:1px solid var(--line);border-radius:12px;padding:22px 20px;background:var(--panel);
+    position:relative}
+  .pillar .art{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--teal-deep);
+    background:var(--teal-wash);border:1px solid var(--line);padding:.25rem .55rem;border-radius:6px;
+    display:inline-block;margin-bottom:14px}
+  .pillar h3{font-size:1.18rem;margin:0 0 8px}
+  .pillar p{margin:0;color:var(--ink-2);font-size:.94rem}
+  .pillar code{font-size:.85em;color:var(--teal-deep);background:var(--teal-wash);padding:.05em .35em;border-radius:4px}
+
+  /* ---- terminal ---- */
+  .demo{margin-top:28px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--ink);
+    box-shadow:0 18px 40px -24px rgba(0,0,0,.5)}
+  :root[data-theme="dark"] .demo, .demo{--tfg:#dfe7e3}
+  .demo .top{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#0e1621;border-bottom:1px solid #23303c}
+  .demo .top .d{width:11px;height:11px;border-radius:50%;background:#33414d}
+  .demo .top .t{margin-left:8px;font-family:var(--mono);font-size:.72rem;color:#7d8b96}
+  .demo pre{margin:0;padding:20px 20px 22px;overflow-x:auto;font-family:var(--mono);font-size:.83rem;
+    line-height:1.75;color:#d7e0dc}
+  .demo .p{color:#4bb8ba}
+  .demo .cm{color:#6b7c86}
+  .demo .ok{color:#57c98c}
+  .demo .k{color:#e0c07a}
+
+  /* ---- boundary ---- */
+  .boundary{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;
+    background:var(--panel);padding:26px 28px;margin-top:8px}
+  .boundary h2{font-size:1.3rem;margin:0 0 12px}
+  .boundary p{margin:0 0 12px;color:var(--ink-2);font-size:.98rem}
+  .boundary p:last-child{margin-bottom:0}
+  .boundary b{color:var(--ink)}
+
+  /* ---- closing / footer ---- */
+  .closing{text-align:center;padding:64px 0 40px}
+  .closing h2{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 auto 18px;max-width:20ch}
+  .closing .hero-cta{justify-content:center}
+  footer{border-top:1px solid var(--line);padding:30px 0 60px;color:var(--muted);font-size:.82rem}
+  footer .wrap{display:flex;flex-direction:column;gap:10px}
+  footer a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+  .src{font-size:.78rem;line-height:1.7}
+
+  @media (max-width:820px){
+    .hero-grid{grid-template-columns:1fr;gap:34px}
+    .seal-wrap{order:-1}
+    .seal{width:180px;height:180px}
+    .pillars{grid-template-columns:1fr}
+    .hero{padding:48px 0 24px}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .seal{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+    @keyframes rise{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+  }
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:6px}
+</style>
+<style>
+  /* page-local additions, in the same tokens as the sheet above */
+  .prose{max-width:68ch}
+  .prose p{color:var(--ink-2)}
+  .callout{border:1px solid var(--line);border-left:3px solid var(--teal);background:var(--panel);
+    border-radius:0 10px 10px 0;padding:18px 20px;margin:26px 0;max-width:72ch}
+  .callout b{color:var(--ink)}
+  pre.cmd{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    overflow-x:auto;font-family:var(--mono);font-size:.88rem;color:var(--ink);margin:20px 0}
+  .faq{margin-top:14px}
+  .faq details{border-top:1px solid var(--line);padding:16px 0}
+  .faq summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:1.02rem}
+  .faq p{margin:12px 0 0;color:var(--ink-2);max-width:70ch}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:24px 0;max-width:72ch}
+  .steps li{counter-increment:s;position:relative;padding:0 0 0 44px;margin:0 0 20px;color:var(--ink-2)}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:28px;height:28px;
+    display:grid;place-items:center;border-radius:50%;background:var(--teal-wash);color:var(--teal-deep);
+    font-family:var(--mono);font-size:.8rem;font-weight:600;border:1px solid var(--line)}
+  .steps li b{color:var(--ink)}
+  footer{border-top:1px solid var(--line);padding:40px 0 60px;margin-top:20px}
+  footer .wrap>div:first-child{color:var(--ink-2)}
+  footer .src{color:var(--muted);font-size:.84rem;margin-top:14px;max-width:80ch}
+</style>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="./" style="text-decoration:none;color:var(--ink)">inspeximus<small>we have inspected</small></a>
+    <nav>
+      <a class="btn" href="./">Overview</a>
+      <a class="btn" href="https://pypi.org/project/inspeximus/">PyPI</a>
+      <a class="btn solid" href="https://github.com/DanceNitra/inspeximus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="wrap prose">
+    <p class="eyebrow">mcp server</p>
+    <h1 class="head">Your agent forgets what it decided.
+      <em>One line fixes that.</em></h1>
+    <p class="lede">An MCP memory server for <b>Claude Code</b>, Cursor, Windsurf, Codex and Cline. The
+      next session starts knowing what the last one decided &mdash; and says so <i>before</i> the action
+      that would contradict it, not in the post-mortem.</p>
+    <pre class="cmd">pip install inspeximus
+inspeximus install --ide claude     # also: cursor, windsurf, codex, cline</pre>
+    <div class="hero-cta">
+      <a class="btn solid" href="https://github.com/DanceNitra/inspeximus/blob/main/MCP_LISTINGS.md">Every tool, and what it is for</a>
+      <a class="btn" href="./">What inspeximus is</a>
+    </div>
+    <p class="fineprint">No database to run, no API key to supply. The core is one zero-dependency file;
+      the MCP server is an opt-in extra.</p>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">what gets wired</p>
+      <h2>Three hooks, and the moment each one fires</h2>
+      <p class="sec-sub">Memory that only answers when asked is memory you have to remember to consult.
+        These fire on their own.</p>
+    </div>
+    <ol class="steps">
+      <li><b>SessionStart</b> &mdash; injects the decisions still in force. Not everything ever said:
+        what has not been superseded. A later correction <i>retires</i> the earlier decision by topic,
+        so the new session inherits a current position rather than an archive.</li>
+      <li><b>PostToolUse</b> &mdash; captures what actually happened, keyed by file. The record is what
+        the run did, not what the plan said it would do.</li>
+      <li><b>PreToolUse</b> &mdash; surfaces the decision that bears on the action <i>before</i> it runs.
+        This is the one that changes outcomes: a rule you are reminded of after the commit is a rule you
+        already broke.</li>
+    </ol>
+    <div class="callout">
+      <b>Built because we needed it.</b> The PreToolUse guard exists because a rule we had agreed on was
+      given twice and broken twice in the same day &mdash; by us. A rule you have to remember is a rule
+      you will break at the moment you feel most certain.
+    </div>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap prose">
+    <div class="sec-head">
+      <p class="eyebrow">the surface</p>
+      <h2>68 tools any MCP host can call</h2>
+    </div>
+    <p>Recall and write are the two you will use daily. The rest are there because agent memory that is
+      only additive becomes wrong and stays wrong: correction, revert, supersession history, provenance
+      checks, contradiction detection, subject erasure with receipts, and audit bundles a third party
+      can verify without trusting the store.</p>
+    <p>The count is read from the server&rsquo;s own registrations by our claims audit, not typed into
+      this page &mdash; a published count maintained by hand drifts on exactly the schedule you stop
+      watching it, and this one did, twice, before it was automated.</p>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap prose">
+    <div class="sec-head">
+      <p class="eyebrow">questions</p>
+      <h2>Reasonable objections</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>How is this different from notes in CLAUDE.md?</summary>
+        <p>CLAUDE.md is a file you maintain by hand, and it grows until it gets skimmed. This captures
+          decisions as they happen and keys them by topic, so a later correction retires the earlier
+          decision instead of sitting beside it. You never prune it, and you never have to wonder which
+          of two contradictory lines is current.</p>
+      </details>
+      <details>
+        <summary>Will it slow my session down?</summary>
+        <p>Recall is local and lexical by default &mdash; no network call, no embedding service, no
+          model in the loop. Semantic recall is available if you supply an embedder, and optional
+          because most sessions do not need it.</p>
+      </details>
+      <details>
+        <summary>What happens when a stored decision turns out to be wrong?</summary>
+        <p>You correct it, and the old one stops coming back. That is the property the whole library is
+          built around, and we
+          <a href="./compare.html">measured it against other memory systems</a> rather than asserting
+          it.</p>
+      </details>
+      <details>
+        <summary>Is my data going anywhere?</summary>
+        <p>No. The store is a file on your machine. Encryption is an opt-in extra, and erasure is a real
+          operation with a receipt rather than a filtered view.</p>
+      </details>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="wrap">
+    <div>inspeximus &mdash; long-term memory for AI agents that stays correct.
+      <a href="./">Overview</a> &middot;
+      <a href="./compare.html">The measurement</a> &middot;
+      <a href="./claude-code.html">Claude Code</a> &middot;
+      <a href="./ai-act.html">EU AI Act</a> &middot;
+      <a href="https://pypi.org/project/inspeximus/">PyPI</a> &middot;
+      <a href="https://github.com/DanceNitra/inspeximus">GitHub</a></div>
+    <div class="src">Every number on this page is registered in
+      <a href="https://github.com/DanceNitra/inspeximus/blob/main/docs/CLAIMS.md">docs/CLAIMS.md</a>
+      with the command that recomputes it. If one disagrees with your run, that is a bug report we want.</div>
+  </div>
+</footer>
+</body>
+</html>

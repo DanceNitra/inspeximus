@@ -12,4 +12,16 @@
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>https://dancenitra.github.io/inspeximus/compare.html</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://dancenitra.github.io/inspeximus/claude-code.html</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
 </urlset>

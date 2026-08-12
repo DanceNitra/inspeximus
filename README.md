@@ -124,6 +124,8 @@ that recomputes it. If one disagrees with your run, that is a bug report we want
 | | |
 |---|---|
 | **[Project site →](https://dancenitra.github.io/inspeximus/)** | **the guided tour: the benchmark, the MCP surface, the governance story** |
+| [Measured vs mem0 & Graphiti](https://dancenitra.github.io/inspeximus/compare.html) | the resurrection table in full, with the control and the honest scope |
+| [Claude Code setup](https://dancenitra.github.io/inspeximus/claude-code.html) | the one-line MCP install, and what each of the three hooks does |
 | [The long version](docs/DEEP_DIVE.md) | every mechanism, every measurement, and the ones that failed |
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
 | [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts |

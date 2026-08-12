@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Does your agent memory keep a correction? mem0 vs Graphiti vs inspeximus</title>
+  <meta name="description" content="Measured: after a stored fact is corrected, how often does the old value come back? inspeximus 0%, Graphiti 13.3%, mem0 46.7% (n=30 each, native configs). Open harness, with a control." />
+  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/compare.html" />
+  <meta property="og:title" content="When you correct a fact, does your agent memory keep it corrected?" />
+  <meta property="og:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/compare.html" />
+  <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="When you correct a fact, does your agent memory keep it corrected?" />
+  <meta name="twitter:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
+  <meta name="theme-color" content="#0d7d84" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": "When you correct a fact, does your agent memory keep it corrected?",
+        "description": "A measured comparison of inspeximus, Graphiti and mem0 on one question: after a stored fact is corrected, how often does the old value come back? n=30 per system, each on its own native configuration.",
+        "url": "https://dancenitra.github.io/inspeximus/compare.html",
+        "author": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" },
+        "publisher": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Why measure resurrection instead of recall accuracy?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Recall accuracy is widely benchmarked and we are not the best at it. What almost nobody publishes is what happens after a stored fact turns out to be wrong. An agent that recalls well and re-serves a corrected value confidently is the failure that costs you, and it does not show up in a recall score." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is this a general memory-quality comparison?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. It is one narrow adversarial cut. On plain retrieval benchmarks other systems can and do beat us. Treat this page as the answer to a single question, not a ranking." }
+          },
+          {
+            "@type": "Question",
+            "name": "Which versions were measured, and when?",
+            "acceptedAnswer": { "@type": "Answer", "text": "mem0 was measured at 2.0.11 in 2026-07 and has not been re-run since; mem0 is on 2.0.18 now. Graphiti was run on its native Neo4j and OpenAI configuration. The version is stamped rather than the claim being restated as current." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+<style>
+  :root{
+    --ink:#16202a; --ink-2:#38434e; --muted:#5d6b74;
+    --ground:#f6f7f5; --panel:#ffffff; --line:#dfe3dd; --line-2:#e9ece6;
+    --teal:#0d7d84; --teal-deep:#0a5f65; --teal-wash:#e7f1f0;
+    --ok:#1a7f54; --ok-wash:#e6f2ea; --amber:#8a5a12; --amber-wash:#f6edda;
+    --seal:#7a2e2a;
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ink:#e8ece8; --ink-2:#c3ccc7; --muted:#8b9a93;
+      --ground:#0f1512; --panel:#161d19; --line:#293530; --line-2:#212b27;
+      --teal:#4bb8ba; --teal-deep:#7fd0d0; --teal-wash:#132623;
+      --ok:#57c98c; --ok-wash:#12241a; --amber:#d9ac5a; --amber-wash:#241d10;
+      --seal:#c67c76;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e8ece8; --ink-2:#c3ccc7; --muted:#8b9a93;
+    --ground:#0f1512; --panel:#161d19; --line:#293530; --line-2:#212b27;
+    --teal:#4bb8ba; --teal-deep:#7fd0d0; --teal-wash:#132623;
+    --ok:#57c98c; --ok-wash:#12241a; --amber:#d9ac5a; --amber-wash:#241d10;
+    --seal:#c67c76;
+  }
+  :root[data-theme="light"]{
+    --ink:#16202a; --ink-2:#38434e; --muted:#5d6b74;
+    --ground:#f6f7f5; --panel:#ffffff; --line:#dfe3dd; --line-2:#e9ece6;
+    --teal:#0d7d84; --teal-deep:#0a5f65; --teal-wash:#e7f1f0;
+    --ok:#1a7f54; --ok-wash:#e6f2ea; --amber:#8a5a12; --amber-wash:#f6edda;
+    --seal:#7a2e2a;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;letter-spacing:.005em;line-height:1.15}
+  a{color:var(--teal-deep);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,kbd,.mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted)}
+  .rule{height:1px;background:var(--line);border:0;margin:0}
+
+  /* ---- top bar ---- */
+  header.bar{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+    background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+  .brand{font-family:var(--serif);font-size:1.15rem;font-weight:600;letter-spacing:.01em}
+  .brand small{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);display:block;margin-top:-2px}
+  .bar nav{display:flex;gap:8px;align-items:center}
+  .btn{font-family:var(--sans);font-size:.86rem;font-weight:600;padding:.5rem .9rem;border-radius:7px;
+    border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+  .btn.solid{background:var(--teal);border-color:var(--teal);color:#fff}
+  @media (prefers-color-scheme:dark){.btn.solid{color:#04211f}}
+  :root[data-theme="dark"] .btn.solid{color:#04211f}
+  :root[data-theme="light"] .btn.solid{color:#fff}
+  .btn:hover{text-decoration:none;border-color:var(--teal)}
+
+  /* ---- hero ---- */
+  .hero{padding:72px 0 40px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:48px;align-items:center}
+  .deadline{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.74rem;
+    letter-spacing:.08em;color:var(--teal-deep);background:var(--teal-wash);border:1px solid var(--line);
+    padding:.35rem .7rem;border-radius:999px;margin-bottom:20px}
+  .deadline .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 25%,transparent)}
+  h1.head{font-size:clamp(2.1rem,4.6vw,3.35rem);margin:0 0 18px;letter-spacing:-.01em}
+  h1.head em{font-style:normal;color:var(--teal-deep);
+    box-shadow:inset 0 -.14em 0 color-mix(in srgb,var(--teal) 22%,transparent)}
+  .lede{font-size:1.12rem;color:var(--ink-2);max-width:60ch;margin:0 0 26px}
+  .lede b{color:var(--ink);font-weight:600}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .fineprint{font-size:.82rem;color:var(--muted);margin-top:16px;max-width:56ch}
+
+  /* ---- seal ---- */
+  .seal-wrap{display:flex;justify-content:center;align-items:center}
+  .seal{width:230px;height:230px;position:relative;color:var(--seal)}
+  .seal svg{width:100%;height:100%;display:block}
+  .seal .core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center}
+  .seal .core .ins{font-family:var(--serif);font-size:1.5rem;font-weight:600;letter-spacing:.02em;color:var(--ink)}
+  .seal .core .sub{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--muted);margin-top:4px}
+  .seal .core .chk{margin-top:10px;font-family:var(--mono);font-size:.62rem;color:var(--ok);
+    background:var(--ok-wash);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent);
+    padding:.2rem .5rem;border-radius:999px}
+
+  /* ---- section frame ---- */
+  section{padding:56px 0}
+  .sec-head{margin:0 0 8px}
+  .sec-head h2{font-size:clamp(1.5rem,3vw,2.05rem);margin:6px 0 0}
+  .sec-sub{color:var(--muted);max-width:64ch;margin:10px 0 0;font-size:1rem}
+
+  /* ---- gap table ---- */
+  .tablecard{margin-top:26px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .tscroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+  thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);text-align:left;padding:14px 16px;background:var(--line-2);font-weight:600;white-space:nowrap}
+  tbody td{padding:13px 16px;border-top:1px solid var(--line);vertical-align:middle;color:var(--ink-2)}
+  tbody td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  tr.us td{background:var(--teal-wash)}
+  tr.us td:first-child{color:var(--teal-deep)}
+  .mk{display:inline-flex;align-items:center;gap:7px;font-size:.86rem}
+  .mk.no{color:var(--muted)}
+  .mk.yes{color:var(--ok);font-weight:600}
+  .mk .g{width:15px;height:15px;flex:0 0 auto}
+  .tnote{padding:13px 16px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);background:var(--panel)}
+
+  /* ---- pillars ---- */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+  .pillar{border:1px solid var(--line);border-radius:12px;padding:22px 20px;background:var(--panel);
+    position:relative}
+  .pillar .art{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--teal-deep);
+    background:var(--teal-wash);border:1px solid var(--line);padding:.25rem .55rem;border-radius:6px;
+    display:inline-block;margin-bottom:14px}
+  .pillar h3{font-size:1.18rem;margin:0 0 8px}
+  .pillar p{margin:0;color:var(--ink-2);font-size:.94rem}
+  .pillar code{font-size:.85em;color:var(--teal-deep);background:var(--teal-wash);padding:.05em .35em;border-radius:4px}
+
+  /* ---- terminal ---- */
+  .demo{margin-top:28px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--ink);
+    box-shadow:0 18px 40px -24px rgba(0,0,0,.5)}
+  :root[data-theme="dark"] .demo, .demo{--tfg:#dfe7e3}
+  .demo .top{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#0e1621;border-bottom:1px solid #23303c}
+  .demo .top .d{width:11px;height:11px;border-radius:50%;background:#33414d}
+  .demo .top .t{margin-left:8px;font-family:var(--mono);font-size:.72rem;color:#7d8b96}
+  .demo pre{margin:0;padding:20px 20px 22px;overflow-x:auto;font-family:var(--mono);font-size:.83rem;
+    line-height:1.75;color:#d7e0dc}
+  .demo .p{color:#4bb8ba}
+  .demo .cm{color:#6b7c86}
+  .demo .ok{color:#57c98c}
+  .demo .k{color:#e0c07a}
+
+  /* ---- boundary ---- */
+  .boundary{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;
+    background:var(--panel);padding:26px 28px;margin-top:8px}
+  .boundary h2{font-size:1.3rem;margin:0 0 12px}
+  .boundary p{margin:0 0 12px;color:var(--ink-2);font-size:.98rem}
+  .boundary p:last-child{margin-bottom:0}
+  .boundary b{color:var(--ink)}
+
+  /* ---- closing / footer ---- */
+  .closing{text-align:center;padding:64px 0 40px}
+  .closing h2{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 auto 18px;max-width:20ch}
+  .closing .hero-cta{justify-content:center}
+  footer{border-top:1px solid var(--line);padding:30px 0 60px;color:var(--muted);font-size:.82rem}
+  footer .wrap{display:flex;flex-direction:column;gap:10px}
+  footer a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+  .src{font-size:.78rem;line-height:1.7}
+
+  @media (max-width:820px){
+    .hero-grid{grid-template-columns:1fr;gap:34px}
+    .seal-wrap{order:-1}
+    .seal{width:180px;height:180px}
+    .pillars{grid-template-columns:1fr}
+    .hero{padding:48px 0 24px}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .seal{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+    @keyframes rise{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+  }
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:6px}
+</style>
+<style>
+  /* page-local additions, in the same tokens as the sheet above */
+  .prose{max-width:68ch}
+  .prose p{color:var(--ink-2)}
+  .callout{border:1px solid var(--line);border-left:3px solid var(--teal);background:var(--panel);
+    border-radius:0 10px 10px 0;padding:18px 20px;margin:26px 0;max-width:72ch}
+  .callout b{color:var(--ink)}
+  pre.cmd{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    overflow-x:auto;font-family:var(--mono);font-size:.88rem;color:var(--ink);margin:20px 0}
+  .faq{margin-top:14px}
+  .faq details{border-top:1px solid var(--line);padding:16px 0}
+  .faq summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:1.02rem}
+  .faq p{margin:12px 0 0;color:var(--ink-2);max-width:70ch}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:24px 0;max-width:72ch}
+  .steps li{counter-increment:s;position:relative;padding:0 0 0 44px;margin:0 0 20px;color:var(--ink-2)}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:28px;height:28px;
+    display:grid;place-items:center;border-radius:50%;background:var(--teal-wash);color:var(--teal-deep);
+    font-family:var(--mono);font-size:.8rem;font-weight:600;border:1px solid var(--line)}
+  .steps li b{color:var(--ink)}
+  footer{border-top:1px solid var(--line);padding:40px 0 60px;margin-top:20px}
+  footer .wrap>div:first-child{color:var(--ink-2)}
+  footer .src{color:var(--muted);font-size:.84rem;margin-top:14px;max-width:80ch}
+</style>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="./" style="text-decoration:none;color:var(--ink)">inspeximus<small>we have inspected</small></a>
+    <nav>
+      <a class="btn" href="./">Overview</a>
+      <a class="btn" href="https://pypi.org/project/inspeximus/">PyPI</a>
+      <a class="btn solid" href="https://github.com/DanceNitra/inspeximus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="wrap prose">
+    <p class="eyebrow">the measurement</p>
+    <h1 class="head">When you correct a fact, does your agent memory
+      <em>keep it corrected?</em></h1>
+    <p class="lede">Every memory library can store and retrieve. Far fewer publish what happens after a
+      stored fact turns out to be <b>wrong</b> &mdash; so we measured it, on three systems, each on its
+      own native configuration.</p>
+    <div class="hero-cta">
+      <a class="btn solid" href="https://github.com/DanceNitra/ramr">The harness is open</a>
+      <a class="btn" href="./">What inspeximus is</a>
+    </div>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">n = 30 per system</p>
+      <h2>How often the old value comes back</h2>
+      <p class="sec-sub">A fact is stored, then corrected. We then ask for it again and count how often
+        the superseded value is what comes back.</p>
+    </div>
+    <div class="tablecard">
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>system</th><th>keeps the correction</th><th>resurrects the old value</th></tr></thead>
+          <tbody>
+            <tr class="us"><td>inspeximus</td><td><span class="mk yes">100%</span></td><td><span class="mk yes">0%</span></td></tr>
+            <tr><td>Graphiti 0.x <span class="mono" style="font-weight:400;color:var(--muted)">(Neo4j + OpenAI)</span></td><td>86.7%</td><td>13.3% <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [3.3, 26.7]</span></td></tr>
+            <tr><td>mem0 2.0.11 <span class="mono" style="font-weight:400;color:var(--muted)">(OpenAI native)</span></td><td>53.3%</td><td><b>46.7%</b> <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [30.0, 63.3]</span></td></tr>
+            <tr><td>inspeximus <span class="mono" style="font-weight:400;color:var(--muted)">&mdash; guard disabled</span></td><td><span class="mk no">0%</span></td><td>&mdash; the control</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>The bottom row is the point.</b> Turn our own guard off and we score zero. That is what tells
+      you the number is the mechanism doing work, and not the benchmark being kind to us. A comparison
+      without a control on the author&rsquo;s own system is a marketing table.
+    </div>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap prose">
+    <div class="sec-head">
+      <p class="eyebrow">what this is not</p>
+      <h2>The honest scope</h2>
+    </div>
+    <p>This is <b>one narrow adversarial cut</b>, not a general memory-quality score. On plain retrieval
+      benchmarks other systems can and do beat us, and we publish those results too rather than only the
+      cut we win. Read this page as the answer to a single question.</p>
+    <p>mem0 was measured at <b>2.0.11</b> (2026-07) and has <b>not</b> been re-run since; mem0 is on
+      2.0.18 now. The version is stamped rather than the claim being quietly restated as current &mdash;
+      if they have fixed it, this page is out of date and we would rather you could tell.</p>
+    <p>Confidence intervals are given because a 30-trial proportion is not a point. Ours is 0% with the
+      guard on and 100% with it off, which is a mechanism, not a sample.</p>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap prose">
+    <div class="sec-head">
+      <p class="eyebrow">reproduce it</p>
+      <h2>Run it against your own store</h2>
+    </div>
+    <ol class="steps">
+      <li><b>Clone the harness.</b> It is a separate public repository so that the benchmark is not
+        maintained by the thing it measures.
+        <pre class="cmd">git clone https://github.com/DanceNitra/ramr</pre></li>
+      <li><b>Bring your own keys.</b> The inspeximus column runs locally and free; the mem0 and Graphiti
+        columns need an OpenAI key and, for Graphiti, a live Neo4j.</li>
+      <li><b>Run the backend comparison.</b> Raw per-trial arrays land in
+        <span class="mono">echo_resistance_backends_result.json</span> &mdash; not a summary, the arrays.
+        <pre class="cmd">python ramr_echo_resistance_backends.py</pre></li>
+    </ol>
+    <p>If your run disagrees with this table, that is a bug report we want, and it goes on the
+      <a href="https://dancenitra.github.io/agora/public/crucible/">public replication ledger</a>
+      whichever way it lands.</p>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap prose">
+    <div class="sec-head">
+      <p class="eyebrow">questions</p>
+      <h2>Reasonable objections</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Why measure resurrection instead of recall accuracy?</summary>
+        <p>Recall accuracy is widely benchmarked, and we are not the best at it. What almost nobody
+          publishes is what a system does after a stored fact turns out to be wrong. An agent that
+          recalls well and confidently re-serves a value you already corrected is the failure that
+          costs you, and it does not appear in a recall score at all.</p>
+      </details>
+      <details>
+        <summary>Isn&rsquo;t 100% just a benchmark you designed to win?</summary>
+        <p>That is the right suspicion, and it is why the control row exists. With the same harness,
+          the same task and our guard switched off, we resurrect the old value every time. The delta is
+          attributable to one mechanism rather than to the benchmark&rsquo;s shape.</p>
+      </details>
+      <details>
+        <summary>How does inspeximus actually do it?</summary>
+        <p>A correction is a first-class write: <span class="mono">remember(key=...)</span> retires the
+          previous value for that key, deterministically, with no model in the loop deciding which is
+          newer. The retirement is a record you can audit, revert with
+          <span class="mono">revert(key)</span>, and prove.</p>
+      </details>
+      <details>
+        <summary>Does this need a vector database?</summary>
+        <p>No. inspeximus is one zero-dependency file. Semantic recall is optional; the lexical
+          fallback needs nothing installed.</p>
+      </details>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="wrap">
+    <div>inspeximus &mdash; long-term memory for AI agents that stays correct.
+      <a href="./">Overview</a> &middot;
+      <a href="./compare.html">The measurement</a> &middot;
+      <a href="./claude-code.html">Claude Code</a> &middot;
+      <a href="./ai-act.html">EU AI Act</a> &middot;
+      <a href="https://pypi.org/project/inspeximus/">PyPI</a> &middot;
+      <a href="https://github.com/DanceNitra/inspeximus">GitHub</a></div>
+    <div class="src">Every number on this page is registered in
+      <a href="https://github.com/DanceNitra/inspeximus/blob/main/docs/CLAIMS.md">docs/CLAIMS.md</a>
+      with the command that recomputes it. If one disagrees with your run, that is a bug report we want.</div>
+  </div>
+</footer>
+</body>
+</html>
