@@ -45,6 +45,13 @@ NOT_STANDALONE = {
     "membench_recall_probe_v2.py": "needs MemBench output under agora_output/",
     "membench_recency_tiebreak_probe.py": "needs MemBench output under agora_output/",
     "reversibility_gate_frontier.py": "needs benchmark output under agora_output/",
+    # Scans the stores THIS deployment writes, and asserts it found some: a zero from a scan that
+    # reached nothing would look identical to "no echoes exist", which is the exact confusion the
+    # probe was written to prevent. On a CI runner there are no stores, so the assertion fires and
+    # the probe exits 1 -- correctly. Its numbers are ours to REPORT, not anyone else's to re-run;
+    # the mechanism half is in corroboration_counts_an_echo_as_two_witnesses.py, which is
+    # self-contained and runs everywhere.
+    "would_a_lineage_rail_reach_anything_here.py": "measures OUR deployment's stores; refuses to report a zero it did not earn",
     "evidence_grade_ratchet.py": "needs a prepared store outside the repo",
     "route_probe.py": "needs a prepared store outside the repo",
     "operating_point_memory.py": "needs a prepared store outside the repo",
