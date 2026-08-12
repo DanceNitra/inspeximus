@@ -403,6 +403,24 @@ NUMBER_CLAIMS = [
        "own native configuration (n=30)",
        "Sample size for the native-config echo run", "REPRODUCIBLE-WITH-DEPS",
        "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    # The fairness correction on the Graphiti row: our own raw output records ZERO echo-attributable
+    # flips out of 26 corrections that reached the graph, so the 13.3% in the table is pre-echo
+    # extraction misses and not a failure of their defense. Understating a competitor's mechanism on
+    # our own front page is the same defect as overstating ours, and it runs in both directions.
+    _c("readme-graphiti-13-3-decomposed", "README.md", ["13.3"],
+       "The 13.3% above is four",
+       "The Graphiti row's raw resurrection decomposed: four pre-echo extraction misses",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    _c("readme-graphiti-decomposition", "README.md", ["0", "26"],
+       "echo_attributable_flips: 0",
+       "Graphiti's bi-temporal invalidation held 26/26 corrections that were extracted pre-echo; "
+       "its 13.3% raw resurrection is four extraction misses, not echo failures",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo"),
+    _c("readme-graphiti-echo-zero", "README.md", ["0"],
+       "Graphiti scores **0%**, the same as us",
+       "On echo-attributable resurrection specifically, Graphiti scores 0% -- the separator is whether "
+       "the supersession link is recorded at write time, not which vendor recorded it",
+       "REPRODUCIBLE-WITH-DEPS", "python ramr_echo_resistance_backends.py  # RAMR repo"),
     _c("site-echo-row", "index.html", ["0", "13.3", "46.7"],
        "inspeximus 0%, Graphiti 13.3%, mem0 46.7%",
        "Corrected-fact resurrection per system on their native configs",

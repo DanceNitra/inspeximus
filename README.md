@@ -69,6 +69,15 @@ re-run it — the version is stamped rather than the claim being restated as cur
 raw arrays and the re-runnable harness:
 [RAMR](https://github.com/DanceNitra/ramr) · `echo_resistance_backends_result.json`</sub>
 
+> **Read the Graphiti row correctly — its echo defense did not fail.** Our own raw output records
+> `echo_attributable_flips: 0` out of **26** corrections that were extracted correctly before the echo
+> ran. Graphiti's bi-temporal invalidation held every one of them. The 13.3% above is four *pre-echo
+> extraction misses* — the correction never made it into the graph — which is a different failure from
+> the one this table is about. Stated as the mechanism rather than the headline: on echo-attributable
+> resurrection, Graphiti scores **0%**, the same as us, by keeping the supersession link at write time.
+> That is the real finding here: what separates these systems is whether the link is recorded, not who
+> recorded it.
+
 The bottom row is the point. Turn our guard off and we score **zero** — so the number is the mechanism,
 not the benchmark being kind to us.
 
