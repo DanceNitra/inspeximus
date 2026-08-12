@@ -524,6 +524,14 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE-WITH-DEPS",
        "curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py",
        "Published as our own failure, not a product claim. 210,499 records across ten stores."),
+    _c("readme-adapter-conformance", "README.md", ["9", "12", "3"],
+       "**9 of 12 verified against current upstream, 3 recorded broken**",
+       "Framework adapters: 9 of 12 verified against current upstream, 3 recorded broken",
+       "REPRODUCIBLE", "python claims_audit.py --numbers",
+       "Read from docs/integration_conformance.json by _live_consistency(), which now checks BOTH "
+       "index.html and README.md -- a second copy of a number is a second place for it to go stale. "
+       "The other 12 in this file is the EU AI Act article number and stays a declared non-claim; "
+       "COUNT-DRIFT caught the collision the moment this line was added, which is the whole point."),
     _c("readme-tests-and-mutations", "README.md", ["2,600", "175"],
        "**2,600+ tests**",
        "Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed",
@@ -1270,25 +1278,33 @@ def _live_consistency(root):
     # tool count comes from the server: the homepage said "Drop-in for" nine frameworks with no qualifier
     # while a JSON file in this repo recorded three of them broken. Nothing reconciled the two.
     ledger = root / "docs" / "integration_conformance.json"
-    site = root / "index.html"
-    if ledger.exists() and site.exists():
-        try:
-            rows = json.loads(ledger.read_text(encoding="utf-8"))["integrations"]
-        except (ValueError, KeyError) as e:
-            out.append(("LIVE-MISMATCH", "docs/integration_conformance.json",
-                        f"the conformance ledger could not be read ({e}), so the published adapter "
-                        f"counts were NOT checked -- which is not the same as checked"))
-        else:
-            broken = sum(1 for v in rows.values() if v.get("broken_against"))
-            m = re.search(r"(\d+) of (\d+) verified against current upstream, (\d+) recorded broken",
-                          site.read_text(encoding="utf-8", errors="replace"))
-            if m is None:
-                out.append(("LIVE-MISMATCH", "index.html",
-                            "the adapter conformance counts are gone from the page; they cannot be checked"))
-            elif (int(m.group(1)), int(m.group(2)), int(m.group(3))) != (len(rows) - broken, len(rows), broken):
-                out.append(("LIVE-MISMATCH", "index.html",
-                            f"publishes {m.group(1)}/{m.group(2)} verified and {m.group(3)} broken; the "
-                            f"ledger records {len(rows) - broken}/{len(rows)} and {broken}"))
+    # EVERY surface that states the counts, not just the homepage. The README now carries them
+    # too, and a second copy of a number is a second place for it to go stale -- checking one of
+    # them is how the MCP tool count came to be 30, 15 and 56 simultaneously.
+    for _surface in ("index.html", "README.md"):
+      site = root / _surface
+      if ledger.exists() and site.exists():
+          try:
+              rows = json.loads(ledger.read_text(encoding="utf-8"))["integrations"]
+          except (ValueError, KeyError) as e:
+              out.append(("LIVE-MISMATCH", "docs/integration_conformance.json",
+                          f"the conformance ledger could not be read ({e}), so the published adapter "
+                          f"counts were NOT checked -- which is not the same as checked"))
+          else:
+              broken = sum(1 for v in rows.values() if v.get("broken_against"))
+              m = re.search(r"(\d+) of (\d+) verified against current upstream, (\d+) recorded broken",
+                            site.read_text(encoding="utf-8", errors="replace"))
+              if m is None:
+                  # REQUIRED on both, not optional on one. These counts are the honest form of a
+                  # "works with" logo wall -- they name what is broken -- and a claim that can be
+                  # deleted without anything noticing is a claim we would eventually stop making
+                  # by accident.
+                  out.append(("LIVE-MISMATCH", _surface,
+                              "the adapter conformance counts are gone; they cannot be checked"))
+              elif (int(m.group(1)), int(m.group(2)), int(m.group(3))) != (len(rows) - broken, len(rows), broken):
+                  out.append(("LIVE-MISMATCH", _surface,
+                              f"publishes {m.group(1)}/{m.group(2)} verified and {m.group(3)} broken; the "
+                              f"ledger records {len(rows) - broken}/{len(rows)} and {broken}"))
 
     readme = root / "docs/DEEP_DIVE.md"
     if readme.exists():

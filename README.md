@@ -5,6 +5,9 @@ When a fact is corrected, inspeximus serves the new value and stops the old one 
 deterministically, with no LLM in the loop.
 
 [![PyPI](https://img.shields.io/pypi/v/inspeximus?color=2563eb&label=pypi)](https://pypi.org/project/inspeximus/)
+[![Downloads](https://img.shields.io/pypi/dm/inspeximus?color=2563eb)](https://pypistats.org/packages/inspeximus)
+[![CI](https://github.com/DanceNitra/inspeximus/actions/workflows/ci.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/ci.yml)
+[![Claims audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Python](https://img.shields.io/pypi/pyversions/inspeximus)](https://pypi.org/project/inspeximus/)
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-2563eb)](https://pypi.org/project/inspeximus/)
 [![Tests](https://img.shields.io/badge/tests-2600%2B-2563eb)](#how-this-is-tested)
@@ -110,6 +113,21 @@ tenant bound into the signed message so a record cannot be moved between tenants
 
 **Zero dependencies.** One file. Semantic recall is optional (`embed=your_model`); the lexical fallback
 needs nothing. The MCP server, encryption and framework adapters are all opt-in extras.
+
+---
+
+## Works with
+
+`langchain` · `langgraph-store` · `llamaindex` · `haystack` · `autogen` · `pydantic-ai` ·
+`google-adk` · `memoryagentbench`
+
+**9 of 12 verified against current upstream, 3 recorded broken** — `crewai`,
+`langgraph-checkpointer` and `openai-agents`, named rather than quietly dropped from the list. The
+counts are read from [`docs/integration_conformance.json`](docs/integration_conformance.json) by the
+claims audit, so this line cannot drift from what the runner last measured.
+
+A "works with" list that only names successes is a logo wall. This one tells you which adapter will
+break before you build on it.
 
 ---
 
