@@ -10,6 +10,15 @@ nothing could have reminded me.
 
 A mechanism is not shipped when it is written. It is shipped when something invokes it. This file is
 the something.
+
+AND THEN IT WAS INVOKED, AND STILL REACHED NOBODY. 2026-08-12, live on the host: the guard fired on a
+real `gh issue comment` call -- the host's own transcript records hookEvent=PreToolUse, exitCode=0,
+stdout = the warning -- and across the same session it fired 3 times and its text entered the model's
+context 0 times. Claude Code injects hook stdout for UserPromptSubmit and SessionStart; for PreToolUse
+at exit 0 it only logs it. So "it fires" was the wrong question, and these tests now assert the
+channel, not the firing: a warning must be emitted as hookSpecificOutput.additionalContext (measured
+to arrive) and a block as exit 2 + stderr (measured to arrive AND to stop the call, which
+permissionDecision:"ask" does not do here -- this deployment runs permissionMode=bypassPermissions).
 """
 import json
 import os
@@ -35,9 +44,24 @@ def _install(tmp_path):
 def _fire(command):
     ev = {"hook_event_name": "PreToolUse", "tool_name": "Bash",
           "tool_input": {"command": command}}
-    r = subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(ev),
-                       capture_output=True, text=True, timeout=180, env=ENV)
-    return r.stdout
+    return subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(ev),
+                          capture_output=True, text=True, timeout=180, env=ENV)
+
+
+def _delivered(r):
+    """The text the MODEL actually receives -- which is not the same as the text that was printed.
+
+    A warning arrives only inside hookSpecificOutput.additionalContext; a block arrives only on
+    stderr with exit 2. Anything else the handler emits is written to a log and read by nobody, so
+    this helper deliberately CANNOT see it: a test that reads raw stdout would have passed on every
+    day the guard was silent in practice.
+    """
+    if r.returncode == 2:
+        return r.stderr
+    if not r.stdout.strip():
+        return ""
+    payload = json.loads(r.stdout)  # not valid JSON -> the channel is wrong -> this raises, correctly
+    return payload["hookSpecificOutput"]["additionalContext"]
 
 
 def test_install_writes_the_pretooluse_guard(tmp_path):
@@ -48,11 +72,23 @@ def test_install_writes_the_pretooluse_guard(tmp_path):
 
 
 def test_the_pretooluse_entry_carries_a_matcher(tmp_path):
-    """Without a matcher the hook is registered and never fires: installed and silent, which reads as
-    protection and is not. That failure would be invisible to the test above."""
+    """A matcher SCOPES the guard. It is not what makes it fire.
+
+    This docstring used to say that without a matcher the hook registers and never fires. That was
+    never measured, and it is false: a matcher-less PreToolUse entry in a project settings.json fired
+    on Write twice in the session of 2026-08-12, which is how the claim was caught. The real reason to
+    carry one is cost and noise -- matcher-less, the handler runs on EVERY tool call at ~0.77 s each
+    (measured, silent path included, 3x3 runs), because it loads the store before discovering it has
+    nothing to say. A false reason inside a passing test is how a wrong belief gets pinned.
+    """
+    from inspeximus.claude_code import _PRE_TOOLS
     entry = _install(tmp_path)["hooks"]["PreToolUse"][0]
-    assert entry.get("matcher"), "PreToolUse without a matcher does not fire: %r" % entry
-    assert "Bash" in entry["matcher"]
+    assert entry.get("matcher"), "PreToolUse without a matcher runs on every tool call: %r" % entry
+    assert set(entry["matcher"].split("|")) == set(_PRE_TOOLS), (
+        "the matcher and the handler's own tool list have drifted, which is silent in BOTH "
+        "directions: a tool the handler inspects but the matcher omits is never consulted, and one "
+        "the matcher admits but the handler ignores pays a process launch to return nothing. "
+        "matcher=%r handler=%r" % (entry["matcher"], _PRE_TOOLS))
 
 
 def test_install_does_not_clobber_settings_it_did_not_write(tmp_path):
@@ -70,11 +106,70 @@ def test_install_does_not_clobber_settings_it_did_not_write(tmp_path):
     ("gh issue comment 1 --repo a/b --body-file x.md", "SOMEONE ELSE'S REPOSITORY"),
     ("git add -A", "deleted real work"),
 ])
-def test_the_guard_fires_on_what_it_guards(command, needle):
-    assert needle in _fire(command), "no warning for %r" % command
+def test_the_guard_reaches_the_model_on_what_it_guards(command, needle):
+    """Not `is it printed` -- `does it arrive`. _delivered() reads only the two channels measured to
+    reach the model, so a regression to bare stdout fails here instead of passing quietly."""
+    assert needle in _delivered(_fire(command)), "not delivered for %r" % command
+
+
+def test_a_warning_is_emitted_on_the_channel_that_arrives():
+    """The regression test for the actual defect of 2026-08-12: correct text, wrong channel."""
+    r = _fire("git add -A")
+    assert r.returncode == 0, "a warning must not block: %r" % r.stderr
+    payload = json.loads(r.stdout)          # bare text here is the defect, and this raises on it
+    hso = payload["hookSpecificOutput"]
+    assert hso["hookEventName"] == "PreToolUse"
+    assert hso["additionalContext"].startswith("[inspeximus] before this action:")
+
+
+def test_outreach_is_BLOCKED_not_merely_announced():
+    """Outreach is the one class where the cost is external and irreversible, and where the owner's
+    rule is absolute. A reminder was not enough: three posts went out ungated on 2026-08-11."""
+    r = _fire("gh issue comment 1462 --repo deepseek-ai/DeepSeek-V3 --body-file draft.md")
+    assert r.returncode == 2, "outreach must stop the call, got exit %d" % r.returncode
+    assert "SOMEONE ELSE'S REPOSITORY" in r.stderr
+    assert r.stdout.strip() == "", "at exit 2 the host reads stderr; stdout is thrown away"
+
+
+def test_the_block_can_be_overridden_once_the_owner_has_approved():
+    """A gate with no way through is a gate that gets removed. The override is weak on purpose -- it
+    buys an explicit, auditable act in place of an omission, not a security boundary."""
+    r = _fire("AGORA_OUTREACH_APPROVED=1 gh issue comment 1462 --repo a/b --body-file draft.md")
+    assert r.returncode == 0, "an approved post must go through, got exit 2"
+    text = _delivered(r)
+    assert "Blocked" not in text, (
+        "the override path replayed the block text: it announced 'Blocked -- re-issue with the "
+        "override' about a call that was not blocked and already carried it. Measured live "
+        "2026-08-12. A guard that misdescribes what it just did is one you stop reading.")
+    assert "AGORA_OUTREACH_APPROVED" in text and "OWNER approved" in text
+
+
+@pytest.mark.parametrize("command", [
+    "gh issue comment 1462 --repo a/b --body-file draft.md",           # bare
+    "cat draft.md | gh issue comment 1462 --repo a/b --body-file -",   # after a pipe
+    "cd /repo && gh pr comment 7 --body hi",                           # after &&
+    "GH_TOKEN=x gh issue comment 1 --body hi",                         # behind an env assignment
+])
+def test_a_post_in_COMMAND_POSITION_blocks_however_it_is_reached(command):
+    assert _fire(command).returncode == 2, "outreach slipped through: %r" % command
+
+
+@pytest.mark.parametrize("command", [
+    """python -c "print('gh issue comment is the pattern')" """,       # quoted in a diagnostic
+    "grep -rn 'gh issue comment' inspeximus/",                         # searching for it
+])
+def test_CONTROL_merely_MENTIONING_a_post_warns_and_does_not_block(command):
+    """The false positive that showed up within a minute of shipping the block: a read-only probe was
+    stopped because the string appeared inside a Python literal. A guard that blocks reading about
+    itself is one that gets removed, so a mention warns -- it still arrives, it just does not wall."""
+    r = _fire(command)
+    assert r.returncode == 0, "a mention must not block: %r" % command
+    assert "MENTIONS a post" in _delivered(r), "a mention must still be delivered: %r" % command
 
 
 def test_CONTROL_an_ordinary_command_stays_silent():
     """The negative control. A guard that fires on everything is one you learn to ignore, and then it
-    protects nothing at the moment it matters."""
-    assert _fire("ls -la").strip() == ""
+    protects nothing at the moment it matters. Both channels must be empty, not just the one we look
+    at: a stray byte on stderr at exit 0 is a warning the host would show and nobody wrote."""
+    r = _fire("ls -la")
+    assert (r.returncode, r.stdout.strip(), r.stderr.strip()) == (0, "", "")

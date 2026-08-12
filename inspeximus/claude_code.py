@@ -698,10 +698,18 @@ _HOOK = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_c
 # than losing the session.
 _HOOK_SESSION_END = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_code",
                                 "timeout": 15}]}
-# PreToolUse needs a MATCHER -- without one it does not fire, and the guard would be installed and
-# silent, which is worse than absent because it reads as protection. "Bash" is the tool every guarded
-# pattern runs through: git add -A, rm -rf, a force push, and `gh issue comment`.
-_HOOK_PRE_TOOL = {"matcher": "Bash",
+#: The tools pre_tool_use() can say anything about. The matcher is DERIVED from this tuple rather
+#: than written beside it, because the two drifting apart is silent in both directions: a tool in the
+#: handler and not the matcher is never consulted, and a tool in the matcher and not the handler pays
+#: the process launch to return immediately.
+_PRE_TOOLS = ("Bash", "Write", "Edit", "MultiEdit", "NotebookEdit")
+
+# WHAT THE MATCHER IS FOR, corrected. This comment used to say a matcher-less PreToolUse "does not
+# fire". Measured 2026-08-12 on a live host: a matcher-less entry in a project settings.json fired on
+# Write, twice. The matcher SCOPES, it does not enable -- and scope is worth having, because without
+# it this handler launches a process and loads the store on every Read, Grep and Glob as well, at
+# ~0.77 s each (measured, silent path included).
+_HOOK_PRE_TOOL = {"matcher": "|".join(_PRE_TOOLS),
                   "hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
 _EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END, "PreToolUse": _HOOK_PRE_TOOL}
 
@@ -787,21 +795,53 @@ def uninstall(cwd=None):
 # prevent it being made again -- because nothing consulted it at the moment a file was created in the
 # wrong repository. A memory that must be QUERIED fails precisely when you do not know you need it.
 #
-# It prints, it does not block. A guard that blocks on a keyword match is wrong often enough to get
-# switched off, and a switched-off guard protects nothing.
+# WHICH CHANNEL, AND WHY NOT THE OBVIOUS ONE. This handler first shipped printing to stdout, on the
+# reasoning that a guard which blocks on a keyword match is wrong often enough to get switched off.
+# The print was correct and it reached nobody. Measured on this host 2026-08-12, all four channels of
+# a PreToolUse hook, live:
+#
+#   plain stdout, exit 0   fires, host logs it, reaches the MODEL 0 of 3 times -- transcript only
+#   permissionDecision ask NOT honoured; this deployment runs permissionMode=bypassPermissions
+#   additionalContext      reaches the model, does not block          <- the warning channel
+#   exit 2 + stderr        blocks the call, reaches the model, and works under bypass  <- the gate
+#
+# So the original reasoning was answered by the wrong instrument: the question was never blocking vs
+# printing, it was whether anything arrives. A print that arrives is enough for a hazard that is local
+# and recoverable. It is NOT enough for the one class where the cost is external and irreversible --
+# posting into someone else's repository -- because there the owner's rule is absolute and the
+# measured failure is three ungated posts in one day. That class blocks; everything else warns.
+#
+# The override is deliberately weak: a token in the command line, which I can always add. It is not a
+# security boundary and cannot be -- it converts an omission into an explicit act that shows up in the
+# transcript, which is precisely what was missing when the three posts went out.
+_OVERRIDE = "AGORA_OUTREACH_APPROVED"
 
-#: (pattern, the question to force). Every entry is a mistake actually made here, not a hazard someone
-#: imagined -- a list of hypotheticals trains the reader to skim past the real ones.
+#: A blocking pattern must match a command that is actually being RUN, not one being quoted. Measured
+#: within a minute of shipping the block: a read-only diagnostic that merely contained the string
+#: `gh issue comment` inside a Python literal was stopped dead. That is the false-positive rate the
+#: original print-only design was afraid of, and it is how a guard gets removed rather than fixed.
+#: A match NOT in command position still WARNS -- it arrives, it just does not stop the call, so the
+#: cost of the regex being loose is a line of text instead of a wall.
+_CMD_POS = re.compile(r"(?:^|[|;&\n(])\s*(?:(?:sudo|env|time|xargs)\s+|\w+=\S*\s+)*$")
+
+
+def _is_run(subject, start):
+    """Is the match at `start` a command being invoked, or a string being mentioned?"""
+    return bool(_CMD_POS.search(subject[:start]))
+
+#: (pattern, severity, the question to force). Every entry is a mistake actually made here, not a
+#: hazard someone imagined -- a list of hypotheticals trains the reader to skim past the real ones.
+#: severity "block" stops the call; "warn" arrives in context and does not.
 _PRE_PATTERNS = [
-    (r"git\s+add\s+(-f|--force)\b",
+    (r"git\s+add\s+(-f|--force)\b", "warn",
      "a path needing -f is IGNORED ON PURPOSE. An ignore is a decision about where things belong, and "
      "forcing past it is how work lands in the wrong repository. Does this artifact have a home of its own?"),
-    (r"git\s+add\s+(-A|--all|\.)(\s|$)",
+    (r"git\s+add\s+(-A|--all|\.)(\s|$)", "warn",
      "staging everything has deleted real work here -- the vault's NTFS-illegal filenames stage as "
      "deletions. Name the files."),
-    (r"git\s+(reset|checkout)\s+--hard",
+    (r"git\s+(reset|checkout)\s+--hard", "warn",
      "this discards uncommitted work irreversibly. Look at the tree first."),
-    (r"git\s+push\s+.*--force",
+    (r"git\s+push\s+.*--force", "warn",
      "a force push can make a commit SHA cited in a published artifact unreachable."),
     # OUTREACH. Anything that posts to another person's repository, or edits what was posted. The
     # rule it enforces was given twice on 2026-08-11 and broken twice the same day, which is the whole
@@ -810,59 +850,103 @@ _PRE_PATTERNS = [
     # were all the same shape -- a generalisation from a sample nobody sized ("43 comments" when it
     # was 23, "every metric calls recall" when it was 12 of 25, "createVerify appears once" when it
     # was twice) -- and each was found within a minute of someone asking whether I had counted.
-    (r"gh\s+(issue|pr)\s+comment\b|gh\s+api[^|]*\bcomments\b",
-     "this POSTS TO SOMEONE ELSE'S REPOSITORY. Before it goes: has the owner seen the draft, and has "
-     "every number and every claim about their code been COUNTED rather than sampled? A generalisation "
-     "checked on two files is the failure that has gone out three times."),
-    (r"\brm\s+-rf\b",
+    (r"gh\s+(issue|pr)\s+comment\b|gh\s+api[^|]*\bcomments\b", "block",
+     "this POSTS TO SOMEONE ELSE'S REPOSITORY, and the owner's rule is that nothing goes outward "
+     "before he has seen the draft. Blocked, not because the draft is wrong, but because on 2026-08-11 "
+     "three posts went out ungated and the gate then found four real defects in twenty minutes. "
+     "Show him the draft, run validate -> storm -> audit -> verify, and re-issue the command with "
+     "%s=1 prefixed once he has approved it." % _OVERRIDE),
+    (r"\brm\s+-rf\b", "warn",
      "irreversible. Confirm the target resolves to what you think it does."),
 ]
 
 
 def pre_tool_use(ev):
-    """Print any recorded decision bearing on the action about to run.
+    """Surface any recorded decision bearing on the action about to run, where it will be READ.
 
-    Two channels, because they fail differently: a DECLARED pattern list catches actions known to go
-    wrong even when nothing was ever written down about them, and a recall over the store catches the
-    ones nobody thought to declare. Either alone leaves the other class silent.
+    A DECLARED pattern list decides whether to speak; a recall over the store decides what else to say
+    once it has. The recall used to be an independent second channel and is no longer -- see the note
+    on it below, which records the two measurements that took it out of that job.
     """
     tool = ev.get("tool_name") or ""
     ti = ev.get("tool_input") or {}
-    if tool == "Bash":
-        subject = str(ti.get("command") or "")
-    elif tool in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
-        subject = str(ti.get("file_path") or "")
-    else:
+    if tool not in _PRE_TOOLS:
         return
+    subject = str((ti.get("command") if tool == "Bash" else ti.get("file_path")) or "")
     if not subject.strip():
         return
 
-    lines = ["  ! " + why for pat, why in _PRE_PATTERNS if re.search(pat, subject, re.I)]
+    approved = _OVERRIDE in subject
+    lines, blocks = [], []
+    for pat, sev, why in _PRE_PATTERNS:
+        m = re.search(pat, subject, re.I)
+        if not m:
+            continue
+        if sev != "block":
+            lines.append("  ! " + why)
+        elif not _is_run(subject, m.start()):
+            lines.append("  ! this command MENTIONS a post to someone else's repository without "
+                         "running one, so it is a warning and not a block. If it does post, the "
+                         "owner has to have seen the draft first.")
+        elif not approved:
+            blocks.append("  ! " + why)
+        else:
+            # Do NOT replay the block text on a call that carried the token: it would announce
+            # "Blocked -- re-issue with the override" about an action already going through with the
+            # override set. A guard that misdescribes what it just did is one you stop reading.
+            lines.append("  ! posting to someone else's repository, with %s set. That token asserts "
+                         "the OWNER approved this exact draft. If he has not seen it, stop." % _OVERRIDE)
     if tool == "Write" and not os.path.exists(subject):
         lines.append("  ! creating a NEW file. If this is a component of an existing product (a "
                      "benchmark, a tool, a package) it probably belongs in that product's own "
                      "repository, not beside whatever you happen to be standing in.")
 
+    # THE SECOND CHANNEL, MEASURED, AND CUT DOWN TO WHAT IT CAN ACTUALLY DO. It used to recall k=3 on
+    # the raw command and keep whatever carried a "decision" tag. On this deployment that returned
+    # decision-tagged hits 0 times out of 3 guarded commands: the store holds thousands of `ran: <cmd>`
+    # mechanics records, a command string retrieves the commands most like it, and the filter ran AFTER
+    # the top-k -- post-filtering a ranked list is not filtering. `where=` is a pre-filter applied
+    # BEFORE ranking and takes the same three queries from 0 hits to 3, 1 and 3.
+    #
+    # But it is gated on a declared pattern having already fired, which is NOT what the original
+    # comment here promised ("catches the ones nobody thought to declare"). Two measurements killed
+    # that: the returned `relevance` is 1.0 for an UNRELATED command and 0.25 for the most relevant one
+    # -- identical within each query (1.0, 0.5, 0.333, 0.25), a rank artifact, not similarity -- so no
+    # floor can separate a real hit from a near-miss, and ungated the channel would attach two
+    # arbitrary decisions to ordinary commands like `pytest -n auto tests/`. A guard that fires on
+    # everything is one you learn to ignore. It also means the store is not loaded at all unless
+    # something already matched, which is where most of the ~0.77 s per call went.
     hits = []
-    try:
-        m = _store(ev.get("cwd") or os.getcwd())
-        for h in (m.recall(subject[:400], k=3) or []):
-            if "decision" in (h.get("tags") or []):
+    if lines or blocks:
+        try:
+            m = _store(ev.get("cwd") or os.getcwd())
+            for h in (m.recall(subject[:400], k=2,
+                               where={"tags": {"$contains": "decision"}}) or []):
                 t = " ".join((h.get("text") or "").split())
                 if t:
                     hits.append("  - " + t[:200])
-    except Exception:
-        pass
+        except Exception:
+            pass
 
-    if not lines and not hits:
+    if not lines and not hits and not blocks:
         return
-    print("[inspeximus] before this action:")
-    for l in lines:
-        print(l)
+    body = ["[inspeximus] before this action:"] + blocks + lines
     if hits:
-        print("  decided before, on something like this:")
-        for h in hits:
-            print(h)
+        body.append("  decided before, on something like this:")
+        body.extend(hits)
+    text = chr(10).join(body)
+
+    if blocks:
+        # stderr AND exit 2. Not stdout: at exit 2 the host feeds stderr back and stops the call,
+        # which is the only channel measured to do both under permissionMode=bypassPermissions.
+        sys.stderr.write(text + chr(10))
+        sys.exit(2)
+
+    # additionalContext, not a bare print: a bare print is logged for a transcript nobody opens and
+    # reached the model 0 of 3 times when this was measured. The JSON is parsed by the host and
+    # injected, which is the whole point of warning BEFORE rather than reviewing after.
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": "PreToolUse", "additionalContext": text}}))
 
 
 def main():

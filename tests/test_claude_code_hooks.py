@@ -245,3 +245,33 @@ def test_uninstall_does_not_propagate_a_json_error(capsys):
         raise AssertionError(f"uninstall must not raise on a malformed config: {type(e).__name__}: {e}")
     assert result is False
     capsys.readouterr()
+"""The installer must install the guard it has, not four of the five hooks.
+
+WHY THIS EXISTS. The PreToolUse handler was written, tested and committed on 2026-08-11 with the
+outreach pattern (`gh issue comment`) explicitly in it, and it never fired once. `install()` iterated
+("PostToolUse", "UserPromptSubmit", "SessionStart", "SessionEnd") -- PreToolUse was not in the tuple,
+so every settings.json it wrote had four hooks and no guard. Three outreach posts went out without
+the pre-publish gate in one day while a guard for exactly that sat in the source, uninvoked.
+
+A mechanism is not shipped when it is written. It is shipped when something invokes it.
+"""
+import json
+import os
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+import pytest  # noqa: E402
+
+
+# THE PreToolUse GUARD TESTS USED TO BE DUPLICATED HERE, VERBATIM, AND THAT IS WHY THEY ARE NOT.
+#
+# Four of them (install-writes-the-guard, carries-a-matcher, fires-on-what-it-guards, the silent
+# control) existed both here and in tests/test_the_installer_ships_the_guard.py. On 2026-08-12 the
+# guard's output channel changed and only the dedicated file was updated; this copy went on asserting
+# the old shape and failed. That is the lucky direction. Had the stale copy been the passing one, it
+# would have gone on certifying a behaviour the product no longer had -- and a duplicated test does
+# not double the evidence, it halves the chance that a change meets all of it.
+#
+# They now live, in stronger channel-aware form, ONLY in tests/test_the_installer_ships_the_guard.py.
