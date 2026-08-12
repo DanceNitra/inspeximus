@@ -838,9 +838,24 @@ _API_WRITE = re.compile(r"-X\s*(POST|PATCH|PUT|DELETE)\b|(^|\s)(-f|-F|--field|--
                         re.I)
 
 
-def _api_is_write(subject, matched):
-    """True unless this is a plain read. `gh issue/pr comment` is always a write; `gh api` may not be."""
-    return not matched.lower().startswith("gh api") or bool(_API_WRITE.search(subject))
+def _api_is_write(subject, start, matched):
+    """True unless this is a plain read. `gh issue/pr comment` is always a write; `gh api` may not be.
+
+    THE WRITE FLAGS ARE LOOKED FOR IN THE gh api INVOCATION, NOT THE WHOLE LINE, and the first version
+    got that wrong in a way that blocked real work within hours. It scanned the entire command string,
+    so a shell line that read a comment back AND committed the probe --
+
+        gh api repos/o/r/issues/comments/123 --jq ... && git commit -F -
+
+    -- was refused, because `git commit -F` contains a `-F` and the check could not tell which command
+    the flag belonged to. A guard that reads flags out of a neighbouring command is guessing, and it
+    fails in the direction that costs most: stopping a read.
+    """
+    if not matched.lower().startswith("gh api"):
+        return True
+    # Only the segment from this match up to the next shell separator belongs to this invocation.
+    seg = re.split(r"[;&|]|\n", subject[start:], 1)[0]
+    return bool(_API_WRITE.search(seg))
 
 #: (pattern, severity, the question to force). Every entry is a mistake actually made here, not a
 #: hazard someone imagined -- a list of hypotheticals trains the reader to skim past the real ones.
@@ -897,7 +912,7 @@ def pre_tool_use(ev):
             continue
         if sev != "block":
             lines.append("  ! " + why)
-        elif not _is_run(subject, m.start()) or not _api_is_write(subject, m.group(0)):
+        elif not _is_run(subject, m.start()) or not _api_is_write(subject, m.start(), m.group(0)):
             lines.append("  ! this command touches someone else's repository but does not appear to "
                          "POST to it (a mention, or a read). Warning, not a block. If it does write, "
                          "the owner has to have seen the draft first.")

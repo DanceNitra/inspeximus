@@ -157,6 +157,10 @@ def test_a_post_in_COMMAND_POSITION_blocks_however_it_is_reached(command):
 @pytest.mark.parametrize("command", [
     "gh api repos/o/r/issues/comments/123",                            # GET: reading a comment back
     "gh api repos/o/r/issues/1/comments --jq '.[].body'",              # GET: listing them
+    # A read chained to an unrelated command that happens to carry a write-looking flag. The first
+    # version scanned the whole line and refused this, because `git commit -F` has a -F.
+    "gh api repos/o/r/issues/comments/123 --jq .body && git commit -F -",
+    "gh api repos/o/r/issues/comments/9 ; cp -f a b",
 ])
 def test_CONTROL_reading_a_comment_is_not_posting_one(command):
     """Measured minutes after the guard's first real use: it blocked us READING BACK the comment we
