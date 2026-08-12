@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="350" viewBox="0 0 920 350" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="How often each memory system re-serves a value you already corrected: inspeximus 0 percent, Graphiti 13.3 percent, mem0 46.7 percent, and inspeximus with its guard disabled 100 percent, over 30 trials each.">
+<text x="0" y="26" font-size="19" font-weight="600" fill="#1f2328">After you correct a fact, how often does the old value come back?</text>
+<text x="0" y="50" font-size="13.5" fill="#59636e">n = 30 per system &#183; each on its own native configuration &#183; lower is better</text>
+<text x="0" y="91" font-size="14.5" font-weight="600" fill="#1f2328">inspeximus</text>
+<text x="0" y="109" font-size="12" fill="#59636e">correction held</text>
+<rect x="262" y="80" width="520" height="26" rx="5" fill="#eaeef2"/>
+<rect x="262" y="80" width="3.0" height="26" rx="5" fill="#0d7d84"/>
+<rect x="262" y="80" width="3" height="26" rx="1.5" fill="#0d7d84"/>
+<text x="796" y="99" font-size="15" font-weight="700" fill="#0d7d84">0%</text>
+<text x="0" y="149" font-size="14.5" font-weight="600" fill="#1f2328">Graphiti 0.x</text>
+<text x="0" y="167" font-size="12" fill="#59636e">Neo4j + OpenAI</text>
+<rect x="262" y="138" width="520" height="26" rx="5" fill="#eaeef2"/>
+<rect x="262" y="138" width="69.2" height="26" rx="5" fill="#8b5cf6"/>
+<text x="796" y="157" font-size="15" font-weight="700" fill="#8b5cf6">13.3%</text>
+<text x="0" y="207" font-size="14.5" font-weight="600" fill="#1f2328">mem0 2.0.11</text>
+<text x="0" y="225" font-size="12" fill="#59636e">OpenAI native</text>
+<rect x="262" y="196" width="520" height="26" rx="5" fill="#eaeef2"/>
+<rect x="262" y="196" width="242.8" height="26" rx="5" fill="#8b5cf6"/>
+<text x="796" y="215" font-size="15" font-weight="700" fill="#8b5cf6">46.7%</text>
+<text x="0" y="265" font-size="14.5" font-weight="600" fill="#1f2328">inspeximus</text>
+<text x="0" y="283" font-size="12" fill="#59636e">guard disabled — the control</text>
+<rect x="262" y="254" width="520" height="26" rx="5" fill="#eaeef2"/>
+<rect x="262" y="254" width="520.0" height="26" rx="5" fill="#a1454a"/>
+<text x="796" y="273" font-size="15" font-weight="700" fill="#a1454a">100%</text>
+<text x="0" y="338" font-size="12" fill="#59636e">The bottom row is the control: with our own guard switched off we resurrect every time, so the number is the mechanism &#8212; not the benchmark being kind to us.</text>
+</svg>

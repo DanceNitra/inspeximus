@@ -15,6 +15,11 @@ deterministically, with no LLM in the loop.
 pip install inspeximus
 ```
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/correction-dark.svg">
+  <img alt="After you correct a fact, how often does the old value come back? inspeximus 0%, Graphiti 0.x 13.3%, mem0 2.0.11 46.7%, and inspeximus with its guard disabled 100% — n=30 per system, each on its own native configuration." src="docs/assets/correction-light.svg">
+</picture>
+
 ---
 
 ## The 30 seconds that matter
