@@ -17,11 +17,16 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install pytest cryptography pyyaml
+          pip install pytest pytest-xdist cryptography pyyaml
       # The BASE environment on purpose: the core is zero-dependency and this leg proves it stays that way.
       # It is not the whole suite -- see the `integrations` job.
       - name: Run tests
         run: python -m pytest tests/ -q
+      # The mutation set is deselected from the default (it edits source in place, so it cannot
+      # share a tree with xdist workers). Run it here explicitly and SERIALLY, or the parallel
+      # default silently drops 31 tests from CI while the run stays green.
+      - name: mutation set (serial)
+        run: python -m pytest tests/ -n 0 -m mutation -q
 
   # 102 tests across 11 modules sit behind MODULE-LEVEL import guards, so in the base job a 15-test module
   # collects as ONE skip line. The suite reported "993 passed, 43 skipped" and read as healthy while the
@@ -41,7 +46,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade pip && pip install pytest
+      - run: python -m pip install --upgrade pip && pip install pytest pytest-xdist
       - name: compare against the recorded baseline
         run: python perf/gate.py check
       - name: the gate must be able to go red
@@ -57,7 +62,7 @@ jobs:
       - name: Install with every optional dependency
         run: |
           python -m pip install --upgrade pip
-          pip install pytest cryptography numpy pyyaml
+          pip install pytest pytest-xdist cryptography numpy pyyaml
           # The google-adk floor that keeps this resolvable lives in pyproject.toml, not here: a second
           # copy in each pip line is how release.yml kept the bug after this file was fixed.
           # haystack is an extra now (it was installed by hand here, and only here, while
