@@ -3,6 +3,48 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.7.0 - UPGRADE IF YOU WANT TO RECEIVE CORRECTIONS FROM ANOTHER SYSTEM: an LLM Errata importer adapter that conforms
+
+`inspeximus.integrations.llm_errata.InspeximusErrataAdapter` implements the LLM Errata importer contract
+(Thomas Willner, https://github.com/thomaswillner/llm-errata) at frozen commit `a477fe4f`. It runs the
+full quarantine, repair and attest cycle through the reference controller:
+
+```
+clean store                       triad all pass    stores=verified   aggregate=verified
+store with an undeclared deriv.   triad all pass    stores=unknown    aggregate=unknown
+```
+
+**Provenance, because the contract turns on it.** The 2.6.1 version of this file was written with
+`prototype/adapters.py` open, and its `rebuild` reproduced the reference algorithm line for line,
+including the arbitrary `"; "` separator. `INDEPENDENT_IMPLEMENTATION.md` excludes exactly that ("Shared
+reference-adapter code disqualifies the implementation as independent evidence"), so the file was
+rewritten from the protocol signature and the prose requirements alone. Measured after the rewrite: zero
+shared runs of three or more consecutive lines with the reference, and three shared single lines, being
+`from __future__ import annotations` and two protocol signatures that must match by definition. Disclosed
+upstream rather than quietly corrected.
+
+**`rebuild` appends; it does not rewrite.** inspeximus is append-only, so a repair writes the correction
+and the surviving payload as new active records and leaves the quarantined originals superseded and
+readable under `include_superseded`. A store whose repair destroys the pre-repair state cannot answer
+"what did you hold before the correction", which is half of what a receipt is for. First version anchored
+the correction to the QUARANTINED record, so taint flowed from the demoted parent and the store came back
+with nothing active; the correction is now asserted with no local parent and the preserved payload
+derives from it.
+
+**`lineage_complete(root)` is how we earn `verified`.** An empty artifact list is never evidence of
+absence on its own. A record that announced derivation and resolved no parent might descend from this
+root and the store cannot say it does not, so one such record anywhere makes the walk incomplete for
+every root and coverage reports `unknown`.
+
+**What the published protocol does not carry, found one failure at a time.** `StoreAdapter` declares
+`enumerate`, `lineage_complete`, `quarantine`, `is_quarantined`, `coverage`, `dispositions`. Repair also
+requires `rebuild`, `retire` (in two signatures discoverable only through a `TypeError` fallback),
+`recall(term)` returning objects with `.content`, optionally `source_artifact`/`source_of`, and
+registration into `importer.ledger` via `register_import`/`register_derivation`, which
+`INDEPENDENT_IMPLEMENTATION.md` never mentions. The last one fails silently: without it the rebuild
+strategy retires every gated artifact in pass one, rebuilds nothing in pass two, and the receipt reads
+FAILED with no exception raised anywhere. Reported upstream.
+
 ## 2.6.1 - UPGRADE IF YOU INSTALL US FROM THE MCP REGISTRY: 2.6.0 reached PyPI but its listing was refused
 
 No library change. 2.6.0 published to PyPI correctly and the MCP registry rejected the accompanying
