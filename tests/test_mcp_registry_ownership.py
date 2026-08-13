@@ -24,13 +24,6 @@ import json
 import os
 import re
 
-import pytest
-
-try:
-    import tomllib
-except ModuleNotFoundError:                                   # pragma: no cover
-    tomllib = pytest.importorskip("tomli")
-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -46,11 +39,16 @@ def _packaged_readme_path():
     points `readme =` at a different file, which is the same defect this whole file is about: the
     document moved and its guard stayed where it was.
     """
-    with io.open(os.path.join(ROOT, "pyproject.toml"), "rb") as fh:
-        cfg = tomllib.load(fh)
-    readme = cfg["project"]["readme"]
-    rel = readme if isinstance(readme, str) else readme.get("file")
-    assert rel, "pyproject declares no readme file; the registry has nothing to validate against"
+    # Read with a regex rather than tomllib, deliberately. A module-level `pytest.importorskip` for the
+    # 3.9 tomli fallback made the skip census count this entire file as invisible to the base CI job --
+    # and a guard that does not run in the job that gates publish is the exact defect it exists to
+    # prevent. One `readme = "..."` line, asserted to be unique, needs no parser.
+    text = io.open(os.path.join(ROOT, "pyproject.toml"), encoding="utf-8").read()
+    hits = re.findall(r"""(?m)^\s*readme\s*=\s*["']([^"']+)["']""", text)
+    assert len(hits) == 1, (
+        "expected exactly one `readme =` line in pyproject.toml, found %d (%r). More than one and this "
+        "guard cannot tell which document ships." % (len(hits), hits))
+    rel = hits[0]
     path = os.path.join(ROOT, rel)
     assert os.path.exists(path), f"pyproject ships {rel!r} as the long description and it does not exist"
     return path

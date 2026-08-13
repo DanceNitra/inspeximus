@@ -3,6 +3,27 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.6.1 - UPGRADE IF YOU INSTALL US FROM THE MCP REGISTRY: 2.6.0 reached PyPI but its listing was refused
+
+No library change. 2.6.0 published to PyPI correctly and the MCP registry rejected the accompanying
+listing, so the registry still pointed at 2.5.0.
+
+The registry proves ownership by reading a marker out of the README of the PUBLISHED package:
+
+    mcp-name: io.github.DanceNitra/inspeximus
+
+`ddf47a3` cut the landing page from 1,068 lines to 156 and took that line with it. Nothing failed at the
+time. Tests, audits and CI are all blind to it because no code reads it, and it surfaced one release
+later as a 400 from the registry. It could not be repaired in 2.6.0 either, since the registry reads the
+artifact that is already published -- which is the whole reason this is a version of its own rather than
+a note.
+
+Restored, with a guard (`tests/test_mcp_registry_ownership.py`). The guard reads the expected name from
+`server.json` rather than a literal, because that name is the registry's join key and a rename with the
+README left behind breaks publishing the same way; and it resolves the readme path out of `pyproject`
+instead of hardcoding `README.md`, since a guard aimed at a file by name keeps passing on the day the
+document moves. Verified by re-removing the marker: the guard fails and both controls stay green.
+
 ## 2.6.0 - UPGRADE IF YOU READ erasure_audit AS A DELETION SIGN-OFF: it returned the pass verdict on partial coverage
 
 `erasure_audit()` demoted its verdict to `unaudited` when declared lineage was **exactly zero**, and the
