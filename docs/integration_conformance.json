@@ -4,7 +4,7 @@
     "autogen": {
       "adapter": "inspeximus.integrations.autogen:InspeximusMemory",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -17,7 +17,7 @@
     "crewai": {
       "adapter": "inspeximus.integrations.crewai:InspeximusStorage",
       "broken_against": "1.15.6",
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": null,
       "detail": "AssertionError: does not satisfy crewai.memory.storage.backend.StorageBackend; missing: adelete, asave, asearch, count, delete, get_record, get_scope_info, list_categories, list_records, list_scopes, update",
       "note": null,
@@ -30,7 +30,7 @@
     "google-adk": {
       "adapter": "inspeximus.integrations.google_adk:InspeximusMemoryService",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": "adk_audit.py",
       "detail": null,
       "note": null,
@@ -43,7 +43,7 @@
     "governance": {
       "adapter": "inspeximus.integrations.governance:ComplianceMixin",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": null,
       "detail": null,
       "note": "framework-free by design; no upstream to skip on",
@@ -56,7 +56,7 @@
     "haystack": {
       "adapter": "inspeximus.integrations.haystack:InspeximusDocumentStore",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": "haystack_audit.py",
       "detail": null,
       "note": null,
@@ -69,7 +69,7 @@
     "langchain": {
       "adapter": "inspeximus.integrations.langchain:InspeximusRetriever + InspeximusChatMessageHistory",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -82,9 +82,9 @@
     "langgraph-checkpointer": {
       "adapter": "inspeximus.integrations.langgraph:InspeximusSaver",
       "broken_against": "1.2.9",
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": "checkpointer_conformance.py",
-      "detail": "StoreChangedOnDisk: <tmp>\\ckpt.jsonl changed on disk since this handle loaded it (another process or another Inspeximus() on the same path). Saving would erase its records. Call reload() to merge the two and retry, or give each writer its own store file.  [intermittent: failed on run 2 of 40]",
+      "detail": "StoreChangedOnDisk: <tmp>\\ckpt.jsonl changed on disk since this handle loaded it (another process or another Inspeximus() on the same path). Saving would erase its records. Call reload() to merge the two and retry, or give each writer its own store file.  [intermittent: failed on run 1 of 40]",
       "note": null,
       "python": "3.12",
       "source": "langgraph.py",
@@ -95,7 +95,7 @@
     "langgraph-store": {
       "adapter": "inspeximus.integrations.langgraph:InspeximusStore",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": "store_audit.py",
       "detail": null,
       "note": null,
@@ -108,7 +108,7 @@
     "llamaindex": {
       "adapter": "inspeximus.integrations.llamaindex:InspeximusMemoryBlock",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -118,10 +118,23 @@
       "upstream_dist": "llama-index-core",
       "verified_against": "0.14.23"
     },
+    "llm-errata": {
+      "adapter": "inspeximus.integrations.llm_errata:InspeximusErrataAdapter",
+      "broken_against": null,
+      "checked": "2026-08-13",
+      "deep_audit": null,
+      "detail": null,
+      "note": "drives the protocol directly; prototype/ is not on PyPI so importing it would make this check permanently skipped, which is worse than no check",
+      "python": "3.12",
+      "source": "llm_errata.py",
+      "status": "verified",
+      "upstream_dist": null,
+      "verified_against": null
+    },
     "memoryagentbench": {
       "adapter": "inspeximus.integrations.memoryagentbench:InspeximusMABMemory",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": null,
       "detail": null,
       "note": "duck-typed on mem0's Memory shape; MemoryAgentBench is a research repo, not a PyPI distribution, so this suite cannot date an upstream breakage for it",
@@ -134,7 +147,7 @@
     "openai-agents": {
       "adapter": "inspeximus.integrations.openai_agents:InspeximusSession",
       "broken_against": "0.18.3",
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": "session_audit.py",
       "detail": "AssertionError: the turn round trip works, but the object does not satisfy agents.memory.Session (missing: session_settings) -- so it fails a type check, and any SDK behaviour keyed on that attribute is inert on this session",
       "note": null,
@@ -147,7 +160,7 @@
     "pydantic-ai": {
       "adapter": "inspeximus.integrations.pydantic_ai:inspeximus_toolset",
       "broken_against": null,
-      "checked": "2026-08-02",
+      "checked": "2026-08-13",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -158,5 +171,5 @@
       "verified_against": "2.18.0"
     }
   },
-  "updated": "2026-08-02"
+  "updated": "2026-08-13"
 }

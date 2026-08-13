@@ -414,6 +414,41 @@ def _rt_governance(tmp):
 # mapping is total, so a new adapter added without a round trip turns the suite red rather than being
 # quietly unverified -- which is how four of these went years without one.
 
+def _rt_llm_errata(tmp):
+    """The LLM Errata importer adapter, driven against the PROTOCOL rather than the spec package.
+
+    Deliberate: `prototype/` is not on PyPI, so a check that imported it would be permanently skipped in
+    CI, and a permanently skipped check on an adapter is the state this file exists to prevent. The
+    adapter's contract IS the protocol (enumerate / quarantine / is_quarantined / rebuild / coverage), so
+    the round trip drives those directly and stays runnable everywhere.
+
+    The two coverage arms are the point. `partial` must be REACHABLE, or the adapter rounds a hole down
+    to a pass, which is the exact defect the spec author reported against our own erasure audit.
+    """
+    from inspeximus.core import Inspeximus
+    from inspeximus.integrations.llm_errata import InspeximusErrataAdapter
+
+    m = Inspeximus(path=str(tmp / "errata.json"), receipts=True)
+    root = m.remember("is vegetarian", source={"doc": "fact:diet"}, key="diet")
+    child = m.remember("is vegetarian; prefers quiet restaurants", derived=True, derived_from=[root],
+                       source={"doc": "summary:dining"})
+    a = InspeximusErrataAdapter(m)
+
+    reached = a.enumerate("fact:diet")
+    assert root in reached and child in reached, (reached, root, child)
+    assert a.coverage("fact:diet") == "verified", a.coverage_detail("fact:diet")
+
+    a.quarantine((child,))
+    assert a.is_quarantined(child), "quarantine must gate the descendant"
+    assert a.dispositions("fact:diet")[child] == "quarantined-only", a.dispositions("fact:diet")
+    rebuilt = a.rebuild(child, inputs=(), replacement="eats meat again; prefers quiet restaurants")
+    assert "eats meat again" in rebuilt and not a.is_quarantined(child), rebuilt
+
+    # CONTROL: a writer that announced derivation and resolved no parent must move the verdict off pass.
+    m.remember("digest whose summariser dropped its lineage", derived=True)
+    assert a.coverage("fact:diet") == "partial", a.coverage_detail("fact:diet")
+
+
 class Check:
     def __init__(self, name, module, dist, adapter, roundtrip, source, deep=None, note=None,
                  repeats=1):
@@ -433,6 +468,11 @@ class Check:
 
 
 CHECKS = [
+    Check("llm-errata", None, None,
+          "inspeximus.integrations.llm_errata:InspeximusErrataAdapter", _rt_llm_errata,
+          "llm_errata.py",
+          note="drives the protocol directly; prototype/ is not on PyPI so importing it would make "
+               "this check permanently skipped, which is worse than no check"),
     Check("langgraph-store", "langgraph", "langgraph",
           "inspeximus.integrations.langgraph:InspeximusStore", _rt_langgraph_store,
           "langgraph.py", deep="store_audit.py"),

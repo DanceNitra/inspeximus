@@ -130,7 +130,7 @@ needs nothing. The MCP server, encryption and framework adapters are all opt-in 
 `langchain` · `langgraph-store` · `llamaindex` · `haystack` · `autogen` · `pydantic-ai` ·
 `google-adk` · `memoryagentbench`
 
-**9 of 12 verified against current upstream, 3 recorded broken** — `crewai`,
+**10 of 13 verified against current upstream, 3 recorded broken** — `crewai`,
 `langgraph-checkpointer` and `openai-agents`, named rather than quietly dropped from the list. The
 counts are read from [`docs/integration_conformance.json`](docs/integration_conformance.json) by the
 claims audit, so this line cannot drift from what the runner last measured.

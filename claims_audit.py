@@ -542,13 +542,13 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE-WITH-DEPS",
        "curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py",
        "Published as our own failure, not a product claim. 210,499 records across ten stores."),
-    _c("readme-adapter-conformance", "README.md", ["9", "12", "3"],
-       "**9 of 12 verified against current upstream, 3 recorded broken**",
-       "Framework adapters: 9 of 12 verified against current upstream, 3 recorded broken",
+    _c("readme-adapter-conformance", "README.md", ["10", "13", "3"],
+       "**10 of 13 verified against current upstream, 3 recorded broken**",
+       "Framework adapters: 10 of 13 verified against current upstream, 3 recorded broken",
        "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Read from docs/integration_conformance.json by _live_consistency(), which now checks BOTH "
        "index.html and README.md -- a second copy of a number is a second place for it to go stale. "
-       "The other 12 in this file is the EU AI Act article number and stays a declared non-claim; "
+       "The other 12 in this file is the EU AI Act article number and stays a declared non-claim; the counts moved 9/12 -> 10/13 when the llm-errata adapter landed, and this line is why the drift surfaced instead of shipping; "
        "COUNT-DRIFT caught the collision the moment this line was added, which is the whole point."),
     _c("readme-tests-and-mutations", "README.md", ["2,600", "175"],
        "**2,600+ tests**",
@@ -865,9 +865,9 @@ NUMBER_CLAIMS = [
        "Was 6 while the README said nine and the package ships nine agent-framework adapters "
        "(autogen, crewai, google_adk, haystack, langchain, langgraph, llamaindex, openai_agents, "
        "pydantic_ai)."),
-    _c("site-integration-conformance", "index.html", ["9", "12", "3"],
-       "9 of 12 verified against current upstream, 3 recorded broken",
-       "9 of 12 framework adapters verified against current upstream; 3 recorded broken",
+    _c("site-integration-conformance", "index.html", ["10", "13", "3"],
+       "10 of 13 verified against current upstream, 3 recorded broken",
+       "10 of 13 framework adapters verified against current upstream; 3 recorded broken",
        "REPRODUCIBLE", "python tools/integration_conformance.py",
        "Read from the committed ledger docs/integration_conformance.json by _live_consistency(), not "
        "typed. The page previously said 'Drop-in for' all nine frameworks with no qualifier at all, "

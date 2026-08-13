@@ -40,7 +40,7 @@ Counts by status:
 | 1 | `MCP_LISTINGS.md` | `30` `26` `2026` | WITHDRAWN: the previous '30 tools' figure, kept as the record of the correction | **WITHDRAWN** | `python claims_audit.py --numbers` |
 | 2 | `MCP_LISTINGS.md` | `68` | The MCP server exposes 68 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 3 | `MCP_LISTINGS.md` | `68` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 4 | `README.md` | `9` `12` `3` | Framework adapters: 9 of 12 verified against current upstream, 3 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 4 | `README.md` | `10` `13` `3` | Framework adapters: 10 of 13 verified against current upstream, 3 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 5 | `README.md` | `0` | The control: with the guard off we score zero, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 6 | `README.md` | `0` `86.7` `13.3` `95` `3.3` `26.7` | Graphiti keeps the correction 86.7% of the time; resurrection 13.3%, 95% CI [3.3, 26.7] | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 7 | `README.md` | `2.0.11` `53.3` `46.7` `95` `30.0` `63.3` | mem0 2.0.11 keeps the correction 53.3%; resurrection 46.7%, 95% CI [30.0, 63.3] | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
@@ -131,7 +131,7 @@ Counts by status:
 | 92 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 93 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 94 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 95 | `index.html` | `9` `12` `3` | 9 of 12 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
+| 95 | `index.html` | `10` `13` `3` | 10 of 13 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
 | 96 | `index.html` | `68` `0` | Homepage counter: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 97 | `index.html` | `68` | Homepage heading: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 98 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
@@ -144,7 +144,7 @@ Counts by status:
 ## Notes
 
 - **mcp-tool-count** — Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 in another. Three surfaces, one server, no error anywhere. Now read from the code.
-- **readme-adapter-conformance** — Read from docs/integration_conformance.json by _live_consistency(), which now checks BOTH index.html and README.md -- a second copy of a number is a second place for it to go stale. The other 12 in this file is the EU AI Act article number and stays a declared non-claim; COUNT-DRIFT caught the collision the moment this line was added, which is the whole point.
+- **readme-adapter-conformance** — Read from docs/integration_conformance.json by _live_consistency(), which now checks BOTH index.html and README.md -- a second copy of a number is a second place for it to go stale. The other 12 in this file is the EU AI Act article number and stays a declared non-claim; the counts moved 9/12 -> 10/13 when the llm-errata adapter landed, and this line is why the drift surfaced instead of shipping; COUNT-DRIFT caught the collision the moment this line was added, which is the whole point.
 - **readme-echo-graphiti** — Measured on the vendor's own native config (Neo4j + OpenAI), n=30.
 - **readme-echo-mem0** — Version-stamped on purpose: mem0 is on 2.0.18 as of 2026-08-11 and we have NOT re-run it.
 - **readme-mcp-tool-count** — Checked against the live @mcp.tool() count by _live_consistency(), not read from here.
