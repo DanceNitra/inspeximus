@@ -814,7 +814,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.8.0"
+__version__ = "2.8.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1831,11 +1831,6 @@ class Inspeximus:
                # anything else rather than falling back to `now`: a guessed event time that reads as a
                # declared one is exactly what `valid_from_source` below exists to make impossible.
                "valid_from": Inspeximus._event_time(valid_from, now),
-               # WHERE THAT TIME CAME FROM. `declared` when the caller supplied it, `ingest` when it
-               # defaulted to write time. Without this, `valid_from == ts` cannot be told apart from
-               # "nobody told us", which is the same defect as a `source` field holding the writer
-               # instead of the origin. Named after `eventTimeSource` in joshuaswarren/remnic#1666.
-               "valid_from_source": "ingest" if valid_from is None else "declared",
                "source": Inspeximus._check_source(source),   # re-checkable origin (e.g. {"doc": id, "span": [start, end]}) so a recalled fact can be traced back, not trusted blind
                # FINGERPRINT THE SOURCE IF IT IS ACTUALLY FETCHABLE. Written into the reserved meta
                # keyspace below, never into `source` -- that dict comes from the caller, and a digest
@@ -1981,6 +1976,15 @@ class Inspeximus:
         # strict_provenance note in __init__. rec['source'] is None when no source was passed.
         if self.strict_provenance and not rec.get("source") and not rec.get("derived_from"):
             rec["orphan"] = True
+        # WHERE THE EVENT TIME CAME FROM, written ONLY when someone actually declared it. `declared` is
+        # the positive claim and carries its own evidence; ABSENCE means nobody asserted an event time,
+        # which is the fact an auditor needs and is true of a defaulted record and a pre-2.8.0 record
+        # alike. Writing "ingest" on every record instead cost +9.8% serialized bytes on write_n1000 and
+        # +10.5% on erase_k200_n2000 -- caught by the work-counter gate, which is exactly the trade this
+        # store should refuse: a tenth of every user's disk to record the absence of a claim.
+        # Named after `eventTimeSource` in joshuaswarren/remnic#1666.
+        if valid_from is not None:
+            rec["valid_from_source"] = "declared"
         if key is not None:
             rec["key"] = str(key)
         # IDENTITY-CONFIDENCE GATE ON SUPERSESSION (Fellegi-Sunter 1969 clerical-review zone / MDM match-merge

@@ -3,6 +3,32 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.8.1 - UPGRADE IF YOU TOOK 2.8.0: it added ~10% to every stored record to write down the absence of a claim
+
+2.8.0 wrote `valid_from_source` on every record, `declared` or `ingest`. CI's work-counter gate caught
+what that costs, on three benchmarks independently:
+
+```
+write_n1000.serialized_bytes       147,642,011 -> 162,159,535  (+9.8%, band +/-2%)
+erase_k200_n2000.serialized_bytes      552,251 ->     610,452  (+10.5%)
+session_n500.serialized_bytes       36,607,471 ->  40,233,984  (+9.9%)
+```
+
+The gate offers to re-record the baseline, and we had a justification ready. We did not take it. Paying a
+tenth of every user's disk to record, on every record, that nobody made a claim is the wrong trade.
+
+**Presence is now the claim.** `valid_from_source: "declared"` is written only when a caller actually
+supplied an event time. Its ABSENCE means nobody asserted one, which is the fact an auditor needs and is
+equally true of a defaulted record and of a pre-2.8.0 record. Nothing is lost: the positive claim still
+carries its own evidence, and the ambiguity 2.8.0 set out to remove -- `valid_from == ts` meaning either
+"true from then" or "nobody told us" -- stays removed.
+
+After the change, no regression: 147,626,351 / 552,353 / 36,605,878 against baselines of 147,642,011 /
+552,251 / 36,607,471.
+
+The performance gate did not make us drop the feature. It made us design it properly, which is what an
+exact counter is for: "a change here is real work being done that was not being done before."
+
 ## 2.8.0 - UPGRADE IF YOU BACK-DATE FACTS: `valid_from` took only a float, and never said whether anyone declared it
 
 Two defects in the same field, found by the Scout reading someone else's PR.

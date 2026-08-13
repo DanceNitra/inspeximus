@@ -59,11 +59,18 @@ def test_an_unparseable_value_RAISES_rather_than_quietly_using_the_clock():
 
 
 def test_the_record_says_whether_anyone_declared_the_event_time():
+    """PRESENCE is the claim; ABSENCE means nobody asserted an event time.
+
+    Writing "ingest" on every record was the first design and it cost +9.8% serialized bytes on the
+    write benchmark, caught by the work-counter gate. A tenth of every user's disk to record the
+    absence of a claim is the wrong trade, and absence already carries that meaning unambiguously:
+    a defaulted record and a pre-2.8.0 record are both records nobody declared a time for.
+    """
     m = _store()
     declared = _rec(m, m.remember("moved to Brno", key="a", valid_from="2024-03-01T00:00:00Z"))
     defaulted = _rec(m, m.remember("moved to Kosice", key="b"))
     assert declared["valid_from_source"] == "declared"
-    assert defaulted["valid_from_source"] == "ingest"
+    assert "valid_from_source" not in defaulted, defaulted
 
 
 def test_CONTROL_the_ambiguity_this_closes_was_real():
@@ -78,8 +85,9 @@ def test_CONTROL_the_ambiguity_this_closes_was_real():
     defaulted = _rec(m, m.remember("nobody said when", key="e"))
     assert abs(declared_now["valid_from"] - declared_now["ts"]) < 1.0
     assert abs(defaulted["valid_from"] - defaulted["ts"]) < 1.0
-    assert declared_now["valid_from_source"] != defaulted["valid_from_source"], (
+    assert declared_now.get("valid_from_source") != defaulted.get("valid_from_source"), (
         "the timestamps agree; only the provenance field separates them")
+    assert declared_now["valid_from_source"] == "declared" and "valid_from_source" not in defaulted
 
 
 def test_as_of_surfaces_the_provenance_rather_than_only_storing_it():
