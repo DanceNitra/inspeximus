@@ -1219,8 +1219,12 @@ def erasure_audit(subject: str = "", values: list[str] | None = None) -> dict:
     the summary built from it, which no longer looks like the subject's data. Reports records still
     attributable to `subject`, derivatives that outlived an erased origin, dangling lineage, and removals with
     no deletion tombstone. READ `coverage` BEFORE `verdict`: every structural check walks DECLARED
-    `derived_from` edges, so a store that declares none returns `verdict="unaudited"` (nothing was inspected),
-    never a pass. Housekeeping deletions (capacity eviction, keep-budget) land in `advisory`, not `residue`.
+    `derived_from` edges, so a store that declares none returns `verdict="unaudited"` (nothing was inspected)
+    and one whose writers claimed derivation the walk could not resolve returns `verdict="partially_audited"`
+    (coverage incomplete by a known amount); neither is a pass. `declared_ratio` is store-wide and never
+    vouches for one subject -- `coverage["subject_reachable_records"]` counts what the walk could actually
+    follow to THIS subject, and 0 means the structural checks said nothing about it.
+    Housekeeping deletions (capacity eviction, keep-budget) land in `advisory`, not `residue`.
     `values` adds a text scan that is an explicit heuristic and never moves the verdict. Read-only; evidence
     about what the store RECORDED, not proof that no copy of the material remains."""
     return _MEM.erasure_audit(subject=subject or None, values=values or None)

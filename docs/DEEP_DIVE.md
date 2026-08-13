@@ -21,7 +21,7 @@ one creep back — deterministically, with no LLM on the write path, from a sing
 a real state model and not a log. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault (our own deployment — you cannot re-run that one; every number you CAN re-run
 is listed in [docs/CLAIMS.md](CLAIMS.md) with its command).*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v2.5.0
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v2.6.0
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -687,7 +687,7 @@ inspeximus check-code src/**/*.py                                            # e
 ```yaml
 # .pre-commit-config.yaml  (point INSPEXIMUS_PATH at a store committed to the repo, e.g. .inspeximus/memory.json)
 - repo: https://github.com/<owner>/inspeximus
-  rev: v2.5.0
+  rev: v2.6.0
   hooks: [{ id: inspeximus-check-code }]
 ```
 
@@ -868,6 +868,27 @@ scanned 1 record(s) for subject 'user-42'
 would report nothing while having inspected nothing. That is a completely different statement from "checked,
 nothing found", and collapsing the two into one reassuring boolean is how a deletion audit becomes a false
 assurance. So when nothing is declared the verdict is **`unaudited`**, never a pass.
+
+The demotion used to be a cliff at exactly zero, which is a narrower rule than the principle behind it.
+Thomas Willner recorded the gap against us in the LLM Errata `PRIOR_ART.md` while we were reviewing his
+spec: "Its tests force `unaudited` when declared lineage is zero, but a nonzero incomplete ratio can still
+return `no_declared_residue`." One resolvable edge bought the pass verdict for a store that had announced
+four hundred derivations and resolved none. Since 2.6.0 that case is **`partially_audited`**.
+
+The gate is the orphan count and not the ratio, which matters more than it sounds. Most records are roots
+and derive from nothing, so a healthy store's `declared_ratio` is low forever, and a threshold on it fires
+on stores with no hole at all while missing the one described above. `undeclared_derived` counts records
+that ANNOUNCED derivation the walk could not resolve, so it reports a hole of known size rather than a
+proportion nobody can calibrate.
+
+Coverage is also store-wide, and a store-wide number cannot vouch for a subject-scoped question. Our own
+test carried the admission in its assertion comment ("lineage exists elsewhere, so not `unaudited`") — the
+lineage that existed was about billing, and no edge the walk followed could have reached an erased
+`user-42`. `coverage["subject_reachable_records"]` now counts what the walk could actually follow to the
+subject asked about. It is reported rather than gated: after a correct cascade the derivatives are erased
+too, so a reach of zero is also what success looks like, and tombstones are content-free by design, so
+nothing here can separate "the cascade erased them" from "they were never declared". A gate a correct
+erasure can never pass measures nothing.
 
 Housekeeping deletions are separated out too: capacity eviction and the consolidation keep-budget hard-delete
 for size reasons, and would otherwise masquerade as erasure residue in any bounded store. They are reported
@@ -1058,7 +1079,7 @@ checkout until the files land.
 
 ## Status
 
-`v2.5.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 68 tools) and a
+`v2.6.0` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 68 tools) and a
 deterministic supersession key (`remember(..., key=...)`) that closes the embedding *supersession blind
 spot*. Roadmap: pluggable vector stores, a hosted tier. Open-core; the core stays free.
 

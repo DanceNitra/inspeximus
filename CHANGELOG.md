@@ -3,6 +3,53 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.6.0 - UPGRADE IF YOU READ erasure_audit AS A DELETION SIGN-OFF: it returned the pass verdict on partial coverage
+
+`erasure_audit()` demoted its verdict to `unaudited` when declared lineage was **exactly zero**, and the
+principle behind that rule is wider than the rule was. One resolvable edge in a store of four hundred
+records that had announced derivation and resolved none was enough to return `no_declared_residue` -- the
+pass verdict -- for a walk with four hundred known holes.
+
+**Reported against us by Thomas Willner, in the LLM Errata `PRIOR_ART.md`, while we were reviewing his
+spec.** His sentence, verbatim: "Its tests force `unaudited` when declared lineage is zero, but a nonzero
+incomplete ratio can still return `no_declared_residue`." He is right. It is also the mirror image of the
+finding we had just filed against his prototype the same day, where an adapter that enumerates cleanly and
+returns an empty list was recorded identically to one that was walked and genuinely had none. Same defect,
+two codebases, each of us blind to our own copy.
+
+**The gate is the orphan count, not `declared_ratio`.** A threshold on the ratio would have been an
+absolute cut on a relative score: most records are roots and derive from nothing, so a healthy store sits
+at a low ratio permanently and any cut either fires always or never. `undeclared_derived` counts records
+that ANNOUNCED derivation the walk could not resolve, which is evidence of a hole rather than a proportion
+nobody can calibrate. New verdict:
+
+```
+residue_found | partially_audited | no_declared_residue | unaudited
+```
+
+`no_declared_residue` is now the only pass, and it asserts exactly one thing: every record that announced
+itself as derived resolved its parents, and walking those parents found nothing surviving that carries the
+erased material.
+
+**Second, narrower finding, ours: store-wide coverage cannot vouch for one subject.** Our own test carried
+the admission in its assertion comment -- "lineage exists elsewhere, so not `unaudited`" -- and the lineage
+that existed was about billing, while the erased subject was `user-42`. Not one edge the walk followed
+could have reached the erased material. `coverage` now reports `subject_reachable_records`: the surviving
+records the walk could actually follow to the subject asked about, `None` when no subject was given.
+
+It is REPORTED and deliberately does not gate the verdict. After a correct cascade the derivatives are
+erased too, so a reach of 0 is also what success looks like, and tombstones are content-free by design (a
+hash of PII is still PII), so nothing at audit time can separate "the cascade erased them" from "they were
+never declared". A gate a correct erasure can never pass measures nothing, which is the same defect facing
+the other way.
+
+**Reproduction, and why the tests are worth something.** `test_one_resolvable_edge_does_not_buy_a_pass_for_a_store_full_of_orphans`
+fails on the pre-fix code with `no_declared_residue` and passes after. Measured by mutating the shipped
+branch back to `elif False:` and re-running: 1 failed, 16 passed, and BOTH negative controls
+(`test_CONTROL_complete_lineage_still_earns_the_pass`, `test_a_ratio_threshold_would_have_been_the_wrong_gate`)
+stayed green under the mutation -- which is what says they measure something other than the defect, rather
+than following the verdict wherever it goes.
+
 ## 2.5.0 - UPGRADE IF YOUR MEMORIES COME FROM SOURCES THAT CHANGE: decay was temporal, and time is the wrong question
 
 `check_sources()` answers the causal question instead of the chronological one: **did the thing this

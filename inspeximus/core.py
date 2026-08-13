@@ -814,7 +814,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.5.0"
+__version__ = "2.6.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -4620,11 +4620,17 @@ class Inspeximus:
         A store whose writers never declared lineage has no edges to walk, so it would report no residue while
         having inspected nothing — a materially different statement from "checked, nothing found". `coverage`
         makes that difference visible instead of collapsing both into one reassuring boolean:
-        `{records, with_declared_lineage, undeclared_derived, declared_ratio}`. When nothing is declared the
-        verdict is **`unaudited`**, never a pass.
+        `{records, with_declared_lineage, undeclared_derived, declared_ratio, subject_reachable_records}`.
+        When nothing is declared the verdict is **`unaudited`**, and when something claimed derivation that
+        the walk could not resolve it is **`partially_audited`** — neither is a pass.
 
         Returns `{verdict, residue, advisory, coverage, checked, limits}`:
-          - `verdict` — `residue_found` | `no_declared_residue` | `unaudited`.
+          - `verdict` — `residue_found` | `partially_audited` | `no_declared_residue` | `unaudited`.
+            `no_declared_residue` is the ONLY pass, and it asserts only this: every record that announced
+            itself as derived resolved its parents, and walking those parents found nothing surviving that
+            carries the erased material. It does not assert that the subject had no undeclared derivative,
+            and `declared_ratio` is store-wide, so it never vouches for one subject — read
+            `subject_reachable_records` for that.
           - `residue` — findings attributable to a DELIBERATE erasure (the vanished record carries a deletion
             tombstone with a request_id or an authority/basis block): `subject_still_attributable`,
             `taint_without_origin` (a derivative outlived the origin it inherited), `dangling_lineage`, and
@@ -4751,9 +4757,33 @@ class Inspeximus:
 
         declared = sum(1 for r in self.items if r.get("derived_from"))
         undeclared = sum(1 for r in self.items if r.get("orphan"))
+        # SUBJECT-SCOPED REACH. `declared` is a STORE-WIDE count and cannot vouch for a subject-scoped
+        # question. Our own test documented the hole in its assertion comment ("lineage exists elsewhere,
+        # so not 'unaudited'"): a store whose only declared edge is billing -> billing-summary walked a
+        # real edge, and no edge it walked could ever have reached an erased `user-42`. This counts the
+        # surviving records the walk could actually have followed TO THIS SUBJECT: one that declares a
+        # parent now tombstoned, or one carrying the subject's canonical source as inherited taint.
+        #
+        # It is REPORTED, and deliberately does NOT gate the verdict. After a correct cascade the
+        # derivatives are erased too, so reach legitimately reads 0 -- and tombstones are content-free by
+        # design (a hash of PII is still PII), so nothing here can separate "cascade erased them" from
+        # "they were never declared". A gate that a correct erasure can never pass measures nothing, which
+        # is the same defect in the other direction. So it goes where an operator is told to look first.
+        subject_reach = None
+        if subject is not None:
+            _canon = Inspeximus._canon_source(subject)
+            # `_deliberate`, not bare `in tombs`: every hard delete tombstones, including capacity
+            # eviction and the consolidation keep-budget, so counting any tombstoned parent inflates
+            # reach on a busy bounded store for reasons unrelated to the subject. This field exists to
+            # warn when reach is zero, and an over-count silences that warning -- the wrong direction
+            # for a safety signal to fail in.
+            subject_reach = sum(1 for r in self.items
+                                if any(_deliberate(pid) for pid in (r.get("derived_from") or []))
+                                or _canon in (r.get("taint") or []))
         coverage = {"records": len(self.items), "with_declared_lineage": declared,
                     "undeclared_derived": undeclared,
                     "declared_ratio": round(declared / len(self.items), 3) if self.items else 0.0,
+                    "subject_reachable_records": subject_reach,
                     # Reported BESIDE declared lineage and never folded into it. On a store with
                     # observe_recall on, this is typically the larger number by orders of magnitude
                     # (declaring is per-write and gets skipped; observing is automatic), and an auditor
@@ -4766,6 +4796,10 @@ class Inspeximus:
             "read `coverage` before trusting a pass",
             "covers THIS store only -- not your vector index, prompt logs, model weights or backups",
             "does not discharge an erasure obligation; a party that stops declaring lineage always looks clean",
+            "`declared_ratio` is STORE-WIDE and never vouches for one subject: a store whose lineage is "
+            "entirely about some other subject walked real edges, none of which could reach this one. "
+            "`subject_reachable_records` counts what the walk could actually follow to THIS subject, and "
+            "0 there means the structural checks said nothing about it, whatever the verdict says",
             "`recall_window` is an OBSERVATION that the store served an id before a write, not a claim of "
             "parentage: it is reported as dangling_recall_window and counted separately in coverage, and it "
             "must not be read as lineage",
@@ -4792,6 +4826,22 @@ class Inspeximus:
             verdict = "residue_found"
         elif declared == 0:
             verdict = "unaudited"          # nothing declared => nothing structural was inspected
+        elif undeclared:
+            # PARTIAL COVERAGE IS NOT A PASS. Until 2.6.0 the only demotion was `declared == 0`, so a
+            # store with ONE resolvable edge and four hundred records that claimed derivation and
+            # resolved none returned the pass verdict. Thomas Willner recorded exactly this in the
+            # LLM Errata PRIOR_ART.md while reviewing us: "Its tests force `unaudited` when declared
+            # lineage is zero, but a nonzero incomplete ratio can still return `no_declared_residue`."
+            # He is right, and it is the same defect we had just reported to him from the other side:
+            # an enumerable store that comes back empty must not be recorded like one that was walked.
+            #
+            # The gate is the ORPHAN COUNT, not `declared_ratio`. A ratio threshold would be an absolute
+            # cut on a relative score: most records are roots and never derive from anything, so a
+            # healthy store sits at a low ratio forever and any threshold either fires always or never.
+            # `orphan` is positive evidence instead of a proportion -- the record ANNOUNCED that it was
+            # derived and the walk could not resolve where from -- so it says the one thing a coverage
+            # verdict needs: there is a hole, and we know it is there.
+            verdict = "partially_audited"
         else:
             verdict = "no_declared_residue"
         return {"verdict": verdict, "residue": residue, "advisory": advisory, "coverage": coverage,

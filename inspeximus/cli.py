@@ -1199,6 +1199,12 @@ def main(argv=None):
             # coverage FIRST: a pass on a store with no declared lineage means nothing was inspected
             print(f"  coverage  {cov['with_declared_lineage']}/{cov['records']} record(s) declare lineage "
                   f"(ratio {cov['declared_ratio']})")
+            if cov.get("undeclared_derived"):
+                print(f"            {cov['undeclared_derived']} record(s) announced derivation and "
+                      "resolved no parent -- the walk has a hole of known size")
+            if a.subject and cov.get("subject_reachable_records") == 0:
+                print(f"            0 surviving record(s) the walk could follow to {a.subject!r}: the "
+                      "store-wide ratio above says nothing about THIS subject")
             if res["verdict"] == "residue_found":
                 print(f"  RESIDUE  {len(res['residue'])} finding(s) tied to a deliberate erasure:")
                 for f in res["residue"]:
@@ -1207,6 +1213,9 @@ def main(argv=None):
             elif res["verdict"] == "unaudited":
                 print("  UNAUDITED  no record declares lineage, so nothing structural was inspected. "
                       "This is NOT a pass -- declare derived_from on derived writes to make it mean something.")
+            elif res["verdict"] == "partially_audited":
+                print(f"  PARTIALLY AUDITED  {cov['undeclared_derived']} record(s) claim derivation the walk "
+                      "could not resolve, so coverage is incomplete by a known amount. This is NOT a pass.")
             else:
                 print("  NO DECLARED RESIDUE  nothing reachable from the erased material through declared "
                       "lineage survived")

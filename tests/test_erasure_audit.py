@@ -201,3 +201,118 @@ def test_cli_write_extends_an_existing_receipt_chain():
     assert len(reopened._receipts) == 2, "the CLI write must extend the chain, not skip it"
     ok, problems = reopened.verify_writes()
     assert ok, problems
+
+
+# ---------------------------------------------------------------------------------------------------
+# PARTIAL COVERAGE IS NOT A PASS (2.6.0)
+#
+# Reported against us by Thomas Willner in the LLM Errata PRIOR_ART.md, while we were reviewing his
+# spec: "Its tests force `unaudited` when declared lineage is zero, but a nonzero incomplete ratio can
+# still return `no_declared_residue`." The demotion was a cliff at exactly zero, so ONE resolvable edge
+# bought the pass verdict for a store that had announced four hundred derivations and resolved none.
+# ---------------------------------------------------------------------------------------------------
+
+def test_one_resolvable_edge_does_not_buy_a_pass_for_a_store_full_of_orphans():
+    """THE DEFECT. Pre-fix this asserted `no_declared_residue` -- a pass, on a walk with 20 known holes."""
+    m = _store()
+    m.remember("alice bought a red bicycle", source={"doc": "user-42"})
+    # The surviving declared edge is deliberately OFF-subject: a cascade erases the subject's own
+    # derivative along with its root, so an edge built on user-42 cannot be the one left standing.
+    billing = m.remember("billing raw", source={"doc": "runbook"})
+    m.remember("summary of billing", derived=True, derived_from=[billing])
+    for i in range(20):
+        m.remember(f"undeclared summary {i}", derived=True)      # announces derivation, resolves nothing
+
+    m.forget_subject("user-42", request_id="REQ-1")
+    audit = m.erasure_audit(subject="user-42")
+
+    assert audit["coverage"]["with_declared_lineage"] > 0, "the cliff must not be reachable via zero"
+    assert audit["coverage"]["undeclared_derived"] == 20
+    assert audit["verdict"] == "partially_audited", (
+        "a store that announced 20 derivations and resolved none must not report the pass verdict just "
+        "because one unrelated edge happened to resolve: got %r" % audit["verdict"])
+
+
+def test_CONTROL_complete_lineage_still_earns_the_pass():
+    """NEGATIVE CONTROL, and the reason the test above measures anything.
+
+    `partially_audited` gates on the orphan COUNT. A gate that fires on every store is worth exactly as
+    much as one that never fires, and this is the arm that fails if the new state degenerates into
+    always-on. Same shape as the fixture above, minus the orphans."""
+    m = _store()
+    m.remember("alice bought a red bicycle", source={"doc": "user-42"})
+    billing = m.remember("billing raw", source={"doc": "runbook"})
+    m.remember("summary of billing", derived=True, derived_from=[billing])
+
+    m.forget_subject("user-42", request_id="REQ-1")
+    audit = m.erasure_audit(subject="user-42")
+
+    assert audit["coverage"]["undeclared_derived"] == 0
+    assert audit["verdict"] == "no_declared_residue", (
+        "every derived record resolved its parents, so the walk had no hole and the pass is honest: "
+        "got %r" % audit["verdict"])
+
+
+def test_a_ratio_threshold_would_have_been_the_wrong_gate():
+    """Why the gate is the orphan count and NOT `declared_ratio`.
+
+    Most records are roots and derive from nothing, so a healthy store sits at a low ratio permanently.
+    Here 1 record in 22 declares lineage -- ratio 0.045, indistinguishable from the broken store above --
+    and every derived record resolved its parents. Any absolute cut on the ratio fires here, on a store
+    with no hole at all. `orphan` is evidence; a proportion is not."""
+    m = _store()
+    m.remember("alice bought a red bicycle", source={"doc": "user-42"})
+    billing = m.remember("billing raw", source={"doc": "runbook"})
+    m.remember("summary of billing", derived=True, derived_from=[billing])
+    for i in range(20):
+        m.remember(f"independent observation {i}", source={"doc": f"sensor-{i}"})   # roots, not derived
+
+    m.forget_subject("user-42", request_id="REQ-1")
+    audit = m.erasure_audit(subject="user-42")
+
+    assert audit["coverage"]["declared_ratio"] < 0.1, "a low ratio is the healthy base rate, not a defect"
+    assert audit["coverage"]["undeclared_derived"] == 0
+    assert audit["verdict"] == "no_declared_residue"
+
+
+# ---------------------------------------------------------------------------------------------------
+# STORE-WIDE COVERAGE CANNOT VOUCH FOR ONE SUBJECT
+# Found while reviewing his spec for the mirror-image defect. Our own assertion comment carried it:
+# "lineage exists elsewhere, so not 'unaudited'" -- the lineage that existed was about billing.
+# ---------------------------------------------------------------------------------------------------
+
+def test_lineage_about_someone_else_reaches_zero_records_for_this_subject():
+    m = _store()
+    m.remember("alice bought a red bicycle", source={"doc": "user-42"})
+    billing = m.remember("billing raw", source={"doc": "runbook"})
+    m.remember("summary of billing", derived=True, derived_from=[billing])   # real edge, wrong subject
+
+    m.forget_subject("user-42", request_id="REQ-1")
+    audit = m.erasure_audit(subject="user-42")
+
+    assert audit["coverage"]["with_declared_lineage"] == 1, "the store does declare lineage"
+    assert audit["coverage"]["subject_reachable_records"] == 0, (
+        "no surviving record declares a tombstoned parent or carries user-42 taint, so not one edge the "
+        "walk followed could have reached the erased material")
+    assert any("never vouches for one subject" in lim for lim in audit["limits"])
+
+
+def test_CONTROL_when_lineage_does_reach_the_subject_the_reach_is_nonzero():
+    """The arm that fails if `subject_reachable_records` is hard-wired to 0 and measures nothing."""
+    m = _store()
+    root = m.remember("alice bought a red bicycle", source={"doc": "user-42"})
+    m.remember("digest built from it", derived=True, derived_from=[root], source={"doc": "digest"})
+
+    m.forget(ids=[root], request_id="REQ-7")        # erase ONLY the root; the derivative survives
+    audit = m.erasure_audit(subject="user-42")
+
+    assert audit["coverage"]["subject_reachable_records"] >= 1, (
+        "a survivor declaring the tombstoned root is exactly what the walk CAN follow to this subject")
+    assert "dangling_lineage" in _kinds(audit["residue"])
+
+
+def test_subject_reach_is_absent_when_no_subject_was_asked_about():
+    """A store-wide audit has no subject, so the field must be None rather than a misleading 0."""
+    m = _store()
+    m.remember("a note", source={"doc": "runbook"})
+    assert m.erasure_audit()["coverage"]["subject_reachable_records"] is None

@@ -1076,9 +1076,19 @@ record; it is the summary built from it, which no longer resembles the subject's
 Returns `{verdict, residue, advisory, coverage, checked, limits}`. **`coverage` is the load-bearing field.**
 Every structural check walks DECLARED `derived_from` edges, so a store that declares none has nothing to walk
 and would otherwise report "nothing found" while having inspected nothing — a false assurance on a deletion.
-When nothing is declared the verdict is `unaudited`, never a pass; `coverage` reports
-`{records, with_declared_lineage, undeclared_derived, declared_ratio}` so a caller can see how much the
-answer is worth.
+When nothing is declared the verdict is `unaudited`, and when a record announced itself as derived but the
+walk could not resolve its parents the verdict is `partially_audited` — coverage is incomplete by a known
+amount, and neither is a pass. `coverage` reports
+`{records, with_declared_lineage, undeclared_derived, declared_ratio, subject_reachable_records}` so a
+caller can see how much the answer is worth.
+
+Two things `declared_ratio` deliberately does not do. It is not the gate: most records are roots that derive
+from nothing, so a healthy store sits at a low ratio permanently and any absolute cut on it either fires
+always or never. The gate is `undeclared_derived`, which is evidence rather than a proportion. And it is
+store-wide, so it never vouches for one subject — a store whose lineage is entirely about billing walked
+real edges, none of which could reach an erased `user-42`. `subject_reachable_records` counts the surviving
+records the walk could actually follow to the subject you asked about; `0` means the structural checks said
+nothing about it, whatever the verdict reads. It is `None` when no subject was given.
 
 `residue` (drives the verdict) holds findings tied to a **deliberate** erasure — one whose tombstone carries a
 request id or a real basis, not the generic default: `subject_still_attributable`, `taint_without_origin` (a
