@@ -3,6 +3,41 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.8.0 - UPGRADE IF YOU BACK-DATE FACTS: `valid_from` took only a float, and never said whether anyone declared it
+
+Two defects in the same field, found by the Scout reading someone else's PR.
+
+**`valid_from` accepted only an epoch float.** `remember(..., valid_from="2024-03-01T00:00:00Z")` --
+the natural thing to pass, and the form every other timestamp on the record already uses (`iso`) -- died
+with `ValueError: could not convert string to float`. It now goes through `_iso_to_epoch`, the parser
+already in this file, rather than a second implementation of the same guarantee.
+
+**An unparseable value now RAISES instead of falling back to the ingest time**, and the message names a
+form that works. A silent fallback would be the exact defect the next paragraph closes: a guessed event
+time that reads as a declared one.
+
+**`valid_from` defaults to the ingest time and nothing recorded that it had.** So `valid_from == ts` was
+ambiguous between "the fact became true when we wrote it" and "nobody told us and we used the clock".
+Records now carry `valid_from_source`: `declared` or `ingest`. This is the same shape as a `source` field
+holding the WRITER rather than the origin, which is how a store reaches 98.3% source coverage with 0.01%
+actually re-checkable.
+
+It is surfaced in `as_of`, not merely stored. A field nothing reads is decoration, which is how a README
+marker deleted in a trim broke registry publishing for a whole release with every test green (2.6.1).
+Records written before this existed report `None` rather than `ingest`: unknown provenance is a different
+claim from "we defaulted it", and guessing would re-create the ambiguity the field exists to remove.
+
+Credit: the distinction is named `eventTimeSource` in joshuaswarren/remnic#1666, which our GitHub Scout
+surfaced as a `learn` lead. We already shipped bi-temporal `valid_from`/`as_of` and had measured it as
+parity rather than an advantage; what we did not have was the provenance of the timestamp.
+
+Safe by construction: `valid_from` is in neither the receipt commit (text/key/mtype/object) nor
+`state_digest` (id, status, ts, key, tenant, content hash), so old stores and old receipts verify
+unchanged and a reader that does not know the new field ignores it.
+
+Verified by mutating the fix back out: 5 of the 7 new tests fail on the old code, and the two that still
+pass are the epoch-number regression test and the control, which is what they are for.
+
 ## 2.7.0 - UPGRADE IF YOU WANT TO RECEIVE CORRECTIONS FROM ANOTHER SYSTEM: an LLM Errata importer adapter that conforms
 
 `inspeximus.integrations.llm_errata.InspeximusErrataAdapter` implements the LLM Errata importer contract

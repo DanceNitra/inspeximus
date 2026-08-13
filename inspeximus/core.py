@@ -814,7 +814,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.7.0"
+__version__ = "2.8.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1827,7 +1827,15 @@ class Inspeximus:
         now = time.time()
         rec = {"id": mid, "text": text, "tags": list(tags or []), "value": float(value),
                "ts": now, "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-               "valid_from": float(valid_from) if valid_from is not None else now,  # event-time (bi-temporal); defaults to ingest-time
+               # EVENT-TIME (bi-temporal). Accepts an epoch float or an ISO-8601 string, and RAISES on
+               # anything else rather than falling back to `now`: a guessed event time that reads as a
+               # declared one is exactly what `valid_from_source` below exists to make impossible.
+               "valid_from": Inspeximus._event_time(valid_from, now),
+               # WHERE THAT TIME CAME FROM. `declared` when the caller supplied it, `ingest` when it
+               # defaulted to write time. Without this, `valid_from == ts` cannot be told apart from
+               # "nobody told us", which is the same defect as a `source` field holding the writer
+               # instead of the origin. Named after `eventTimeSource` in joshuaswarren/remnic#1666.
+               "valid_from_source": "ingest" if valid_from is None else "declared",
                "source": Inspeximus._check_source(source),   # re-checkable origin (e.g. {"doc": id, "span": [start, end]}) so a recalled fact can be traced back, not trusted blind
                # FINGERPRINT THE SOURCE IF IT IS ACTUALLY FETCHABLE. Written into the reserved meta
                # keyspace below, never into `source` -- that dict comes from the caller, and a digest
@@ -6083,6 +6091,25 @@ class Inspeximus:
         return {"intent": "echo", "action": "blocked", "key": key, "id": rid,
                 "policy": policy, "note": "unmarked restatement of a superseded value; not restored"}
 
+    @staticmethod
+    def _event_time(valid_from, now: float) -> float:
+        """Coerce a caller-supplied event time. Epoch number or ISO-8601 string; never a guess.
+
+        Raises rather than defaulting on an unparseable value. Returning `now` there would stamp a
+        record with an event time nobody asserted while `valid_from_source` said `declared`, which is
+        worse than the crash it replaces because it is silent.
+        """
+        if valid_from is None:
+            return now
+        if isinstance(valid_from, (int, float)) and not isinstance(valid_from, bool):
+            return float(valid_from)
+        epoch = _iso_to_epoch(valid_from) if isinstance(valid_from, str) else None
+        if epoch is None:
+            raise ValueError(
+                "valid_from must be a UTC epoch number or an ISO-8601 string such as "
+                "'2024-03-01T00:00:00Z'; got %r" % (valid_from,))
+        return float(epoch)
+
     def as_of(self, key: str, when: float, as_recorded: float | None = None) -> dict | None:
         """POINT-IN-TIME query: the value that was CURRENT for `key` at event-time `when` (a UTC
         epoch float). This is the bi-temporal 'as-of' / time-travel read — reconstruct history, not
@@ -6095,7 +6122,8 @@ class Inspeximus:
         back-filled record (added later with an earlier valid_from) is placed by its event-time, so
         as_of reflects when facts were TRUE, not when they were written.
 
-        Returns {object, text, valid_from, invalidated_at, id} for the record valid at `when`, or
+        Returns {object, text, valid_from, valid_from_source, invalidated_at, id} for the record valid
+        at `when`, or
         None if nothing was known for `key` yet at that time. Ties (overlapping intervals from an
         unclean history) resolve to the latest valid_from <= when.
 
@@ -6125,6 +6153,11 @@ class Inspeximus:
             return None
         out = {"object": best.get("object"), "text": best.get("text"),
                "valid_from": best.get("valid_from", best["ts"]),
+               # WHERE THAT TIME CAME FROM, surfaced rather than merely stored. A field nothing reads
+               # is decoration. Records written before this existed carry no value and report None:
+               # unknown provenance is a different claim from "we defaulted it", and guessing `ingest`
+               # for them would re-create the ambiguity this field was added to remove.
+               "valid_from_source": best.get("valid_from_source"),
                "invalidated_at": best.get("invalidated_at"), "id": best["id"]}
         if as_recorded is not None:
             nxt = [r.get("valid_from", r["ts"]) for r in self._tenant_rows()
