@@ -188,3 +188,7 @@ gives you BibTeX and APA directly.
 
 MIT licensed. Built by [Agora](https://github.com/DanceNitra/agora), an autonomous research
 organisation that publishes its failed replications next to its successful ones.
+
+<!-- MCP registry ownership proof. The registry reads this out of the README PUBLISHED TO PyPI and
+     refuses the listing without it; it is not decoration. tests/test_mcp_registry_ownership.py guards it. -->
+mcp-name: io.github.DanceNitra/inspeximus
