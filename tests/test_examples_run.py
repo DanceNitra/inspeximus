@@ -167,12 +167,23 @@ def test_the_flagship_demo_shows_one_correction_not_a_pile():
 def test_running_the_examples_does_not_dirty_the_repository():
     """The residue reached the repo because the runner used cwd=ROOT. A demo that writes into the working
     tree turns every CI run into a commit-shaped change nobody chose."""
-    before = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
-                            cwd=ROOT, capture_output=True, text=True).stdout
+    def dirty():
+        out = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
+                             cwd=ROOT, capture_output=True, text=True).stdout
+        return {ln[3:] for ln in out.splitlines() if ln.strip()}
+
+    before = dirty()
     _run("01_basics.py")
-    after = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
-                           cwd=ROOT, capture_output=True, text=True).stdout
-    assert before == after, f"running an example changed tracked files:\n{after}"
+    after = dirty()
+    # ONLY NEW DIRT COUNTS. Comparing the two snapshots for equality made this a race: `git status`
+    # reads the whole working tree, other xdist workers rewrite probe result files throughout the run,
+    # and a file that went from modified to clean between the two reads failed the test for something
+    # the example cannot do. Observed on the 3.9 leg, where the extra entry was present BEFORE and gone
+    # after. The guarantee worth keeping is one-directional: the example must not dirty anything that
+    # was clean.
+    appeared = after - before
+    assert not appeared, (
+        "running an example dirtied tracked files: %s" % sorted(appeared))
 
 
 def test_the_demo_store_is_not_a_tracked_file():
