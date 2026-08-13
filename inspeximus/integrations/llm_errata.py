@@ -5,8 +5,16 @@ travels from an origin to every independent importer that already holds material
 corrected root, and what each importer may honestly attest afterwards.
 
 Written against the published `StoreAdapter` protocol and `INDEPENDENT_IMPLEMENTATION.md` at frozen
-commit `a477fe4f5c86730031b6285d9505778fb8eec060`, G2 surface digest
-`a6908d21a3fbfc71c11da85ff72634a3917205a06d0ec6c5e3f949756c04e3a3`.
+commit `ac4468faf73c2cc7949dd29b2a2a151f5bd23116`, canonical G2 surface digest
+`7e0d6c88c1ca3a87743ac70ba2a3dfea0b350d112d2d3c59a3c6cbb537568f12`.
+
+REBOUND FROM `a477fe4f`, where the protocol declared six methods and the repair path needed six more.
+We implemented far enough to hit each missing one, reported them, and the surface is now complete and
+documented: `quarantine_coverage`, `source_artifact`, `repair_inputs` and `snapshot` are declared, and
+`retire` has a single keyword-only signature. The `register_into` helper this file used to carry is
+GONE, because the coupling it worked around is gone: `RebuildStrategy` now asks the adapter for
+`source_artifact()` and `repair_inputs()` instead of requiring an external store to register its graph
+in the reference `LineageLedger`. That workaround existing at all was the evidence for the report.
 
 PROVENANCE, STATED BECAUSE THE CONTRACT TURNS ON IT. The first version of this file, shipped in
 inspeximus 2.6.1, was written with `prototype/adapters.py` open in order to get the interface right, and
@@ -22,7 +30,11 @@ The mapping is close to one-for-one, which is why we are a natural implementer r
     enumerate(root)        records reachable from the root through DECLARED derived_from taint
     lineage_complete(root) below, and it is the method the contract actually cares about
     quarantine(ids)        demote to superseded + needs_rederivation, never delete
+    quarantine_coverage    what we may claim BEFORE repair, distinct from the final verdict
+    source_artifact(id)    the record IS its lineage node here; ids are content-addressed
+    repair_inputs(id)      declared parents that still exist, store-owned, no external ledger
     rebuild(...)           APPEND corrected records; the quarantined ones stay superseded
+    snapshot()             content-free per-record digest, bound into the state roots
     coverage(root)         verified only when completeness can be established for THIS root
 
 WHY REBUILD APPENDS RATHER THAN REWRITES. inspeximus is append-only: history is evidence, and scrubbing
@@ -50,8 +62,8 @@ from __future__ import annotations
 from typing import Any
 
 #: The frozen specification surface this adapter was written against.
-SPEC_COMMIT = "a477fe4f5c86730031b6285d9505778fb8eec060"
-SPEC_G2_DIGEST = "a6908d21a3fbfc71c11da85ff72634a3917205a06d0ec6c5e3f949756c04e3a3"
+SPEC_COMMIT = "ac4468faf73c2cc7949dd29b2a2a151f5bd23116"
+SPEC_G2_DIGEST = "7e0d6c88c1ca3a87743ac70ba2a3dfea0b350d112d2d3c59a3c6cbb537568f12"
 
 
 def _coverage(value: str):
@@ -152,14 +164,12 @@ class InspeximusErrataAdapter:
                     (rec.get("meta") or {}).get("needs_rederivation"))
         return False                                          # absent is not gated; say so honestly
 
-    def retire(self, artifact_id: str, superseded_at: str | None = None) -> None:
+    def retire(self, artifact_id: str, *, superseded_at: str | None = None) -> None:
         """Retire an artifact whose ORIGIN was superseded, rather than rebuilding it.
 
-        NOT in the published `StoreAdapter` protocol, and neither is `rebuild`: both are invoked by
-        `strategies.py` during repair, so an implementer who writes to the protocol alone gets an
-        AttributeError the first time a correction is applied. Reported upstream. The two-argument form
-        is here because the reference strategy calls `retire(item, superseded_at=...)` first and falls
-        back to `retire(item)` on TypeError, which an implementer also cannot discover from the protocol.
+        Keyword-only, matching the single documented signature at `ac4468f`. At `a477fe4` `retire` was
+        absent from the protocol and the strategy called it two ways, trying `superseded_at=` and
+        falling back on `TypeError`; we reported that and it is now one form.
 
         Retired is not quarantined: this record is not waiting to be rebuilt, its origin is gone. So the
         rederivation flag is cleared while the record itself is kept, because destroying it would erase
@@ -196,10 +206,21 @@ class InspeximusErrataAdapter:
             anchor = [new_id] if new_id else []
             written.append(replacement)
         for src_id in (inputs or ()):
-            payload = (by_id.get(src_id) or {}).get("text")
-            if payload:
-                self._assert(payload, anchor)
+            src = by_id.get(src_id) or {}
+            payload = src.get("text")
+            if not payload:
+                continue
+            # ONLY re-assert an input that was itself gated. A surviving input is still active and
+            # still recallable, so copying its text here would leave the store asserting the same
+            # proposition twice -- measured: "prefers quiet restaurants" and "moderate budget" each
+            # appeared twice in the active set after a repair. The preservation check passes either
+            # way, which is exactly why this had to be caught by reading the store rather than the
+            # receipt: a duplicate is invisible to a probe that only asks whether a term is recallable.
+            if src.get("status") in (None, "active"):
                 written.append(payload)
+                continue
+            self._assert(payload, anchor)
+            written.append(payload)
 
         if origin is not None:
             # The disposition lives on the record rather than in a set on the adapter, so it survives
@@ -248,46 +269,56 @@ class InspeximusErrataAdapter:
                 out.append(_Hit(rec["id"], text))
         return tuple(out)
 
-    # ---- registration, which the protocol does not mention and repair requires ------------------
-    def register_into(self, ledger: Any, root: str) -> int:
-        """Publish this store's lineage into the importer's `LineageLedger`. Returns records written.
+    # ---- the rest of the runtime surface, declared at ac4468f ----------------------------------
+    def quarantine_coverage(self, root: str):
+        """Coverage at the durable checkpoint, BEFORE any repair.
 
-        NOT documented in `INDEPENDENT_IMPLEMENTATION.md`, and repair does not work without it. The
-        rebuild strategy decides retire-versus-rebuild from `ledger.artifact(source).inputs` and takes
-        the rebuild inputs from `ledger.valid_inputs(...)`, so an adapter whose artifacts were never
-        registered has every gated item fall into pass one, gets retired wholesale, and pass two rebuilds
-        nothing. Measured before adding this: aggregate=failed with zero records written.
-
-        Registration order matters and the ledger enforces it: `register_derivation` refuses inputs it
-        has not seen, so roots go first and descendants follow in dependency order.
+        Deliberately distinct from `coverage(root)`, which reports final dispositions. At `08b95263`
+        the checkpoint inferred `verified` from a successful enumeration and never asked the adapter;
+        we reported that an adapter answering `partial` had its answer overwritten, and this method is
+        the contract that replaced the inference. It answers the only question we can honestly answer
+        before repair: could the walk have been complete for this root.
         """
-        by_id = {r["id"]: r for r in self._records()}
-        reachable = self.enumerate(root)
-        written = 0
-        pending = [rid for rid in reachable]
-        for rid in list(pending):
-            rec = by_id.get(rid)
-            if rec is None or rec.get("derived_from"):
-                continue
-            ledger.register_import(root, rid, store=self.name, content=rec.get("text", ""))
-            written += 1
-            pending.remove(rid)
-        # Descendants, repeatedly, until no further one can be satisfied. A record whose parents are
-        # outside `reachable` can never be registered, and is left out rather than faked in.
-        progress = True
-        while pending and progress:
-            progress = False
-            for rid in list(pending):
-                rec = by_id.get(rid) or {}
-                parents = tuple(p for p in (rec.get("derived_from") or []) if p in reachable)
-                if not parents or any(p in pending for p in parents):
-                    continue
-                ledger.register_derivation(rid, store=self.name, inputs=parents,
-                                           content=rec.get("text", ""))
-                written += 1
-                pending.remove(rid)
-                progress = True
-        return written
+        return _coverage("verified" if self.lineage_complete(root) else "unknown")
+
+    def source_artifact(self, artifact_id: str) -> str:
+        """The stable lineage node one artifact represents.
+
+        In this store a record IS the node: ids are content-addressed and never reused, so an artifact
+        and its lineage identity coincide. A store that fanned one proposition across several rows
+        would return the shared node here instead.
+        """
+        return artifact_id
+
+    def repair_inputs(self, artifact_id: str) -> tuple:
+        """The store's OWN direct inputs for an artifact: its declared parents, still present.
+
+        This is the method that replaced registering our graph into the reference `LineageLedger`. We
+        reported that coupling after a repair silently retired every gated artifact and rebuilt none,
+        with no exception raised anywhere; the strategy now asks the adapter instead. Parents that no
+        longer exist are omitted rather than returned as dangling ids, because the strategy uses this
+        set to decide what a rebuild may be composed FROM.
+        """
+        present = {r["id"] for r in self._records()}
+        for rec in self._records():
+            if rec["id"] == artifact_id:
+                return tuple(p for p in (rec.get("derived_from") or []) if p in present)
+        return ()
+
+    def snapshot(self) -> dict:
+        """Inspectable state bound into checkpoint and receipt state roots.
+
+        Content-free and deterministic: a short digest over each record's text and status, so the root
+        moves when a repair changes what the store serves, and does not move when only bookkeeping
+        changes. Ordering is the caller's concern (the controller sorts), but the mapping must be
+        stable across processes, so nothing here depends on dict insertion order or object identity.
+        """
+        import hashlib
+        out = {}
+        for rec in self._records():
+            payload = "%s|%s" % (rec.get("text") or "", rec.get("status") or "active")
+            out[rec["id"]] = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+        return out
 
     # ---- reported beside the verdict, not folded into it ---------------------------------------
     def coverage_detail(self, root: str) -> dict:

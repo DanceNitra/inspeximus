@@ -84,7 +84,7 @@
       "broken_against": "1.2.9",
       "checked": "2026-08-13",
       "deep_audit": "checkpointer_conformance.py",
-      "detail": "StoreChangedOnDisk: <tmp>\\ckpt.jsonl changed on disk since this handle loaded it (another process or another Inspeximus() on the same path). Saving would erase its records. Call reload() to merge the two and retry, or give each writer its own store file.  [intermittent: failed on run 7 of 40]",
+      "detail": "StoreChangedOnDisk: <tmp>\\ckpt.jsonl changed on disk since this handle loaded it (another process or another Inspeximus() on the same path). Saving would erase its records. Call reload() to merge the two and retry, or give each writer its own store file.  [intermittent: failed on run 4 of 40]",
       "note": null,
       "python": "3.12",
       "source": "langgraph.py",

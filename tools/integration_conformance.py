@@ -454,9 +454,23 @@ def _rt_llm_errata(tmp):
                    for h in a.recall("is vegetarian")), "the superseded blob must not recall"
     assert a.dispositions("fact:diet")[summary] == "rebuilt", a.dispositions("fact:diet")
 
-    # retire is the other half: an artifact whose origin is gone is not awaiting rebuild.
+    # retire is the other half: an artifact whose origin is gone is not awaiting rebuild. One
+    # keyword-only signature since ac4468f; before that it was undeclared and called two ways.
     a.retire(rest, superseded_at="2026-08-01T00:00:00Z")
     assert not a.is_quarantined(rest), "retired is not quarantined"
+
+    # The surface the reference controller actually drives, declared at ac4468f after we implemented
+    # far enough to hit each missing piece. `repair_inputs` is the one that replaced registering our
+    # graph into the reference LineageLedger, so it is asserted to be store-owned and self-consistent.
+    assert a.source_artifact(summary) == summary, "a record is its own lineage node in this store"
+    assert set(a.repair_inputs(summary)) <= set(x["id"] for x in m.items), (
+        "repair_inputs must name records this store actually holds, never dangling ids")
+    snap = a.snapshot()
+    assert snap and all(isinstance(k, str) and isinstance(v, str) for k, v in snap.items()), snap
+    assert snap == a.snapshot(), "snapshot feeds a state root, so it must be deterministic"
+    # quarantine_coverage is the PRE-repair verdict and must not be inferred from enumeration alone;
+    # this is the contract that replaced the checkpoint defect we reported at 08b95263.
+    assert a.quarantine_coverage("fact:diet") in ("verified", "unknown"), a.quarantine_coverage("fact:diet")
 
     # CONTROL: a writer that announced derivation and resolved no parent must move the verdict off pass.
     # `unknown`, not a fifth state of our own: the spec author declined `unaudited` on the grounds that

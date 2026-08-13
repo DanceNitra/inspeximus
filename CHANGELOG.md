@@ -3,6 +3,43 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.9.0 - UPGRADE IF YOU IMPLEMENT LLM ERRATA: the adapter is rebound to the corrected spec surface
+
+Rebound from `a477fe4f` to **`ac4468faf73c2cc7949dd29b2a2a151f5bd23116`**, canonical G2 digest
+`7e0d6c88c1ca3a87743ac70ba2a3dfea0b350d112d2d3c59a3c6cbb537568f12`.
+
+**The spec author accepted and fixed both findings our implementation produced.** The durable checkpoint
+now records `adapter.quarantine_coverage(root)` instead of inferring `verified` from a successful
+enumeration, with a direct regression test for the `partial -> verified` mismatch we reported; and
+`StoreAdapter` now declares the full runtime surface, with `retire` reduced to one keyword-only
+signature. The record-decomposition requirement in the implementer contract came from a mistake in our
+own test fixture, where two propositions shared a record.
+
+**`register_into` is deleted, and that is the point.** It existed only to register our lineage into the
+reference `LineageLedger`, an undocumented coupling we found when a repair silently retired every gated
+artifact and rebuilt nothing with no exception raised. `RebuildStrategy` now asks the adapter through
+`source_artifact()` and `repair_inputs()`, so an external store no longer registers anything. Measured
+here: the full quarantine, repair and attest cycle completes against the reference controller with an
+empty reference ledger.
+
+```
+clean store                      checkpoint=verified  triad all pass  aggregate=verified
+store with one undeclared deriv.  checkpoint=unknown   triad all pass  aggregate=unknown
+```
+
+New: `quarantine_coverage`, `source_artifact`, `repair_inputs`, `snapshot`.
+
+**One defect of our own, found by reading the store rather than the receipt.** `rebuild` re-asserted
+every named input's payload, including inputs that were never gated and were still active, so after a
+repair the store asserted "prefers quiet restaurants" and "moderate budget" twice each. The receipt was
+clean either way: the preservation check asks only whether a term is recallable, and a duplicated fact is
+recallable exactly as well as a single one. Now only a gated input is re-asserted.
+
+Standing: G2 and G4 remain BLOCKED and the repository remains NOT_PROD_READY. Our 2.7.0 is recorded
+upstream as an externally authored candidate with a claimed clean-room rewrite, not as established
+independent evidence, and a third producer must validate both implementations. That is the correct
+treatment and we asked for it.
+
 ## 2.8.2 - AFFECTS NOBODY'S CODE: a test that checked our documented commands was passing for the wrong reason
 
 No library change. `test_docs_examples_are_runnable` extracts every `inspeximus ...` line from the
