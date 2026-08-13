@@ -583,3 +583,26 @@ def test_the_fingerprint_says_None_rather_than_guessing_outside_a_checkout(tmp_p
     plain = tmp_path / "nogit"
     plain.mkdir()
     assert release_check._tree_fingerprint(plain) is None
+
+
+def test_the_error_message_names_a_remedy_THAT_ACTUALLY_WORKS():
+    """The message offered two ways out and the code implemented one.
+
+    `who_should_upgrade` told an author to "name the users affected, or say plainly that it affects
+    nobody's code", while only `UPGRADE IF/WHEN` was ever accepted. A release that genuinely changes
+    nothing observable therefore had no honest way to pass: the only route through was to invent an
+    audience for it. An error message that names a fix the code rejects sends the reader in a circle.
+
+    Both arms are asserted here, because implementing the second remedy without testing it is how the
+    first one came to be wrong.
+    """
+    assert "TODO" not in release_notes.who_should_upgrade(
+        "AFFECTS NOBODY'S CODE: a test was passing for the wrong reason", "9.9.9")
+    assert "TODO" not in release_notes.who_should_upgrade(
+        "UPGRADE IF YOU BACK-DATE FACTS: valid_from took only a float", "9.9.9")
+    # CONTROL: a heading that states no audience at all must still be refused, or this gate stops
+    # gating and every future release passes by saying nothing.
+    todo = release_notes.who_should_upgrade("a heading that names nobody", "9.9.9")
+    assert todo.startswith("TODO"), todo
+    # and the remedy the refusal names must be one of the two that work
+    assert "AFFECTS NOBODY'S CODE" in todo

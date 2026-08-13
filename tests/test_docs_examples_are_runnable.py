@@ -116,9 +116,17 @@ def test_every_documented_inspeximus_command_block_runs():
             # splitting on spaces turned it into six unrecognised arguments -- the test
             # failing on its own parsing rather than on the example.
             argv = shlex.split(line.replace("inspeximus ", "", 1))
+            # A READER'S environment, not ours. EIGHTEEN test modules assign INSPEXIMUS_* into
+            # os.environ directly rather than through monkeypatch, so it survives for the rest of the
+            # worker process; inheriting it sent the documented `remember` to some other tmp store and the
+            # later `--store inspeximus_memory.json` then found nothing. That made this test pass or
+            # fail on WHICH TESTS RAN BEFORE IT: green locally, red in the integrations job where the
+            # optional extras pull in more modules and the ordering changes. A documented command has
+            # to work for someone who has none of our variables set, which is what this now measures.
+            reader_env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
             r = subprocess.run([sys.executable, "-m", "inspeximus.cli", *argv], cwd=work,
                                capture_output=True, text=True, timeout=300,
-                               env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
+                               env={**reader_env, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
             total += 1
             assert r.returncode == 0, (
                 f"a documented command fails when pasted: $ {line} -- exit={r.returncode}; "

@@ -113,8 +113,15 @@ def who_should_upgrade(heading, version):
         # The author's capitals are emphasis, not a sentence, so they are quoted rather than reworded
         # into "Upgrade if YOU USE ...", which read as a typo. Their words, unedited.
         return "Upgrade %s this is true of you: **%s**." % (m.group(1).lower(), clause)
+    # THE SECOND REMEDY THE MESSAGE BELOW NAMES, now actually implemented. It offered "say plainly that
+    # it affects nobody's code" while only `UPGRADE IF/WHEN` was accepted, so a release that genuinely
+    # changes no user-visible behaviour had no way to pass except by inventing an audience for it. An
+    # error message that names a fix the code rejects sends the reader in a circle.
+    if re.search(r"AFFECTS NOBODY'?S CODE", heading, re.I):
+        return ("**No upgrade needed.** This release changes nothing a caller can observe; it is here "
+                "so the record is complete.")
     return ("TODO(who should upgrade): the %s changelog heading does not say who this is for. "
-            "Name the users affected, or say plainly that it affects nobody's code." % version)
+            "Name the users affected, or say plainly that it AFFECTS NOBODY'S CODE." % version)
 
 
 def previous_version(version, root=ROOT):

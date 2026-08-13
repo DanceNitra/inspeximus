@@ -3,6 +3,48 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.8.2 - AFFECTS NOBODY'S CODE: a test that checked our documented commands was passing for the wrong reason
+
+No library change. `test_docs_examples_are_runnable` extracts every `inspeximus ...` line from the
+README and DEEP_DIVE, runs it in a fresh temp directory, and requires exit 0. It passed the subprocess
+`{**os.environ}`, and **eighteen** test modules assign `INSPEXIMUS_*` into `os.environ` directly rather
+than through `monkeypatch`, so the value survives for the rest of that worker process.
+
+Inherited, `INSPEXIMUS_PATH` sent the documented `remember` to some other temp store, and the documented
+`audit-verify bundle.json --store inspeximus_memory.json` two lines later then found nothing:
+
+```
+FAIL --store inspeximus_memory.json does not exist; refusing to create a store while verifying
+```
+
+So the test's verdict depended on WHICH TESTS RAN BEFORE IT. Green on a dev machine and in the release
+job; red in the `integrations` job, where the optional extras pull in more modules and the ordering
+changes. It had been measuring "this works if a stale variable happens to be set", not "this works when a
+reader pastes it".
+
+The subprocess now runs with a READER'S environment: every `INSPEXIMUS_*` key is stripped. That is the
+correct behaviour independently of the leak, because someone copying a command out of our documentation
+has none of our variables set.
+
+Reproduced before and after rather than assumed: with `INSPEXIMUS_PATH` exported, the old code fails and
+the new code passes.
+
+**Not fixed here, and stated so it is not mistaken for done:** the eighteen modules still write to
+`os.environ` directly. This closes the one route the failure arrived by, not the class.
+
+**And a second one found while fixing the first.** The release-notes gate refused this entry because its
+heading names no audience, and its message offered two remedies: name the users, *or say plainly that it
+affects nobody's code*. Only the first was implemented. A release that genuinely changes nothing
+observable had no honest way through except to invent an audience for itself. The second remedy now
+exists, this entry uses it, and a test asserts both arms plus a control that a heading naming nobody is
+still refused.
+
+Worth recording how that fix failed twice before it took. The branch was written with `` word
+boundaries that a heredoc turned into literal **backspace characters** (``), which are invisible when
+the line is printed, so the source read correctly, the pattern matched when retyped by hand in a test, and
+the file itself could never match. Two rounds of "the code I am reading is not the code that runs" before
+`repr()` showed it.
+
 ## 2.8.1 - UPGRADE IF YOU TOOK 2.8.0: it added ~10% to every stored record to write down the absence of a claim
 
 2.8.0 wrote `valid_from_source` on every record, `declared` or `ingest`. CI's work-counter gate caught
