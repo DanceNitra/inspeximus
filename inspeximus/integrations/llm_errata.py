@@ -97,6 +97,10 @@ class InspeximusErrataAdapter:
     def __init__(self, store: Any, name: str = "inspeximus") -> None:
         self.store = store
         self.name = name
+        #: Propositions a destructive retire failed to remove completely, either because `forget()`
+        #: removed nothing or because a copy survives in another record. Non-empty means this adapter
+        #: may not claim `verified`.
+        self._erasure_residue: list = []
 
     # ---- reading the store ---------------------------------------------------------------------
     def _records(self) -> list:
@@ -204,14 +208,43 @@ class InspeximusErrataAdapter:
             self._flush()
             return
 
+        doomed = None
         for rec in self._records():
             if rec["id"] == artifact_id:
+                doomed = rec.get("text")
                 meta = rec.setdefault("meta", {})
                 meta.pop("needs_rederivation", None)
                 meta["retired_by"] = "llm-errata"
         self._flush()
-        self.store.forget(ids=artifact_id, basis="llm-errata correction or erasure",
-                           request_id="llm-errata")
+
+        result = self.store.forget(ids=artifact_id, basis="llm-errata correction or erasure",
+                                   request_id="llm-errata")
+
+        # `forget()` RETURNS HOW MANY IT REMOVED, AND IT CAN BE ZERO. It reports `forgotten: 0`
+        # without raising when the id is outside the caller's tenant rows. The first version of this
+        # branch discarded that result and no longer set a status, so a no-op erasure left the record
+        # ACTIVE -- strictly worse than the demotion it replaced. A fix that can silently do nothing
+        # is the same defect this method exists to correct, reintroduced one layer down.
+        if not (result or {}).get("forgotten"):
+            for rec in self._records():
+                if rec["id"] == artifact_id:
+                    rec["status"] = "superseded"
+            self._flush()
+            self._erasure_residue.append(
+                {"proposition": doomed, "reason": "forget() removed nothing", "record": artifact_id})
+            return
+
+        # What SURVIVED, rather than trusting that removing one record removed the claim. `forget()`
+        # documents its completeness on the premise that "consolidation never copies raw text into
+        # other records"; that premise does not hold for `remember(derived=True)`, which copies the
+        # text verbatim. So a derivative can still hold the erased proposition after a successful
+        # forget, and the record that would have noticed is the one just destroyed.
+        if doomed:
+            survivors = [r["id"] for r in self._records() if doomed in (r.get("text") or "")]
+            if survivors:
+                self._erasure_residue.append(
+                    {"proposition": doomed, "surviving_records": survivors,
+                     "reason": "a derived record retains a verbatim copy"})
 
     def rebuild(self, artifact_id: str, *, inputs: tuple, replacement: str | None) -> str:
         """Append the corrected assertion and the surviving payload as new active records.
@@ -260,6 +293,21 @@ class InspeximusErrataAdapter:
     def coverage(self, root: str):
         if not self.lineage_complete(root):
             return _coverage("unknown")
+        if self._erasure_residue:
+            # A DESTRUCTIVE RETIRE THAT LEFT COPIES BEHIND MUST NOT REPORT `verified`.
+            #
+            # `forget()` removes the record it is given. It does not remove the same proposition
+            # where a summariser copied it into a DERIVED record's text, because that record is a
+            # different fact with different provenance and destroying it would take collateral with
+            # it. Measured: with one derived record holding "is vegetarian; prefers quiet
+            # restaurants", an erase erratum removed the root and returned `verified` while the
+            # erased proposition sat on disk inside the derivative.
+            #
+            # This is the conservative half of the fix and it is deliberately the half that ships
+            # first. Widening the deletion is a data-loss decision that needs its own review; saying
+            # so out loud costs nothing and is required by the spec's own rule that missing or
+            # incomplete disposal remains `partial` or `unknown` rather than silently complete.
+            return _coverage("partial")
         return _coverage("verified")
 
     def dispositions(self, root: str) -> dict:

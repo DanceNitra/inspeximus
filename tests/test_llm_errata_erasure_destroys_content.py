@@ -57,3 +57,54 @@ def test_the_erased_value_is_not_recallable_afterwards():
     mem, _ = _store()
     InspeximusErrataAdapter(mem).retire(_target(mem))
     assert not [r for r in mem.items if r.get("text") == "is vegetarian"]
+
+
+def _with_derivative():
+    path = os.path.join(tempfile.mkdtemp(), "m.json")
+    mem = Inspeximus(path=path, receipts=True)
+    a = mem.remember("is vegetarian", source={"doc": "fact:diet"}, key="diet")
+    b = mem.remember("prefers quiet restaurants", source={"doc": "fact:rest"}, key="rest")
+    mem.remember("is vegetarian; prefers quiet restaurants", derived=True, derived_from=[a, b])
+    return mem, path
+
+
+def test_a_surviving_derived_copy_blocks_a_verified_claim():
+    """forget() removes the record it is given, not the proposition wherever a summariser copied it.
+
+    Its completeness note rests on "consolidation never copies raw text into other records", which
+    does not hold for remember(derived=True). So the erased value can survive verbatim in a
+    derivative, and the record that would have noticed is the one just destroyed. Coverage must
+    therefore say `partial`, not `verified`. This is the conservative half of the fix: widening the
+    deletion is a separate data-loss decision.
+    """
+    mem, path = _with_derivative()
+    adapter = InspeximusErrataAdapter(mem)
+    adapter.retire(_target(mem))
+    assert adapter._erasure_residue, "a surviving copy must be recorded, not ignored"
+    assert "is vegetarian" in open(path, encoding="utf-8").read()
+    # _coverage() degrades to a bare string when the spec package is absent, and it must:
+    # importing inspeximus may never require llm-errata to be installed.
+    cov = adapter.coverage("fact:diet")
+    assert getattr(cov, "value", cov) != "verified"
+
+
+def test_a_forget_that_removes_nothing_still_demotes_the_record():
+    """The regression this fix introduced, now a test.
+
+    forget() reports `forgotten: 0` without raising when the id is outside the caller's tenant rows.
+    The first destructive branch discarded that result AND no longer set a status, so a no-op
+    erasure left the record ACTIVE -- worse than the demotion it replaced. A fix that can silently
+    do nothing is the defect it was meant to correct, one layer down.
+    """
+    mem, _ = _store()
+    adapter = InspeximusErrataAdapter(mem)
+    adapter.store.forget = lambda **kw: {"forgotten": 0}
+    target = _target(mem)
+    adapter.retire(target)
+    rec = next(r for r in mem.items if r["id"] == target)
+    assert rec["status"] == "superseded", "a failed erasure must not leave the record active"
+    assert adapter._erasure_residue, "a failed erasure must be recorded"
+    # _coverage() degrades to a bare string when the spec package is absent, and it must:
+    # importing inspeximus may never require llm-errata to be installed.
+    cov = adapter.coverage("fact:diet")
+    assert getattr(cov, "value", cov) != "verified"
