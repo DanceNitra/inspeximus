@@ -108,3 +108,50 @@ def test_a_forget_that_removes_nothing_still_demotes_the_record():
     # importing inspeximus may never require llm-errata to be installed.
     cov = adapter.coverage("fact:diet")
     assert getattr(cov, "value", cov) != "verified"
+
+
+def test_an_erasure_destroys_the_mixed_descendant_and_keeps_the_collateral():
+    """The debt this file was opened with, now paid.
+
+    An erasure carries no replacement, so `rebuild` used to write nothing and leave the mixed
+    descendant demoted with its text intact: a summariser's record reading "is vegetarian; prefers
+    quiet restaurants" survived an erase of the first half verbatim, and coverage could only honestly
+    report `partial`. It now destroys the descendant AFTER the surviving inputs have been re-asserted,
+    so the collateral it takes with it is collateral that already exists elsewhere.
+    """
+    # The spec package is an OPTIONAL dependency and must stay one: importing inspeximus may never
+    # require llm-errata. Skip rather than fail where it is absent.
+    pytest.importorskip("prototype")
+    from prototype.errata import Erratum, Operation
+    from prototype.scenario import build_importer
+    from prototype.signing import Ed25519Signer
+
+    mem, path = _with_derivative()
+    owner = Ed25519Signer(b"\x01" * 32, key_id="key-1")
+    importer = build_importer(owner)
+    importer.adapters = [InspeximusErrataAdapter(mem)]
+    importer.roots = ("fact:diet",)
+    receipt = importer.repair(owner.sign_erratum(Erratum(
+        erratum_id="e", sequence=1, target_root="fact:diet", operation=Operation.ERASE,
+        valid_from="2026-08-01T00:00:00Z",
+        postconditions={"negative": "vegetarian", "preserve": "quiet restaurants"})))
+
+    raw = open(path, encoding="utf-8").read()
+    assert "is vegetarian" not in raw, "the descendant kept a verbatim copy of the erased fact"
+    assert "prefers quiet restaurants" in raw, "the collateral was destroyed with it"
+    assert receipt.aggregate.value == "verified"
+
+
+def test_residue_is_rechecked_rather_than_trusted():
+    """A flag recorded in one phase must not outlive the condition another phase removed.
+
+    `retire` records a surviving copy at the moment it destroys the root; `rebuild` then destroys that
+    copy in the same repair. Trusting the recorded list reported `partial` for a store whose erasure
+    had completed. Coverage re-reads the store instead.
+    """
+    mem, _ = _store()
+    adapter = InspeximusErrataAdapter(mem)
+    adapter._erasure_residue.append(
+        {"proposition": "a proposition no record contains", "record": "x"})
+    cov = adapter.coverage("fact:diet")
+    assert getattr(cov, "value", cov) == "verified", "a stale residue entry blocked a clean verdict"

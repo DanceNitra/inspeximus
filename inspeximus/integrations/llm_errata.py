@@ -288,12 +288,53 @@ class InspeximusErrataAdapter:
             # a reload and an auditor reading the store directly sees it without asking us.
             (origin.setdefault("meta", {}))["rederived_by"] = "llm-errata"
         self._flush()
+
+        # AN ERASURE MUST DESTROY THE MIXED DESCENDANT, NOT DEMOTE IT.
+        #
+        # `replacement is None` is how the protocol says erasure: a correction and a supersession
+        # both state what is true instead, an erasure states nothing. On that path this method used
+        # to write no new record and leave the origin demoted with its text intact, so a summariser's
+        # record reading "is vegetarian; prefers quiet restaurants" survived an erase of the first
+        # half verbatim, and coverage could only honestly report `partial`.
+        #
+        # The surviving inputs have already been re-asserted above as new active records, so the
+        # collateral this destroys is collateral that now exists elsewhere -- which is the whole
+        # reason rebuild runs before this and not after. The preservation arm of the triad is what
+        # checks that claim, and it is why this is safe to do here and was not safe to do in
+        # `retire`, where nothing had been rebuilt yet.
+        if replacement is None and origin is not None:
+            result = self.store.forget(ids=artifact_id, basis="llm-errata erasure of a descendant",
+                                       request_id="llm-errata")
+            if not (result or {}).get("forgotten"):
+                self._erasure_residue.append(
+                    {"proposition": origin.get("text"), "record": artifact_id,
+                     "reason": "forget() removed nothing on a descendant"})
+
         return "\n".join(written)
+
+    def _live_residue(self) -> list:
+        """Residue that is STILL THERE, re-checked, not a flag recorded earlier and trusted.
+
+        `retire` records a surviving copy at the moment it destroys the root, and `rebuild` may then
+        destroy that copy in the same repair. Trusting the recorded list reported `partial` for a
+        store whose erasure had in fact completed -- a stale flag outliving the condition it
+        described, which is the same defect as claiming success without checking, pointed the other
+        way. Cheaper to re-read the store than to keep a list correct across two phases.
+        """
+        live = []
+        for item in self._erasure_residue:
+            text = item.get("proposition")
+            if not text:
+                live.append(item)
+                continue
+            if any(text in (r.get("text") or "") for r in self._records()):
+                live.append(item)
+        return live
 
     def coverage(self, root: str):
         if not self.lineage_complete(root):
             return _coverage("unknown")
-        if self._erasure_residue:
+        if self._live_residue():
             # A DESTRUCTIVE RETIRE THAT LEFT COPIES BEHIND MUST NOT REPORT `verified`.
             #
             # `forget()` removes the record it is given. It does not remove the same proposition
