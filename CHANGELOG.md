@@ -3,6 +3,44 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.9.1 - UPGRADE IF YOU ERASE THROUGH THE LLM ERRATA ADAPTER: an erasure claimed success it had not achieved
+
+**2.9.0 returned `aggregate: verified` for an `erase` erratum while the erased proposition remained in
+the store, and on disk, verbatim.** `retire()` demoted the record and kept its text in both branches.
+The reference contract keys this on `superseded_at`: the protocol supplies it only for a supersession,
+where the proposition was true until an instant and the history is evidence. Its ABSENCE means
+correction or erasure, where the content must go. We treated both the same, and the retaining way.
+
+Fixed: the destructive branch now calls `forget()`, the store's verified-forgetting primitive, which
+hard-deletes the record, scrubs its id from surviving links and supersession pointers, drops cached
+vectors and writes a content-free tombstone. The capability was always there; the adapter never
+reached for it.
+
+**Two further defects, one of them introduced by that fix, and both fixed here.**
+
+`forget()` reports `{"forgotten": 0}` without raising when the id falls outside the caller's tenant
+rows. The first version of the destructive branch discarded that result and no longer set a status, so
+an erasure that removed nothing left the record ACTIVE, which is worse than the demotion it replaced.
+The result is now read; a removal that did nothing demotes the record and is recorded.
+
+**And the erasure is still not complete, which is why `coverage()` no longer says `verified`.**
+`forget()` documents its completeness on the premise that "consolidation never copies raw text into
+other records". That premise does not hold for `remember(derived=True)`, which copies the text
+verbatim, so a summariser's derivative can still hold the erased proposition after a successful
+forget, and the record that would have noticed is the one just destroyed. A surviving copy is now
+recorded and coverage reports `partial`. Widening the deletion to every record whose text contains
+the proposition is a data-loss decision that needs its own review; the specification's own rule is
+that incomplete disposal stays `partial` or `unknown` rather than silently complete.
+
+Checked before shipping, because the obvious worry is trading a disclosure bug for a data-loss bug:
+after a destructive retire, `erasure_audit()` still returns `residue_found` and `verify_writes()` is
+clean. The audit trail survives by design and destroying content on a correction is what the reference
+contract requires.
+
+Found by our own candidate conformance case, but only after an independent adversarial pass showed
+that case was itself vacuous: it searched present-tense recall, where concealment and erasure are
+identical. Strengthened to search the persisted state, it failed immediately, against us.
+
 ## 2.9.0 - UPGRADE IF YOU IMPLEMENT LLM ERRATA: the adapter is rebound to the corrected spec surface
 
 Rebound from `a477fe4f` to **`ac4468faf73c2cc7949dd29b2a2a151f5bd23116`**, canonical G2 digest
