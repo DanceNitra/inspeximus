@@ -172,18 +172,46 @@ class InspeximusErrataAdapter:
         falling back on `TypeError`; we reported that and it is now one form.
 
         Retired is not quarantined: this record is not waiting to be rebuilt, its origin is gone. So the
-        rederivation flag is cleared while the record itself is kept, because destroying it would erase
-        the evidence of what this importer held before the correction.
+        rederivation flag is cleared while the record itself is kept.
+
+        `superseded_at` DECIDES WHETHER THE CONTENT SURVIVES, and getting that wrong was a real defect
+        we shipped. The protocol supplies it only for a supersession, where the proposition was true
+        until an instant and the history is worth keeping. Its ABSENCE means correction or erasure,
+        where the reference contract requires the content to be destroyed and IDEA.md is explicit that
+        "a receipt must not preserve the secret it claims to erase".
+
+        Until 2.9.1 this method demoted the record and kept its text in both cases. An `erase` erratum
+        therefore returned `aggregate: verified` while the erased proposition sat in the store
+        verbatim, and on disk -- a success-shaped non-erasure, in the product we sell on memory
+        integrity. It was found by our own candidate conformance case once that case was strengthened
+        to search the PERSISTED state rather than present-tense recall, which is the only view in
+        which concealment and erasure look different.
+
+        So the destructive branch now calls `forget()`, the store's verified-forgetting primitive: it
+        hard-deletes the record, scrubs its id from every surviving record's links and supersession
+        pointers, drops the cached vectors, and records a content-free tombstone. Demotion was never
+        enough for this operation and the capability was there the whole time; the adapter simply
+        never reached for it.
         """
+        if superseded_at:
+            for rec in self._records():
+                if rec["id"] == artifact_id:
+                    rec["status"] = "superseded"
+                    meta = rec.setdefault("meta", {})
+                    meta.pop("needs_rederivation", None)
+                    meta["retired_by"] = "llm-errata"
+                    meta["superseded_at"] = superseded_at
+            self._flush()
+            return
+
         for rec in self._records():
             if rec["id"] == artifact_id:
-                rec["status"] = "superseded"
                 meta = rec.setdefault("meta", {})
                 meta.pop("needs_rederivation", None)
                 meta["retired_by"] = "llm-errata"
-                if superseded_at:
-                    meta["superseded_at"] = superseded_at
         self._flush()
+        self.store.forget(ids=artifact_id, basis="llm-errata correction or erasure",
+                           request_id="llm-errata")
 
     def rebuild(self, artifact_id: str, *, inputs: tuple, replacement: str | None) -> str:
         """Append the corrected assertion and the surviving payload as new active records.
