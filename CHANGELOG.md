@@ -3,6 +3,95 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.10.1 - UPGRADE IF ANY TWO PROCESSES SHARE ONE STORE FILE. Concurrent saves could corrupt it.
+
+**Who should upgrade: everyone, and urgently if more than one process writes one store.** That
+includes every Claude Code hook deployment, because Claude Code fires the configured hooks
+concurrently for parallel tool calls — which is exactly how we found this.
+
+**We corrupted our own store.** Three of this project's hook stores were destroyed in ten days. The
+main one — 6 MB, 10,059 records, the largest memory store in the organisation — had been unparseable
+since 2026-08-13 18:40 and nobody noticed for two days, because the hooks fail open. Every record was
+recoverable, and the two earlier casualties turned out to be strict subsets, so nothing was lost. We
+are writing it down because a memory library that silently loses memories is the worst failure it can
+have, and we shipped one.
+
+### The write path is now durable (fixes the corruption)
+
+`_save` wrote to `<store>.tmp` — **one fixed name, shared by every writer** — then `os.replace`d it.
+Two processes writing that temp at overlapping offsets produce a *blend*, and the replace promotes
+it. `_file_sig` never protected against this: it is a check read BEFORE the write, so it detects a
+competing writer only once that writer has already finished. There was no locking of any kind.
+
+Measured, 6 processes x 40 honest `open -> remember -> flush` on one store, old path as control:
+
+| | tears | writes landed |
+|---|---|---|
+| 2.10.0 | 66 | 100 / 240 |
+| **2.10.1** | **0** | **218 / 240** |
+
+Three parts: a unique temp file per write, an inter-process lock held across the check *and* the
+write as one critical section, and `fsync` before the replace. The same fix is applied to the
+receipt and tombstone sidecars, where a tear is worse — the chain breaks and `verify_writes()`
+reports the store *tampered* when it was only raced.
+
+Cost: `fsync` adds ~1.5 ms per save. That is the guarantee, not overhead. The lock file lives in the
+system temp directory, not beside your store.
+
+### Tenant isolation: the private surface failed open
+
+`_TenantView` forwarded every private helper to the unbound parent, so a correctly-scoped public
+method could read the whole store through a helper it called. Six confirmed cross-tenant defects,
+each reproduced by execution:
+
+* `route()` returned and wrote another tenant's value, in both directions.
+* `restore_intent` embedded the matching record id in the string it minted, making it a **confirm/deny
+  oracle on a guessed value** in another tenant.
+* `classify_reversion` takes a caller-supplied embedder and handed the attacker's own callback
+  another tenant's **full record plaintext**.
+* `ratify` reached another tenant's record; `admit` wrote into no tenant at all, so the writer was
+  told `admitted: True` and could never see the record again.
+* `revoke` was the one ACL reader of six with no tenant predicate, making `was_granted` a grant
+  oracle — probed invisibly, since the probe lands in the attacker's own tenant.
+* The CUSUM and irreversible-budget sidecars were keyed store-globally while the safety guard reading
+  them was tenant-scoped, so **tenancy disarmed the guard**: one tenant could exhaust another's
+  irreversible-action budget (monotonic, no refund path) and raise poison alarms on their good
+  outcomes. On a shared SaaS host no guessing is needed — every Notion URL canonicalizes alike.
+
+If you use `for_tenant()` on a shared store, treat 2.10.1 as a security release.
+
+### Three checks that could not see their target, so all three reported a pass
+
+* **An encrypted store accepted a plaintext substitute.** Opening an encrypted file without a key
+  already raised; opening a *plaintext* file *with* one succeeded, served the substituted records,
+  and re-encrypted them under your key on the next save. Both directions are errors now.
+* **`erasure_audit()` from a tenant view could not return a pass.** It cross-checked tenant-scoped
+  records against store-wide receipts, so it reported `residue_found` 100% of the time — listing the
+  other tenants' complete live id set — with nobody having erased anything. It now reports the check
+  as *unchecked* in `limits`.
+* **Retention asked "is it served", not "is it stored".** A `discarded` PII record was invisible to
+  `compliance_check` and `retention_sweep` while its plaintext sat in the file, so the store
+  certified itself clean under Art. 5(1)(e). `superseded` PII is deliberately still not swept — it is
+  the prior half of a correction — but it is now *reported* rather than silently omitted.
+
+### Hook context: a stored memory could forge the hook's own header
+
+Three of the four Claude Code injection sites printed stored text raw, newlines and all, so one
+record could reproduce the `[inspeximus]` header byte-for-byte and open a second, forged block —
+claiming a higher trust class than the record had, under the framing sentence that tells the model
+not to second-guess it. Since `capture()` stores `Write`/`Edit` content verbatim, any file the agent
+writes could plant it. All four sites now sanitise structure as well as length.
+
+### Also
+
+* `amends` is intersected with an explicit allowlist (`mtype` only), so an amendment can no longer
+  declare that it forgives the fields the write commitment exists to bind.
+* `verify_attribution` derives the write preimage from `_chain_core` instead of a hand-written copy
+  that had already drifted — five definitions of one preimage, now one.
+* The record router (`route`/`_route_chain`) applies the same status allowlist `recall()` uses. A
+  `discarded` row could otherwise become "the current value", so a genuine correction returned
+  `noop` and was never written.
+
 ## 2.10.0 - AFFECTS NOBODY'S CODE UNLESS YOU OPT IN: two new features, no change to existing behaviour (one exception, below)
 
 **Who should upgrade.** Anyone whose writers cannot vouch for what they produce — a sentence
