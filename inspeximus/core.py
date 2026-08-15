@@ -159,6 +159,11 @@ _ACL_LOG = logging.getLogger("inspeximus.acl")
 # discarded (a verifier said no), candidate (identity unresolved) -- is invisible until something
 # deliberately adds it here. See _eligible().
 _RECALLABLE = frozenset({"active", "superseded", "hub"})
+# The ONLY committed fields an amendment may forgive. `mtype` is the one field a legitimate
+# in-band operation rewrites (slash/restore revoking or restoring graduation); text+key
+# (immutable_sha256), attribution and the served value bind for the life of the record and no
+# call site in this library ever declares them. Enforced rather than described -- see verify_writes.
+_AMENDABLE = frozenset({"mtype"})
 _GUARD_KEYSPACES = ("code::symbol::", _ACL_PREFIX)
 
 
@@ -2182,6 +2187,11 @@ class Inspeximus:
         r = {"seq": len(self._receipts), "ts": rec.get("ts"), "memory_id": rec["id"],
              "commit": self._write_commit(rec), "prev": prev}
         if amends:
+            bad = set(amends) - _AMENDABLE
+            if bad:
+                raise ValueError(f"refusing to emit a receipt amending {sorted(bad)}: only "
+                                 f"{sorted(_AMENDABLE)} may be forgiven. Widening this is a "
+                                 f"deliberate change to what the chain guarantees, not a parameter.")
             r["amends"] = sorted(amends)
             # WHY a record changed is as auditable as WHAT changed (yun520-1, hermes-agent#34352).
             # `amends` says which committed field a receipt rewrites; without a reason the trail cannot
@@ -2520,11 +2530,21 @@ class Inspeximus:
                 rc = r.get("commit") or {}
                 if "immutable_sha256" in rc:
                     # A receipt is forgiven for exactly the fields a LATER receipt DECLARED it was amending,
-                    # and for nothing else. text+key (immutable_sha256) and attribution are never declared by
-                    # any call site, so they bind on every receipt for the life of the record.
+                    # and for nothing else -- INTERSECTED WITH `_AMENDABLE`, because the declaration is
+                    # attacker-writable and the vocabulary was not.
+                    #
+                    # This comment used to read "text+key (immutable_sha256) and attribution are never
+                    # declared by any call site, so they bind on every receipt for the life of the record."
+                    # That was a description of our own call sites, not a property of the chain, and an
+                    # append-only log lets anyone add a call site. Measured 2026-08-15: tamper the stored
+                    # text out of band (verify_writes correctly goes False), then append ONE well-formed
+                    # receipt whose `amends` names immutable_sha256 -- with a correct hash over the real
+                    # preimage, so the chain link is genuine -- and verify_writes returns to True over text
+                    # that was never written. That is the 1.67.0 laundering path, re-entered through the
+                    # amends vocabulary instead of through slash().
                     forgiven = {f for x in self._receipts
                                 if x["memory_id"] == r["memory_id"] and x.get("seq", 0) > r.get("seq", 0)
-                                for f in (x.get("amends") or ())}
+                                for f in (x.get("amends") or ())} & _AMENDABLE
                     # `k in rc` so a pre-1.82 receipt, which has no `value_sha256`, is checked on what it
                     # does carry instead of failing on a field that did not exist when it was written. It
                     # cannot be used to strip a field either: the receipt hash covers the whole commit, so
@@ -2694,8 +2714,15 @@ class Inspeximus:
         # question below, not a log-integrity failure.
         chain_ok, prev = True, _GENESIS
         for r in self._receipts:
-            core = {k: r.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev")}
-            if r.get("prev") != prev or _sha256_hex(_canon(core)) != r.get("hash"):
+            # THE FIFTH SITE, and it was already WRONG. A hand-written copy of the write preimage,
+            # frozen at the pre-1.68.0 shape, so it missed `amends` (1.68.0) and `amend_reason`
+            # (2.10.0) -- the drift `_chain_core`'s own docstring records as "four definitions of one
+            # preimage, and the fix reached two of them". Measured 2026-08-15: after a LEGITIMATE
+            # slash(), verify_writes() and anchor() said clean while verify_attribution() and
+            # provenance() both reported chain_ok=False -- a false alarm on the surface whose whole
+            # job is to make a relabel loud, on every store that has ever revoked standing.
+            _core = Inspeximus._chain_core(r, "write")
+            if r.get("prev") != prev or _sha256_hex(_canon(_core)) != r.get("hash"):
                 chain_ok = False
             if "sig" in r and _HAVE_ED:
                 try:
