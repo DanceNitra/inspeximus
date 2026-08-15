@@ -55,6 +55,10 @@ def _b_id(store):
 
 # ── the sweep: every public method, not a curated list ───────────────────────────────────────────────
 _ARGS = {                                     # plausible arguments that would reach the other tenant
+    # confirm()/discard_provisional() take a record id, so the sweep aims THE OTHER TENANT'S id at
+    # them: the leak they could produce is promoting or rejecting a row that is not ours, and the
+    # return value naming its text. `None` is what the harness substitutes for "the other side's id".
+    "confirm": (None, "swept"), "discard_provisional": (None, "swept"),
     "history": ("b/k",), "provenance": ("b/k",), "as_of": ("b/k", 9e9), "why_recalled": ("b/k",),
     "revert": ("b/k",), "verify_claim": ("globex v2",), "recall": ("globex secret",),
     "route": ("globex",), "check_conflict": ("globex v2",), "believed_at": ("b/k", 9e9),

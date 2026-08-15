@@ -171,6 +171,10 @@ def test_issuing_a_grant_does_not_change_what_the_operator_reads():
 
 # ── THE SWEEP: every public method, not a curated list of read surfaces ──────────────────────────────
 _ARGS = {
+    # Same reason as the tenant sweep: these take a record id, so they are driven with an UNGRANTED
+    # record's id rather than exempted. A method that refuses is a pass; one that echoes the content
+    # of a record the caller may not read is the leak this test exists for.
+    "confirm": (None, "swept"), "discard_provisional": (None, "swept"),
     # The RFC 6962 transparency surface: swept, not exempted. inclusion_proof returns a LEAF, so this
     # is the test that would catch it carrying another agent's content if the leaf ever grew a text field.
     "inclusion_proof": (0,), "merkle_consistency_proof": (0,), "merkle_root": (),

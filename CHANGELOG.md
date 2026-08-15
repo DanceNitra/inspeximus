@@ -3,6 +3,79 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.10.0 - AFFECTS NOBODY'S CODE UNLESS YOU OPT IN: two new features, no change to existing behaviour (one exception, below)
+
+**Who should upgrade.** Anyone whose writers cannot vouch for what they produce — a sentence
+splitter, an extraction pass, any pipeline that mints records from text it did not verify — and
+anyone who needs an audit trail to tell a correction from a quiet rewrite. Both features are opt-in
+(`provisional=True`, `reason=`); existing calls behave exactly as they did in 2.9.1.
+
+**One behaviour change, and it is a narrowing.** `recall(include_superseded=True)` previously also
+returned `candidate` records — rows whose IDENTITY was unresolved, surfaced by a flag named for
+supersession. It no longer does. If you were relying on that to enumerate candidates, use
+`candidates()`, which is the API for it.
+
+Both features in this release were proposed by **[@yun520-1](https://github.com/yun520-1)**, in public
+review on `NousResearch/hermes-agent#34352` and `openclaw/openclaw#7707`. They are his ideas; the
+implementation and any defects in it are ours.
+
+### Provisional records: the splitter may write, but it may not mint
+
+We measured a period-and-capital sentence splitter at 30% wrong on hard text: "J. R. R. Tolkien"
+becomes three fabricated first-class claims, one of which is the standalone fact `J.`. yun520-1 named
+what that means:
+
+> the splitter now gets to mint first-class records, which means the splitter is a trust boundary, and
+> it is a worse one than the chunking it replaced (chunk boundaries are syntactic, sentence boundaries
+> are semantic) ... the splitter must never be the sole authority that mints a record.
+
+So `remember(..., provisional=True)` stores a record with its key, lineage and receipts intact and
+**unretrievable** — by any flag — until something confirms it. `provisional()` is the queue,
+`confirm(id, by=...)` accepts (recording WHO vouched; an unnamed voucher is written `unstated`), and
+`discard_provisional(id, basis=...)` rejects. An unconfirmed record stays out of recall forever: the
+cost of a forgotten confirmation is a missing memory, the cost of the other direction is a fabricated
+one.
+
+This is NOT the existing `candidates()` queue, and conflating them would be a bug. That one asks
+WHICH KEY a write belongs to, and promoting one supersedes an authoritative value. This one asks
+whether the CONTENT is real, and confirming one supersedes nothing at the moment of confirmation.
+
+**Two defects found while building it, both by tests written against the feature rather than for it.**
+A provisional write initially SUPERSEDED the authoritative value on its key: writing an unconfirmed
+"Tolkien was born in 1802" against a verified 1892 marked the verified record superseded and left the
+unconfirmed one invisible, so `recall()` returned NOTHING. A fabricated sentence would have silently
+knocked out a real fact — strictly worse than not shipping the feature. `_supersede_by_key` now
+refuses to let a non-authoritative record retire an authoritative one.
+
+And the gate itself sat below the bitemporal branch, so `recall(as_of=...)` returned provisional
+records; that branch returns True before any status check runs. It is first in `_eligible` now, and
+it is an ALLOWLIST (`_RECALLABLE = {active, superseded, hub}`) rather than a list of statuses to
+exclude — because the first version was a denylist, and `discard_provisional`'s new `discarded`
+status fell straight through it into `return include_superseded`. A rejected record, surfaced by a
+flag named for supersession, minutes after the gate above it was written. A status added next year is
+invisible until someone deliberately admits it.
+
+Side effect worth stating: `include_superseded=True` previously surfaced `candidate` records too.
+It no longer does.
+
+### Amendments record why, and the reason is committed
+
+`amends` says WHICH committed field a receipt legitimately rewrites. It did not say why, and as
+yun520-1 put it, "if the amendment record doesn't say why (corrected typo vs updated fact), the audit
+trail can't distinguish a correction from a quiet rewrite."
+
+`slash()` and `restore()` now take `reason=`, recorded on the amendment **inside the receipt hash**.
+Forging it or stripping it breaks the chain: it can be contradicted, never rewritten. A caller who
+states nothing gets `unstated` recorded rather than the field omitted — a missing key is
+indistinguishable from a caller who had nothing to say.
+
+It went into `_chain_core`, the one shared preimage definition, and that immediately broke the offline
+bundle verifier: `audit_bundle` kept a hand-maintained list of preimage fields two hundred lines away
+from the preimage, so `verify_writes()` said clean while the bundle said "write chain breaks at index
+1". The same thing had happened with `amends` in 1.68.0 and was fixed by special-casing that field,
+which left the defect in place. The export is now DERIVED from `_chain_core`, so there is nothing left
+to forget a field in.
+
 ## 2.9.1 - UPGRADE IF YOU ERASE THROUGH THE LLM ERRATA ADAPTER: an erasure claimed success it had not achieved
 
 **2.9.0 returned `aggregate: verified` for an `erase` erratum while the erased proposition remained in

@@ -41,15 +41,29 @@ def _content_free_writes(store) -> list:
     """Every field the write receipt's hash commits to, plus the hash itself, so an offline verifier can
     re-derive it. Content-free: `commit` is hashes, never text.
 
-    `amends` is OPTIONAL and part of the preimage since 1.68.0 (see Inspeximus._chain_core). Exporting a
-    fixed field list dropped it, so a bundle from any store where slash()/restore() had ever run could not
-    be verified -- by any version, including the one that produced it. The tombstone exporter below already
-    handles its optional `auth` block for exactly this reason."""
+    THE FIELD LIST IS DERIVED, NOT WRITTEN DOWN. `amends` became part of the preimage in 1.68.0 and this
+    exporter's fixed list dropped it, so a bundle from any store where slash()/restore() had ever run could
+    not be verified -- by any version, including the one that produced it. That was fixed by adding a
+    special case for `amends`, which left the real defect in place: a hand-maintained list of preimage
+    fields, two hundred lines away from the preimage.
+
+    It reproduced immediately. `amend_reason` (added after 2.9.1) joined `_chain_core` and this list did
+    not know,
+    and `test_every_surface_agrees_after_an_amendment` failed on all three fixtures with "write chain
+    breaks at index 1" while verify_writes() and anchor() both said clean -- the same split the
+    _chain_core docstring records.
+
+    So the export now IS the preimage, by construction: whatever `_chain_core` commits to is what ships,
+    plus the hash so an offline verifier can compare. A field added to the preimage cannot be forgotten
+    here again, because there is nothing here to forget it in.
+
+    Content-free either way: `commit` is hashes, never text."""
     out = []
     for r in store._receipts:
-        rec = {k: r.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev", "hash")}
-        if r.get("amends"):
-            rec["amends"] = r["amends"]
+        rec = dict(Inspeximus._chain_core(r, "write"))
+        rec["hash"] = r.get("hash")
+        if r.get("sig"):                      # receipt signature travels with it when one was minted
+            rec["sig"] = r["sig"]
         out.append(rec)
     return out
 

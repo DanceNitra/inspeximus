@@ -155,6 +155,10 @@ _GENESIS = "0" * 64
 _ACL_PREFIX = "acl::grant::"
 _ACL_LOG = logging.getLogger("inspeximus.acl")
 
+# The ONLY statuses recall may ever return. Everything else -- provisional (never confirmed),
+# discarded (a verifier said no), candidate (identity unresolved) -- is invisible until something
+# deliberately adds it here. See _eligible().
+_RECALLABLE = frozenset({"active", "superseded", "hub"})
 _GUARD_KEYSPACES = ("code::symbol::", _ACL_PREFIX)
 
 
@@ -814,7 +818,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.9.1"
+__version__ = "2.10.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1704,6 +1708,7 @@ class Inspeximus:
                  mtype: str | None = None, valid_from: float | None = None,
                  source: dict | None = None, key: str | None = None,
                  derived_from: list | None = None, attestation=None, derived: bool = False,
+                 provisional: bool = False,
                  object: str | None = None, reaffirm: bool = False, capability: str | None = None,
                  pii=None, identity_confidence: float | None = None,
                  user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
@@ -1836,7 +1841,8 @@ class Inspeximus:
                # keyspace below, never into `source` -- that dict comes from the caller, and a digest
                # a writer can set is a drift check the writer can defeat. See check_sources().
                "mtype": mtype or _infer_type(text), "last_access": now,
-               "status": "active", "links": [], "meta": dict(meta or {})}
+               "status": "provisional" if provisional else "active",
+               "links": [], "meta": dict(meta or {})}
         # SOURCE FINGERPRINT (see check_sources): only when the doc is a path that exists right now.
         # Reserved keyspace, so a later writer cannot forge freshness for content it changed.
         _sdoc = Inspeximus._raw_source(rec)
@@ -2166,7 +2172,7 @@ class Inspeximus:
                 "value_sha256": _sha256_hex(_canon({"object": rec.get("object")})),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
 
-    def _emit_write_receipt(self, rec: dict, amends: tuple = ()) -> dict:
+    def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "") -> dict:
         """`amends` names the committed fields this receipt legitimately rewrites (slash/restore -> mtype).
         It is DECLARED, not inferred, and verification forgives an earlier receipt for exactly the declared
         fields and nothing else. Inferring it — "the latest receipt wins" — is what let a public slash()
@@ -2177,6 +2183,12 @@ class Inspeximus:
              "commit": self._write_commit(rec), "prev": prev}
         if amends:
             r["amends"] = sorted(amends)
+            # WHY a record changed is as auditable as WHAT changed (yun520-1, hermes-agent#34352).
+            # `amends` says which committed field a receipt rewrites; without a reason the trail cannot
+            # tell a correction from a quiet rewrite. An UNSTATED reason is recorded as such rather than
+            # omitted: a missing key is indistinguishable from a caller that had nothing to say, and an
+            # optional field nobody is required to fill is the adoption defect, not the feature.
+            r["amend_reason"] = (str(reason).strip() or "unstated")[:200]
         r["hash"] = _sha256_hex(_canon(Inspeximus._chain_core(r, "write")))
         if self._receipt_signer is not None:
             # WRITE-AUTHORITY BOUNDARY. The signing key lives OUTSIDE this process (KMS, HSM, a signing
@@ -2802,6 +2814,14 @@ class Inspeximus:
         is a restatement-of-superseded (an echo) — retire the incoming rec stale-on-arrival and keep the
         current value, so a later re-mention of the old value cannot resurrect it. reaffirm=True bypasses
         the guard (a genuine, authoritative reversal back to a previously-superseded value)."""
+        if rec.get("status") == "provisional":
+            # A record that is NOT authoritative cannot retire one that is. Measured while building
+            # this: without the check, writing an unconfirmed "Tolkien was born in 1802" against the
+            # key holding a verified 1892 marked the VERIFIED record `superseded` and left the
+            # unconfirmed one invisible -- so recall returned NOTHING. A fabricated sentence would
+            # have silently knocked out a real fact, which is strictly worse than not shipping the
+            # feature. Supersession belongs at confirm(), the moment the value becomes authoritative.
+            return
         k = rec.get("key")
         if not k:
             return
@@ -2916,6 +2936,62 @@ class Inspeximus:
     # ── candidate reconciliation queue (identity-confidence gate; Fellegi-Sunter clerical review / MDM steward
     #    queue, ported to agent memory). A fuzzy-identity keyed write forks a candidate instead of superseding;
     #    these three methods are the steward path that promotes or discards it. ────────────────────────────────
+    def provisional(self, limit: int = 50) -> list:
+        """Records written but NOT yet confirmed — the queue a verifier has to say yes or no to.
+
+        WHY THIS EXISTS. yun520-1, on openclaw/openclaw#7707, on our measurement that a
+        period-and-capital sentence splitter is 30% wrong on hard text and turns "J. R. R. Tolkien"
+        into three fabricated claims:
+
+            the splitter now gets to mint first-class records, which means the splitter is a trust
+            boundary, and it is a worse one than the chunking it replaced (chunk boundaries are
+            syntactic, sentence boundaries are semantic) ... the splitter must never be the sole
+            authority that mints a record.
+
+        So a writer that cannot vouch for what it produced writes `provisional=True`. The record is
+        stored, keyed, lineage-stamped and auditable — it simply cannot be retrieved, by any flag,
+        until something confirms it. "J." as a standalone fact never reaches a context window.
+
+        This is NOT the `candidates()` queue. That one asks WHICH KEY a write belongs to (identity
+        confidence below fork_below) and promoting one supersedes an authoritative value. This one
+        asks whether the CONTENT is real, and confirming one supersedes nothing. Conflating them
+        would let an unverified fragment take over a key on promotion.
+        """
+        out = [r for r in self._tenant_rows() if r.get("status") == "provisional"]
+        out.sort(key=lambda r: -(r.get("ts") or 0))
+        return [{"id": r["id"], "text": r.get("text"), "key": r.get("key"),
+                 "derived_from": list(r.get("derived_from") or []), "ts": r.get("ts")}
+                for r in out[:limit]]
+
+    def confirm(self, mid: str, by: str = "") -> dict:
+        """Confirm a provisional record: it becomes ordinary and retrievable. `by` names what vouched.
+
+        The name is recorded because "confirmed" with no author is the same shape as an optional
+        reason nobody fills — it reads as verification while asserting nothing. An unconfirmed
+        record stays out of recall forever, which is the fail-closed direction: the cost of a
+        forgotten confirmation is a missing memory, and the cost of the opposite is a fabricated one.
+        """
+        rec = next((r for r in self._tenant_rows()
+                    if r["id"] == mid and r.get("status") == "provisional"), None)
+        if rec is None:
+            return {"confirmed": False, "reason": "no provisional record with that id"}
+        rec["status"] = "active"
+        rec["confirmed_by"] = (str(by).strip() or "unstated")[:120]
+        rec["confirmed_at"] = time.time()
+        self._save(force=True)
+        return {"confirmed": True, "id": mid, "by": rec["confirmed_by"]}
+
+    def discard_provisional(self, mid: str, basis: str = "") -> dict:
+        """Reject a provisional record — the verifier saying no, which is the point of the queue."""
+        rec = next((r for r in self._tenant_rows()
+                    if r["id"] == mid and r.get("status") == "provisional"), None)
+        if rec is None:
+            return {"discarded": False, "reason": "no provisional record with that id"}
+        rec["status"] = "discarded"
+        rec["discard_basis"] = (str(basis).strip() or "unstated")[:200]
+        self._save(force=True)
+        return {"discarded": True, "id": mid}
+
     def candidates(self, key: str | None = None) -> list:
         """The reconciliation queue: forked candidate records awaiting an identity decision (writes whose
         identity_confidence fell below fork_below, so they did NOT supersede). Each entry shows what it WOULD
@@ -5049,6 +5125,14 @@ class Inspeximus:
             core = {k: rec.get(k) for k in ("seq", "ts", "memory_id", "commit", "prev")}
             if rec.get("amends"):
                 core["amends"] = rec["amends"]
+            # `amend_reason` joins the preimage HERE, in the one shared definition, for the reason this
+            # docstring already records: 1.68.0 added `amends` to the emitter and the verifier and missed
+            # `_recompute_tip` and `audit_bundle._rewalk`, and anchor() then committed to a truncated chain.
+            # A reason outside the hash would be worse than none: anyone with file access could append a
+            # flattering one to a laundering amendment, or strip an inconvenient one, and the chain would
+            # still verify. Committed, it can be contradicted but not rewritten.
+            if rec.get("amend_reason"):
+                core["amend_reason"] = rec["amend_reason"]
             return core
         return Inspeximus._tombstone_core(rec)                                                   # tombstone
 
@@ -6835,6 +6919,20 @@ class Inspeximus:
                 _near = (_numt, max(0.0, min(1.0, float(near.get("trust", 1.0)))), max(1e-9, float(near.get("half", 0.25))))
         def _eligible(r: dict) -> bool:
             s = r["status"]
+            if s not in _RECALLABLE:
+                # AN ALLOWLIST, and FIRST, above every other branch. Both halves are the guarantee.
+                #
+                # First, because a denylist below the bitemporal branch is not a gate: placed there,
+                # `recall(as_of=...)` returned provisional records, since that branch returns True
+                # before any status check runs.
+                #
+                # An allowlist, because a denylist only knows the statuses somebody remembered to
+                # add. `discard_provisional()` set status="discarded" and that fell straight through
+                # to `return include_superseded` — a REJECTED record, surfaced by a flag named for
+                # supersession, minutes after the denylist above it was written. A status added next
+                # year is invisible until someone decides it should be visible, which is the safe
+                # default for a store whose job is to not hand back things nobody verified.
+                return False
             if as_of is not None:
                 # Bi-temporal "as of T": a memory counts if it was VALID at time T — valid_from <= T and not yet
                 # invalidated by T — INCLUDING records now superseded (they were current back then). Records
@@ -8162,7 +8260,8 @@ class Inspeximus:
                 "low_source_diversity": low_diversity, "adjudicated": adjudicated,
                 "notes": notes or ["no corroboration yet (claimed)"]}
 
-    def slash(self, ids, scope: str = "source", allow_ambiguous: bool = False) -> dict:
+    def slash(self, ids, scope: str = "source", allow_ambiguous: bool = False,
+              reason: str = "") -> dict:
         """Retroactive standing forfeiture — the accountability lever for a CAUGHT poison. When a memory is
         caught driving a bad outcome (the application detects/attributes it), slash() FORFEITS the entire
         accrued outcome-standing of its SOURCE (scope='source', default — every active memory sharing that
@@ -8253,7 +8352,7 @@ class Inspeximus:
                 # operation sequences, first at op 3. The code already called this mutation legitimate in a
                 # comment; the honest follow-through is to RECORD it, not to stop committing to mtype.
                 # Append-only, so the amendment is itself evidence of when standing was revoked.
-                self._emit_write_receipt(r, amends=("mtype",))
+                self._emit_write_receipt(r, amends=("mtype",), reason=reason)
         if slashed:
             # DURABLE, NOT THROTTLED. `_save()` batches writes on a 5s timer, which is right for a
             # remember() in a hot loop and wrong for the one operation whose whole purpose is to take
@@ -8265,7 +8364,8 @@ class Inspeximus:
             self._save(force=True)
         return {"slashed": len(slashed), "sources": sources, "ids": slashed}
 
-    def restore(self, ids, scope: str = "source", allow_ambiguous: bool = False) -> dict:
+    def restore(self, ids, scope: str = "source", allow_ambiguous: bool = False,
+                reason: str = "") -> dict:
         """Undo a slash() — the safety valve. Detection is imperfect (a self-graded / MINJA-style oracle can be
         tricked into flagging a LEGIT source, so slash() can be WEAPONISED to knock out a rival's memory), so a
         forfeiture must be reversible. When a slashed source is exonerated, restore() recovers its EXACT
@@ -8334,7 +8434,7 @@ class Inspeximus:
                 # Same amendment as slash(): restoring graduation rewrites a COMMITTED field, so without a
                 # new receipt the chain still asserts the slashed mtype and verify_writes() reports tampering
                 # after a legitimate exoneration. slash and restore must be symmetric here.
-                self._emit_write_receipt(r, amends=("mtype",))
+                self._emit_write_receipt(r, amends=("mtype",), reason=reason)
         if restored:
             # Durable for the same reason slash() is: a restore the process can lose leaves the
             # record slashed on disk while every in-memory reader believes it was rehabilitated.
@@ -10374,6 +10474,9 @@ class _TenantView:
     def _acl_write(self, *a, **k):      return Inspeximus._acl_write(self, *a, **k)
     def _acl_note_problem(self, *a, **k): return Inspeximus._acl_note_problem(self, *a, **k)
     def candidates(self, *a, **k):      return Inspeximus.candidates(self, *a, **k)
+    def provisional(self, *a, **k):     return Inspeximus.provisional(self, *a, **k)
+    def confirm(self, *a, **k):         return Inspeximus.confirm(self, *a, **k)
+    def discard_provisional(self, *a, **k): return Inspeximus.discard_provisional(self, *a, **k)
     def promote_candidate(self, *a, **k): return Inspeximus.promote_candidate(self, *a, **k)
     def discard_candidate(self, *a, **k): return Inspeximus.discard_candidate(self, *a, **k)
     def observe(self, *a, **k):         return Inspeximus.observe(self, *a, **k)
