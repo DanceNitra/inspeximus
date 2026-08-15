@@ -193,7 +193,8 @@ def bind_content(bundle: dict, store_items: list) -> dict:
         now = Inspeximus._write_commit(rec)
         # Compare only the fields the bundle actually carries, so a bundle written by an older version
         # (no immutable_sha256) is checked on what it does commit to rather than reported as broken.
-        for field in ("immutable_sha256", "content_sha256", "value_sha256", "attrib_sha256"):
+        for field in ("immutable_sha256", "content_sha256", "value_sha256",
+                      "status_sha256", "attrib_sha256"):
             if field in commit and commit[field] != now.get(field):
                 mismatched.append({"memory_id": mid, "field": field})
                 break

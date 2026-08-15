@@ -160,11 +160,47 @@ _ACL_LOG = logging.getLogger("inspeximus.acl")
 # discarded (a verifier said no), candidate (identity unresolved) -- is invisible until something
 # deliberately adds it here. See _eligible().
 _RECALLABLE = frozenset({"active", "superseded", "hub"})
-# The ONLY committed fields an amendment may forgive. `mtype` is the one field a legitimate
-# in-band operation rewrites (slash/restore revoking or restoring graduation); text+key
-# (immutable_sha256), attribution and the served value bind for the life of the record and no
-# call site in this library ever declares them. Enforced rather than described -- see verify_writes.
-_AMENDABLE = frozenset({"mtype"})
+
+#: Statuses under which a record is WITHHELD from every read path, under any flag. The complement of
+#: this set is what the store will serve, and that distinction -- not the raw status string -- is what
+#: `status_sha256` commits to. See _serving_class().
+_WITHHELD = frozenset({"provisional", "discarded", "candidate"})
+
+
+def _serving_class(rec: dict) -> str:
+    """`withheld` or `served`: will this record ever reach a reader?
+
+    THE COMMITMENT IS ON THE CLASS, NOT THE STATUS, and that is the whole design. `status` is written
+    at fourteen call sites, most of them mechanical and high-volume: consolidation and supersession
+    move dozens of records from `active` to `superseded` in one pass. Committing the raw string would
+    demand an amendment receipt at every one of them -- chain churn proportional to housekeeping, and
+    fourteen chances to miss one and raise a tamper alarm on an honest store.
+
+    Every one of those mechanical transitions stays INSIDE `served`. Only three cross the boundary
+    (confirm, promote_candidate, discard_candidate), and each is a deliberate, low-volume act by
+    someone vouching for a record. So the class costs three amendments instead of fourteen and binds
+    exactly the property the product sells: whether anything vouched for this record before a reader
+    saw it.
+
+    `confirmed_by` rides along in the same hash, so stamping a fabricated reviewer onto a record is
+    caught by the same check as flipping its status.
+    """
+    return "withheld" if (rec.get("status") or "active") in _WITHHELD else "served"
+# The ONLY committed fields an amendment may forgive. Two, and each earns its place by being a
+# field a legitimate in-band operation genuinely rewrites:
+#
+#   mtype          -- slash()/restore() revoking or restoring graduation.
+#   status_sha256  -- confirm(), promote_candidate() and discard_candidate(), the three acts that
+#                     move a record across the withheld/served boundary. Added in 2.10.2 with the
+#                     commitment itself: a field that legitimately changes cannot be bound for life
+#                     the way text+key are, so binding it REQUIRES an amendment path, and the two
+#                     ship together or the first honest confirm() raises a tamper alarm.
+#
+# text+key (immutable_sha256), attribution and the served value bind for the LIFE of the record and
+# no call site in this library ever declares them -- that is the invariant this set protects, and
+# widening it further is a deliberate change to what the chain guarantees, not a parameter.
+# Enforced rather than described: verify_writes intersects with it, _emit_write_receipt raises on it.
+_AMENDABLE = frozenset({"mtype", "status_sha256"})
 _GUARD_KEYSPACES = ("code::symbol::", _ACL_PREFIX)
 
 
@@ -2345,6 +2381,27 @@ class Inspeximus:
                 # receipt is emitted, and no call site rewrites it afterwards (supersession moves `status`,
                 # revert() writes a new record).
                 "value_sha256": _sha256_hex(_canon({"object": rec.get("object")})),
+                # WHETHER THE STORE WILL SERVE IT, since 2.10.2. `status` and `confirmed_by` were in
+                # no commitment at all, so the one edit that changes what a reader sees WITHOUT
+                # touching a committed field had zero coverage. Measured 2026-08-15 with two controls:
+                # flipping a `discarded` record (one a reviewer explicitly REJECTED) to `active` on
+                # disk, and stamping confirmed_by='security-review' on it, left verify_writes,
+                # verify_attribution, verify_bundle and bind_content ALL reporting clean while recall
+                # served the rejected record. The controls fire as they must -- editing `object` is
+                # caught, appending a record is caught -- so insertion and content-edit are both
+                # covered and this was the single uncovered edit.
+                #
+                # A SEPARATE field for the same reason `value_sha256` is one: folding it into an
+                # existing hash would make every receipt ever written mismatch, so an upgrade would
+                # raise a tamper alarm on every honest store. Old receipts simply lack the key and are
+                # checked on what they do commit to, and they cannot be stripped of it either --
+                # the receipt hash covers the whole commit dict.
+                #
+                # UNLIKE value_sha256, this one is AMENDABLE: the class legitimately changes when a
+                # verifier confirms or rejects. See _serving_class for why the class and not the raw
+                # status, and _AMENDABLE for what that costs.
+                "status_sha256": _sha256_hex(_canon({"serving": _serving_class(rec),
+                                                     "confirmed_by": rec.get("confirmed_by")})),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
 
     def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "") -> dict:
@@ -2720,7 +2777,8 @@ class Inspeximus:
                     # cannot be used to strip a field either: the receipt hash covers the whole commit, so
                     # deleting one breaks the chain link.
                     bad = any(rc.get(k) != cc.get(k)
-                              for k in ("immutable_sha256", "mtype", "value_sha256", "attrib_sha256")
+                              for k in ("immutable_sha256", "mtype", "value_sha256",
+                                        "status_sha256", "attrib_sha256")
                               if k not in forgiven and k in rc)
                 elif legacy_strict:
                     # PRE-1.68 receipt, checked STRICTLY: text/key/mtype are one hash here, so the only
@@ -2749,7 +2807,29 @@ class Inspeximus:
                 else:
                     bad = False
                 if bad:
-                    problems.append(f"memory {r['memory_id']}: stored content no longer matches its write receipt (edited after write)")
+                    # SAY WHICH FIELD. Until 2.10.2 every mismatch printed "stored content no longer
+                    # matches", which was true of text and object and actively misleading of the two
+                    # fields added since: an operator told their CONTENT was edited goes and diffs
+                    # text that is byte-identical, finds nothing, and concludes the alarm is noise.
+                    # A message must name the remedy it wants, and the remedy differs -- a text
+                    # mismatch is a rewritten memory, a status_sha256 mismatch is a record made
+                    # visible (or vouched-for) by someone who did not go through confirm().
+                    _WHAT = {"immutable_sha256": "its TEXT or KEY", "mtype": "its TYPE",
+                             "value_sha256": "its VALUE (`object`)",
+                             "status_sha256": "whether the store SERVES it, or who confirmed it",
+                             "content_sha256": "its text/key/type"}
+                    _diff = [k for k, v in rc.items() if k in _WHAT and cc.get(k) != v]
+                    # `content_sha256` is the pre-1.68 COMPOSITE of text+key+mtype, so it co-fires
+                    # with whichever specific hash actually moved. Naming both reads as two findings
+                    # where there is one. Keep it only when it is the only signal -- on a legacy
+                    # receipt that carries nothing finer.
+                    if len(_diff) > 1:
+                        _diff = [k for k in _diff if k != "content_sha256"]
+                    _why = ("; ".join(_WHAT[k] for k in _diff) if _diff
+                            else "a field its receipt commits to")
+                    problems.append(
+                        f"memory {r['memory_id']}: {_why} no longer matches its write receipt "
+                        f"(edited after write)")
             prev = r.get("hash")
         # verify the DELETION-TOMBSTONE chain too — else a forged tombstone could hide a real out-of-band delete
         tprev = _GENESIS
@@ -3175,6 +3255,11 @@ class Inspeximus:
         rec["status"] = "active"
         rec["confirmed_by"] = (str(by).strip() or "unstated")[:120]
         rec["confirmed_at"] = time.time()
+        # A CROSSING: withheld -> served. The amendment is what separates this confirmation from an
+        # attacker editing the same two fields on disk -- and it puts WHO vouched, and why, in the
+        # chain rather than only in the record they could rewrite.
+        self._emit_write_receipt(rec, amends=("status_sha256",),
+                                 reason=f"confirmed by {rec['confirmed_by']}")
         self._save(force=True)
         return {"confirmed": True, "id": mid, "by": rec["confirmed_by"]}
 
@@ -3235,6 +3320,8 @@ class Inspeximus:
         rec["key"] = ck
         rec.pop("candidate_key", None)
         rec.setdefault("meta", {})["promoted_from_candidate"] = True
+        self._emit_write_receipt(rec, amends=("status_sha256",),   # crossing: withheld -> served
+                                 reason=f"candidate promoted to the authoritative value for {ck}")
         self._supersede_by_key(rec)                            # now retires the prior authoritative value
         self._save(force=True)
         after = {r["id"] for r in self.items if r.get("key") == ck and r.get("status") == "active"}
@@ -3252,6 +3339,8 @@ class Inspeximus:
         rec["superseded_ts"] = time.time()
         m = rec.setdefault("meta", {})
         m["superseded_by_policy"] = "candidate_discarded"
+        self._emit_write_receipt(rec, amends=("status_sha256",),   # crossing: withheld -> served
+                                 reason="candidate rejected: " + (basis or "unstated"))
         if basis:
             m["discard_basis"] = basis
         self._save(force=True)
