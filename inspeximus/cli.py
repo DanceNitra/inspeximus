@@ -66,8 +66,11 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False, receipt_
     # this function used to own now live:
     #   RECEIPTS: a store that ALREADY has a receipt chain keeps it. Without this, a plain
     #   `inspeximus remember` against a receipted store opened receipts OFF and the write silently did not
-    #   extend the chain -- so the very next verify_writes() reported a record with no receipt, i.e. the CLI
-    #   quietly punched a hole in the evidence it exists to produce. Detected from the sidecar rather than a
+    #   extend the chain -- so the record ended up covered by no receipt, i.e. the CLI
+    #   quietly punched a hole in the evidence it exists to produce. `verify_attribution` and
+    #   `verify_bundle` report such a record; `verify_writes` does not, because it walks the
+    #   receipts (measured 2026-08-15 -- this comment named verify_writes and was wrong).
+    #   Detected from the sidecar rather than a
     #   flag, because the user who enabled receipts in Python should not have to re-declare them at every
     #   shell call.
     #   ECHO GUARD, matched to the MCP surface. The CLI and `inspeximus-mcp` are documented as sharing one

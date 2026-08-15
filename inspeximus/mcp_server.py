@@ -198,7 +198,10 @@ _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
 #   and it beats a real add-based system (mem0 0.57) at the answer level. INSPEXIMUS_ECHO_GUARD=0 disables it.
 #   RECEIPTS: a store that ALREADY has a .receipts.json sidecar keeps them on. This server read
 #   INSPEXIMUS_RECEIPTS alone, so an MCP write against a receipted store did not extend the chain and the
-#   next verify_writes() reported an uncovered record -- the CLI defect, one surface over. Enabling receipts
+#   record was then covered by no receipt. Note WHICH verifier says so: `verify_attribution` and
+#   `verify_bundle` report it; `verify_writes` does NOT -- it walks the receipts and never looks at a
+#   record no receipt names (measured 2026-08-15; this comment said verify_writes and was wrong).
+#   Same defect as the CLI had, one surface over. Enabling receipts
 #   on a store that has no sidecar is still opt-in, so nothing is created unasked.
 # INSPEXIMUS_OBSERVE_RECALL (opt-in, default off): persist the recall->write window this server already
 # watches, as an OBSERVATION (`recall_window`), never as claimed lineage. 2.2.0 added the capability to the
