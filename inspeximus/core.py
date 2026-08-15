@@ -860,7 +860,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.10.1"
+__version__ = "2.10.2"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.

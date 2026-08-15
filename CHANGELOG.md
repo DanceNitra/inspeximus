@@ -3,6 +3,117 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.10.2 - UPGRADE IF YOU RELY ON verify_writes() AS TAMPER-EVIDENCE, OR USE for_tenant() ON A SHARED STORE. Seven ways a file-level attacker or a co-tenant beat the verifiers.
+
+**Who should upgrade: anyone who relies on `verify_writes()` as tamper-evidence, and anyone using
+`for_tenant()` on a shared store.** Every finding below was confirmed by execution with a positive
+control, by an adversarial pass run against 2.10.1 the day it shipped. Two of them were holes in
+2.10.1's own fixes, found within the hour.
+
+**Two behaviour changes, both deliberate:**
+
+* `capacity=` is now **per-tenant** on a handle from `for_tenant()`, not per-store. See below.
+* `erasure_certificate()` now **raises** on a tenant-bound handle instead of returning one.
+
+### A record no receipt NAMES was not a checked record
+
+`verify_writes()` walked the receipts and looked each one's record up, so a record present in the
+store that no receipt mentions was never examined — not unchecked, *uncounted*. The attacker holds
+no key and forges nothing: they **append**, and the check was built to notice editing.
+
+```
+append one JSON object to the store file
+verify_writes -> (True, [])        and recall served the fabricated memory
+CONTROL: edit an existing record   -> (False, ['... no longer matches its write receipt'])
+```
+
+`verify_attribution()` was the one surface that caught it, and one word defeated that too: its
+sweep is `status == "active"`, while `as_of()` and `history()` serve `superseded`. The new sweep
+runs over **every** status. It also closes **receipt truncation** — dropping the trailing receipt
+let that record's text and value be rewritten freely, because nothing named it any more.
+
+`coverage_strict=False` for the honest case this fires on: a store that enabled receipts part-way.
+
+### Whether the store SERVES a record is committed
+
+`status` and `confirmed_by` were in no commitment, so the one edit that changes what a reader sees
+without touching a committed field had **zero** coverage. Flip a record a reviewer explicitly
+REJECTED (`discard_provisional`) back to `active`, stamp `confirmed_by: security-review`, and all
+four verifiers reported clean while recall served it. That is the whole point of 2.10.0's
+provisional queue, undone by a disk edit.
+
+The commitment is on the **serving class** (`withheld`/`served`), not the raw status string.
+`status` is written at fourteen call sites, most of them mechanical — committing the string would
+demand an amendment receipt at every one. Only three cross the boundary (`confirm`,
+`promote_candidate`, `discard_candidate`), each a deliberate act of vouching. Measured: eight
+mechanical supersessions emit **zero** amendments; one `confirm()` emits one, carrying *who*
+vouched into the chain rather than only into the record an attacker could rewrite.
+
+### A retired record cannot come back
+
+The hole in the fix above, found the same hour: the serving class folds `active` and `superseded`
+together on purpose, so **swapping the two statuses on disk** served the corrected-away value as
+current and hid the correction, with every verifier clean. Closed with `retires` in the receipt —
+the ids a write retired. A fact about the *write*, so it binds for life, needs no amendment, and
+adds no receipts.
+
+**Honest limit, and it is in the code:** this catches resurrection, not *concealment*. Demoting the
+current record to hide it still passes, because closing that needs `consolidate()` and capacity
+eviction to declare their retirements, and they emit no receipt at all.
+
+### Tenant isolation: the fixes 2.10.1 shipped were incomplete
+
+2.10.1 rebound six private helpers that a tenant view was forwarding to the unbound parent. Three
+more were found, and the enumeration itself was the defect — a denylist by omission:
+
+* **`_evict_to_capacity` — the one that DELETES.** On a shared store at `capacity=10`, one tenant
+  writing five of its *own* records hard-deleted five of another's, through `forget()`, with a
+  tombstone naming no cause, and the victim was told nothing. It had been *declared* store-wide on
+  the reasoning that capacity is a property of the file; that reasoning was wrong. **Capacity is now
+  per-tenant on a bound handle** — a shared cap any tenant can spend on another's records is not a
+  cap, it is a delete primitive.
+* **`_emit_tombstone`** — so tombstones now carry a tenant stamp, and `erasure_report()` /
+  `governance_report()` filter on it. Before: a tenant read every other tenant's erasure record,
+  including `request_id` strings and the free-text `auth.basis`. Measured payload:
+  `"gdpr_art17 request by jane.doe@globex.example, DOB 1984-03-02"`. Operator-authored text naming
+  data subjects, read across a tenant boundary, on the compliance surface. Tombstones written before
+  this release have no stamp and are **withheld and counted** on a bound handle, never withheld
+  silently.
+* **`_resolve_subject`** — cross-tenant erasure does *not* reproduce today, because its only callers
+  are rebound. Rebound anyway: that safety is a property of the call graph, not of the method.
+
+The structural test now keys on `self.tenant` rather than on which collection a helper reads. A
+private method that consults it is making a tenant decision, and forwarded to the parent it always
+reads `None`.
+
+### `erasure_certificate()` is operator-only
+
+It shipped the full tombstone chain from genesis **on purpose**, so a third party can re-derive it —
+which meant a tenant-bound handle could issue a certificate scoped to another tenant's request id.
+You cannot scope the chain (`prev` breaks) and you cannot redact `request_id` or `auth` (both are
+inside the committed hash). A scoped certificate is not a narrower certificate, it is a broken one,
+so a bound handle now raises with that reason instead of quietly returning one.
+
+### Also
+
+* An **encrypted store accepted a plaintext substitute**: opening a plaintext file *with* a key
+  succeeded, served the substituted records, and re-encrypted them under the real key on the next
+  save. Both directions of the mismatch are errors now.
+* `erasure_audit()` from a tenant view **could not return a pass** — it cross-checked tenant-scoped
+  records against store-wide receipts, so it reported `residue_found` 100% of the time, listing the
+  other tenants' entire live id set, with nobody having erased anything. It now reports the check as
+  *unchecked* in `limits`.
+* **Retention asked "is it served", not "is it stored".** A `discarded` PII record was invisible to
+  `compliance_check` and `retention_sweep` while its plaintext sat in the file. `superseded` PII is
+  still not swept — it is the prior half of a correction — but it is now *reported* rather than
+  silently omitted.
+* A stored memory could **forge the hook's own header** and open a second, trusted-looking block in
+  the model's context. All four Claude Code injection sites now sanitise structure, not just length.
+* `verify_writes()` mismatch messages **name the field**. "stored content no longer matches" sent an
+  operator to diff text that was byte-identical.
+* Three comments in the shipped code claimed `verify_writes` reports something it does not. Measured
+  and corrected, because the next reader would have trusted them.
+
 ## 2.10.1 - UPGRADE IF ANY TWO PROCESSES SHARE ONE STORE FILE. Concurrent saves could corrupt it.
 
 **Who should upgrade: everyone, and urgently if more than one process writes one store.** That
