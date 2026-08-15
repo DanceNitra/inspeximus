@@ -50,6 +50,7 @@ import os
 import random as _random
 import re
 import threading
+import tempfile
 import time
 import uuid
 from pathlib import Path
@@ -1019,6 +1020,175 @@ def evaluate_applicability(source, stored_environment=None, current_environment=
     if reasons:
         return {"status": "REVALIDATE", "reasons": sorted(reasons)}
     return {"status": "MATCH", "reasons": []}
+
+
+def _lock_primitive():
+    """Resolve the platform lock module ONCE, at import.
+
+    This was inside _StoreLock.__init__, so every save re-entered the import machinery. Profiling the
+    identity-gate probe: 14,000 saves, 19.3 s in importlib -- more than the fsync it was there to
+    accompany, and the entire reason two 90-second probes started overrunning a 180 s CI timeout. The
+    platform does not change between saves; a per-instance import can only ever re-answer the same
+    question. (I assumed the cost was the lock itself and optimised the handle first; that bought
+    2.6 ms/save while this was sitting in the profile the whole time. Measure, then fix.)
+    """
+    try:
+        import fcntl
+        return ("fcntl", fcntl)
+    except ImportError:
+        pass
+    try:
+        import msvcrt
+        return ("msvcrt", msvcrt)
+    except ImportError:
+        return (None, None)
+
+
+_LOCK_PRIMITIVE = _lock_primitive()
+
+
+class _StoreLock:
+    """A real inter-process lock around the read-modify-write of one store file.
+
+    `_file_sig` is a TOCTOU CHECK, not a lock: it is read before the write and cannot cover the write
+    itself, so it detects a competing writer only when that writer already finished. It never made the
+    write atomic against one running concurrently.
+
+    Measured 2026-08-15, 6 processes x 40 honest `open -> remember -> flush` on one 2.94 MB store:
+    156 JSON tears, 21 of 240 writes landing, and the store left permanently unparseable -- which the
+    (correct) refusing loader turns into a total outage. This is not hypothetical: three of this
+    project's own hook stores corrupted in ten days, the main one silently dead for two days, because
+    Claude Code fires the PreToolUse/PostToolUse hooks concurrently for parallel tool calls.
+
+    The OS releases the lock when the holder dies, so a killed process cannot wedge the store -- the
+    property an O_EXCL lockfile does not have. Best-effort: if the platform primitive is unavailable
+    the lock degrades to a no-op rather than failing the write, because a store that cannot save is a
+    worse outcome than one that races.
+
+    NOT re-entrant. Windows byte-range locks are per-handle, so a second _StoreLock on the SAME path
+    inside the first would deadlock against itself. `_durable_replace` therefore does not lock; only
+    its two callers do, and they lock different files.
+    """
+
+    #: One cached (threading.Lock, open file handle) per lock path, for the life of the process.
+    #: Re-opening the lock file on EVERY save cost ~2 ms; measured 2026-08-15, the round trip took the
+    #: save path from 3.7 to 8.2 ms and pushed two 90-second probes past a 180 s CI timeout, which is
+    #: how the cost was noticed at all. The handle is cheap to hold and the OS still releases the lock
+    #: if the process dies.
+    #:
+    #: The threading.Lock is NOT redundant. Byte-range locks are per-HANDLE on Windows, so two threads
+    #: sharing one cached handle would not block each other -- caching the handle without it would
+    #: have traded a cross-process race for an in-process one.
+    _CACHE: dict = {}
+    _CACHE_GUARD = threading.Lock()
+
+    __slots__ = ("_path", "_fh", "_locker", "_tl")
+
+    def __init__(self, path):
+        # The lock lives in the SYSTEM TEMP DIR, keyed by a hash of the resolved store path -- NOT
+        # beside the store. A first version put `<store>.lock` next to it and the erasure-residue
+        # scanner immediately counted 6 files where the docs promise 3: inspeximus scans data
+        # directories for DSAR residue, so dropping new files into one is not free, and a user should
+        # not have to clean up after a lock. It carries no content (it is opened, never written), so
+        # nothing about it is data.
+        #
+        # The tradeoff, stated: two users on one machine share the temp dir and therefore the lock,
+        # which is what we want; two machines sharing a network mount do not -- but flock/LockFile
+        # over SMB/NFS is unreliable anyway, so a co-located file would not have bought that either.
+        h = hashlib.sha256(os.path.abspath(str(path)).encode("utf-8", "replace")).hexdigest()[:16]
+        self._path = os.path.join(tempfile.gettempdir(), f"inspeximus-{h}.lock")
+        self._fh = None
+        self._tl = None
+        self._locker = _LOCK_PRIMITIVE
+
+    def __enter__(self):
+        kind, mod = self._locker
+        if kind is None:
+            return self
+        with _StoreLock._CACHE_GUARD:
+            ent = _StoreLock._CACHE.get(self._path)
+            if ent is None:
+                ent = (threading.Lock(), None)
+                _StoreLock._CACHE[self._path] = ent
+        self._tl = ent[0]
+        self._tl.acquire()                   # in-process first: one handle, so the OS lock cannot
+        deadline = time.time() + 20.0        # separate two threads of ours
+        while True:
+            try:
+                fh = _StoreLock._CACHE[self._path][1]
+                if fh is None or fh.closed:
+                    fh = open(self._path, "a+b")
+                    _StoreLock._CACHE[self._path] = (self._tl, fh)
+                if kind == "fcntl":
+                    mod.flock(fh.fileno(), mod.LOCK_EX)
+                else:
+                    fh.seek(0)
+                    mod.locking(fh.fileno(), mod.LK_LOCK, 1)
+                self._fh = fh
+                return self
+            except OSError:
+                _StoreLock._CACHE[self._path] = (self._tl, None)
+                if time.time() >= deadline:
+                    return self              # degrade to unlocked rather than lose the write
+                time.sleep(0.05)
+
+    def __exit__(self, *exc):
+        kind, mod = self._locker
+        try:
+            if self._fh is not None:
+                try:
+                    if kind == "fcntl":
+                        mod.flock(self._fh.fileno(), mod.LOCK_UN)
+                    elif kind == "msvcrt":
+                        self._fh.seek(0)
+                        mod.locking(self._fh.fileno(), mod.LK_UNLCK, 1)
+                except OSError:
+                    pass                     # the handle stays cached; the next acquire re-opens it
+                self._fh = None
+        finally:
+            if self._tl is not None:
+                self._tl.release()
+                self._tl = None
+        return False
+
+
+def _durable_replace(path, payload, encoding: str = "utf-8") -> None:
+    """Write `payload` to a UNIQUE temp beside `path`, fsync it, then os.replace onto `path`.
+
+    Two defects, one line apart, both measured:
+
+      * A FIXED temp name (the store name plus ".tmp") is shared by every writer, so two processes
+        wrote into the same file at overlapping offsets and os.replace promoted the BLEND. The tear
+        signature is a blend, not a truncation -- one recovered store ended with two closing brackets.
+        A unique name per write eliminated it outright: 156 tears -> 0 over the same 240 writes.
+      * No fsync, so os.replace could publish a name pointing at unflushed bytes; a crash between the
+        two leaves a valid-looking empty or partial store.
+
+    os.replace is retried: on Windows it raises PermissionError when a reader has the target open,
+    which cost ~19 of 240 writes in the measurement even after the temp name was made unique.
+    """
+    d = os.path.dirname(os.path.abspath(str(path))) or "."
+    fd, tmp = tempfile.mkstemp(prefix=os.path.basename(str(path)) + ".", suffix=".tmp", dir=d)
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(payload if isinstance(payload, bytes) else payload.encode(encoding))
+            f.flush()
+            os.fsync(f.fileno())
+        last = None
+        for attempt in range(40):
+            try:
+                os.replace(tmp, path)
+                return
+            except PermissionError as e:            # Windows: a reader holds the target open
+                last = e
+                time.sleep(0.01 * (attempt + 1))
+        raise last
+    finally:
+        if os.path.exists(tmp):
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
 
 
 class Inspeximus:
@@ -4142,9 +4312,11 @@ class Inspeximus:
         """Write via a temp file + os.replace. The sidecars used plain write_text, so a crash or a competing
         writer mid-write could leave a TRUNCATED receipt/tombstone chain — i.e. the evidence file corrupt
         while the store itself was fine, which is the worst way round."""
-        tmp = path.with_name(path.name + ".tmp")
-        tmp.write_text(text, encoding="utf-8")
-        os.replace(tmp, path)
+        # The same fixed-temp-name defect the store itself had, on the EVIDENCE files --
+        # receipts and tombstones -- where a tear is worse: the chain breaks and
+        # verify_writes reports the store TAMPERED when it was only raced.
+        with _StoreLock(path):
+            _durable_replace(path, text)
 
     _ABSENT = ("absent",)          #: sentinel: the file did not exist when we looked
 
@@ -10178,27 +10350,29 @@ class Inspeximus:
                 [{k: v for k, v in r.items() if k != "vec"} for r in rows]
             # Atomic write: a partial/interleaved write can't corrupt the store (crash- and
             # concurrent-writer-safe — last writer wins, never a torn JSON file).
-            if self._file_sig is not None and self._stat_sig() != self._file_sig:
-                # Another handle wrote this file since we loaded or last saved it. Writing now replaces its
-                # records with ours -- measured: B's committed, flush()ed record erased by A's next save,
-                # with verify_writes() still True on both sides because each chain was self-consistent.
-                # inspeximus is a SINGLE-WRITER store; refuse rather than lose the other writer's work.
-                raise StoreChangedOnDisk(
-                    f"{self.path} changed on disk since this handle loaded it (another process or another "
-                    f"Inspeximus() on the same path). Saving would erase its records. Call reload() to merge "
-                    f"the two and retry, or give each writer its own store file.")
-            # allow_nan=False: a caller-supplied NaN/Infinity was written as a bare literal, which
-            # Python re-reads but every STRICT JSON parser (jq, JS, Rust/serde) rejects — so the
-            # store silently stopped being valid JSON for the audit bundle and any non-Python reader,
-            # while state_digest and verify_writes both still reported healthy.
-            data = _dump_store(slim)
-            tmp = self.path.with_name(self.path.name + ".tmp")
-            if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
-                key = self._resolve_key()                         # sets self._enc_salt on first save
-                tmp.write_bytes(_encrypt_blob(key, data.encode("utf-8"), self._enc_salt))
-            else:
-                tmp.write_text(data, encoding="utf-8")
-            os.replace(tmp, self.path)
+            # ONE critical section for the check AND the write. Split apart, the window
+            # between them is exactly the race the check exists to report.
+            with _StoreLock(self.path):
+                if self._file_sig is not None and self._stat_sig() != self._file_sig:
+                    # Another handle wrote this file since we loaded or last saved it. Writing now replaces its
+                    # records with ours -- measured: B's committed, flush()ed record erased by A's next save,
+                    # with verify_writes() still True on both sides because each chain was self-consistent.
+                    # inspeximus is a SINGLE-WRITER store; refuse rather than lose the other writer's work.
+                    raise StoreChangedOnDisk(
+                        f"{self.path} changed on disk since this handle loaded it (another process or another "
+                        f"Inspeximus() on the same path). Saving would erase its records. Call reload() to merge "
+                        f"the two and retry, or give each writer its own store file.")
+                # allow_nan=False: a caller-supplied NaN/Infinity was written as a bare literal, which
+                # Python re-reads but every STRICT JSON parser (jq, JS, Rust/serde) rejects — so the
+                # store silently stopped being valid JSON for the audit bundle and any non-Python reader,
+                # while state_digest and verify_writes both still reported healthy.
+                data = _dump_store(slim)
+                if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
+                    key = self._resolve_key()                         # sets self._enc_salt on first save
+                    payload = _encrypt_blob(key, data.encode("utf-8"), self._enc_salt)
+                else:
+                    payload = data
+                _durable_replace(self.path, payload)
             # record the embed recipe the persisted vectors were made with (only when vectors are actually
             # persisted) so a later open with a different recipe re-embeds instead of silently mismatching.
             # embed_id None means THIS opener has no recipe (e.g. a lexical hook run on a semantic store) —

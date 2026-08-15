@@ -292,6 +292,19 @@ KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
 #: 150 probes to buy margin for one.
 _SLOW_PROBES = {
     "reinforce_accuracy_ablation.py": 600,   # 173.8s idle; LoCoMo corpora x 2, bootstrap CIs
+    # 2.10.1 made every store save durable (unique temp + fsync + inter-process lock), which is what
+    # stops six concurrent writers blending one store into an unparseable file. These two probes each
+    # perform ~14,000 full-store writes, so they pay the guarantee 14,000 times: measured on an idle
+    # box, 46.2s -> 66.1s and 83.6s -> 91.7s, with 20.4s of that squarely in nt.fsync. Both passed
+    # alone and both failed the release run at 24-way parallelism -- the load-average failure this
+    # table already exists to prevent. The cost is the feature; the probes are outliers in how often
+    # they trigger it.
+    #
+    # (A first pass blamed the lock and cached its file handle for 2.6 ms/save. The profile then
+    # showed 19.3s in importlib: `import msvcrt` was inside the lock's __init__ and ran on every
+    # save. Both are fixed, and the residue below is fsync alone.)
+    "identity_gate_supersession_probe.py": 400,     # 66.1s idle
+    "recall_iterative_surface_multihop.py": 400,    # 91.7s idle
 }
 _DEFAULT_PROBE_TIMEOUT = 180
 
