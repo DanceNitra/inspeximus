@@ -4690,7 +4690,15 @@ class Inspeximus:
         b = self._acl_resolve_by(by)
         kind, value, token = Inspeximus._acl_selector(scope, tag, key, ids)
         k = self._acl_key(b, a, kind, token)
+        # `self._items`, not `self.items`, in the five siblings' company -- and this one lacked the
+        # tenant predicate they all carry (_acl_grants_for :4551, _acl_match :4584, can_read :4653,
+        # grants :4672, grant_log :4692). So `was_granted` answered a yes/no question about ANOTHER
+        # tenant's grants: revoke('bob', tag='roadmap') returned True iff the victim had granted
+        # exactly that, one bit per probe, and the probe landed in the ATTACKER's tenant so the
+        # victim's own grant_log never moved. The oracle is minor; "five filter and one does not" is
+        # the drift the items chokepoint exists to end.
         was = any(r.get("key") == k and r.get("status") == "active"
+                  and (self.tenant is None or r.get("tenant") == self.tenant)
                   and ((r.get("meta") or {}).get("acl") or {}).get("state") == "granted"
                   for r in self._items)
         out = self._acl_write(a, b, kind, value, token, "revoked", note)
@@ -6160,6 +6168,21 @@ class Inspeximus:
         chain = []
         for r in self.items:
             if r.get("key") != key or r.get("object") is None:
+                continue
+            # THE SAME ALLOWLIST recall() uses, for the same reason. The router is the SECOND read
+            # path and it never got the gate: with no status filter, a `provisional` row nobody has
+            # confirmed -- or a `discarded` one a verifier explicitly REJECTED -- contributed its
+            # object to the version chain and, being written later, became chain[-1], i.e. "the
+            # current value". Measured 2026-08-15: with a discarded db-EVIL in the chain, the
+            # genuine correction route()d to {"action":"noop","note":"value already current"} and
+            # was never written -- permanently, 3/3 retries -- while the store kept serving db-7.
+            # An authorized absolute restore likewise returned ok:true, burned its single-use nonce
+            # and changed nothing; and a discarded row was itself a valid restore TARGET, so a
+            # rejected value could be made active.
+            #
+            # An allowlist, not a denylist, for the reason `_eligible` already records: `discarded`
+            # was born after the denylist would have been written, and the next status will be too.
+            if r.get("status") not in _RECALLABLE:
                 continue
             m = r.get("meta") or {}
             if m.get("echo_blocked") or m.get("objectless_blocked"):
@@ -8652,7 +8675,8 @@ class Inspeximus:
                                              .read_text(encoding="utf-8"))
                 except Exception:
                     self._cusum = {}
-        return self._cusum
+        # Tenant-scoped: a bound handle must not read or spend another tenant's bucket.
+        return self._cusum if self.tenant is None else _TenantBucket(self._cusum, self.tenant)
 
     def _save_cusum(self):
         if self.path:
@@ -8756,7 +8780,8 @@ class Inspeximus:
                         f"deliberately if you intend to reset it.") from None
                 except BaseException:
                     self._irrev = {}
-        return self._irrev
+        # Tenant-scoped: a bound handle must not read or spend another tenant's bucket.
+        return self._irrev if self.tenant is None else _TenantBucket(self._irrev, self.tenant)
 
     def _save_budget(self):
         if self.path:
@@ -8877,9 +8902,21 @@ class Inspeximus:
         """Audit view of the per-source lifetime irreversible-influence budget (spend_irreversible): for every
         source that has spent anything, its cumulative spent / remaining / whether it is exhausted. Read-only."""
         B = self._budget_state()
-        return {s: {"spent": round(float(v), 4), "remaining": round(max(0.0, float(budget) - float(v)), 4),
-                    "exhausted": float(v) >= float(budget)}
-                for s, v in sorted(B.items())}
+        out = {}
+        for s, v in sorted(B.items()):
+            row = {"spent": round(float(v), 4),
+                   "remaining": round(max(0.0, float(budget) - float(v)), 4),
+                   "exhausted": float(v) >= float(budget)}
+            # An UNBOUND (operator) handle reads the raw store-global dict, whose keys are now
+            # "<tenant>\0<source>". Unpack that into a field rather than printing the separator: the
+            # scoping fix must not turn the operator's audit view into mojibake, and "who spent it"
+            # is exactly what the victim's own report could not tell them before.
+            if self.tenant is None and "\u0000" in s:
+                t, s = s.split("\u0000", 1)
+                row["tenant"] = t
+                s = f"{t}/{s}"
+            out[s] = row
+        return out
 
     def _effective_value(self, r: dict, now: float) -> float:
         """Recall weight = stored value decayed by time since last access, at the memory's TYPE
@@ -10477,6 +10514,74 @@ def _value_clash(a: str, b: str) -> bool:
     return _tokens(_NUM.sub("", a)) == _tokens(_NUM.sub("", b))   # identical apart from the one value
 
 
+class _TenantBucket:
+    """A tenant-scoped view over one of the store-global sidecar dicts (CUSUM, irreversible budget).
+
+    Both sidecars were keyed by the bare canonical source and shared store-wide, while the safety
+    guard reading them (`_peers`, from `_tenant_rows()`) was tenant-SCOPED. Tenancy therefore
+    DISARMED the guard. Measured 2026-08-15 with a positive control: the AmbiguousSubject collision
+    guard fires correctly when both records sit in one tenant, and is silent when the identical pair
+    is split across two -- so an attacker spends the victim's irreversible budget to exhaustion
+    through the shared bucket. No source-guessing is required on a shared SaaS host, where every
+    Notion URL canonicalizes to `notionso`. The counter is monotonic by design (no refund path), and
+    the victim's own report shows the spend with no attribution, so it cannot tell it was attacked.
+    The same bucket drives monitor()'s CUSUM, so a victim reporting a GOOD outcome can be made to
+    raise a poison alarm against itself.
+
+    A view rather than rewritten call sites: the accesses are `B.get(s, 0.0)`, `B[s] = ...` and
+    `.items()` in the reports, spread over two methods and two report surfaces. Prefixing inside one
+    object keeps every caller honest by construction, which is the same argument the `items` property
+    chokepoint already won.
+
+    An UNBOUND handle gets the raw dict: an operator auditing the whole store should see the whole
+    store, and existing single-tenant sidecar files keep working unchanged (their keys are bare).
+    """
+
+    __slots__ = ("_d", "_p")
+
+    def __init__(self, d: dict, tenant: str):
+        self._d = d
+        self._p = f"{tenant}\u0000"
+
+    def _k(self, k):
+        return self._p + str(k)
+
+    def get(self, k, default=None):
+        return self._d.get(self._k(k), default)
+
+    def __getitem__(self, k):
+        return self._d[self._k(k)]
+
+    def __setitem__(self, k, v):
+        self._d[self._k(k)] = v
+
+    def __delitem__(self, k):
+        del self._d[self._k(k)]
+
+    def __contains__(self, k):
+        return self._k(k) in self._d
+
+    def __iter__(self):
+        n = len(self._p)
+        return (k[n:] for k in self._d if k.startswith(self._p))
+
+    def __len__(self):
+        return sum(1 for _ in iter(self))
+
+    def keys(self):
+        return list(iter(self))
+
+    def items(self):
+        n = len(self._p)
+        return [(k[n:], v) for k, v in self._d.items() if k.startswith(self._p)]
+
+    def values(self):
+        return [v for _, v in self.items()]
+
+    def setdefault(self, k, default=None):
+        return self._d.setdefault(self._k(k), default)
+
+
 class _TenantView:
     """A logically-isolated view over a shared Inspeximus store (see Inspeximus.for_tenant). It carries its OWN `tenant`
     but forwards EVERY other attribute to the parent store, so all data + config are shared by reference (one
@@ -10506,7 +10611,7 @@ class _TenantView:
     #: by default. That is the whole point: the previous version forwarded EVERYTHING, and 54 of 79 public
     #: methods reached the parent as tenant=None (admin) — `A.history(B_key)` returned B's plaintext.
     _STORE_LEVEL = frozenset({
-        "flush", "reload", "reembed", "anchor", "witness", "ratify", "admit",
+        "flush", "reload", "reembed", "anchor", "witness",
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
         "verify_attribution", "register_erasure_target", "explain_growth",
         # `verify_attestations` is store-level for a REASON, not by resemblance to its neighbours above.
@@ -10521,8 +10626,8 @@ class _TenantView:
         # which is the same bar `merkle_root`/`inclusion_proof` are listed under below. It is still swept
         # by the tenant and agent leak tests, not exempted.
         "verify_attestations",
-        "detect_split_view", "check_self_narration", "classify_reversion",
-        "restore_intent", "revert_intent", "revert_capability",
+        "detect_split_view", "check_self_narration",
+        "revert_capability",
         # `believed_at` is NOT store-level: it is a read surface that returns a record's plaintext as of a
         # timestamp, so it is rebound on the view below and scoped like every other read.
         # A pure static scorer: it reads the record dict handed to it and touches no rows, so it has no
@@ -10590,6 +10695,28 @@ class _TenantView:
     # tenant-sensitive surface: rebound so `self` is the VIEW (its tenant), state stays the parent's
     def apply_retention(self, *a, **k):       return Inspeximus.apply_retention(self, *a, **k)
     def shred(self, *a, **k):                 return Inspeximus.shred(self, *a, **k)
+    # ratify / admit / classify_reversion were classified _STORE_LEVEL and are not: each reads record
+    # rows and returns or mutates record content. Measured by execution 2026-08-15 -- acme.ratify(globex_id,
+    # "reproduction", "mallory") appended to globex's row on disk and lifted its grade to "verified";
+    # acme.admit(victim_text) returned globex's id and similarity, and an admit that SUCCEEDED from a
+    # tenant view wrote its row with tenant=None, so the writer could never see its own memory again;
+    # classify_reversion returned another tenant's current AND superseded object values.
+    # revert_intent / restore_intent were _STORE_LEVEL as well, so they were parent-bound TWICE over
+    # -- the classification and the un-rebound helper both. restore_intent embeds the matching record's
+    # id in the string it mints, so a non-empty `@<id>` segment CONFIRMS a guessed object value in
+    # another tenant and an empty one denies it. Measured: guessing 120000 and 250000 both returned an
+    # id; 999999 and 42 returned none.
+    def revert_intent(self, *a, **k):       return Inspeximus.revert_intent(self, *a, **k)
+    def restore_intent(self, *a, **k):      return Inspeximus.restore_intent(self, *a, **k)
+    # The sidecar STATE accessors. Rebinding _TenantBucket inside them was not enough: both names are
+    # private, so __getattr__ forwarded them to the parent and they ran with tenant=None -- the scoping
+    # branch was live code that a tenant view could never reach. The same private-surface defect as
+    # _route_chain, one floor up, found by re-running the attack after the "fix".
+    def _cusum_state(self, *a, **k):        return Inspeximus._cusum_state(self, *a, **k)
+    def _budget_state(self, *a, **k):       return Inspeximus._budget_state(self, *a, **k)
+    def ratify(self, *a, **k):              return Inspeximus.ratify(self, *a, **k)
+    def admit(self, *a, **k):               return Inspeximus.admit(self, *a, **k)
+    def classify_reversion(self, *a, **k):  return Inspeximus.classify_reversion(self, *a, **k)
     def grade(self, *a, **k):                 return Inspeximus.grade(self, *a, **k)
     def erasure_certificate(self, *a, **k):   return Inspeximus.erasure_certificate(self, *a, **k)
     def sleep(self, *a, **k):           return Inspeximus.sleep(self, *a, **k)
@@ -10684,6 +10811,30 @@ class _TenantView:
     def reopened(self, *a, **k):        return Inspeximus.reopened(self, *a, **k)
     def resolve_reopened(self, *a, **k): return Inspeximus.resolve_reopened(self, *a, **k)
     def support_challenge_for(self, *a, **k): return Inspeximus.support_challenge_for(self, *a, **k)
+    # PRIVATE HELPERS THAT READ RECORDS, rebound so they run scoped. `__getattr__` forwards every
+    # underscore name to the PARENT, which is tenant=None -- so a public method rebound here could still
+    # read the whole store through an un-rebound helper it calls. Measured 2026-08-15 by executing it:
+    # `route()` is rebound, but `_route_key`/`_route_chain` were not, so acme.route("go back to the very
+    # first payout") returned globex's value AND wrote it into acme; in reverse, a value acme planted on
+    # globex's key became globex's own current value on its next route(). `revert_challenge` is rebound,
+    # but `_current_active_id` was not, so it handed out another tenant's record id.
+    #
+    # The public surface already fails CLOSED here (an unclassified public name raises). The private
+    # surface failed OPEN, one line above it in the same __getattr__. `test_no_unrebound_private_reads_
+    # records` is what keeps these two halves in step; add a helper there and it goes red.
+    #
+    # NOT rebound, deliberately: _save / _load_from_disk / _atomic_write / _evict_to_capacity are
+    # properties of the whole store file -- a tenant does not have its own capacity or its own bytes.
+    def _current_active_id(self, *a, **k): return Inspeximus._current_active_id(self, *a, **k)
+    def _route_chain(self, *a, **k): return Inspeximus._route_chain(self, *a, **k)
+    def _route_key(self, *a, **k): return Inspeximus._route_key(self, *a, **k)
+    def _retired_values(self, *a, **k): return Inspeximus._retired_values(self, *a, **k)
+    def _latest_superseded_object(self, *a, **k): return Inspeximus._latest_superseded_object(self, *a, **k)
+    def _narrow_to_subject(self, *a, **k): return Inspeximus._narrow_to_subject(self, *a, **k)
+    def _erasure_collisions(self, *a, **k): return Inspeximus._erasure_collisions(self, *a, **k)
+    def _erasure_preview(self, *a, **k): return Inspeximus._erasure_preview(self, *a, **k)
+    def _resolve_read_conflicts(self, *a, **k): return Inspeximus._resolve_read_conflicts(self, *a, **k)
+    def _nonce_consumed(self, *a, **k): return Inspeximus._nonce_consumed(self, *a, **k)
     def _current_active(self, *a, **k): return Inspeximus._current_active(self, *a, **k)
     def _tenant_rows(self, *a, **k):    return Inspeximus._tenant_rows(self, *a, **k)
     # Later tenant-sensitive additions. Reached through __getattr__ these run PARENT-bound, so `self.tenant`
