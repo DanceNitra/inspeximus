@@ -169,6 +169,36 @@ class DeletionManifest:
         if sorted(manifest.get("residual_targets") or []) != recomputed_leaks:
             problems.append(f"`residual_targets` is {manifest.get('residual_targets')!r} but the entries say "
                             f"{recomputed_leaks!r}")
+        # THE ENTRIES MUST COVER THE TARGETS THE HEADER NAMES. Recomputing the verdict from the
+        # entries closed the "signed lie" hole and opened a quieter one: a PREFIX OF A HASH CHAIN IS
+        # A VALID HASH CHAIN. Delete the trailing entry -- the one recording the target where the
+        # subject's data is still present -- and the recomputation now runs over evidence that says
+        # everything was clean, so `complete` reads True and `residual_targets` reads [] and verify()
+        # returns (True, []). Measured 2026-08-15 on a SIGNED, key-pinned manifest.
+        #
+        # `targets` is inside `_header_hash`, so it cannot be trimmed to match: doing both breaks
+        # entry 0's link ("broken chain link", measured). That is what makes this check sufficient
+        # rather than merely another recomputation from truncatable evidence.
+        #
+        # Recomputing from evidence you have not counted is the same defect the docstring above
+        # records as fixed, one level down.
+        _declared = list(manifest.get("targets") or [])
+        _seen: dict = {}
+        for x in entries:
+            _seen[x.get("target")] = _seen.get(x.get("target"), 0) + 1
+        _missing = [t for t in _declared if t not in _seen]
+        _dupes = sorted(t for t, n in _seen.items() if n > 1)
+        _extra = sorted(t for t in _seen if _declared and t not in _declared)
+        if _missing:
+            problems.append(
+                f"{len(_missing)} declared target(s) have NO entry: {_missing} -- the manifest was "
+                f"TRUNCATED. A prefix of a hash chain is a valid hash chain, so the verdict was "
+                f"recomputed over evidence that is missing exactly the targets it would have failed on.")
+        if _dupes:
+            problems.append(f"target(s) audited more than once: {_dupes} -- one entry per target, or "
+                            f"the verdict depends on which copy is read")
+        if _extra:
+            problems.append(f"entries audit target(s) the header does not declare: {_extra}")
         # The header must be what the chain was seeded with. A pre-1.83 manifest seeded at genesis instead;
         # that is accepted only when asked for, and never silently, because "this manifest predates the
         # binding" and "this manifest was repointed at someone else" look identical from the outside.
