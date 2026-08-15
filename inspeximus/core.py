@@ -9493,6 +9493,86 @@ class Inspeximus:
                 "redundant_frac": round(redundant / max(1, len(sample)), 3), "sampled": len(sample),
                 "retired_on_arrival": sum(retired.values()), "retired_by_policy": retired}
 
+    def _resolve_state_toggle(self, a: dict, b: dict, active: list, dup_threshold: float,
+                              by_id: dict) -> tuple:
+        """Two similar records CONTRADICT each other. Which one wins, or does neither?
+
+        THE ONE PLACE THAT DECIDES, because there used to be two and they disagreed. `consolidate()`
+        had all three protections; `consolidate_clusters()` reimplemented the same resolution with
+        NONE of them, and `sleep()` -- the documented idle call, and an MCP tool -- calls
+        consolidate_clusters unconditionally. So a user who turned on the hardening flags precisely
+        because they feared single-shot poison had them on the path they call explicitly and off the
+        path that runs on idle.
+
+        Measured 2026-08-15 on one corpus, same store, same flags:
+
+            consolidate()          supersede_requires_corroboration=True -> honest fact ACTIVE
+            sleep()                supersede_requires_corroboration=True -> honest fact SUPERSEDED
+            consolidate()          supersede_persistence=3               -> honest fact ACTIVE
+            sleep()                supersede_persistence=3               -> honest fact SUPERSEDED
+            consolidate()          back-filled record (older valid_from) -> correctly retired
+            sleep()                back-filled record                    -> RETIRED THE CURRENT ONE
+            consolidate()          refused overturn -> reopened=True, queue length 2
+            sleep()                refused overturn -> reopened=None,  queue length 0
+
+        Four divergences, not one. Copying the corroboration `if` across would have closed a quarter
+        of it and left a fix that reads complete -- which is why this is an extraction rather than a
+        patch: a guard added here in a year cannot land on one path only.
+
+        Returns ("toggled", older) or ("linked", None). The caller counts and, on "toggled", checks
+        whether its own anchor was the record retired.
+        """
+        # VALIDITY time, not ingest order. A fact learned LATE about an EARLIER state must not
+        # overwrite the genuinely-current one just because it arrived later. The cluster path used
+        # `a["ts"] <= b["ts"]`, so a back-filled record retired the current value -- the exact
+        # inversion this rule exists to prevent.
+        _vf = lambda r: r.get("valid_from", r["ts"])
+        older, newer = (a, b) if _vf(a) <= _vf(b) else (b, a)
+
+        # Fast-novelty guard (opt-in): supersede only on a CORROBORATED contradiction -- earned
+        # credit, or the same bar as graduation. An uncorroborated single contradiction is recorded
+        # as a link but does not override a standing fact.
+        if self.supersede_requires_corroboration and not self._graduation_corroborated(newer, by_id):
+            a["links"].append(b["id"])
+            # FAIL LOUD, not just fail safe. BOTH records, because both survive a refused overturn
+            # and because picking one made the flag depend on sort order.
+            for _r, _o in ((older, newer), (newer, older)):
+                self._flag_contested(_r, "uncorroborated_contradiction",
+                                     _o.get("object"), {"contested_by": _o["id"]})
+            return ("linked", None)
+
+        # Persistence (CUSUM) guard: supersede only once the NEW state is asserted by
+        # >= supersede_persistence independent records. An isolated poison flip stays below it.
+        if self.supersede_persistence > 1:
+            nvec = self._qvec(newer["text"])
+            support = sum(
+                1 for r in active if r["status"] == "active"
+                and self._similarity(newer["text"], r, nvec) >= dup_threshold
+                and not _value_clash(newer["text"], r["text"])
+                and not _negation_clash(newer["text"], r["text"])
+                and (_value_clash(older["text"], r["text"]) or _negation_clash(older["text"], r["text"])))
+            if support < self.supersede_persistence:
+                a["links"].append(b["id"])
+                for _r, _o in ((older, newer), (newer, older)):
+                    self._flag_contested(_r, "insufficient_persistence", _o.get("object"),
+                                         {"contested_by": _o["id"], "support": support,
+                                          "required": self.supersede_persistence})
+                return ("linked", None)
+
+        older["status"] = "superseded"
+        older["superseded_ts"] = time.time()
+        older["invalidated_at"] = _vf(newer)      # bi-temporal: when it stopped being current
+        om = older.setdefault("meta", {})
+        om["superseded_by_toggle"] = newer["id"]
+        om["superseded_by_policy"] = ("toggle_corroborated" if self.supersede_requires_corroboration
+                                      else ("toggle_persistence" if self.supersede_persistence > 1
+                                            else "state_toggle"))
+        # Accuracy loop: being OVERTURNED is a was-wrong signal -- debit the superseded claim, credit
+        # the one that corrected the record.
+        older["bad"] = float(older.get("bad", 0) or 0) + 1.0
+        newer["good"] = float(newer.get("good", 0) or 0) + 1.0
+        return ("toggled", older)
+
     def consolidate(self, keep: int | None = None, dup_threshold: float = 0.82,
                     hub_coverage: float = 0.12, link_duplicates: bool = True) -> dict:
         """The dream pass. ADDS a derived layer (status + links); never edits raw text. Three steps:
@@ -9574,91 +9654,17 @@ class Inspeximus:
                         continue
                     if self._similarity(a["text"], b, avec) >= dup_threshold:
                         if _negation_clash(a["text"], b["text"]) or _value_clash(a["text"], b["text"]):
-                            # Resolve by VALIDITY time (valid_from = when the fact is TRUE), not ingest order
-                            # (ts = when it was stored). A fact learned LATE about an EARLIER state (e.g. a
-                            # back-filled record) must NOT overwrite the genuinely-current one just because it
-                            # arrived later. valid_from defaults to ts, so ingest-ordered streams are unchanged;
-                            # only out-of-order arrivals (the bi-temporal case) flip vs the old ts rule.
-                            _vf = lambda r: r.get("valid_from", r["ts"])
-                            older, newer = (a, b) if _vf(a) <= _vf(b) else (b, a)
-                            # Fast-novelty guard (opt-in): supersede only on a CORROBORATED contradiction
-                            # (earned credit, or >=2 links — same bar as graduation). An uncorroborated
-                            # single contradiction is recorded as a link but does NOT override a standing
-                            # fact (resists single-shot poison flips). Default OFF -> legacy fast behavior.
-                            if self.supersede_requires_corroboration and not                                     self._graduation_corroborated(newer, _by_id):
-                                # The SAME predicate as graduation and the influence gate, which is what
-                                # the comment above always claimed and what the code did not do. It used
-                                # to read `len(newer["links"]) >= 2` -- a raw LINK COUNT. That required
-                                # neither distinct sources nor verified keys, so it was strictly weaker
-                                # than the bar it named, and `strict_corroboration = True` did not touch
-                                # it at all: measured, an attacker with ONE source string and two filler
-                                # links overturned a standing fact with strict corroboration ON, while
-                                # the graduation bar rejected the identical shape. Asked directly by
-                                # yun520-1 (DeepSeek-V3#1462) whether corroboration here is counted from
-                                # the forgeable dimension; it was counted from something weaker still.
-                                a["links"].append(b["id"]); linked += 1
-                                # FAIL LOUD, not just fail safe. Refusing the overturn is only half the
-                                # job: a consumer calling plain recall() used to see the correct live
-                                # value and nothing else, because the only trace was an extra UNLABELLED
-                                # link -- indistinguishable from any other link. The same substrate
-                                # already flags contested records via observe() -> reopened(), so one of
-                                # its two contradiction paths simply was not using its own fail-loud
-                                # channel. Measured before this change: under_review=None on the blocked
-                                # path, under_review=True on the observe() path, identical situation.
-                                # Raised by yun520-1 (DeepSeek-V3#1466) asking whether a surviving live
-                                # value tells the reader a retraction arrived. It did not.
-                                # The cost is stated rather than hidden: the default is noisier now,
-                                # because every refused single-source claim marks the record it targeted.
-                                # BOTH records, because both survive a refused overturn and because
-                                # picking one made the flag depend on sort order: `older` is decided by
-                                # `_vf`, and two writes in the same clock tick tie, so it fell back to
-                                # the `-value` sort -- reachable by an attacker. Measured on 2.1.1: a
-                                # boosted contradiction moved the flag onto the ATTACKER's record and
-                                # left a plain recall() of the surviving value showing under_review=None.
-                                for _r, _o in ((older, newer), (newer, older)):
-                                    self._flag_contested(_r, "uncorroborated_contradiction",
-                                                         _o.get("object"), {"contested_by": _o["id"]})
+                            # ONE resolution, shared with consolidate_clusters(). It lived here as an
+                            # inlined block and the cluster path had its own copy with none of the
+                            # three guards; the copies are gone so a future guard cannot land on one
+                            # path only. See _resolve_state_toggle for the four measured divergences.
+                            _verdict, _older = self._resolve_state_toggle(
+                                a, b, active, dup_threshold, _by_id)
+                            if _verdict == "linked":
+                                linked += 1
                                 continue
-                            # Persistence (CUSUM) guard: supersede only once the NEW state is asserted by
-                            # >= supersede_persistence independent records (the change has persisted). Count
-                            # active records that (i) match newer's value/polarity and (ii) contradict older —
-                            # an isolated poison flip stays below the threshold and is merely linked.
-                            if self.supersede_persistence > 1:
-                                nvec = self._qvec(newer["text"])
-                                support = sum(
-                                    1 for r in active if r["status"] == "active"
-                                    and self._similarity(newer["text"], r, nvec) >= dup_threshold
-                                    and not _value_clash(newer["text"], r["text"])
-                                    and not _negation_clash(newer["text"], r["text"])
-                                    and (_value_clash(older["text"], r["text"]) or _negation_clash(older["text"], r["text"])))
-                                if support < self.supersede_persistence:
-                                    a["links"].append(b["id"]); linked += 1
-                                    # The second guard reaching this same refusal. 2.1.1 gave the flag
-                                    # to the corroboration guard only, so a store hardened with
-                                    # persistence alone still refused overturns SILENTLY.
-                                    for _r, _o in ((older, newer), (newer, older)):
-                                        self._flag_contested(_r, "insufficient_persistence",
-                                                             _o.get("object"),
-                                                             {"contested_by": _o["id"],
-                                                              "support": support,
-                                                              "required": self.supersede_persistence})
-                                    continue
-                            older["status"] = "superseded"
-                            older["superseded_ts"] = time.time()
-                            older["invalidated_at"] = _vf(newer)   # bi-temporal: when this record stopped being current
-                            om = older.setdefault("meta", {})
-                            om["superseded_by_toggle"] = newer["id"]
-                            om["superseded_by_policy"] = ("toggle_corroborated" if self.supersede_requires_corroboration
-                                                          else ("toggle_persistence" if self.supersede_persistence > 1
-                                                                else "state_toggle"))
-                            # Accuracy loop, live consumer: being OVERTURNED by a later contradiction is
-                            # a was-wrong signal — debit the superseded claim, credit the one that
-                            # corrected the record. So the consolidation pass continuously feeds each
-                            # memory's reliability from real outcomes, not just external scoring.
-                            older["bad"] = float(older.get("bad", 0) or 0) + 1.0
-                            newer["good"] = float(newer.get("good", 0) or 0) + 1.0
                             toggled += 1
-                            if older is a:
+                            if _older is a:
                                 break                # this anchor is gone; advance to the next
                         else:
                             a["links"].append(b["id"]); linked += 1
@@ -9732,6 +9738,10 @@ class Inspeximus:
         clusters = [[r for r in c if not Inspeximus._is_session_bookkeeping(r)]
                     for c in self._cluster_active(cluster_sim)]
         fired = linked = toggled = staled = 0
+        # The population the persistence guard counts support in, and the id map the corroboration
+        # guard resolves links through. Computed once: both are store-wide questions, not per-cluster.
+        _live = [r for r in self.items if r.get("status") == "active"]
+        _by_id = {r["id"]: r for r in self.items}
         for members in clusters:
             if len(members) < threshold:
                 continue                              # sparse — leave the raw episodes alone
@@ -9746,13 +9756,16 @@ class Inspeximus:
                         continue
                     if self._similarity(a["text"], b, avec) >= dup_threshold:
                         if _negation_clash(a["text"], b["text"]) or _value_clash(a["text"], b["text"]):
-                            older, newer = (a, b) if a["ts"] <= b["ts"] else (b, a)
-                            older["status"] = "superseded"; older["superseded_ts"] = time.time()
-                            om = older.setdefault("meta", {})
-                            om["superseded_by_toggle"] = newer["id"]
-                            om["superseded_by_policy"] = "state_toggle"
+                            # ONE resolution, shared with consolidate(). This loop used to inline its
+                            # own -- ts ordering, no corroboration guard, no persistence guard, no
+                            # fail-loud flag -- and sleep() runs THIS one.
+                            _verdict, _older = self._resolve_state_toggle(
+                                a, b, _live, dup_threshold, _by_id)
+                            if _verdict == "linked":
+                                linked += 1
+                                continue
                             toggled += 1
-                            if older is a:
+                            if _older is a:
                                 break
                         else:
                             a["links"].append(b["id"]); linked += 1
