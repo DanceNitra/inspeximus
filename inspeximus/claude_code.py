@@ -325,6 +325,47 @@ def _excerpt(s, n=180):
     return (s[:n] + "…") if len(s) > n else s
 
 
+#: The literal strings this module prints to mark ITS OWN output. A record that reproduces one of
+#: them is claiming to be the hook, not content the hook is quoting.
+_OUR_HEADERS = (
+    "[inspeximus] relevant project memory (deterministic, corrections already applied):",
+    "[inspeximus] this project's current known files (mechanics, latest state only):",
+    "[inspeximus] before this action:",
+    "decisions/rules (what we concluded, and why):",
+    "curated knowledge (from memory):",
+    "recent mechanics (files/commands):",
+)
+
+
+def _injected(s, n=480):
+    """Render stored text for a block that is FED TO THE MODEL AS CONTEXT.
+
+    Until 2.10.1 three of the four injection sites printed `it['text']` raw. Newlines survived, so a
+    single record reproduced the hook's own header byte-for-byte and opened a second, forged block
+    beneath the genuine one -- with no marker between them, and claiming a higher trust class than
+    the record actually had (a `knowledge` record rendering as `decisions/rules`). The framing
+    sentence the real header carries, "deterministic, corrections already applied", is precisely what
+    tells the model not to second-guess what follows.
+
+    The write path is wide open by design: `capture()` stores Write/Edit `new_string` verbatim, so any
+    file the agent writes -- including one it fetched from the web -- can plant the payload. Treat
+    every stored string as hostile content, because ours literally is third-party text.
+
+    Three things, in order, and each is load-bearing:
+      * collapse newlines, so one record can only ever be one line and cannot open a block;
+      * neutralise a leading `[inspeximus]` and any of our own header strings, so it cannot claim to
+        BE the hook (`_excerpt` alone does not do this -- it was written for length, not for trust);
+      * bound the length, so a record cannot push the real context out of the window.
+    """
+    out = _excerpt(s, n)
+    for h in _OUR_HEADERS:
+        if h in out:
+            out = out.replace(h, "[quoted] " + h.lstrip("["))
+    if out.lstrip().startswith("[inspeximus]"):
+        out = "[quoted] " + out.lstrip()[len("[inspeximus]"):].lstrip()
+    return out
+
+
 # ── one-time, opt-out star nudge (shown ONCE after inspeximus has proven its worth) ─────────────────────
 _NUDGE_AFTER = 25   # writes before the (single) star ask fires — a milestone of demonstrated value
 
@@ -593,13 +634,13 @@ def recall(ev):
         # typing. The block is a POINTER -- the subject plus the head of the `because` is what makes an
         # agent stop and go read the record, and the full text is one `recall` away. Measured: 18,032
         # bytes unbounded against ~4 KB at this cap, on the same eight decisions.
-        out += [f"  * {_excerpt(d['text'], 480)}" for d in decisions]
+        out += [f"  * {_injected(d['text'], 480)}" for d in decisions]
     if knowledge:
         out.append("curated knowledge (from memory):")
-        out += [f"  = {k['text']}" for k in knowledge]
+        out += [f"  = {_injected(k['text'])}" for k in knowledge]
     if mechanics:
         out.append("recent mechanics (files/commands):")
-        out += [f"  - {mm['text']}" for mm in mechanics]
+        out += [f"  - {_injected(mm['text'])}" for mm in mechanics]
     if out:
         print("[inspeximus] relevant project memory (deterministic, corrections already applied):\n" + "\n".join(out))
     _maybe_nudge(cwd)   # visible slot: UserPromptSubmit stdout is shown to the user
@@ -650,7 +691,7 @@ def session_start(ev):
     files = [it for it in getattr(m, "items", []) if "file" in (it.get("tags") or [])
              and it.get("status") != "superseded"][:int(cfg["files"])]
     if files:
-        lines = "\n".join(f"- {it['text']}" for it in files)
+        lines = "\n".join(f"- {_injected(it['text'])}" for it in files)
         block = f"[inspeximus] this project's current known files (mechanics, latest state only):\n{lines}"
         print(block[:int(cfg["files_max_chars"])])
     # once-a-day, opt-out "newer version exists" courtesy (stdout is injected as context here)
