@@ -94,6 +94,44 @@ You cannot scope the chain (`prev` breaks) and you cannot redact `request_id` or
 inside the committed hash). A scoped certificate is not a narrower certificate, it is a broken one,
 so a bound handle now raises with that reason instead of quietly returning one.
 
+### The idle path ran a second copy of the supersession rules, with none of the guards
+
+`consolidate()` protects its state-toggle path three ways: a corroboration guard, a persistence
+guard, and a fail-loud `reopened` flag on a refused overturn. `consolidate_clusters()` reimplemented
+that resolution and had **none** of them — and `sleep()`, the documented idle call and an MCP tool,
+calls it unconditionally. So the hardening flags a security-conscious user turns on were live on the
+path they call explicitly and dead on the path that runs unattended.
+
+| same corpus, same flags | `consolidate()` | `sleep()` |
+|---|---|---|
+| `supersede_requires_corroboration=True` | honest fact **active** | honest fact **superseded** |
+| `supersede_persistence=3` | honest fact **active** | honest fact **superseded** |
+| a back-filled record (older `valid_from`) | correctly retired | **retired the current one** |
+| a refused overturn | `reopened` queue = 2 | queue = 0 |
+
+Four divergences, so the fix is an extraction rather than a patch: `_resolve_state_toggle` is the one
+place that decides, both loops call it, and a source-level test fails if a second copy reappears. The
+bi-temporal one was the worst — ordering by ingest time instead of validity time does not skip a
+guard, it *inverts* the rule.
+
+Precondition, stated: the cluster must be ripe (≥15 similar members).
+
+### Two evidence artifacts defeated by deleting part of them
+
+* **A truncated deletion manifest reports itself complete.** `verify()` recomputes `complete` and
+  `residual_targets` from the entries — and a prefix of a hash chain is a valid hash chain. Drop the
+  trailing entry, the one recording the target where the subject's data is *still present*, and the
+  recomputation runs over evidence that says everything was clean: `complete: True`,
+  `residual_targets: []`, `verify -> (True, [])`, on a signed, key-pinned manifest. Entries must now
+  cover the targets the header declares. `targets` is inside the header hash, so trimming it to match
+  breaks the chain instead.
+* **An amnesiac witness co-signs a rollback.** `Witness.__init__` swallowed a broken state file and
+  continued with no memory, while the module's own docstring says that memory *is* the guarantee.
+  A file that exists but does not parse now raises. Deletion needs more than that — a deleted file
+  and a first run are the same bytes — so `strict=True` makes first contact with a store an explicit
+  `bootstrap(store_id)`. Default off, because a witness pool that refuses every new store on upgrade
+  is worse than the attack.
+
 ### Also
 
 * An **encrypted store accepted a plaintext substitute**: opening a plaintext file *with* a key
