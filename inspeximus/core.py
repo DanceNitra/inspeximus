@@ -4274,6 +4274,23 @@ class Inspeximus:
                 except Exception as e:                                # wrong key / tampered / truncated -> never
                     raise ValueError("cannot decrypt store (wrong key/passphrase, or the file was tampered)") from e
                 #                                                       silently return [] (would risk overwriting real data)
+            elif self._encrypted:
+                # SYMMETRY. The branch above refuses an encrypted file opened without a key; this one
+                # used to ACCEPT a plaintext file opened WITH one. Measured 2026-08-15: substituting a
+                # plaintext JSON file under an encrypted store's path opened without error, served the
+                # attacker's records, and the next save re-encrypted them under the real key -- after
+                # which the substituted content is indistinguishable from genuine data. verify_writes()
+                # does complain, but never names the real problem, and the caller who ASKED for
+                # encryption is never told they got plaintext.
+                #
+                # The encrypted branch itself is sound: a corrupt file that keeps the magic is correctly
+                # refused. Only the dispatch was one-directional. Both mismatches must be errors.
+                raise ValueError(
+                    f"the store at {self.path} is NOT encrypted, but this handle was opened with "
+                    f"encrypt_key=/encrypt_passphrase=. Refusing to read it: a plaintext file under an "
+                    f"encrypted store's path is a substitution, and saving would re-encrypt the "
+                    f"substituted content under your key. Move the file aside if you meant to migrate "
+                    f"it, or open it without a key to read it as plaintext.")
             else:
                 try:
                     self._items = json.loads(raw.decode("utf-8"))    # legacy plaintext JSON
@@ -5043,8 +5060,22 @@ class Inspeximus:
                      + (": the origin was erased, this derivative was not" if deliberate else ""),
                      None if deliberate else "origin absent, but no erasure request accounts for it")
 
-        # a receipted write whose record is gone must be accounted for by SOME tombstone
-        if getattr(self, "_receipts", None):
+        # A receipted write whose record is gone must be accounted for by SOME tombstone.
+        #
+        # NOT FROM A TENANT VIEW. `by_id` is built from `self.items` (tenant-SCOPED) and cross-checked
+        # against `self._receipts` (store-WIDE), so every OTHER tenant's live record looks like a
+        # receipted write that vanished without a tombstone. Measured 2026-08-15: on any receipted
+        # multi-tenant store a tenant's erasure_audit() returned `residue_found` 100% of the time --
+        # with nobody having erased anything at all -- and the residue list was precisely the other
+        # tenants' complete live id set. Two harms in one: a compliance verdict that CANNOT return a
+        # pass, and an enumeration of every id in the store.
+        #
+        # Tombstones carry no tenant field (they are hashed by `_tombstone_core`, which has no such
+        # key), so the check cannot be scoped correctly yet. A check that cannot see its target must
+        # report UNCHECKED, never `residue` -- rule #12, and the reason it is in `limits` rather than
+        # silently dropped.
+        _tenant_bound = getattr(self, "tenant", None) is not None
+        if not _tenant_bound and getattr(self, "_receipts", None):
             for mid in {rc.get("memory_id") for rc in self._receipts}:
                 if mid not in by_id and mid not in tombs:
                     _add(True, "tombstone_gap", mid,
@@ -5099,6 +5130,11 @@ class Inspeximus:
             "parentage: it is reported as dangling_recall_window and counted separately in coverage, and it "
             "must not be read as lineage",
         ]
+        if _tenant_bound:
+            limits.append(
+                "tombstone_gap NOT CHECKED: this handle is bound to a tenant, and receipts are "
+                "store-wide, so every other tenant's live record would read as a gap. Run "
+                "erasure_audit() from an unbound (operator) handle for that check.")
         if values:
             # Word boundaries alone are NOT enough: plain \b lets 'UTC' fire inside 'UTC-8', reporting a
             # DIFFERENT, longer value as recovered. So the match must not continue across - / : + or an

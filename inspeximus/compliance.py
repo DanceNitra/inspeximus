@@ -184,20 +184,66 @@ def compliance_check(store, require_receipts: bool = True, max_pii_age_days: flo
             violations.append({"code": "not_append_only", "article": "Art. 12/19",
                                "detail": "history is not an append-only extension of the pinned anchor: " + "; ".join(probs)})
 
+    limits: list = []
     if max_pii_age_days is not None:
         checked.append("pii_retention")
         now = now_ts if now_ts is not None else time.time()
         cutoff = now - float(max_pii_age_days) * 86400.0
         tv = getattr(store, "tenant", None)
         stale = [r["id"] for r in getattr(store, "items", [])
-                 if r.get("status") == "active" and r.get("pii")
+                 if _still_stored(r) and r.get("pii")
                  and (tv is None or r.get("tenant") == tv) and (r.get("ts") or 0) < cutoff]
         if stale:
             violations.append({"code": "pii_over_retention", "article": "GDPR Art. 5(1)(e)",
-                               "detail": f"{len(stale)} active PII record(s) older than {max_pii_age_days} days "
+                               "detail": f"{len(stale)} stored PII record(s) older than {max_pii_age_days} days "
                                          "— storage-limitation breach; run forget_pii()"})
+        # The half a sweep will NOT touch. Named, so "no violations" cannot be read as "no stored PII
+        # past its window": superseded PII is still stored, and only forget_pii()/forget_subject()
+        # reach it. Silence here is what turned a clean verdict into a false one.
+        held = [r["id"] for r in getattr(store, "items", [])
+                if _stored_but_not_sweepable(r) and r.get("pii")
+                and (tv is None or r.get("tenant") == tv) and (r.get("ts") or 0) < cutoff]
+        if held:
+            limits.append(f"{len(held)} SUPERSEDED PII record(s) are also older than {max_pii_age_days} "
+                          "days. Their content is on disk, but a retention sweep does not erase them "
+                          "because they are the prior half of a correction history. Use forget_pii() "
+                          "or forget_subject() if the policy requires them gone.")
 
-    return {"ok": not violations, "violations": violations, "checked": checked}
+    return {"ok": not violations, "violations": violations, "checked": checked, "limits": limits}
+
+
+#: Statuses whose content is on disk AND which a retention sweep may erase without destroying
+#: anything another guarantee depends on.
+#:
+#: Until 2.10.1 the three retention paths asked `status == "active"`. A `discarded` PII record -- one
+#: a verifier explicitly REJECTED, so nobody is watching it -- was therefore invisible to detection
+#: while its plaintext sat in the file: measured 2026-08-15, with only such a record present,
+#: retention_sweep found 0 eligible and compliance_check returned ok with zero violations and
+#: Art. 5(1)(e) marked CHECKED, while the email address and the SSN were readable on disk. The
+#: remedy the check itself names, forget_pii(), would have cleaned it -- forget_pii never filtered on
+#: status -- so the defect was detection, not disposal.
+#:
+#: `superseded` is deliberately NOT here, and the first version of this fix got that wrong. Its
+#: content is equally on disk, but a superseded row is the load-bearing half of a correction: it is
+#: what history(), the receipt chain and every supersession guarantee are made of. Sweeping it is a
+#: real product decision with audit consequences, not a bug fix, so it is REPORTED as uncovered
+#: rather than silently swept or silently ignored -- a check must not claim coverage it does not
+#: have.
+_SWEEPABLE_STATUSES = frozenset({"active", "provisional", "discarded"})
+
+
+def _still_stored(r: dict) -> bool:
+    """Is this record's personal data in the file AND safe for a retention sweep to erase?
+
+    An allowlist, for the reason the recall path already learned: `discarded` was born after any
+    denylist here would have been written, and the next status will be too.
+    """
+    return (r.get("status") or "active") in _SWEEPABLE_STATUSES
+
+
+def _stored_but_not_sweepable(r: dict) -> bool:
+    """On disk, but erasing it would destroy a correction history. Reported, never swept."""
+    return (r.get("status") or "active") == "superseded"
 
 
 def retention_sweep(store, max_age_days: float, now_ts: float | None = None, pii_only: bool = True,
@@ -212,7 +258,7 @@ def retention_sweep(store, max_age_days: float, now_ts: float | None = None, pii
     cutoff = now - float(max_age_days) * 86400.0
     tv = getattr(store, "tenant", None)
     ids = [r["id"] for r in getattr(store, "items", [])
-           if r.get("status") == "active" and (r.get("pii") if pii_only else True)
+           if _still_stored(r) and (r.get("pii") if pii_only else True)
            and (tv is None or r.get("tenant") == tv) and (r.get("ts") or 0) < cutoff]
     out = {"eligible": len(ids), "ids": ids, "cutoff_ts": cutoff, "applied": False, "erased": 0,
            "request_id": None}
