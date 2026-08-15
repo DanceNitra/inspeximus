@@ -42,12 +42,43 @@ CORE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 # Private helpers that are store-wide by nature: a tenant does not have its own capacity, its own
 # bytes on disk, or its own embedding matrix. Every entry is a decision, not an oversight.
 _STORE_WIDE_PRIVATE = {
-    "__init__", "_save", "_load_from_disk", "_atomic_write", "_evict_to_capacity",
+    "__init__", "_save", "_load_from_disk", "_atomic_write",
     "_vec_matrix", "_null_context",
+    # `_evict_to_capacity` WAS here, declared store-wide on the reasoning that capacity is a property
+    # of the file. That reasoning was wrong and the test did its job by forcing the decision into
+    # writing where it could be read and refuted: on a shared store at capacity=10, one tenant writing
+    # five of its own records hard-deleted five of another's, through forget(), silently. A helper
+    # that DELETES across a security boundary is not store-wide however the cap is defined. Capacity
+    # is now per-tenant on a bound handle -- a shared cap any tenant can spend on another's records is
+    # a delete primitive, not a cap.
     # The two sidecar WRITERS persist the whole store-global dict on purpose; only the READERS
     # (_cusum_state / _budget_state) are per-tenant, and both are rebound.
     "_save_cusum", "_save_budget",
+    # `_flush_tombstones` persists the WHOLE chain to its sidecar, the way _save_cusum does; the file
+    # is one file and writing it is not a tenant act.
+    "_flush_tombstones",
+    # `_merkle_leaves` feeds anchor()/witness(), which are already declared store-level: an anchor is
+    # a commitment over the whole log and a scoped one would not verify -- the same either/or as
+    # erasure_certificate. Store-wide on purpose, not for want of scoping.
+    "_merkle_leaves",
 }
+
+
+#: What makes a private helper TENANT-SENSITIVE, and therefore something that must run with a tenant.
+#:
+#: This started as `self.items|self._items` -- "reads records". Too narrow, twice, and each time the
+#: gap was found by an attack rather than by the rule:
+#:   * `_cusum_state` / `_budget_state` read a per-tenant SIDECAR, not records.
+#:   * `_emit_tombstone` writes a tombstone, and reads `self.tenant` to stamp it.
+#: So the detector was widened twice by adding whatever the last miss touched, which is a denylist by
+#: omission -- exactly what let a seventh helper through.
+#:
+#: `self.tenant` is the general predicate: a private method that consults it is MAKING A TENANT
+#: DECISION, and forwarded to the parent it will always read None and decide as admin. There is no
+#: way to make that decision correctly while un-rebound. The collection patterns stay as a second
+#: net for helpers that filter rows without naming `tenant` directly.
+_TENANT_SENSITIVE = (r"self\.tenant\b|self\._tenant_rows\b"
+                     r"|self\.items|self\._items|self\._cusum\b|self\._irrev\b|self\._tombstones\b")
 
 
 def _toy(text: str):
@@ -122,6 +153,36 @@ def test_admit_does_not_name_another_tenants_record(pair):
     assert r.get("duplicate_of") != gid and r.get("id") != gid, f"globex's id leaked: {r}"
 
 
+def test_one_tenants_write_does_not_evict_anothers_records():
+    """THE ONE THAT DELETES, and the seventh instance of this class found in a day.
+
+    It was not missed -- it was DECLARED store-wide in `_STORE_WIDE_PRIVATE` above, on the reasoning
+    that capacity is a property of the file. Measured refutation: on a shared store at capacity=10,
+    globex writing five of its OWN records hard-deleted five of acme's, through forget(), with a
+    tombstone naming no cause, and acme was told nothing. The declaration was the defect; the test
+    forcing it into writing is what made it refutable.
+    """
+    s = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), capacity=10)
+    acme, globex = s.for_tenant("acme"), s.for_tenant("globex")
+    for i in range(10):
+        acme.remember(f"acme record number {i} about its own business", key=f"a{i}")
+    assert len(acme.items) == 10
+    for i in range(5):
+        globex.remember(f"globex record number {i} about other business", key=f"g{i}")
+    assert len(acme.items) == 10, "another tenant's ordinary write deleted acme's records"
+    assert len(globex.items) == 5
+
+
+def test_capacity_still_bounds_a_single_tenant():
+    """The must-not-vacuum control. Scoping the evictor must not disable it -- a cap that never
+    evicts would pass the test above for the wrong reason."""
+    s = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), capacity=10)
+    acme = s.for_tenant("acme")
+    for i in range(18):
+        acme.remember(f"acme record number {i} about its own business", key=f"a{i}")
+    assert len(acme.items) <= 10, f"the cap stopped biting: {len(acme.items)} rows"
+
+
 # --------------------------------------------------------------------------- the structural rule
 def test_no_unrebound_private_helper_reads_records():
     """THE test. The five above pin the instances; this one closes the class.
@@ -141,7 +202,7 @@ def test_no_unrebound_private_helper_reads_records():
             body = inspect.getsource(fn)
         except OSError:
             continue
-        if re.search(r"self\.items|self\._items|self\._cusum\b|self\._irrev\b", body):
+        if re.search(_TENANT_SENSITIVE, body):
             offenders.append(name)
     assert offenders == [], (
         "these private helpers read records but are neither rebound on _TenantView nor declared "

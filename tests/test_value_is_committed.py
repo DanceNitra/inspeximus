@@ -32,8 +32,14 @@ def _store(**kw):
     return Inspeximus(path=os.path.join(tempfile.mkdtemp(), "m.json"), receipts=True, **kw)
 
 
-def _pre_182_commit(rec):
-    """Exactly what 1.81.0 committed: no `value_sha256`."""
+def _pre_182_commit(rec, *_later_args):
+    """Exactly what 1.81.0 committed: no `value_sha256`.
+
+    `*_later_args` swallows arguments the CALLER gained after 1.81 (2.10.2 passes `retires`). The
+    point of this double is the SHAPE OF THE COMMIT DICT it returns, not the arity of the function
+    -- an old version could not have received those arguments at all. Without this, adding a
+    parameter to `_write_commit` breaks seven tests that have nothing to say about it.
+    """
     return {"id": rec["id"],
             "content_sha256": _sha256_hex(_canon({"text": rec.get("text"), "key": rec.get("key"),
                                                   "mtype": rec.get("mtype")})),

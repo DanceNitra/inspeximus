@@ -2282,14 +2282,15 @@ class Inspeximus:
         # over from an earlier call would be read as this call's, and a stale signal is worse than none --
         # the caller would test a field that answers about a different write.
         self.last_write = {"id": mid, "key": key, "status": "active", "blocked": False, "policy": None}
-        if key is not None and not _is_candidate:
-            self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
+        _retired: list = []            # a keyless write retires nothing; bound here so the receipt
+        if key is not None and not _is_candidate:   # below always has a value to commit
+            _retired = self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
             #                                                  a candidate (low identity_confidence) never supersedes
         if self.capacity is not None:
             self._evict_to_capacity(protect_id=mid)          # bounded working set (opt-in) BEFORE persisting
         self._save(force=True)        # a new memory is real content - persist immediately, not throttled
         if self.receipts_enabled:
-            self._emit_write_receipt(rec)
+            self._emit_write_receipt(rec, retires=_retired)
         return mid
 
     def _evict_to_capacity(self, protect_id: str | None = None) -> None:
@@ -2343,7 +2344,7 @@ class Inspeximus:
 
     # ── write receipts (OPT-IN: tamper-evident write history) ─────────────────
     @staticmethod
-    def _write_commit(rec: dict) -> dict:
+    def _write_commit(rec: dict, retires=()) -> dict:
         """What a receipt commits to for a stored memory: its id, a hash of its content-bearing fields, AND a hash
         of its ATTRIBUTION (canonical sources = own source + inherited derived_from taint). Binding attribution into
         the receipt is what makes a later RELABEL detectable: k, the influence budget, the influence gate and slash
@@ -2388,8 +2389,10 @@ class Inspeximus:
                 # disk, and stamping confirmed_by='security-review' on it, left verify_writes,
                 # verify_attribution, verify_bundle and bind_content ALL reporting clean while recall
                 # served the rejected record. The controls fire as they must -- editing `object` is
-                # caught, appending a record is caught -- so insertion and content-edit are both
-                # covered and this was the single uncovered edit.
+                # caught by verify_writes, and appending a record is caught by verify_attribution and
+                # verify_bundle (NOT by verify_writes, which walks the receipts and never looks at a
+                # record no receipt names) -- so content-edit and insertion were both covered
+                # somewhere and this was the single edit covered nowhere.
                 #
                 # A SEPARATE field for the same reason `value_sha256` is one: folding it into an
                 # existing hash would make every receipt ever written mismatch, so an upgrade would
@@ -2402,9 +2405,15 @@ class Inspeximus:
                 # status, and _AMENDABLE for what that costs.
                 "status_sha256": _sha256_hex(_canon({"serving": _serving_class(rec),
                                                      "confirmed_by": rec.get("confirmed_by")})),
+                # THE IDS, not a hash of them: the verifier must CHECK each against the store, so it
+                # has to read them. Surrogate ids are content-free by construction -- the same standard
+                # the tombstone chain already meets. Inside the receipt hash, so trimming the list
+                # breaks the chain link instead of shrinking the check.
+                "retires": sorted(retires or ()),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
 
-    def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "") -> dict:
+    def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "",
+                            retires=()) -> dict:
         """`amends` names the committed fields this receipt legitimately rewrites (slash/restore -> mtype).
         It is DECLARED, not inferred, and verification forgives an earlier receipt for exactly the declared
         fields and nothing else. Inferring it — "the latest receipt wins" — is what let a public slash()
@@ -2412,7 +2421,7 @@ class Inspeximus:
         (attrib_sha256), which is the one thing committing attribution exists to catch."""
         prev = self._receipts[-1]["hash"] if self._receipts else _GENESIS
         r = {"seq": len(self._receipts), "ts": rec.get("ts"), "memory_id": rec["id"],
-             "commit": self._write_commit(rec), "prev": prev}
+             "commit": self._write_commit(rec, retires), "prev": prev}
         if amends:
             bad = set(amends) - _AMENDABLE
             if bad:
@@ -2681,7 +2690,8 @@ class Inspeximus:
         return (not problems), problems
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
-                      legacy_strict: bool = True, value_strict: bool = True) -> tuple[bool, list[str]]:
+                      legacy_strict: bool = True, value_strict: bool = True,
+                      coverage_strict: bool = True) -> tuple[bool, list[str]]:
         """Verify the write-receipt chain AND that each stored memory still matches its write receipt.
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
         Requires receipts to have been enabled at write time.
@@ -2890,6 +2900,55 @@ class Inspeximus:
                     f"into the chain -- or pass value_strict=False to accept the gap without a record of "
                     f"having done so. ({', '.join(uncovered[:5])}"
                     + (f", +{len(uncovered) - 5} more" if len(uncovered) > 5 else "") + ")")
+        # A RECORD NO RECEIPT NAMES IS NOT A CHECKED RECORD. This walks the RECEIPTS and looks each
+        # one's record up, so a record present in the store that no receipt mentions was never
+        # examined at all -- and the MCP tool's own docstring promises "no silent edits/INSERTIONS/
+        # reordering". Measured 2026-08-15: append one JSON object to the store file and this returned
+        # (True, []) while recall served the fabricated memory. The attacker holds no key and forges
+        # nothing; they ADD rather than edit, and the check is built to notice editing.
+        #
+        # OVER EVERY STATUS, not just `active`. `verify_attribution` -- the one surface that did catch
+        # the injection -- sweeps active only, so changing one word in the planted record to
+        # `superseded` flipped it to ok=True while `as_of()` and `history()` still served the value.
+        # Same attack, one field different, opposite verdict.
+        #
+        # This also closes receipt TRUNCATION, which was the same blindness weaponised: drop the
+        # trailing receipt and that record's text and value could then be rewritten freely, because
+        # nothing named it any more.
+        #
+        # `coverage_strict=False` for the honest case this fires on -- a store that turned receipts on
+        # part-way, whose older records genuinely have none. An opt-out with a name, like
+        # legacy_strict and value_strict, not a silent exemption.
+        if coverage_strict and self.receipts_enabled and self._receipts:
+            _named = {rc["memory_id"] for rc in self._receipts}
+            _uncovered = sorted(r["id"] for r in self._items if r["id"] not in _named)
+            if _uncovered:
+                problems.append(
+                    f"{len(_uncovered)} record(s) are covered by NO write receipt, so nothing here "
+                    f"vouches for them: {_uncovered[:5]}{' ...' if len(_uncovered) > 5 else ''}. They "
+                    f"were inserted out of band, or written while receipts were off. Pass "
+                    f"coverage_strict=False if this store enabled receipts part-way.")
+
+        # A RECORD A LATER WRITE RETIRED MUST NOT BE ACTIVE. This is the half `status_sha256` cannot
+        # cover: it folds `active` and `superseded` into one serving class on purpose, so SWAPPING the
+        # two on disk was invisible to it -- the store then serves the corrected-away value as current
+        # and hides the correction, with every verifier reporting clean. Measured 2026-08-15, and the
+        # same edit on a `provisional` record WAS caught, which is what makes it a coverage hole in
+        # that commitment rather than a missing mechanism.
+        #
+        # HONEST LIMIT, and the reason this is a ONE-DIRECTIONAL rule. It catches RESURRECTION -- a
+        # retired record made current again, which is the injection attack. It does NOT catch
+        # DEMOTION, silently marking the current record superseded to hide it, because closing that
+        # needs every retiring path to declare itself and `consolidate()` and capacity eviction retire
+        # records without emitting a receipt at all. Claiming both would be the vacuous half.
+        if self.receipts_enabled and self._receipts:
+            _live = {r["id"] for r in self._items if r.get("status") == "active"}
+            for _rid in sorted({rid for rc in self._receipts
+                                for rid in ((rc.get("commit") or {}).get("retires") or ())
+                                if rid in _live}):
+                problems.append(
+                    f"memory {_rid}: a later write RETIRED this record and it is ACTIVE again -- the "
+                    f"store is serving a value that was corrected away (edited after write)")
         return (len(problems) == 0, problems)
 
     def recommit(self, ids=None) -> dict:
@@ -3037,7 +3096,7 @@ class Inspeximus:
         # value rather than returning a signature that matches every other unnormalisable value.
         return sig or str(s).strip().lower()
 
-    def _supersede_by_key(self, rec: dict, reaffirm: bool = False) -> None:
+    def _supersede_by_key(self, rec: dict, reaffirm: bool = False) -> list:
         """Deterministic (subject, relation, object) supersession: retire active records that share
         rec['key']. No similarity threshold, no LLM call — the fix our Crucible replication validated
         (stale-fact recall 41.7% -> 0.0%, where cosine-based detection is near chance at AUROC ~0.61).
@@ -3091,6 +3150,7 @@ class Inspeximus:
         is a restatement-of-superseded (an echo) — retire the incoming rec stale-on-arrival and keep the
         current value, so a later re-mention of the old value cannot resurrect it. reaffirm=True bypasses
         the guard (a genuine, authoritative reversal back to a previously-superseded value)."""
+        _retired: list = []                    # ids this write retires; committed by its receipt
         if rec.get("status") == "provisional":
             # A record that is NOT authoritative cannot retire one that is. Measured while building
             # this: without the check, writing an unconfirmed "Tolkien was born in 1802" against the
@@ -3098,10 +3158,10 @@ class Inspeximus:
             # unconfirmed one invisible -- so recall returned NOTHING. A fabricated sentence would
             # have silently knocked out a real fact, which is strictly worse than not shipping the
             # feature. Supersession belongs at confirm(), the moment the value becomes authoritative.
-            return
+            return _retired
         k = rec.get("key")
         if not k:
-            return
+            return _retired
         vf_new = rec.get("valid_from", rec["ts"])
         tv = rec.get("tenant")                         # tenant isolation: only same-tenant records collide on a key
         # WHICH ROWS THIS KEY CAN COLLIDE WITH. Normally the handle's own (tenant- and ACL-scoped) view, so a
@@ -3141,7 +3201,7 @@ class Inspeximus:
                 m["objectless_blocked"] = True
                 m["superseded_by_toggle"] = active[0]["id"]
                 m["superseded_by_policy"] = "objectless_guard"
-                return
+                return _retired
             superseded_sigs = {self._obj_sig(r) for r in same_key if r.get("status") == "superseded"}
             if (active and new_sig in superseded_sigs
                     and all(self._obj_sig(a) != new_sig for a in active)):
@@ -3168,13 +3228,13 @@ class Inspeximus:
                              "retired on arrival and the current value is unchanged. If the value has "
                              "genuinely returned, write it with reaffirm=True."),
                 }
-                return                                 # current value preserved; skip normal supersession
+                return _retired                        # current value preserved; skip normal supersession
         # A record that does not ASSERT A CHANGE never retires anything. It is the store's only way to
         # tell "your address remains 742 Birchwood Lane, Unit 4A" (agreement, possibly at a different
         # granularity) from "actually it's Unit 3A now" (a correction). Without it, keying the echoes of
         # a value makes the echoes supersede each other and the current answer disappears from recall.
         if rec.get("meta", {}).get("asserts_change") is False:
-            return
+            return _retired
         new_sig_r = self._obj_sig(rec)
         for r in _pool:
             if r is rec or r.get("status") != "active" or r.get("key") != k or r.get("tenant") != tv:
@@ -3202,6 +3262,25 @@ class Inspeximus:
                 rm = r.setdefault("meta", {})
                 rm["superseded_by_toggle"] = rec["id"]
                 rm["superseded_by_policy"] = "keyed_reaffirm" if reaffirm else "keyed_lww"
+                # WHAT THIS WRITE RETIRED, on the writing record, before its receipt is emitted.
+                #
+                # `status_sha256` binds the withheld/served class and deliberately folds `active` and
+                # `superseded` together, to keep consolidation from churning the chain. An adversarial
+                # pass found the hole in that within the hour: SWAP the two on disk and the store
+                # serves the corrected-away value as current and hides the correction, while every
+                # verifier reports clean. Resurrecting a retracted decision is the worst shape it takes.
+                #
+                # `retires` is a fact ABOUT THE WRITE, not about current state, so unlike a status it
+                # binds for life and needs no amendment: this write DID retire those ids, permanently.
+                # It therefore costs ZERO extra receipts, so the churn objection that ruled out
+                # committing the raw status does not apply to it.
+                #
+                # RETURNED, not written onto the record. The first version stored it as `rec["retires"]`
+                # and a test caught the mistake within the run: it holds RANDOM SURROGATE IDS, so two
+                # identically-built stores stopped comparing equal, and the record shape grew a field
+                # that duplicates what the receipt says. A fact about the write belongs in the receipt.
+                if r["id"] not in _retired:
+                    _retired.append(r["id"])
             else:                              # an active same-key value is newer -> incoming is stale-on-arrival
                 rec["status"] = "superseded"
                 rec["superseded_ts"] = time.time()
@@ -3209,6 +3288,7 @@ class Inspeximus:
                 rm = rec.setdefault("meta", {})
                 rm["superseded_by_toggle"] = r["id"]
                 rm["superseded_by_policy"] = "keyed_lww_backfill"
+        return _retired
 
     # ── candidate reconciliation queue (identity-confidence gate; Fellegi-Sunter clerical review / MDM steward
     #    queue, ported to agent memory). A fuzzy-identity keyed write forks a candidate instead of superseding;
@@ -3919,6 +3999,21 @@ class Inspeximus:
              "request_id": request_id, "prev": prev}
         if basis is not None or authorized_by is not None or authorization is not None:
             t["auth"] = {"basis": basis, "authorized_by": authorized_by, "authorization": authorization}
+        # WHOSE ERASURE THIS WAS -- deliberately OUTSIDE the committed core, and the tradeoff is
+        # stated rather than glossed. `_tombstone_core` has no tenant key, so a tenant view had no
+        # way to filter and read EVERY tenant's erasure record: their memory_ids, their `request_id`
+        # strings and the whole free-text `auth.basis`. Measured 2026-08-15, acme reading globex's
+        # row: request_id "DSAR-globex-jane.doe-2026-000123" and basis "gdpr_art17 request by
+        # jane.doe@globex.example, DOB 1984-03-02". Operator-authored free text that NAMES DATA
+        # SUBJECTS is the worst possible payload for a cross-tenant read, and the surface leaking it
+        # is the compliance surface.
+        #
+        # It cannot go INSIDE the core: that would change every existing tombstone's hash and break
+        # the chain on upgrade. So the stamp is a VIEW FILTER, not an audit claim -- it is not
+        # tamper-evident, and nothing in this file may treat it as evidence of anything. Verified by
+        # re-hashing live tombstones with the key added: identical, chain_intact preserved.
+        if self.tenant is not None:
+            t["tenant"] = self.tenant
         t["hash"] = _sha256_hex(_canon(Inspeximus._tombstone_core(t)))
         if self._receipt_sk and _HAVE_ED:
             sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._receipt_sk))
@@ -5000,13 +5095,34 @@ class Inspeximus:
         """
         return _TenantView(self, self.tenant, agent=Inspeximus._check_agent_id(agent))
 
+    def _visible_tombstones(self) -> tuple:
+        """This handle's tombstones, plus how many were withheld for want of a tenant stamp.
+
+        FAIL-CLOSED on the unstamped ones. A tombstone written before 2.10.2 has no `tenant`, so a
+        bound handle cannot tell whether it is looking at its own erasure or someone else's -- and
+        the payload is operator free text naming data subjects. Withheld and COUNTED, never withheld
+        silently: a report that quietly shows less than it used to is how an operator concludes an
+        erasure never happened.
+        """
+        if self.tenant is None:
+            return tuple(self._tombstones), 0
+        mine = tuple(t for t in self._tombstones if t.get("tenant") == self.tenant)
+        return mine, sum(1 for t in self._tombstones if "tenant" not in t)
+
     def erasure_report(self) -> dict:
         """Audit view of deliberate erasures: total tombstones + each {memory_id, ts, request_id}. Read-only;
         carries NO erased content (by construction). The durable proof-of-deletion trail behind forget_subject."""
-        return {"tombstoned_total": len(self._tombstones),
-                "erasures": [{"memory_id": t["memory_id"], "ts": t.get("ts"),
-                              "request_id": t.get("request_id"), "signed": "sig" in t}
-                             for t in self._tombstones]}
+        toms, withheld = self._visible_tombstones()
+        out = {"tombstoned_total": len(toms),
+               "erasures": [{"memory_id": t["memory_id"], "ts": t.get("ts"),
+                             "request_id": t.get("request_id"), "signed": "sig" in t}
+                            for t in toms]}
+        if withheld:
+            out["limits"] = [f"{withheld} tombstone(s) predate tenant stamping and are WITHHELD from "
+                             f"this bound handle: without a stamp they cannot be attributed, and a "
+                             f"`request_id` is operator free text that routinely names a data subject. "
+                             f"Read them from an unbound (operator) handle."]
+        return out
 
     def erasure_audit(self, subject: str | None = None, values=None) -> dict:
         """AFTER an erasure: what does the store's lineage say survived — and how much did it actually see?
@@ -5370,6 +5486,25 @@ class Inspeximus:
         commits to surrogate ids + timestamps + opaque request, never PII. HONEST SCOPE = governance_report()'s
         (within THIS store; the ACT not the content; the signature is load-bearing only against a non-holder of
         receipt_key — witness the anchor externally). Pair with shred() for encrypted-at-rest crypto-erasure."""
+        # OPERATOR-ONLY, and this is a genuine either/or rather than an unfinished scoping job.
+        # The certificate ships the FULL chain from genesis ON PURPOSE, so a third party can
+        # re-derive it without trusting us. You cannot scope the `tombstones` array -- the `prev`
+        # links break and `chain_intact` fails -- and you cannot redact `request_id` or `auth`
+        # either, because both are INSIDE `_tombstone_core` and redaction breaks the hash. So a
+        # scoped certificate is not a narrower certificate; it is a broken one.
+        #
+        # Measured 2026-08-15: a bound handle issued a certificate scoped to ANOTHER tenant's
+        # request_id, carrying that tenant's erased ids and the free-text basis "gdpr_art17 request
+        # by jane.doe@globex.example, DOB 1984-03-02". Refusing LOUDLY beats narrowing quietly: a
+        # certificate a third party cannot verify from genesis is not the artifact this docstring
+        # promises, so silently degrading it would break the feature to close the leak.
+        if self.tenant is not None:
+            raise AttributeError(
+                "erasure_certificate() is operator-only and is not available on a tenant-bound "
+                "handle. The certificate must ship the whole tombstone chain from genesis so a "
+                "third party can re-derive it; scoping it to one tenant breaks `prev` and the "
+                "signatures, and the chain carries every tenant's request_id and authority basis. "
+                "Issue it from an unbound handle, or give each tenant its own store file.")
         toms = self._tombstones                                  # full chain (content-free) so it verifies from genesis
         scoped = [t for t in toms if request_id is None or t.get("request_id") == request_id]
         erased_ids = sorted({t.get("memory_id") for t in scoped if t.get("memory_id")})
@@ -5415,17 +5550,18 @@ class Inspeximus:
         Prior art: crypto-shredding; Cassandra / event-sourcing tombstones; GDPR Art.17/30 erasure logs;
         Crosby-Wallach / Certificate Transparency tamper-evident logs."""
         ok, problems = self.verify_writes(expected_pubkey)
+        toms, _withheld = self._visible_tombstones()
         by_req: dict = {}
-        for t in self._tombstones:
+        for t in toms:
             by_req.setdefault(t.get("request_id"), []).append(t.get("memory_id"))
         return {
-            "erasures_total": len(self._tombstones),
+            "erasures_total": len(toms),
             "by_request": {rid: {"erased": len(ids), "memory_ids": sorted(i for i in ids if i)}
                            for rid, ids in by_req.items()},
             "proof": {
                 "verified": ok,
                 "problems": problems,
-                "all_signed": bool(self._tombstones) and all("sig" in t for t in self._tombstones),
+                "all_signed": bool(toms) and all("sig" in t for t in toms),
                 "expected_pubkey": expected_pubkey,
                 # honest trust level of the signatures (the footgun made visible to the auditor):
                 "signature_authenticity": ("pinned to expected_pubkey" if expected_pubkey else
@@ -10839,6 +10975,33 @@ class _TenantView:
     # _route_chain, one floor up, found by re-running the attack after the "fix".
     def _cusum_state(self, *a, **k):        return Inspeximus._cusum_state(self, *a, **k)
     def _budget_state(self, *a, **k):       return Inspeximus._budget_state(self, *a, **k)
+    # The tombstone writer and reader. THIRD time in one day that a private name defeated a scoping
+    # fix: the `if self.tenant is not None` stamp inside _emit_tombstone was live code a tenant view
+    # could never reach, exactly as with _route_chain and _budget_state. The structural test below
+    # now keys on `self.tenant` itself rather than on which collection a helper happens to read,
+    # because "reads records" and "reads a sidecar" were both too narrow -- the invariant is that a
+    # private method making a TENANT decision must run with the tenant, and there is no other way to
+    # get one.
+    def _emit_tombstone(self, *a, **k):     return Inspeximus._emit_tombstone(self, *a, **k)
+    def _visible_tombstones(self, *a, **k): return Inspeximus._visible_tombstones(self, *a, **k)
+    # THE ONE THAT DELETES, and the seventh instance of this defect found in one day. It was not
+    # missed -- I DECLARED it store-wide in the structural test, reasoning that capacity is a property
+    # of the file. Measured consequence of that reasoning: on a shared store at capacity=10, globex
+    # writing five of its OWN records hard-deleted five of acme's, via forget(), with a tombstone that
+    # names no cause, and acme was told nothing. A helper that DELETES across a security boundary is
+    # not store-wide however the cap is defined.
+    #
+    # SEMANTICS CHANGE, stated because it is a decision and not a side effect: once view-bound,
+    # `self.items` is tenant-scoped, so `capacity` becomes PER-TENANT on a bound handle rather than
+    # per-store. A shared cap that any tenant can spend on any other tenant's records is not a cap,
+    # it is a cross-tenant delete primitive. An unbound (operator) handle is unchanged.
+    def _evict_to_capacity(self, *a, **k): return Inspeximus._evict_to_capacity(self, *a, **k)
+    # Reached today only through rebound public callers, so `_tenant_rows()` is already scoped when it
+    # runs and cross-tenant erasure does NOT reproduce (measured: acme erasing a shared subject name
+    # took its own record and left both of globex's). Rebound anyway, because that safety is a
+    # property of the current call graph and not of this method -- one new caller on the private path
+    # and it resolves a subject against every tenant's rows, on the DELETE path.
+    def _resolve_subject(self, *a, **k):    return Inspeximus._resolve_subject(self, *a, **k)
     def ratify(self, *a, **k):              return Inspeximus.ratify(self, *a, **k)
     def admit(self, *a, **k):               return Inspeximus.admit(self, *a, **k)
     def classify_reversion(self, *a, **k):  return Inspeximus.classify_reversion(self, *a, **k)
