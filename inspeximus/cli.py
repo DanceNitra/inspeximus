@@ -679,17 +679,22 @@ def main(argv=None):
             bundle = json.load(f)
         wl = [w.strip() for w in a.witnesses.split(",")] if a.witnesses else None
         items = None
+        receipts = None   # bound here too: without --store the verify call would NameError
         if a.store:
             # Opening a store CREATES it when the path does not exist, and an auditor who mistyped would
             # then be handed a clean verdict over the empty store they had just made -- the same shape as
             # the erasure certificate that reported valid while its absence proof pointed at a typo.
-            from inspeximus.audit_bundle import load_store_items
+            from inspeximus.audit_bundle import load_store_items, load_store_receipts
             items = load_store_items(a.store)     # ONE implementation; see its docstring
+            # The LIVE chain, which is what separates ordinary growth from an injected record
+            # without trusting `ts` -- a field the writer controls.
+            receipts = load_store_receipts(a.store)
             if items is None:
                 print(f"  FAIL --store {a.store} does not exist; refusing to create a store while "
                       f"verifying, because an empty one verifies clean")
                 return 1
-        res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)
+        res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,
+                        store_items=items, store_receipts=receipts)
         if a.json:
             _out(res, True)
         else:

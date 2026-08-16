@@ -3,6 +3,90 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.10.3 - UPGRADE IF YOU HAND AUDIT BUNDLES TO ANYONE. A planted record could pass as ordinary growth.
+
+2.10.2 shipped this as a stated residual with a test pinning it open. The test is what said it had
+closed.
+
+### `ts` was deciding, and the attacker writes `ts`
+
+An audit bundle is a snapshot at time T. A record the bundle's chain does not cover is either
+**growth** (written after T — ordinary operation; a bundle is not a lease) or an **injection**.
+2.10.2 told them apart with `ts <= generated_ts`. `ts` is a field in the record, so forward-dating a
+planted record made it read as growth.
+
+**No heuristic over `ts` could have worked.** Every field in that file is attacker-controlled; the
+information separating "written later" from "planted with a later timestamp" is not present.
+
+**It is in the live chain.** With receipts on, legitimate growth is receipted in the store's
+*current* chain — just not in the bundle's snapshot of it — and an injection is receipted in neither.
+`verify_bundle(store_receipts=...)` now asks the chain, and `ts` decides nothing. `load_store_receipts()`
+is the loader beside `load_store_items()`, and both CLI entry points pass it.
+
+Without `store_receipts` the old heuristic still runs and **says in words that it is one**, because a
+check that silently degrades to a weaker one is how "verified" stops meaning anything.
+
+### Two more, found while measuring that one
+
+* **A post-export rollback verified clean.** Nothing checked that the bundle's chain is a *prefix* of
+  the store's current chain, so truncating history after the export passed. The membership test above
+  is worth little without it: an operator who rewrites history can make any record look covered.
+* **Signing bought nothing at this surface.** The signature check walked the *bundle's* chain, and an
+  attacker with sidecar access appends to the *live* one — so on a signed store, planting a record
+  plus a hand-minted unsigned receipt still passed. A signed chain that grows unsigned entries was
+  appended to by something without the key, and is now reported as such.
+
+### An audit bundle can now be witnessed, and an unwitnessed one says so
+
+Everything else in a bundle is the operator verifying the operator. A chain signed with
+`receipt_key` catches an editor who lacks the key; it cannot catch the party who **holds** it, and
+that party is whoever runs the store. Measured: an operator rebuilt the store around a forged policy,
+re-signed the whole chain, and `verify_writes` returned True and a fresh bundle over it verified
+clean, a page of OK lines and VERDICT PASS.
+
+All three witnesses refused the rewritten head — same height, different tip.
+
+**The parts were already here and nothing joined them.** `collect_cosignatures()` returned a list,
+`verify_cosigned_anchor()` consumed one, and check (5) read `anchor["cosignatures"]` — but nothing in
+the library ever *wrote* that key, so it was absent from every anchor inspeximus produced. The only
+operator-adversarial check in the artifact was reachable only by a caller who built the anchor,
+called the collector, hand-stuffed the result back in and then built the bundle around it.
+
+```python
+from inspeximus import Inspeximus
+from inspeximus.audit_bundle import build_bundle, verify_bundle
+from inspeximus.witness_pool import Witness
+
+m = Inspeximus(path="audit.json", receipts=True)
+m.remember("deployment needs two approvers", key="policy", object="two")
+
+pool = [Witness(), Witness(), Witness()]          # independent, and outside this process in practice
+bundle = build_bundle(m, witnesses=pool, store_id="prod")
+out = verify_bundle(bundle, witnesses=[w.public for w in pool], threshold=2,
+                    require_witnessed=True)
+print(out["ok"], len(bundle["anchor"]["cosignatures"]))
+# -> True 3
+```
+
+A witness that **refuses** is not dropped: refusals ride in the bundle and fail it, whether or not
+the auditor passes an allowlist. An honest witness refuses only a fork or a rollback, so that is the
+loudest signal in the artifact — it came from outside it. k-of-n, so one unreachable witness does not
+block an export.
+
+An unwitnessed bundle still passes, because it is legitimate — but it now reports **SELF-CERTIFIED**
+instead of passing in silence, and `require_witnessed=True` refuses one.
+
+### What is still open, and it is a different threat model
+
+An attacker who can append to the `.receipts` sidecar mints a receipt for their record, and on an
+**unsigned** chain it reads as growth again — the documented unsigned-chain limit. Signing closes it
+(pinned by a test). Against the **operator**, who holds the key, only an externally witnessed anchor
+closes it -- and that is now the normal export flow, above, rather than an expert option.
+
+`build_bundle` now records `baseline_complete` — whether every record was covered when the bundle was
+taken. Without it, "uncovered today" cannot be read: it might mean planted, or it might mean the
+bundle was always a partial claim.
+
 ## 2.10.2 - UPGRADE IF YOU RELY ON verify_writes() AS TAMPER-EVIDENCE, OR USE for_tenant() ON A SHARED STORE. Seven ways a file-level attacker or a co-tenant beat the verifiers.
 
 **Who should upgrade: anyone who relies on `verify_writes()` as tamper-evidence, and anyone using

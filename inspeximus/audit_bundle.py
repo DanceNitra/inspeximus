@@ -106,11 +106,41 @@ def _acl_acts(store) -> list:
     return [{k: a.get(k) for k in keep} for a in sorted(acts, key=lambda x: x.get("ts") or 0)]
 
 
-def build_bundle(store, expected_pubkey: str | None = None, sign=None) -> dict:
-    """Serialise a store's record-keeping state into one portable, self-verifying artifact. `expected_pubkey`
-    pins the signature-authenticity check; `sign(bytes)->hex` (opt-in) lets an external witness co-sign the
-    anchor. Returns the bundle dict (json-serialisable). Content-free -- no memory text leaves the store."""
+def build_bundle(store, expected_pubkey: str | None = None, sign=None, witnesses=None,
+                 store_id: str | None = None) -> dict:
+    """Serialise a store's record-keeping state into one portable, self-verifying artifact.
+
+    `expected_pubkey` pins the signature-authenticity check. `sign(bytes)->hex` attaches ONE witness
+    signature to the head.
+
+    `witnesses=` is the k-of-n path, and it exists because the parts were already here and nothing
+    joined them. `collect_cosignatures()` returned a list, `verify_cosigned_anchor()` consumed one,
+    and check (5) of verify_bundle read `anchor["cosignatures"]` -- but NOTHING ever wrote that key.
+    So the only operator-adversarial check in the artifact was reachable only by a caller who built
+    the anchor, called the collector, hand-stuffed the result into the anchor and then built the
+    bundle around it. Measured 2026-08-16: `cosignatures` was absent from every anchor this library
+    produced.
+
+    WHY IT MATTERS MORE THAN THE OTHER CHECKS. Everything else in a bundle is the operator vouching
+    for the operator. A receipt chain signed with `receipt_key` catches an editor who lacks the key;
+    it cannot catch the party who HOLDS it, and that party is whoever runs the store. An independent
+    witness attesting the log's height at a point in time is the one thing here that an operator
+    cannot forge alone -- so a bundle without one is a self-certification, and verify_bundle now says
+    that out loud instead of passing in silence.
+
+    A witness that REFUSES is not dropped: refusals ride in the bundle as `witness_refusals`, because
+    an honest witness only refuses a fork or a rollback and that is the alarm, not an error to
+    swallow.
+    """
     anchor = store.anchor(sign=sign)
+    if witnesses:
+        from .witness_pool import collect_cosignatures
+        _sid = store_id or str(getattr(store, "path", "") or "store")
+        _res = collect_cosignatures(_sid, anchor, witnesses)
+        if _res.get("cosignatures"):
+            anchor["cosignatures"] = [list(c) for c in _res["cosignatures"]]
+        if _res.get("refused"):
+            anchor["witness_refusals"] = _res["refused"]
     bundle = {
         "kind": BUNDLE_KIND,
         "inspeximus_version": __version__,
@@ -121,6 +151,13 @@ def build_bundle(store, expected_pubkey: str | None = None, sign=None) -> dict:
         "supersession": store.supersession_report(),
         "n_records": len(getattr(store, "items", []) or []),   # content-free count: lets the verifier tell
         #                                        "empty store" from "store with data but receipts disabled"
+        # WAS EVERY RECORD COVERED WHEN THIS WAS TAKEN? Without it, "uncovered at audit time" cannot
+        # be read: it might mean the record was planted, or it might mean the baseline was never
+        # clean and this bundle was always a partial claim. Stating it here makes the later verdict
+        # about the RECORD instead of about the export.
+        "baseline_complete": not [r for r in (getattr(store, "items", []) or [])
+                                  if r.get("id") not in {rc.get("memory_id")
+                                                         for rc in (getattr(store, "_receipts", None) or ())}],
         "write_chain": _content_free_writes(store),
         "tombstone_chain": _content_free_tombstones(store),
         "grants": _acl_acts(store),
@@ -227,7 +264,8 @@ def bind_content(bundle: dict, store_items: list) -> dict:
 
 
 def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1,
-                  require_signed: bool = False,
+                  require_signed: bool = False, store_receipts: list | None = None,
+                  require_witnessed: bool = False,
                   store_items: list | None = None) -> dict:
     """STANDALONE offline verification of an audit bundle -- needs only the file (no store, no receipt key).
     Checks, in order: (1) the bundle's own hash; (2) the write chain re-walks from genesis and its tip+count
@@ -249,6 +287,11 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     genuinely did verify -- but `summary.content_checked` is False and `limits` says so in words, because
     an `ok` that quietly omits the one thing an auditor came to ask is worse than a refusal."""
     checks, problems = [], []
+    # `limits` belongs here, beside them. It used to be created after the governance section,
+    # so every check above that point had to park what it wanted to say in a deferred list --
+    # and the third check that needed it hit UnboundLocalError instead. A list half the
+    # function cannot reach is a trap laid for the next check.
+    limits: list = []
 
     def ok(msg): checks.append(msg)
     def bad(msg): problems.append(msg)
@@ -295,10 +338,6 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     else:
         bad("anchor sth_hash does not match its own fields")
 
-    # `limits` is created further down, after the governance section. These two checks belong up
-    # here with the rest of the anchor work, so what they have to say is parked and flushed there.
-    _deferred_limits: list = []
-
     # (4b) THE MERKLE ROOTS, recomputed from the chains this bundle carries.
     #
     # `_STH_FIELDS` is ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip") -- the tips and
@@ -331,8 +370,8 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             if _rh != anchor.get("root_hash"):
                 bad("anchor root_hash does not match its own root fields")
     except Exception as e:                       # a verifier must report, never crash
-        _deferred_limits.append(f"merkle roots NOT re-derived ({type(e).__name__}: {e}) -- treat the "
-                                f"roots in this anchor as unchecked")
+        limits.append(f"merkle roots NOT re-derived ({type(e).__name__}: {e}) -- treat the roots "
+                      f"in this anchor as unchecked")
 
     # (4c) SIGNATURE COVERAGE, stated as a number rather than left to be inferred from silence.
     #
@@ -350,7 +389,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     _total = len(wc) + len(tc)
     if _total:
         if _signed == 0:
-            (bad if require_signed else _deferred_limits.append)(
+            (bad if require_signed else limits.append)(
                 f"UNSIGNED: 0 of {_total} chain entries carry a signature. The chain is internally "
                 f"consistent, which is not the same as attributable -- an editor who can rewrite the "
                 f"sidecar can rewrite the chain too. Pass require_signed=True to refuse this.")
@@ -373,6 +412,24 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             bad("witnesses supplied but the anchor carries no co-signatures -- not operator-adversarially verifiable")
     elif cosigs:
         ok(f"anchor carries {len(cosigs)} co-signature(s) (pass witnesses= to verify them)")
+    else:
+        # SAY IT. With no witnesses passed and no co-signatures present, this branch used to be
+        # silent, so a self-certified bundle produced a page of OK lines and a PASS with nothing
+        # anywhere indicating that every one of those checks was the operator vouching for the
+        # operator. Same lesson as the signature coverage two checks up: absence of a finding is not
+        # a finding of absence, and an auditor has to be told which artifact they are holding.
+        (bad if require_witnessed else limits.append)(
+            "SELF-CERTIFIED: this anchor carries no external co-signature. Every check above is the "
+            "operator's own record-keeping verified against itself -- an operator holding receipt_key "
+            "can rewrite the whole history and re-sign it so it verifies internally. Only a witnessed "
+            "anchor is adversarial against the operator. Pass require_witnessed=True to refuse this.")
+    if anchor.get("witness_refusals"):
+        # An honest witness refuses only a fork or a rollback, so a refusal recorded at export time is
+        # the loudest signal in the artifact -- louder than any check here, because it comes from
+        # outside.
+        bad(f"{len(anchor['witness_refusals'])} witness(es) REFUSED to co-sign this anchor at export: "
+            f"{[r.get('reason', '')[:80] for r in anchor['witness_refusals'][:3]]}. An honest witness "
+            f"refuses only a fork or a rollback.")
 
     gov = bundle.get("governance") or {}
 
@@ -435,7 +492,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             bad("this bundle carries NO write or tombstone receipts -- nothing here to verify, which is "
                 "not the same as verified")
 
-    limits: list = list(_deferred_limits)
+
     # (7b) ACCESS CONTROL. Grants are ordinary records, so each one has a write receipt in the chain above --
     # which means the bundle can be asked whether its ACL summary is backed by the evidence beside it. An
     # act listed here with no receipt was appended to the bundle, not written to the store; that is the
@@ -480,7 +537,70 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         # the bundle is a snapshot, not a lease. Only `mismatched` is a tamper signal, which is why
         # bind_content itself defines ok as `not mismatched`. Reporting the other two as failures would
         # false-alarm on every normal write, the same defect as the naive anchor-tip comparison.
-        # SPLIT `unreceipted` BY AGE, because the two halves are different claims.
+        # SPLIT `unreceipted` INTO GROWTH AND INJECTION -- and NOT by `ts`.
+        #
+        # `ts` is a field in the record, so the attacker writes it. 2.10.2 discriminated on
+        # `ts <= generated_ts`, which closed the erasure-slack hole and left this one: forward-date
+        # the planted record and it reads as ordinary growth. Measured, and stated in that release's
+        # own changelog as a residual. No cleverer heuristic over `ts` can work -- the information
+        # separating "written later" from "planted with a later timestamp" is not in the file.
+        #
+        # IT IS IN THE LIVE CHAIN. With receipts on, legitimate growth is receipted in the store's
+        # CURRENT chain (just not in this bundle's snapshot of it); an injection is receipted in
+        # neither. Measured 2026-08-16: the later write appears in the live chain, the forward-dated
+        # plant does not. So we ask the chain, and `ts` stops deciding anything.
+        #
+        # HONEST SCOPE. This holds against an attacker who can edit the STORE. One who can also
+        # append to the `.receipts` sidecar mints a receipt for their record and it reads as growth
+        # again -- the documented unsigned-chain limit, closed by `receipt_key=`/an external signer
+        # (their forged entry is then unsigned, which the coverage check above reports as PARTIALLY
+        # SIGNED) and, against the operator themself, only by an externally witnessed anchor.
+        #
+        # Without `store_receipts` the old heuristic still runs, but says in words that it is one.
+        _gen_ts = bundle.get("generated_ts")
+        _live_ids = ({rc.get("memory_id") for rc in store_receipts}
+                     if store_receipts is not None else None)
+        if _live_ids is None:
+            limits.append("GROWTH NOT VERIFIED: no store receipt chain was supplied, so records the "
+                          "bundle does not cover are classified by their own `ts` -- a field the "
+                          "writer controls. Pass store_receipts= for the chain-membership check.")
+
+        # THE BUNDLE'S CHAIN MUST BE A PREFIX OF THE LIVE ONE. Append-only is the property the whole
+        # artifact rests on, and nothing checked it across the two: measured 2026-08-16, truncating
+        # the live chain after the export left verify_bundle reporting ok=True. Without this, the
+        # membership test below is worth little either -- an operator who rewrites history can make
+        # any record "covered".
+        if store_receipts is not None:
+            _bh = [r.get("hash") for r in wc]
+            _lh = [r.get("hash") for r in store_receipts]
+            if len(_lh) < len(_bh):
+                bad(f"the store's receipt chain is SHORTER than this bundle's ({len(_lh)} < "
+                    f"{len(_bh)}): history was rolled back or truncated after the export")
+            elif _lh[:len(_bh)] != _bh:
+                bad("this bundle's receipt chain is not a PREFIX of the store's current chain: "
+                    "history was rewritten after the export, not merely appended to")
+            else:
+                ok(f"the store's chain extends this bundle's append-only "
+                   f"({len(_bh)} -> {len(_lh)} entries)")
+                # AND THE EXTENSION MUST BE SIGNED IF THE BUNDLE WAS. The signature check further up
+                # walks the BUNDLE's chain; the attacker appends to the LIVE one, which it never
+                # reads. Measured 2026-08-16, and it is the hole in this very fix: on a SIGNED store,
+                # planting a record plus a hand-minted unsigned receipt for it made the record read
+                # as ordinary growth and the bundle verified clean. Signing the chain has to buy
+                # something here, or "use receipt_key=" is advice that does not pay.
+                _new = store_receipts[len(_bh):]
+                if _bh and all(r.get("sig") for r in wc) and _new:
+                    _unsigned = [r.get("memory_id") for r in _new if not r.get("sig")]
+                    if _unsigned:
+                        bad(f"this bundle's chain is signed but {len(_unsigned)} of the "
+                            f"{len(_new)} entries appended since are NOT: {_unsigned[:5]}"
+                            f"{' ...' if len(_unsigned) > 5 else ''}. A signed chain that grows "
+                            f"unsigned entries was appended to by something without the key.")
+
+        if bundle.get("baseline_complete") is False:
+            limits.append("the store already held records covered by no receipt when this bundle was "
+                          "taken, so an uncovered record today is not evidence on its own -- this "
+                          "bundle was a partial claim from the start")
         #
         # The wording "written after the bundle was taken -- not an accusation" is right for GROWTH,
         # which is ordinary operation. It is wrong for a record that ALREADY EXISTED when the bundle
@@ -500,6 +620,9 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         _by_id = {r.get("id"): r for r in (store_items or []) if isinstance(r, dict)}
         _preexisting, _growth = [], []
         for mid in (b.get("unreceipted") or []):
+            if _live_ids is not None:
+                (_growth if mid in _live_ids else _preexisting).append(mid)
+                continue
             _r = _by_id.get(mid) or {}
             _ts = _r.get("ts")
             if isinstance(_gen_ts, (int, float)) and isinstance(_ts, (int, float)) and _ts <= _gen_ts:
@@ -507,10 +630,13 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             else:
                 _growth.append(mid)
         if _preexisting:
-            bad(f"{len(_preexisting)} record(s) existed when this bundle was generated and are covered "
-                f"by NO receipt: {_preexisting[:5]}{' ...' if len(_preexisting) > 5 else ''}. That is "
-                f"not growth -- the bundle's own count check has slack wherever a record was erased, "
-                f"and an injected record fits in it.")
+            _why = ("is covered by no receipt in the store's CURRENT chain either, so it was not "
+                    "written by this store -- it was inserted out of band"
+                    if _live_ids is not None else
+                    "existed when this bundle was generated (by its own `ts`, which the writer "
+                    "controls) and is covered by no receipt")
+            bad(f"{len(_preexisting)} record(s): {_preexisting[:5]}"
+                f"{' ...' if len(_preexisting) > 5 else ''} -- each {_why}.")
         for mid in _growth[:5]:
             limits.append(f"record {mid} is covered by no receipt in this bundle (written after it was "
                           f"taken, or with receipts disabled) -- not checked, not an accusation")
@@ -563,6 +689,18 @@ def load_store_items(path):
     return list(Inspeximus(path=path, receipts=True).items)
 
 
+def load_store_receipts(path):
+    """The store's CURRENT receipt chain, or None if the path is not there.
+
+    An auditor holding the store file holds its `.receipts` sidecar too, and that chain is what
+    separates growth from injection without trusting a timestamp. Same existence guard as its
+    sibling, for the same reason: opening a store CREATES it.
+    """
+    if not os.path.exists(path):
+        return None
+    return list(getattr(Inspeximus(path=path, receipts=True), "_receipts", None) or [])
+
+
 def _cli(argv=None):
     import argparse, os
     ap = argparse.ArgumentParser(prog="inspeximus.audit_bundle",
@@ -599,13 +737,16 @@ def _cli(argv=None):
         bundle = json.load(f)
     wl = [w.strip() for w in a.witnesses.split(",")] if a.witnesses else None
     items = None
+    receipts = None   # bound here too: without --store the verify call would NameError
     if a.store:
         items = load_store_items(a.store)
+        receipts = load_store_receipts(a.store)   # the live chain: growth vs injection
         if items is None:
             print(f"  FAIL --store {a.store} does not exist; refusing to create a store while verifying, "
                   f"because an empty one verifies clean")
             return 1
-    res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)
+    res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,
+                        store_items=items, store_receipts=receipts)
     for c in res["checks"]:
         print(f"  OK   {c}")
     for pr in res["problems"]:
