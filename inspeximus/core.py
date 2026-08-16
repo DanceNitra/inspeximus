@@ -7063,11 +7063,37 @@ class Inspeximus:
         receipts = getattr(self, "_receipts", None) or []
         mine = [r for r in receipts if r.get("memory_id") == rec["id"]]
         if mine:
-            committed = mine[-1].get("commit") or {}
+            # THE FIRST RECEIPT, and EVERY committed field. Two defects lived in the three lines this
+            # replaces, and both were the sibling surface's own lessons unlearned here.
+            #
+            # (1) It compared `content_sha256`, the PRE-1.68 composite of text+key+mtype. Since then
+            #     the binding fields are immutable_sha256, value_sha256, status_sha256, time_sha256
+            #     and attrib_sha256. So editing `object` -- the value the store SERVES, and what
+            #     supersession, revert() and the echo guard all key on -- left provenance reporting
+            #     `content_matches_receipt: True` while verify_writes on the same store said False.
+            #     Measured 2026-08-15: 90d -> 30d on disk, one surface caught it and this one did not.
+            #
+            # (2) It read `mine[-1]`, the LATEST receipt. verify_writes carries a long comment about
+            #     why that is a laundering path -- tamper out of band, append a well-formed amendment,
+            #     and the latest receipt commits to the forged content. (I could not make that land
+            #     through this surface in the fixture I built, so it is fixed as a structure, not
+            #     reported as a reproduced exploit.) The first receipt is what binds; later ones may
+            #     forgive only the fields they DECLARE, which is what `_AMENDABLE` is for.
+            first = min(mine, key=lambda r: r.get("seq", 0))
+            committed = first.get("commit") or {}
+            latest = max(mine, key=lambda r: r.get("seq", 0))
             current = self._write_commit(rec)
+            forgiven = {f for r in mine if r.get("seq", 0) > first.get("seq", 0)
+                        for f in (r.get("amends") or ())} & _AMENDABLE
             integ["receipted"] = True
-            integ["signed"] = "sig" in mine[-1]
-            integ["content_matches_receipt"] = committed.get("content_sha256") == current["content_sha256"]
+            integ["signed"] = "sig" in latest
+            _fields = [k for k in ("immutable_sha256", "value_sha256", "status_sha256",
+                                   "time_sha256", "content_sha256")
+                       if k in committed and k not in forgiven]
+            _bad = [k for k in _fields if committed.get(k) != current.get(k)]
+            integ["content_matches_receipt"] = not _bad
+            if _bad:
+                integ["content_mismatch_fields"] = _bad
             integ["attribution_matches_receipt"] = (
                 None if committed.get("attrib_sha256") is None       # written before attribution was committed
                 else committed.get("attrib_sha256") == current["attrib_sha256"])

@@ -178,6 +178,47 @@ keep-budget, and `remember()` reserved only one. Writing under the other gave 30
 store capped at 10. Both are reserved now, and a test walks the list so a third cannot arrive
 unreserved.
 
+### Hiding the current record, the mirror image of resurrecting an old one
+
+`retires` closed un-retiring a corrected-away value. The other direction stayed open: mark the live
+record `superseded` on disk and recall returns nothing, with every verifier clean. Composed with the
+injection hole it was a controlled **substitution** — conceal the true policy, inject a replacement,
+and the agent is served the forgery.
+
+The rule now: a record **born as the live value** that is not current today must be accounted for —
+by a later receipt, another write's `retires`, or a tombstone. Five retirement paths had no "newer"
+record to hang that on (the state toggle, both keep-budgets, lineage retraction, reload merge) and
+now declare themselves, one receipt each. `born_status` is the other half: the echo, objectless and
+back-fill guards all retire the *incoming* record, so an ordinary store is full of `superseded` rows
+that were never live, and without it the check would fire on every one of them.
+
+### Attestation: roots nobody recomputed, signatures anyone could strip
+
+* **The Merkle roots were bound by nothing.** `_STH_FIELDS` covers the tips and counts, not the
+  roots, and `verify_bundle` never re-derived them: zero `writes_root`, reseal the (advisory)
+  `bundle_hash`, verdict PASS. The root is what an **inclusion proof** verifies against — the receipt
+  an auditor checks *without* the log — so a substituted root lets a proof over a forged tree verify
+  clean. Now re-derived from the chains the bundle carries.
+* **Signatures could be deleted.** Strip every `sig` and `pubkey`, reseal: `ok: True`, no problem
+  raised, nothing saying the artifact had ever been signed. Coverage is now stated as a number, a
+  partially-signed chain is an error, and `require_signed=True` refuses the downgrade. It still
+  cannot *prove* a bundle was signed — an attacker strips the pubkey too — but the auditor is told
+  which artifact they are holding.
+* **Tombstones ignored `receipt_signer`.** They honoured the in-process `receipt_key` only, so the
+  deployment that took the write-authority boundary seriously — where the store cannot mint a
+  signature at all — got **unsigned erasure proofs**, with `governance_report` saying
+  `all_signed: False` and nothing explaining why. Both paths now, failing closed.
+
+### `provenance()` and `verify_writes()` disagreed, and provenance was wrong
+
+`provenance()` answers "why do you hold this, and how far does that answer bind", so its integrity
+block reads as a verdict. It compared `content_sha256` — the pre-1.68 composite of text+key+mtype —
+so editing `object`, the value the store actually serves, left it reporting
+`content_matches_receipt: True` while `verify_writes` on the same store said False. It now checks
+every committed field against the **first** receipt (later ones forgive only what they declare) and
+names the field that moved. A parity test asserts the two surfaces can never disagree again,
+whatever field is touched — checking a list of fields someone thought of is how this stayed wrong.
+
 ### Also
 
 * An **encrypted store accepted a plaintext substitute**: opening a plaintext file *with* a key
