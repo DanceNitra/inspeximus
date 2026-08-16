@@ -80,7 +80,14 @@ def deprecate_symbol(store, old: str, new: str, reason: str = "") -> dict:
     if old == new:
         raise ValueError("`old` and `new` are the same symbol -- nothing to deprecate")
     text = f"{old} was replaced by {new}" + (f": {reason}" if reason else "")
-    store.remember(text, key=_key(old), object=new, mtype="semantic")
+    # The guard keyspace is RESERVED in remember() (it is exempt from capacity eviction and from the
+    # keep-budget, so an arbitrary writer could hold unbounded rows outside the operator's cap). This
+    # is the legitimate writer saying so, the same way grant()/revoke() do for the ACL prefix.
+    store._guard_writing = getattr(store, "_guard_writing", 0) + 1
+    try:
+        store.remember(text, key=_key(old), object=new, mtype="semantic")
+    finally:
+        store._guard_writing -= 1
     return {"symbol": old, "replacement": new, "reason": reason}
 
 

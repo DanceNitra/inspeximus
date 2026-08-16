@@ -201,7 +201,10 @@ def _serving_class(rec: dict) -> str:
 # widening it further is a deliberate change to what the chain guarantees, not a parameter.
 # Enforced rather than described: verify_writes intersects with it, _emit_write_receipt raises on it.
 _AMENDABLE = frozenset({"mtype", "status_sha256"})
-_GUARD_KEYSPACES = ("code::symbol::", _ACL_PREFIX)
+#: The code-guard keyspace, named once so the reservation in remember() and the exemption in
+#: _is_guard_record cannot drift apart -- they were two string literals and only one was enforced.
+_CODE_GUARD_PREFIX = "code::symbol::"
+_GUARD_KEYSPACES = (_CODE_GUARD_PREFIX, _ACL_PREFIX)
 
 
 def _is_guard_record(rec) -> bool:
@@ -2017,6 +2020,22 @@ class Inspeximus:
             raise ValueError(
                 f"{_ACL_PREFIX!r} is the reserved access-control keyspace: a grant may only be written by "
                 f"grant()/revoke(), never through remember(). Otherwise any writer could authorise itself.")
+        # THE OTHER GUARD KEYSPACE, reserved for the same reason and previously not reserved at all.
+        # `_GUARD_KEYSPACES` has two prefixes; `remember()` reserved one. Guard records are excluded
+        # from the capacity population BEFORE the comparison and from the consolidation keep-budget,
+        # and they are still rankable by recall -- so writing under the unreserved prefix bought
+        # permanent exemption from a bound the operator configured. Measured 2026-08-15, capacity=10:
+        # ordinary keys -> 10 active, 8 of the attacker's 20 survive and 8 honest records are evicted;
+        # `code::symbol::` keys -> 30 active, OVER CAP BY 20, and every honest record survives because
+        # nothing was ever evicted. The payload is recallable throughout.
+        #
+        # `deprecate_symbol` is the legitimate writer and goes through the same door as grant()/revoke().
+        if key is not None and str(key).startswith(_CODE_GUARD_PREFIX) \
+                and not getattr(self, "_guard_writing", 0):
+            raise ValueError(
+                f"{_CODE_GUARD_PREFIX!r} is the reserved code-guard keyspace: records under it are exempt "
+                f"from capacity eviction and from the consolidation keep-budget, so an arbitrary writer "
+                f"could hold unbounded rows outside a cap the operator set. Use deprecate_symbol().")
         # RESERVED META KEYSPACE (see _RESERVED_META). The caller's dict is about to be copied onto the
         # record, and the library reads its own decisions back out of that dict, so anything it stamps
         # must not be arrivable from outside. Stripped silently rather than raising: a writer probing
@@ -2052,6 +2071,20 @@ class Inspeximus:
                # keyspace below, never into `source` -- that dict comes from the caller, and a digest
                # a writer can set is a drift check the writer can defeat. See check_sources().
                "mtype": mtype or _infer_type(text), "last_access": now,
+               # WAS THE TYPE DECLARED, OR GUESSED FROM THE TEXT? `mtype` picks the decay half-life
+               # (7 days episodic vs 3650 days procedural -- 521x) and `_effective_value` ranks
+               # capacity eviction by it, so a label inferred from CALLER TEXT sets its own retention
+               # class. Measured 2026-08-15 with attacker and honest records written interleaved at
+               # the same time, so age and store order are neutral, and one word different inside the
+               # attacker's own text: without it, evictions alternate 2/3, 3/3, 3/4, 4/4 -- symmetric.
+               # With "always" added, 6 honest records are destroyed and 2 attacker records are, an
+               # exact inversion. Word choice in a document the agent reads aims the delete.
+               #
+               # Tightening the regex is unwinnable -- any keyword list over attacker-controlled text
+               # is bypassable -- and it is not the defect. The defect is that a guess confers a
+               # PRIVILEGE. Recorded here and honoured in _effective_value; inference still helps
+               # ranking, but it cannot buy immortality.
+               "mtype_inferred": mtype is None,
                "status": "provisional" if provisional else "active",
                "links": [], "meta": dict(meta or {})}
         # SOURCE FINGERPRINT (see check_sources): only when the doc is a path that exists right now.
@@ -2336,7 +2369,7 @@ class Inspeximus:
         # test_capacity_eviction_is_advisory_not_erasure_residue, which expected the oldest to go.
         _order = {rec.get("id"): i for i, rec in enumerate(self._items)}
         rest_keep = set(id(r) for r in
-                        sorted(rest, key=lambda r: (-self._effective_value(r, now),
+                        sorted(rest, key=lambda r: (-self._eviction_value(r, now),
                                                     -_order.get(r.get("id"), -1)))[:budget - kprot])
         evict_ids = [r["id"] for r in rest if id(r) not in rest_keep]
         if evict_ids:
@@ -9219,6 +9252,30 @@ class Inspeximus:
                 s = f"{t}/{s}"
             out[s] = row
         return out
+
+    def _eviction_value(self, r: dict, now: float) -> float:
+        """`_effective_value`, but an INFERRED type does not keep its half-life.
+
+        `mtype` picks the decay half-life (7 days episodic vs 3650 days procedural, a 521x spread)
+        and eviction ranks by it, so a label GUESSED from caller text sets its own retention class.
+        Measured 2026-08-15 with the arms interleaved and aged one day per round: adding the single
+        word "always" to the attacker's own text moved two evictions off the attacker's records and
+        onto the user's, at every scale (control 2/2, 4/4, 6/6, 8/8; attack 3/1, 5/3, 7/5, 9/7).
+
+        EVICTION ONLY, and that boundary is the fix rather than a detail. The first version applied
+        this inside `_effective_value` itself, which RANKING also uses -- so every inferred record
+        decayed at one rate, a time gap stopped reordering anything, and a test whose whole job is to
+        catch a vacuous tie assertion caught it. Inference is genuinely useful for ranking; it is
+        only a privilege where it decides what gets DELETED and what survives forever.
+
+        Tightening the regex is unwinnable: any keyword list over attacker-controlled text is
+        bypassable, and an inaccurate label is not the defect. A guess conferring a privilege is.
+        """
+        if not r.get("mtype_inferred"):
+            return self._effective_value(r, now)
+        _r = dict(r)
+        _r["mtype"] = "episodic"
+        return self._effective_value(_r, now)
 
     def _effective_value(self, r: dict, now: float) -> float:
         """Recall weight = stored value decayed by time since last access, at the memory's TYPE
