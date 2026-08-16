@@ -4150,7 +4150,30 @@ class Inspeximus:
         if self.tenant is not None:
             t["tenant"] = self.tenant
         t["hash"] = _sha256_hex(_canon(Inspeximus._tombstone_core(t)))
-        if self._receipt_sk and _HAVE_ED:
+        # BOTH SIGNING PATHS, in the same order the write receipt uses them. This honoured
+        # `receipt_key` (the in-process key) and ignored `receipt_signer` (the external KMS/HSM)
+        # entirely -- so the deployment that took the write-authority boundary seriously, the one
+        # where the store cannot mint a signature at all, got UNSIGNED erasure proofs. Measured
+        # 2026-08-15: with receipt_signer= the receipts came back 1/1 signed and the tombstones 0/1,
+        # the signer was called exactly once, and governance_report reported all_signed: False with
+        # nothing saying why. A GDPR deletion proof is the last artifact that should be unsigned in
+        # the most careful configuration.
+        #
+        # Fails CLOSED like the write path: a configured signer that errors or returns nothing must
+        # not degrade to an unsigned tombstone that later reads as "no signature required".
+        if self._receipt_signer is not None:
+            try:
+                _sig = self._receipt_signer(t["hash"])
+            except Exception as e:
+                raise RuntimeError(f"receipt signer failed ({type(e).__name__}: {e}); refusing to "
+                                   f"append an unsigned tombstone while a signer is configured") from e
+            if not _sig:
+                raise RuntimeError("receipt signer returned no signature; refusing to append an "
+                                   "unsigned tombstone while a signer is configured")
+            t["sig"] = _sig
+            if self.receipt_pubkey:
+                t["pubkey"] = self.receipt_pubkey
+        elif self._receipt_sk and _HAVE_ED:
             sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._receipt_sk))
             t["pubkey"] = self.receipt_pubkey
             t["sig"] = sk.sign(bytes.fromhex(t["hash"])).hex()

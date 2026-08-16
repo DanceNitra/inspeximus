@@ -227,6 +227,7 @@ def bind_content(bundle: dict, store_items: list) -> dict:
 
 
 def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1,
+                  require_signed: bool = False,
                   store_items: list | None = None) -> dict:
     """STANDALONE offline verification of an audit bundle -- needs only the file (no store, no receipt key).
     Checks, in order: (1) the bundle's own hash; (2) the write chain re-walks from genesis and its tip+count
@@ -293,6 +294,71 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         ok("anchor sth_hash is internally consistent")
     else:
         bad("anchor sth_hash does not match its own fields")
+
+    # `limits` is created further down, after the governance section. These two checks belong up
+    # here with the rest of the anchor work, so what they have to say is parked and flushed there.
+    _deferred_limits: list = []
+
+    # (4b) THE MERKLE ROOTS, recomputed from the chains this bundle carries.
+    #
+    # `_STH_FIELDS` is ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip") -- the tips and
+    # counts, NOT the roots. So `writes_root`, `tombstones_root` and `root_hash` sat in the anchor
+    # bound by nothing and checked by nobody. Measured 2026-08-15: zero any of the three, reseal
+    # `bundle_hash` (self-computed and documented as advisory), and verify_bundle returned ok=True.
+    # They matter because the ROOT is what an inclusion proof verifies against -- the SCITT-style
+    # receipt an auditor checks without the log -- so a substituted root lets a proof over a forged
+    # tree verify clean.
+    #
+    # Recomputed with the same leaf definition the store uses (`_chain_core`), which is why it can be
+    # done offline from the bundle alone.
+    try:
+        from .merkle import root as _mroot
+        for _kind, _recs, _field in (("write", wc, "writes_root"),
+                                     ("tombstone", tc, "tombstones_root")):
+            if _field not in anchor:
+                continue
+            _leaves = [_canon(Inspeximus._chain_core(r, _kind)) for r in _recs]
+            _re = _mroot(_leaves).hex()
+            if _re != anchor.get(_field):
+                bad(f"anchor {_field} does not match the {_kind} chain in this bundle "
+                    f"(recomputed {_re[:12]}..., anchor says {str(anchor.get(_field))[:12]}...)")
+            else:
+                ok(f"anchor {_field} re-derives from the {_kind} chain")
+        if "root_hash" in anchor:
+            _rh = _sha256_hex(_canon({k: anchor.get(k) for k in
+                                      ("n_writes", "writes_root", "n_tombstones",
+                                       "tombstones_root", "merkle")}))
+            if _rh != anchor.get("root_hash"):
+                bad("anchor root_hash does not match its own root fields")
+    except Exception as e:                       # a verifier must report, never crash
+        _deferred_limits.append(f"merkle roots NOT re-derived ({type(e).__name__}: {e}) -- treat the "
+                                f"roots in this anchor as unchecked")
+
+    # (4c) SIGNATURE COVERAGE, stated as a number rather than left to be inferred from silence.
+    #
+    # An attacker who can edit the bundle can DELETE every `sig` and `pubkey` and reseal it, and the
+    # result verified ok=True with nothing anywhere saying the artifact had ever been signed.
+    # Measured 2026-08-15: 3 of 3 signatures stripped, verdict PASS, no problem raised. The chain is
+    # still internally consistent -- that is the point, and it is why "no signature" must be reported
+    # as a FACT about this bundle instead of as an absence of findings.
+    #
+    # HONEST LIMIT: this cannot prove a bundle WAS signed. An attacker who strips the signatures also
+    # strips the pubkey, and an unsigned bundle from an unsigned store is legitimate. What it buys is
+    # that an auditor is told which one they are holding, and `require_signed=True` lets one who
+    # knows the store signs its receipts refuse the downgrade outright.
+    _signed = sum(1 for r in wc if r.get("sig")) + sum(1 for r in tc if r.get("sig"))
+    _total = len(wc) + len(tc)
+    if _total:
+        if _signed == 0:
+            (bad if require_signed else _deferred_limits.append)(
+                f"UNSIGNED: 0 of {_total} chain entries carry a signature. The chain is internally "
+                f"consistent, which is not the same as attributable -- an editor who can rewrite the "
+                f"sidecar can rewrite the chain too. Pass require_signed=True to refuse this.")
+        elif _signed < _total:
+            bad(f"PARTIALLY SIGNED: {_signed} of {_total} chain entries carry a signature -- a chain "
+                f"that is signed in places is not signed")
+        else:
+            ok(f"all {_total} chain entries carry a signature")
 
     # (5) external witness co-signatures (the only operator-adversarial check)
     cosigs = anchor.get("cosignatures")
@@ -369,7 +435,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             bad("this bundle carries NO write or tombstone receipts -- nothing here to verify, which is "
                 "not the same as verified")
 
-    limits: list = []
+    limits: list = list(_deferred_limits)
     # (7b) ACCESS CONTROL. Grants are ordinary records, so each one has a write receipt in the chain above --
     # which means the bundle can be asked whether its ACL summary is backed by the evidence beside it. An
     # act listed here with no receipt was appended to the bundle, not written to the store; that is the
