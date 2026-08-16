@@ -130,6 +130,13 @@ def test_the_committed_spec_is_not_empty_and_names_real_targets():
     with open(os.path.join(ROOT, "tools", "mutations.json"), encoding="utf-8") as fh:
         spec = json.load(fh)
     assert spec, "tools/mutations.json is empty: the gate would pass over zero mutations"
+    # EVERY BROKEN TARGET, NOT THE FIRST ONE. This asserted inside the loop, so a spec with eleven
+    # stale targets reported one and hid ten -- and each fix revealed the next, which is eleven CI
+    # rounds to learn a number that was knowable in one. Measured 2026-08-16: after five rounds of
+    # changes the count was 11, meaning 11 mutations were silently not being exercised and the
+    # mutation score was overstated by exactly that many. A guard against silent skips must not
+    # report its own findings one at a time.
+    broken = []
     for mut in spec:
         assert set(mut) >= {"name", "file", "old", "new", "tests"}, mut
         path = os.path.join(ROOT, mut["file"])
@@ -140,8 +147,9 @@ def test_the_committed_spec_is_not_empty_and_names_real_targets():
         # CRLF checkout a multi-line target could pass here and be SKIPPED by the real run -- a guard
         # against silent skips, itself blind to the commonest cause of one.
         src = mutation_check._read_exact(path)
-        assert src.count(mutation_check._match_endings(mut["old"], src)) == 1, \
-            f"{mut['name']}: target is absent or ambiguous, so it would be silently skipped"
+        _hits = src.count(mutation_check._match_endings(mut["old"], src))
+        if _hits != 1:
+            broken.append(f"{mut['name']}  [{_hits} hits in {mut['file']}]")
         # The TEST pointer has to resolve too. A mutation aimed at a test file that was renamed or
         # deleted still runs -- pytest reports nothing, and it reads as a SURVIVOR rather than as an
         # error. That is a two-hour gate run to learn a filename changed.
@@ -153,6 +161,11 @@ def test_the_committed_spec_is_not_empty_and_names_real_targets():
         for t in (mut["tests"] if isinstance(mut["tests"], list) else [mut["tests"]]):
             assert os.path.exists(os.path.join(ROOT, t)), \
                 f"{mut['name']}: names a test file that does not exist ({t})"
+
+    assert not broken, (
+        f"{len(broken)} of {len(spec)} mutation target(s) are absent or ambiguous. The gate would "
+        f"SKIP them, so the mutation score would be overstated by that many:\n  "
+        + "\n  ".join(broken))
 
 
 def test_the_cli_refuses_an_empty_spec():

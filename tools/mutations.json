@@ -64,9 +64,9 @@
   },
   {
     "name": "the CLI stops printing the scope next to the verdict",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "    for lim in res.get(\"limits\") or []:\n        print(f\"  NOTE {lim}\")",
-    "new": "    for lim in []:\n        print(f\"  NOTE {lim}\")",
+    "file": "inspeximus/cli.py",
+    "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
+    "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
     "tests": [
       "tests/test_verify_bundle_content_scope.py"
     ]
@@ -74,8 +74,8 @@
   {
     "name": "the headline CLI stops passing the store through",
     "file": "inspeximus/cli.py",
-    "old": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold, store_items=items)",
-    "new": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold)",
+    "old": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,\n                            store_items=items, store_receipts=receipts,",
+    "new": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,\n                            store_receipts=receipts,",
     "tests": [
       "tests/test_verify_bundle_content_scope.py"
     ]
@@ -83,8 +83,8 @@
   {
     "name": "a mistyped store path is created instead of refused (shared guard)",
     "file": "inspeximus/audit_bundle.py",
-    "old": "    if not os.path.exists(path):\n        return None",
-    "new": "    if False:\n        return None",
+    "old": "    if not os.path.exists(path):\n        return None\n    return list(Inspeximus(path=path, receipts=True).items)",
+    "new": "    if False:\n        return None\n    return list(Inspeximus(path=path, receipts=True).items)",
     "tests": [
       "tests/test_docs_examples_are_runnable.py"
     ]
@@ -299,8 +299,8 @@
   {
     "name": "verify_writes stops comparing the value",
     "file": "inspeximus/core.py",
-    "old": "                              for k in (\"immutable_sha256\", \"mtype\", \"value_sha256\", \"attrib_sha256\")",
-    "new": "                              for k in (\"immutable_sha256\", \"mtype\", \"attrib_sha256\")",
+    "old": "                              for k in (\"immutable_sha256\", \"mtype\", \"value_sha256\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
+    "new": "                              for k in (\"immutable_sha256\", \"mtype\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
     "tests": [
       "tests/test_value_is_committed.py"
     ]
@@ -308,8 +308,8 @@
   {
     "name": "the audit bundle stops binding the value",
     "file": "inspeximus/audit_bundle.py",
-    "old": "        for field in (\"immutable_sha256\", \"content_sha256\", \"value_sha256\", \"attrib_sha256\"):",
-    "new": "        for field in (\"immutable_sha256\", \"content_sha256\", \"attrib_sha256\"):",
+    "old": "        for field in (\"immutable_sha256\", \"content_sha256\", \"value_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
+    "new": "        for field in (\"immutable_sha256\", \"content_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
     "tests": [
       "tests/test_value_is_committed.py"
     ]
@@ -560,17 +560,17 @@
   {
     "name": "the shared store guard stops refusing a missing path",
     "file": "inspeximus/audit_bundle.py",
-    "old": "    if not os.path.exists(path):\n        return None",
-    "new": "    if False:\n        return None",
+    "old": "    if not os.path.exists(path):\n        return None\n    return list(getattr(Inspeximus(path=path, receipts=True), \"_receipts\", None) or [])",
+    "new": "    if False:\n        return None\n    return list(getattr(Inspeximus(path=path, receipts=True), \"_receipts\", None) or [])",
     "tests": [
       "tests/test_docs_examples_are_runnable.py"
     ]
   },
   {
     "name": "audit_bundle's CLI ignores the guard's refusal",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "        if items is None:",
-    "new": "        if False:",
+    "file": "inspeximus/cli.py",
+    "old": "            receipts = load_store_receipts(a.store)\n            if items is None:",
+    "new": "            receipts = load_store_receipts(a.store)\n            if False:",
     "tests": [
       "tests/test_docs_examples_are_runnable.py"
     ]
@@ -651,8 +651,8 @@
   {
     "name": "MCP verify_audit_bundle drops store_items again (content never compared)",
     "file": "inspeximus/mcp_server.py",
-    "old": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items)",
-    "new": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold)",
+    "old": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items,\n                         store_receipts=receipts, require_signed=require_signed,\n                         expected_pubkey=(expected_pubkey or None))",
+    "new": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold,\n                         store_receipts=receipts, require_signed=require_signed,\n                         expected_pubkey=(expected_pubkey or None))",
     "tests": [
       "tests/test_mcp_verification_gaps.py"
     ]
@@ -705,7 +705,7 @@
   {
     "name": "the guard keyspace registry goes empty, so nothing is carved out",
     "file": "inspeximus/core.py",
-    "old": "_GUARD_KEYSPACES = (\"code::symbol::\", _ACL_PREFIX)",
+    "old": "_GUARD_KEYSPACES = (_CODE_GUARD_PREFIX, _ACL_PREFIX)",
     "new": "_GUARD_KEYSPACES = ()",
     "tests": [
       "tests/test_guard_keyspace_survives_housekeeping.py"
@@ -1499,8 +1499,8 @@
   {
     "name": "the recall block drops its per-record bound",
     "file": "inspeximus/claude_code.py",
-    "old": "out += [f\"  * {_excerpt(d['text'], 480)}\" for d in decisions]",
-    "new": "out += [f\"  * {d['text']}\" for d in decisions]",
+    "old": "        out += [f\"  * {_injected(d['text'], 480)}\" for d in decisions]",
+    "new": "        out += [f\"  * {d['text']}\" for d in decisions]",
     "tests": [
       "tests/test_claude_code_recall_surfaces_decisions.py"
     ]
@@ -1553,8 +1553,8 @@
   {
     "name": "check_sources calls a store with nothing checkable OK (empty check reads clean)",
     "file": "inspeximus/core.py",
-    "old": "\"ok\": bool(checked) and not drifted and not orphaned,",
-    "new": "\"ok\": not drifted and not orphaned,",
+    "old": "            \"ok\": bool(checked) and not drifted and not orphaned and not unbound_capture,",
+    "new": "            \"ok\": not drifted and not orphaned and not unbound_capture,",
     "tests": [
       "tests/test_isolation_and_persistence.py"
     ]
@@ -1562,8 +1562,8 @@
   {
     "name": "the source fingerprint goes into the caller-writable source dict instead of reserved meta",
     "file": "inspeximus/core.py",
-    "old": "                    rec[\"meta\"][\"source_sha256\"] = hashlib.sha256(_fh.read()).hexdigest()",
-    "new": "                    rec[\"source\"][\"sha256\"] = hashlib.sha256(_fh.read()).hexdigest()",
+    "old": "                    rec[\"meta\"][\"source_sha256\"] = _obs.lower() if _obs else _at_write",
+    "new": "                    rec[\"source\"][\"sha256\"] = _obs.lower() if _obs else _at_write",
     "tests": [
       "tests/test_isolation_and_persistence.py"
     ]

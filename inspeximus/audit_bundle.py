@@ -1010,64 +1010,64 @@ def load_store_receipts(path):
 
 
 def _cli(argv=None):
-    import argparse, os
+    """`python -m inspeximus.audit_bundle` -- kept working, no longer a second implementation.
+
+    THIS USED TO BE A FULL COPY of the audit-build / audit-verify handlers in cli.py, and it drifted
+    exactly the way a second implementation of one decision always does. When `--expected-pubkey`
+    and `--require-signed` were added to `inspeximus audit-verify` -- the fix for "the pin is
+    reachable only from the side that does not need it" -- this copy did not get them, so an auditor
+    who reached for this entrypoint got the unpinned verdict and nothing told them the stronger
+    check existed. Nobody noticed until the mutation harness refused a spec whose target line had
+    moved out from under it.
+
+    Porting the two flags across would have bought one round of agreement and then diverged again on
+    the next change. So this translates its own argv onto the real CLI instead: old invocations keep
+    working, `--expected-pubkey` and `--require-signed` are available here for the first time, and
+    audit-verify is implemented in exactly one place. `tests/test_mutation_check_harness.py` has the
+    one remaining target, and `test_there_is_only_one_audit_verify` fails if a copy comes back.
+    """
+    import argparse
     ap = argparse.ArgumentParser(prog="inspeximus.audit_bundle",
-                                 description="Build / verify a portable inspeximus audit bundle.")
+                                 description="Build / verify a portable inspeximus audit bundle. "
+                                             "A thin alias for `inspeximus audit-build` / "
+                                             "`inspeximus audit-verify`, which is where these live.")
     sub = ap.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build", help="export a store's record-keeping state to a portable bundle")
     b.add_argument("--path", help="store file (default: $INSPEXIMUS_PATH or ./inspeximus_memory.json)")
     b.add_argument("--out", default="inspeximus_audit_bundle.json", help="output json path")
-    b.add_argument("--expected-pubkey", default=None, help="pin the signature-authenticity check to this key")
+    b.add_argument("--expected-pubkey", default=None,
+                   help="pin the signature-authenticity check to this key")
     v = sub.add_parser("verify", help="verify a bundle OFFLINE (needs only the file)")
     v.add_argument("bundle", help="the bundle json to verify")
     v.add_argument("--witnesses", default=None, help="comma-separated allowlisted witness pubkeys (hex)")
     v.add_argument("--threshold", type=int, default=1, help="k-of-n witness threshold")
     v.add_argument("--store", default=None,
-                   help="the store file the bundle came from; binds the receipts to the CONTENT it serves "
-                        "today. Without it a clean chain over substituted text still reads PASS.")
+                   help="the store file the bundle came from; binds the receipts to the CONTENT it "
+                        "serves today. Without it a clean chain over substituted text reads PASS.")
+    v.add_argument("--expected-pubkey", default=None,
+                   help="pin the chain signatures to a key you got OUT OF BAND. Reaching this "
+                        "entrypoint no longer costs you the pinned check.")
+    v.add_argument("--require-signed", action="store_true",
+                   help="refuse a bundle whose chain is unsigned or only present-but-unverified")
     a = ap.parse_args(argv)
 
+    from .cli import main as _main
     if a.cmd == "build":
-        p = a.path or os.environ.get("INSPEXIMUS_PATH") or "inspeximus_memory.json"
-        store = Inspeximus(path=p, receipts=True)          # reload the persisted receipt/tombstone chains
-        bundle = build_bundle(store, expected_pubkey=a.expected_pubkey)
-        if bundle["anchor"]["n_writes"] == 0:
-            print("note: this store has no write receipts -- it was not written with receipts enabled, so the "
-                  "bundle proves nothing. Write with Inspeximus(path=..., receipts=True) (or `inspeximus "
-                  "--receipts remember ...`) to build an auditable chain.")
-        with open(a.out, "w", encoding="utf-8") as f:
-            json.dump(bundle, f, ensure_ascii=False, indent=2)
-        print(f"wrote audit bundle -> {a.out}  "
-              f"({bundle['anchor']['n_writes']} writes, {bundle['anchor']['n_tombstones']} erasures)")
-        return 0
+        fwd = (["--path", a.path] if a.path else []) + ["audit-build", "--out", a.out]
+        if a.expected_pubkey:
+            fwd += ["--expected-pubkey", a.expected_pubkey]
+        return _main(fwd)
 
-    with open(a.bundle, encoding="utf-8") as f:
-        bundle = json.load(f)
-    wl = [w.strip() for w in a.witnesses.split(",")] if a.witnesses else None
-    items = None
-    receipts = None   # bound here too: without --store the verify call would NameError
+    fwd = ["audit-verify", a.bundle, "--threshold", str(a.threshold)]
+    if a.witnesses:
+        fwd += ["--witnesses", a.witnesses]
     if a.store:
-        items = load_store_items(a.store)
-        receipts = load_store_receipts(a.store)   # the live chain: growth vs injection
-        if items is None:
-            print(f"  FAIL --store {a.store} does not exist; refusing to create a store while verifying, "
-                  f"because an empty one verifies clean")
-            return 1
-    res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,
-                        store_items=items, store_receipts=receipts)
-    for c in res["checks"]:
-        print(f"  OK   {c}")
-    for pr in res["problems"]:
-        print(f"  FAIL {pr}")
-    # Printed with the verdict, never below it: a PASS whose scope is only visible to someone who read the
-    # docstring is the same silent assurance this check exists to remove.
-    for lim in res.get("limits") or []:
-        print(f"  NOTE {lim}")
-    print(f"\nVERDICT: {'PASS' if res['ok'] else 'FAIL'}  "
-          f"({res['summary'].get('writes')} writes, {res['summary'].get('erasures')} erasures"
-          f", content {'checked' if res['summary'].get('content_checked') else 'NOT checked'}"
-          f"{', operator-adversarial' if res['summary'].get('operator_adversarial') else ''})")
-    return 0 if res["ok"] else 1
+        fwd += ["--store", a.store]
+    if a.expected_pubkey:
+        fwd += ["--expected-pubkey", a.expected_pubkey]
+    if a.require_signed:
+        fwd += ["--require-signed"]
+    return _main(fwd)
 
 
 if __name__ == "__main__":
