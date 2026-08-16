@@ -2410,6 +2410,24 @@ class Inspeximus:
                 # the tombstone chain already meets. Inside the receipt hash, so trimming the list
                 # breaks the chain link instead of shrinking the check.
                 "retires": sorted(retires or ()),
+                # WHEN THE FACT BECAME TRUE, since 2.10.2. `valid_from` decides every `as_of()`
+                # answer -- "what did the agent believe when it acted, provably" -- and it was in no
+                # commitment at all. Measured 2026-08-15: edit it on disk and verify_writes,
+                # verify_attribution, verify_bundle and a client-held witness taken BEFORE the edit
+                # all report clean. The control is what makes that specific: `state_digest` DOES
+                # cover the sibling field `ts`, so the witness is wired to timestamps in general and
+                # simply not to the two that answer the temporal question.
+                #
+                # Write-once, so it binds for life like text+key and `object`: set in remember()
+                # before the receipt is emitted, rewritten by no call site. `valid_from_source` rides
+                # along -- it is the provenance OF that time, and a claim whose provenance can be
+                # rewritten silently is not evidence.
+                #
+                # `invalidated_at` is deliberately NOT here: supersession writes it mechanically, so
+                # committing it would demand an amendment per retirement -- the churn argument that
+                # shaped `status_sha256`. It is handled by RECOMPUTING it in as_of() instead.
+                "time_sha256": _sha256_hex(_canon({"valid_from": rec.get("valid_from"),
+                                                   "valid_from_source": rec.get("valid_from_source")})),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
 
     def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "",
@@ -2788,7 +2806,7 @@ class Inspeximus:
                     # deleting one breaks the chain link.
                     bad = any(rc.get(k) != cc.get(k)
                               for k in ("immutable_sha256", "mtype", "value_sha256",
-                                        "status_sha256", "attrib_sha256")
+                                        "status_sha256", "time_sha256", "attrib_sha256")
                               if k not in forgiven and k in rc)
                 elif legacy_strict:
                     # PRE-1.68 receipt, checked STRICTLY: text/key/mtype are one hash here, so the only
@@ -2827,6 +2845,8 @@ class Inspeximus:
                     _WHAT = {"immutable_sha256": "its TEXT or KEY", "mtype": "its TYPE",
                              "value_sha256": "its VALUE (`object`)",
                              "status_sha256": "whether the store SERVES it, or who confirmed it",
+                             "time_sha256": "WHEN the fact became true (`valid_from`), or where that "
+                                            "time came from",
                              "content_sha256": "its text/key/type"}
                     _diff = [k for k, v in rc.items() if k in _WHAT and cc.get(k) != v]
                     # `content_sha256` is the pre-1.68 COMPOSITE of text+key+mtype, so it co-fires
@@ -6705,15 +6725,29 @@ class Inspeximus:
         (`when`, world truth) x transaction-time (`as_recorded`, what the store knew). Audit/replay: "what did the
         agent believe when it acted", provably, without the later correction contaminating the reconstruction."""
         if as_recorded is None:
-            best = None
-            for r in self._tenant_rows():
-                if r.get("key") != key:
-                    continue
-                vf = r.get("valid_from", r["ts"])
-                inv = r.get("invalidated_at")
-                if vf <= when and (inv is None or inv > when):
-                    if best is None or vf > best.get("valid_from", best["ts"]):
-                        best = r
+            # RECOMPUTED from `valid_from` ordering, not read from the stored `invalidated_at`.
+            #
+            # This branch used to trust the stored field while the `as_recorded` branch below already
+            # derived the interval end from the next record's `valid_from` -- two implementations of
+            # one rule, and only one of them was safe. `invalidated_at` is mechanically written by
+            # supersession, so it cannot be committed without churning the receipt chain; deriving it
+            # means it does not need to be. Measured 2026-08-15: with the stored field trusted,
+            # editing `net30.invalidated_at` and `net90.valid_from` together moved the 2024-06 answer
+            # from net30 to net90 -- the store then says it believed a value at a date when it
+            # believed the opposite -- and editing either one alone blanked the answer entirely.
+            # Now the only field that decides is `valid_from`, and that one IS committed.
+            #
+            # The stored field is still written and still returned, as a cache and for display. It is
+            # simply no longer load-bearing, which is the point: a tampered cache changes no answer.
+            _rows = [r for r in self._tenant_rows() if r.get("key") == key]
+            cands = [r for r in _rows if r.get("valid_from", r["ts"]) <= when]
+            best = max(cands, key=lambda r: (r.get("valid_from", r["ts"]), r["ts"]), default=None)
+            if best is not None:
+                _bvf = best.get("valid_from", best["ts"])
+                _nxt = [r.get("valid_from", r["ts"]) for r in _rows
+                        if r.get("valid_from", r["ts"]) > _bvf]
+                if _nxt and min(_nxt) <= when:
+                    best = None            # a later record already took over before `when`
         else:
             # transaction-time filter: only records written by `as_recorded`; supersession recomputed within it
             # (a record is superseded only by a LATER-valid_from record that was itself already recorded by then).
@@ -6730,6 +6764,13 @@ class Inspeximus:
                # for them would re-create the ambiguity this field was added to remove.
                "valid_from_source": best.get("valid_from_source"),
                "invalidated_at": best.get("invalidated_at"), "id": best["id"]}
+        if as_recorded is None:
+            # Report the DERIVED end, for the same reason the branch above selects on it: a caller
+            # comparing `invalidated_at` against its own clock must not be handed a number the store
+            # itself no longer trusts.
+            _nxt = [r.get("valid_from", r["ts"]) for r in self._tenant_rows()
+                    if r.get("key") == key and r.get("valid_from", r["ts"]) > out["valid_from"]]
+            out["invalidated_at"] = min(_nxt) if _nxt else None
         if as_recorded is not None:
             nxt = [r.get("valid_from", r["ts"]) for r in self._tenant_rows()
                    if r.get("key") == key and r["ts"] <= as_recorded
