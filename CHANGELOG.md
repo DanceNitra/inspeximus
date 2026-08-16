@@ -132,6 +132,52 @@ Precondition, stated: the cluster must be ripe (≥15 similar members).
   `bootstrap(store_id)`. Default off, because a witness pool that refuses every new store on upgrade
   is worse than the attack.
 
+### `as_of()` — the two fields that decide what the agent believed
+
+`valid_from` and `invalidated_at` decide every temporal answer, and neither was committed. Editing
+`valid_from` on disk left `verify_writes`, `verify_attribution`, `verify_bundle` and a client-held
+witness **taken before the edit** all reporting clean. The control that made this specific:
+`state_digest` *does* cover the sibling field `ts`, so the witness is wired to timestamps in general
+and simply not to these.
+
+`valid_from` (with `valid_from_source`) is now committed as `time_sha256` — write-once, so it binds
+for life. `invalidated_at` is written mechanically by supersession and cannot be committed without
+churning the chain, so it was made **non-load-bearing** instead: `as_of()` derives the interval end
+from `valid_from` ordering, which its own `as_recorded` branch already did. Tampering with the stored
+field now changes no answer.
+
+### One prior erasure bought a free injected record in the audit bundle
+
+The coverage check compared **counts**, and a count has slack: each erasure removes a record and
+leaves its receipt. So on a store that has performed a GDPR erasure — exactly the store an audit
+bundle exists for — an injected record fit in the gap.
+
+| same injection, same verifier | records | receipts | verdict |
+|---|---|---|---|
+| no prior erasure | 4 | 3 | **FAIL** |
+| one prior erasure | 3 | 3 | **PASS** |
+
+Now split by age: a record that already existed when the bundle was generated and has no receipt is
+a problem; one written afterwards is ordinary growth and still reads as a note. **Residual, stated:**
+`ts` is attacker-writable, so forward-dating the record makes it look like growth again. This raises
+the cost; it does not close it.
+
+### A guessed label bought a retention privilege
+
+`mtype` is inferred from text, picks the decay half-life (7 days vs 3650 — a 521× spread), and
+capacity eviction ranks by it. So one word inside a document the agent reads decided which of the
+user's *true* memories were hard-deleted: adding `always` to the attacker's own text moved two
+evictions off their records and onto the user's, at every scale measured.
+
+An inferred type now decays at the episodic rate **in the eviction path only** — inference still
+informs ranking, where it is genuinely useful and confers nothing. Tightening the regex would be
+unwinnable and is not the defect; a guess conferring a privilege is.
+
+Separately, `_GUARD_KEYSPACES` lists two prefixes exempt from capacity and from the consolidation
+keep-budget, and `remember()` reserved only one. Writing under the other gave 30 active records on a
+store capped at 10. Both are reserved now, and a test walks the list so a third cannot arrive
+unreserved.
+
 ### Also
 
 * An **encrypted store accepted a plaintext substitute**: opening a plaintext file *with* a key
