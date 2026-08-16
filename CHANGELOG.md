@@ -3,6 +3,107 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.11.0 - UPGRADE IF AN AGENT ACTS ON A RECALLED MEMORY SOME TIME AFTER CHECKING IT, or if you run a MULTI-TENANT store and use `witness()` / `python -m inspeximus.audit_bundle verify`.
+
+Nothing here changes existing behaviour for a single-tenant caller who does not pass the new
+argument — but two things below were shipped broken and are worth reading even if the feature is not
+for you: a tenant's hydration witness attested the whole store, and `audit-verify` had a second
+implementation that could not pin a key.
+
+`witness(hits, bind_sources=True)` pins the SOURCES an answer was derived from, and
+`verify_witness` re-reads them at the point the answer is used.
+
+```python
+import hashlib, os, tempfile
+from inspeximus import Inspeximus
+
+d = tempfile.mkdtemp(); src = os.path.join(d, "policy.txt")
+open(src, "wb").write(b"deployment needs two approvers")
+mem = Inspeximus(path=os.path.join(d, "m.json"), receipts=True)
+mem.remember("deployment needs two approvers", key="policy", object="two",
+             source={"doc": src,
+                     "observed_sha256": hashlib.sha256(b"deployment needs two approvers").hexdigest()})
+
+hits = mem.recall("approvers")
+w = mem.witness(hits, bind_sources=True)          # the state this answer was derived from
+open(src, "wb").write(b"deployment needs ONE approver")   # the world moves before the agent acts
+v = mem.verify_witness(w)
+print(v["stale_at_use"], v["digest_match"], v["sources_moved"] != [])
+# -> True True True
+```
+
+The middle `True` is the point: the STORE did not change, so `digest_match` is right to say so. Only
+the world moved, and until now nothing said that at the moment it mattered.
+
+### Why there is a third one
+
+Provenance has a temporal chain, and a mutation in each gap is a different failure with a different
+remedy. The framing is [@safal207](https://github.com/safal207)'s on
+[anthropics/claude-code#34556](https://github.com/anthropics/claude-code/issues/34556), generalised
+from two bugs found independently -- his in OmniMemory (hash at session-end), ours in inspeximus
+(hash at write time):
+
+| window | failure | verdict | since |
+|---|---|---|---|
+| OBSERVE → CAPTURE | the fingerprint is of bytes nobody read | `UNBOUND_CAPTURE` | 2.10.6 |
+| CAPTURE → VERIFY | the source changed since capture | `DRIFTED` | long before |
+| **VERIFY → USE** | the source changed after it checked out | **`STALE_AT_USE`** | **here** |
+
+**Measured on ourselves before building it** (`probes/the_third_window_verify_to_use.py`):
+`check_sources` returned FRESH, the file changed, `recall` served the old text, and
+`verify_witness` answered `digest_match: True` -- correctly, because the store did not change. The
+window was never invisible; a second `check_sources` sees it. It was **unbound**: nothing carried
+the verification forward to the moment the memory was acted on, so the check that would have caught
+it is the one nobody thought to re-run.
+
+### What it refuses to pretend
+
+Every one of these is a shape this repository has shipped at least once:
+
+* **A witness that bound nothing does not report a clean world.** `sources_match` is False because
+  nothing was checked, not because nothing moved, and it says which.
+* **An unbindable record is named, not skipped** -- otherwise a half-covered answer reads exactly
+  like a fully covered one.
+* **A source that cannot be re-read is neither fresh nor moved.** Silence is not agreement.
+* **Coverage is a fraction, not a boolean**, and the KIND of binding travels with each pin. A record
+  with a locator but no `observed_sha256` still gets a write-time hash, which answers *this* window
+  and is not evidence the memory was ever bound to what was read; `sources_observation_bound` keeps
+  them apart. *My first version reported both as one number -- the exact conflation this whole line
+  of work exists to undo -- and a test caught it by expecting 0/1 and getting 1/1.*
+* **The store answer and the world answer stay separate.** `digest_match` is about the store,
+  `sources_match` about the world, and `valid` requires both only when the caller asked for sources.
+
+**This witness is UNSIGNED**, and the package now says so where the two meanings collide: a holder
+who edits the pinned digests gets a clean verdict. It binds an honest caller from their own check to
+their own use. `witness_pool.Witness.attest()` is the operator-adversarial one.
+
+### Fixed on the way, and shipped broken before this
+
+* **A tenant's hydration witness attested the WHOLE store.** `state_digest` was rebound on
+  `_TenantView` and `witness`, which wraps it, was not -- so the method ran PARENT-bound. Measured:
+  on a store where `acme` owns one record, `acme.witness()` reported `records: 2`, `active: 2` and
+  the root digest. It leaked how much other tenants hold, and it made every neighbour's write flip
+  this tenant's receipt to invalid. The structural sweep did not catch it because the sweep covers
+  PRIVATE helpers and this is a public method.
+* **The shared write chain no longer false-alarms a tenant.** The receipt chain is per-store and the
+  witness is per-tenant, so a neighbour's write moves this tenant's tip while their own records are
+  untouched. Reported (`receipts_tip_match` plus a limit saying so), not fatal -- an alarm that
+  fires on other people's activity is one that gets switched off before it ever catches anything. An
+  UNBOUND store keeps the strict meaning, and both directions have a test.
+* **`audit-verify` had a second implementation.** `python -m inspeximus.audit_bundle verify` was a
+  full copy of the `inspeximus audit-verify` handler and did not get 2.10.6's `--expected-pubkey` or
+  `--require-signed`, so that entrypoint could not pin a key at all. The copy is deleted rather than
+  patched -- `_cli` translates onto the real CLI -- and a test fails if a second one appears.
+* **Eleven mutation targets had gone stale** and were being silently skipped, so the mutation score
+  was overstated by eleven. The harness asserted inside its loop and reported one at a time; it
+  collects them now, 0.83s to see all eleven instead of 8m33s to see one. Two were *ambiguous*
+  rather than absent -- two loaders share a guard's lines verbatim -- so the mutation would have hit
+  whichever came first.
+
+Two adversarial passes on this candidate before publishing: 11 probes, then 8 against the first
+pass's own fixes. Both returned nothing, the second with a live control proving it could still tell
+a moved source from a steady one.
+
 ## 2.10.6 - SECURITY. UPGRADE IF YOU USE WITNESSES, AUDIT BUNDLES, OR `source={'doc': <path>}`.
 
 **Three** adversarial passes were run against this release before it was published — the previous

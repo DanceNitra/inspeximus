@@ -984,7 +984,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.10.6"
+__version__ = "2.11.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5824,7 +5824,7 @@ class Inspeximus:
             h.update(line.encode("utf-8")); h.update(b"\x1e")
         return h.hexdigest()
 
-    def witness(self) -> dict:
+    def witness(self, records=None, bind_sources: bool = False) -> dict:
         """HYDRATION WITNESS: a compact, deterministic receipt of the store state an answer was derived
         from — "this answer reflects store state as of revision X". Attach it to any answer assembled
         from recall() results; verify later with verify_witness(). When write receipts are enabled
@@ -5832,7 +5832,41 @@ class Inspeximus:
         the tamper-evident write history. It inherits state_digest()'s blind spot: `value` and outcome
         standing are not covered, so a tamper that only reorders RANKING leaves a witness verifying.
         HONEST SCOPE: the witness pins the STORE + this store's view of
-        its index inputs; it cannot attest external caches or copies it never saw."""
+        its index inputs; it cannot attest external caches or copies it never saw.
+
+        AND IT IS UNSIGNED, which matters because this package uses the word "witness" for two
+        different things. THIS one is a receipt an HONEST caller carries from their own verification
+        to their own use: measured, a holder who edits the pinned digests to whatever the file says
+        now gets a clean verdict, and that is not a hole, it is what an unsigned self-issued receipt
+        is. It binds a caller to their own earlier check; it does not bind a caller who lies.
+        `witness_pool.Witness.attest()` is the operator-adversarial one -- signed by a third party,
+        for the case where the party being audited is the one handing you the artifact.
+
+        `bind_sources=True` closes the THIRD invalidation window, and it is the one this library did
+        not have. Provenance has a temporal chain — OBSERVE, BIND, CAPTURE, VERIFY, USE — and a
+        mutation in each gap is a different failure with a different remedy:
+
+            OBSERVE -> CAPTURE   the fingerprint is of bytes nobody read   UNBOUND_CAPTURE
+            CAPTURE -> VERIFY    the source changed since capture          DRIFTED
+            VERIFY  -> USE       the source changed after it checked out   STALE_AT_USE
+
+        The framing is @safal207's on anthropics/claude-code#34556. Measured on ourselves before
+        building it: `check_sources` returns FRESH, the file changes, `recall` serves the old text,
+        and `verify_witness` answers digest_match=True — correctly, because the STORE did not change.
+        A caller who verified and then acted had nothing telling them the ground moved. It was never
+        invisible (a second `check_sources` sees it); it was UNBOUND, which is worse, because the
+        check that would have caught it is the one nobody thought to run again.
+
+        Pass the recall results the answer used — `witness(hits, bind_sources=True)` — and the
+        witness carries their source locators and fingerprints. Only those: binding every source in
+        the store would cost a full re-read to attest records the answer never touched.
+
+        WHAT IT REFUSES TO PRETEND. A record with no fingerprint CANNOT be bound, and is listed in
+        `sources_unbound` rather than skipped, because a witness that binds nothing and reports
+        nothing is the vacuous pass this repository keeps meeting. `sources_bound` is "n/of" for the
+        same reason `declared_observation_binding_coverage` carries the word declared: coverage is
+        not a guarantee, and the number has to let you tell them apart.
+        """
         act = sum(1 for r in self.items if r.get("status") == "active")
         w = {"inspeximus_hydration_witness": 1, "digest": self.state_digest(),
              "records": len(self.items), "active": act,
@@ -5841,19 +5875,156 @@ class Inspeximus:
             w["embed_id"] = self.embed_id
         if getattr(self, "_receipts", None):
             w["receipts_tip"] = self._receipts[-1].get("hash")
+        if bind_sources:
+            w.update(self._bind_sources(records))
         return w
 
-    def verify_witness(self, w: dict) -> dict:
+    def _bind_sources(self, records=None) -> dict:
+        """The source half of a hydration witness: what each covered record was reading, and its digest.
+
+        `records` may be recall() results, record dicts, or bare ids. None means every active record,
+        which is honest but expensive — the useful unit is the handful an answer actually used.
+        """
+        if records is None:
+            ids = [r.get("id") for r in self.items if r.get("status") == "active"]
+        elif isinstance(records, (str, bytes)):
+            ids = [records]
+        else:
+            ids = [r.get("id") if isinstance(r, dict) else r for r in records]
+
+        by_id = {r.get("id"): r for r in self.items}
+        bound, unbound, unknown = {}, [], []
+        for rid in ids:
+            rec = by_id.get(rid)
+            if rec is None:
+                # NAMED, not dropped. An id the store does not hold is a caller error or an erasure
+                # between recall and witness, and either way the answer rested on something this
+                # witness cannot speak for.
+                unknown.append(rid)
+                continue
+            meta = rec.get("meta") or {}
+            fp = meta.get("source_sha256")
+            doc = Inspeximus._raw_source(rec)
+            if fp and doc:
+                # BOUND, AND WHAT KIND. A write-time hash is a perfectly good baseline for THIS
+                # window -- "has the source changed since I checked" needs only a fingerprint that
+                # was true at check time. It is NOT evidence the memory was ever right about the
+                # bytes it read, which is the OBSERVE->CAPTURE question and a different guarantee.
+                # Binding both and reporting them as one number would be the exact conflation this
+                # feature exists to undo, so the kind travels with the pin.
+                bound[rid] = {"doc": doc, "sha256": fp,
+                              "observation_bound": bool(meta.get("observation_bound"))}
+            else:
+                unbound.append(rid)
+        _obs = sum(1 for v in bound.values() if v["observation_bound"])
+        out = {"sources": bound,
+               "sources_bound": f"{len(bound)}/{len(bound) + len(unbound) + len(unknown)}",
+               "sources_observation_bound": f"{_obs}/{len(bound)}"}
+        if unbound:
+            out["sources_unbound"] = unbound
+        if unknown:
+            out["sources_unknown"] = unknown
+        return out
+
+    def verify_witness(self, w: dict, resolver=None) -> dict:
         """Check a hydration witness against the store as it is NOW. digest_match=True means the store
         is byte-for-byte in the state the witness pinned (no write, supersession, revert, or erasure has
         happened since); False means the answer that carried this witness reflects a PRIOR revision —
-        which is exactly what the receipt exists to make visible."""
+        which is exactly what the receipt exists to make visible.
+
+        A witness built with `bind_sources=True` also re-reads the SOURCES it pinned, which is the
+        VERIFY -> USE window: the store can be untouched while the world the memory describes has
+        moved. `resolver(doc) -> bytes|None` fetches non-file sources, exactly as in check_sources.
+
+        THE TWO ANSWERS STAY SEPARATE, because collapsing them is the defect this whole line of work
+        came from: `digest_match` is about the STORE, `sources_match` is about the WORLD, and one
+        score hiding which of them broke tells you nothing about the remedy. A moved source is
+        `stale_at_use` and wants revalidation; a changed digest wants re-derivation.
+
+        `valid` DOES require both — but only when the witness carries sources, because then the
+        caller explicitly asked for that guarantee and `valid: True` beside a moved source would be
+        a false assurance. A witness that pinned no sources keeps the old meaning exactly.
+        """
         cur = self.state_digest()
         out = {"digest_match": cur == w.get("digest"), "current_digest": cur}
+        limits: list = []
         if "receipts_tip" in w:
             tip = self._receipts[-1].get("hash") if getattr(self, "_receipts", None) else None
             out["receipts_tip_match"] = (tip == w.get("receipts_tip"))
-        out["valid"] = out["digest_match"] and out.get("receipts_tip_match", True)
+        _tip_ok = out.get("receipts_tip_match", True)
+        if self.tenant is not None and not _tip_ok:
+            # THE RECEIPT CHAIN IS PER-STORE AND THE WITNESS IS PER-TENANT, so ANOTHER tenant's
+            # write moves this tenant's tip while their own records are untouched. Failing here
+            # would mark every tenant's receipt invalid on a busy shared store, and an alarm that
+            # fires on other people's activity is one that gets switched off before it ever catches
+            # anything. Reported, not fatal -- the tenant's own claim is `digest_match`, which is
+            # scoped and stays True. An UNBOUND store keeps the strict meaning: there, a moved tip
+            # IS the store's history changing, which is exactly what the anchor exists to catch.
+            _tip_ok = True
+            limits.append(
+                "the shared write chain moved since this witness was taken, which on a tenant-bound "
+                "store usually means ANOTHER tenant wrote. It does not mean this tenant's records "
+                "changed -- see digest_match for that. Take the witness from the unbound store if "
+                "you need the whole chain attested.")
+        out["valid"] = out["digest_match"] and _tip_ok
+
+        if "sources" in w:
+            pinned = w.get("sources") or {}
+            moved, orphaned, matched = [], [], 0
+            for rid, s in pinned.items():
+                doc = (s or {}).get("doc")
+                try:
+                    blob = resolver(doc) if resolver else (
+                        open(doc, "rb").read() if doc and os.path.exists(doc) else None)
+                except Exception:
+                    blob = None
+                if blob is None:
+                    # NOT a match and NOT a mismatch. A source that cannot be re-read answers the
+                    # question with silence, and silence must not read as pass.
+                    orphaned.append(rid)
+                elif hashlib.sha256(blob).hexdigest() == (s or {}).get("sha256"):
+                    matched += 1
+                else:
+                    moved.append(rid)
+            out["sources_checked"] = len(pinned)
+            out["sources_matched"] = matched
+            out["sources_moved"] = moved
+            out["sources_orphaned"] = orphaned
+            out["stale_at_use"] = bool(moved)
+            # EMPTY IS NOT CLEAN. A witness that bound nothing has attested nothing, and the caller
+            # asked for source binding, so reporting True here would be the exact vacuous pass this
+            # method exists to remove.
+            out["sources_match"] = bool(pinned) and not moved and not orphaned
+            if not pinned:
+                limits.append(
+                    "this witness asked to bind sources and bound NONE, so sources_match is False "
+                    "because nothing was checked, not because something moved. Records need "
+                    "source={'doc': ..., 'observed_sha256': ...} to be bindable.")
+            if w.get("sources_unbound"):
+                limits.append(
+                    f"{len(w['sources_unbound'])} record(s) in this answer carry no source "
+                    f"fingerprint and could not be bound, so the VERIFY->USE window is open for "
+                    f"them however this verdict reads: {w['sources_unbound'][:5]}")
+            if w.get("sources_unknown"):
+                limits.append(
+                    f"{len(w['sources_unknown'])} id(s) the witness names are not in this store: "
+                    f"{w['sources_unknown'][:5]}")
+            if orphaned:
+                limits.append(
+                    f"{len(orphaned)} pinned source(s) could not be re-read, so they are neither "
+                    f"fresh nor moved: {orphaned[:5]}")
+            _wt = [r for r, v in pinned.items() if not (v or {}).get("observation_bound")]
+            if _wt:
+                # A DIFFERENT WINDOW, STATED SEPARATELY. These pins rest on a hash taken when the
+                # record was written rather than on the bytes the agent read, so this verdict
+                # answers "the source has not moved since you checked" and says nothing about
+                # whether the memory was bound to what was actually observed.
+                limits.append(
+                    f"{len(_wt)} pinned source(s) rest on a WRITE-TIME hash, not an observed one, "
+                    f"so VERIFY->USE is covered for them while OBSERVE->CAPTURE is not: {_wt[:5]}")
+            out["valid"] = out["valid"] and out["sources_match"]
+        if limits:
+            out["limits"] = limits
         return out
 
     def index_coherence(self) -> dict:
@@ -11527,6 +11698,22 @@ class _TenantView:
     def decisions_in_force(self, *a, **k): return Inspeximus.decisions_in_force(self, *a, **k)
     def supersession_report(self, *a, **k): return Inspeximus.supersession_report(self, *a, **k)
     def state_digest(self, *a, **k):        return Inspeximus.state_digest(self, *a, **k)
+    # NOT REBOUND UNTIL NOW, AND SHIPPED THAT WAY. `state_digest` was rebound and `witness`, which
+    # wraps it, was not -- so on a tenant view the whole method ran PARENT-bound and a tenant's
+    # hydration receipt attested the WHOLE store: measured, acme.witness() reported records=2 and
+    # the root digest on a store where acme owns one record. Two costs, and the second is worse:
+    # it leaks how much other tenants hold, and it makes every other tenant's write flip this
+    # tenant's verify_witness to invalid -- a false alarm on a shared store is how a real one gets
+    # ignored. Found while adding bind_sources, which inherited it.
+    def witness(self, *a, **k):             return Inspeximus.witness(self, *a, **k)
+    def verify_witness(self, *a, **k):      return Inspeximus.verify_witness(self, *a, **k)
+    # REBOUND THE DAY IT WAS WRITTEN, by the sweep rather than by me remembering. `_bind_sources`
+    # reads records, and a private helper reached through `__getattr__` runs PARENT-bound -- so a
+    # tenant's hydration witness would have pinned every tenant's sources, leaking their file paths
+    # into an artifact meant to be handed onward. No exception, no failing unit test, just rows from
+    # the wrong slice: exactly the class the structural sweep exists for, catching a method twenty
+    # minutes old.
+    def _bind_sources(self, *a, **k):       return Inspeximus._bind_sources(self, *a, **k)
     def erasure_report(self, *a, **k):      return Inspeximus.erasure_report(self, *a, **k)
     def governance_report(self, *a, **k):   return Inspeximus.governance_report(self, *a, **k)
     def forget(self, *a, **k):              return Inspeximus.forget(self, *a, **k)
