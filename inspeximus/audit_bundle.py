@@ -414,7 +414,38 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         # the bundle is a snapshot, not a lease. Only `mismatched` is a tamper signal, which is why
         # bind_content itself defines ok as `not mismatched`. Reporting the other two as failures would
         # false-alarm on every normal write, the same defect as the naive anchor-tip comparison.
-        for mid in (b.get("unreceipted") or [])[:5]:
+        # SPLIT `unreceipted` BY AGE, because the two halves are different claims.
+        #
+        # The wording "written after the bundle was taken -- not an accusation" is right for GROWTH,
+        # which is ordinary operation. It is wrong for a record that ALREADY EXISTED when the bundle
+        # was generated and is covered by no receipt: nothing legitimate produces that.
+        #
+        # Check (7) above compares COUNTS, and a count has slack: each erasure removes a record and
+        # leaves its receipt behind, so on a store that has performed one GDPR erasure -- exactly the
+        # store an audit bundle exists for -- an injected record fits in the gap. Measured 2026-08-15:
+        # same injection, same verifier. Without a prior erasure, records=4 receipts=3 -> FAIL. With
+        # one prior erasure, records=3 receipts=3 -> PASS, and the auditor read VERDICT: PASS.
+        #
+        # HONEST RESIDUAL, stated because it is not closed: `ts` is attacker-writable, so forward-
+        # dating the injected record makes it look like growth again. This raises the cost from
+        # "free" to "you must also fake the timestamp"; it does not eliminate it. Closing it properly
+        # is a build-time refusal to export a store with uncovered records without saying so.
+        _gen_ts = bundle.get("generated_ts")
+        _by_id = {r.get("id"): r for r in (store_items or []) if isinstance(r, dict)}
+        _preexisting, _growth = [], []
+        for mid in (b.get("unreceipted") or []):
+            _r = _by_id.get(mid) or {}
+            _ts = _r.get("ts")
+            if isinstance(_gen_ts, (int, float)) and isinstance(_ts, (int, float)) and _ts <= _gen_ts:
+                _preexisting.append(mid)
+            else:
+                _growth.append(mid)
+        if _preexisting:
+            bad(f"{len(_preexisting)} record(s) existed when this bundle was generated and are covered "
+                f"by NO receipt: {_preexisting[:5]}{' ...' if len(_preexisting) > 5 else ''}. That is "
+                f"not growth -- the bundle's own count check has slack wherever a record was erased, "
+                f"and an injected record fits in it.")
+        for mid in _growth[:5]:
             limits.append(f"record {mid} is covered by no receipt in this bundle (written after it was "
                           f"taken, or with receipts disabled) -- not checked, not an accusation")
         orph = b.get("orphaned") or []
