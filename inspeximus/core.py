@@ -411,6 +411,75 @@ def new_ed25519_keypair() -> tuple[str, str]:
 _STH_FIELDS = ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")
 
 
+def receipt_key_for(store_path, create: bool = True) -> str:
+    """The receipt signing key for `store_path`, minted on first use, kept OUTSIDE the store's directory.
+
+        m = Inspeximus(path="mem.json", receipts=True, receipt_key=receipt_key_for("mem.json"))
+
+    WHY A HELPER AND NOT A PARAGRAPH OF ADVICE. An unsigned chain catches an editor who can rewrite
+    the store but NOT the `.receipts` sidecar. An attacker who can write both -- a compromised agent
+    process, a shared volume, a tampered backup, which is the realistic one -- appends a well-formed
+    receipt for their planted record and every check reports clean. Measured 2026-08-16.
+
+    The key is what stops them, and it does NOT have to be secret from the operator. It has to be
+    absent from the files they edit. That distinction is the entire recommendation, and it is why
+    this refuses to place the key inside the store's own directory: `docs/ERASURE.md` showed a
+    one-liner writing `receipt.key` into the working directory, which for the common case IS the
+    data directory, and a key sitting beside the store buys nothing against the attacker it exists
+    to stop.
+
+    LOCATION, in order: `INSPEXIMUS_RECEIPT_KEY` (a hex key, or a path to one), else
+    `INSPEXIMUS_KEY_HOME`, else the per-user config dir (`%APPDATA%` / `$XDG_CONFIG_HOME` /
+    `~/.config`) under `inspeximus/keys/`. Named by a hash of the store's absolute path, so moving a
+    store loses its key -- deliberately: silently signing a moved store with a NEW key would produce
+    a chain signed by two keys, which verify_writes now reports rather than accepts.
+
+    HONEST SCOPE, because this is exactly where key management gets oversold. This raises the bar
+    from "one directory" to "two locations". It is NOT a KMS: an attacker with the user's home
+    directory has it, and the OPERATOR always has it -- so it does nothing against the party who runs
+    the store. For that, witness the anchor externally (`build_bundle(witnesses=[...])`). Pass a real
+    `receipt_signer=` when the key must never be in this process at all.
+
+    `create=False` returns "" instead of minting, for a caller that wants to know rather than act.
+    """
+    import hashlib as _h
+    env = os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip()
+    if env:
+        if len(env) == 64 and all(c in "0123456789abcdefABCDEF" for c in env):
+            return env.lower()                                   # the key itself
+        if os.path.exists(env):
+            return open(env, encoding="utf-8").read().strip()
+        raise ValueError(f"INSPEXIMUS_RECEIPT_KEY is set to {env!r}, which is neither a 64-hex key "
+                         f"nor a path that exists. Refusing to guess and silently sign with a "
+                         f"different key than you configured.")
+
+    home = os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA") \
+        or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    kdir = os.path.join(home, "inspeximus", "keys")
+    tag = _h.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
+    kf = os.path.join(kdir, f"{tag}.key")
+
+    # THE GUARD THIS EXISTS FOR. A key inside the store's own directory is readable by the attacker
+    # it is meant to stop, so producing one would be worse than refusing -- it would look like
+    # protection.
+    if os.path.abspath(kdir).startswith(os.path.abspath(os.path.dirname(str(store_path)) or ".")):
+        raise ValueError(
+            f"refusing to keep the receipt key at {kdir}: it is inside the store's own directory, "
+            f"so an attacker who can edit the store can read the key and sign whatever they like. "
+            f"Set INSPEXIMUS_KEY_HOME to somewhere else.")
+
+    if os.path.exists(kf):
+        return open(kf, encoding="utf-8").read().strip()
+    if not create:
+        return ""
+    sk, _pk = new_ed25519_keypair()
+    os.makedirs(kdir, exist_ok=True)
+    _fd = os.open(kf, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)   # not world-readable, no clobber
+    with os.fdopen(_fd, "w", encoding="utf-8") as f:
+        f.write(sk)
+    return sk
+
+
 def _int_or(x, default: int) -> int:
     """int(x) or `default` — a malformed count must not crash a verifier that exists to report on it."""
     try:
@@ -863,7 +932,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.10.3"
+__version__ = "2.10.4"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2769,7 +2838,8 @@ class Inspeximus:
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
                       legacy_strict: bool = True, value_strict: bool = True,
-                      coverage_strict: bool = True) -> tuple[bool, list[str]]:
+                      coverage_strict: bool = True,
+                      require_signed: bool = False) -> tuple[bool, list[str]]:
         """Verify the write-receipt chain AND that each stored memory still matches its write receipt.
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
         Requires receipts to have been enabled at write time.
@@ -2980,6 +3050,36 @@ class Inspeximus:
                     f"into the chain -- or pass value_strict=False to accept the gap without a record of "
                     f"having done so. ({', '.join(uncovered[:5])}"
                     + (f", +{len(uncovered) - 5} more" if len(uncovered) > 5 else "") + ")")
+        # SIGNATURE COVERAGE, on the PRIMARY surface. Signatures were verified here when present and
+        # demanded only when `expected_pubkey` was passed, so an UNSIGNED entry appended to a SIGNED
+        # chain fell through the `elif expected_pubkey:` branch and nothing was said. Measured
+        # 2026-08-16: plant a record, hand-mint a well-formed hash-linked receipt for it with no
+        # signature, and verify_writes returned (True, []) on a store opened with receipt_key. The
+        # equivalent check already existed in verify_bundle and had simply never reached the tool an
+        # agent actually calls -- the same one-surface-of-two shape this file keeps meeting.
+        #
+        # A CHAIN SIGNED IN PLACES IS NOT SIGNED, and that is not a preference: it is exactly what
+        # the append attack produces. So it is a problem with no opt-in required.
+        #
+        # A FULLY unsigned chain is legitimate -- receipts without a key are the documented default
+        # and catch an editor who cannot also rewrite the sidecar -- so it is NOT a problem unless
+        # the caller asks. `require_signed=True` is how an operator who configured a key finds out
+        # that the key stopped being used.
+        _chain = list(self._receipts or ()) + list(self._tombstones or ())
+        if _chain:
+            _signed = sum(1 for r in _chain if r.get("sig"))
+            if 0 < _signed < len(_chain):
+                problems.append(
+                    f"{len(_chain) - _signed} of {len(_chain)} chain entries carry NO signature "
+                    f"while {_signed} do. A chain signed in places is not signed: something without "
+                    f"the key appended to it.")
+            elif _signed == 0 and require_signed:
+                problems.append(
+                    f"UNSIGNED: none of the {len(_chain)} chain entries carry a signature. The chain "
+                    f"is internally consistent, which is not the same as attributable -- an editor "
+                    f"who can rewrite the .receipts sidecar can rewrite the chain with it. Pass "
+                    f"receipt_key= (with the key OUTSIDE the store's directory) or a receipt_signer.")
+
         # A RECORD NO RECEIPT NAMES IS NOT A CHECKED RECORD. This walks the RECEIPTS and looks each
         # one's record up, so a record present in the store that no receipt mentions was never
         # examined at all -- and the MCP tool's own docstring promises "no silent edits/INSERTIONS/

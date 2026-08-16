@@ -125,13 +125,22 @@ def test_an_unpinned_verdict_on_a_signed_chain_declares_what_it_did_not_check(mo
 
 
 def test_an_unsigned_store_is_not_nagged_about_a_key_it_never_had(monkeypatch, store_dir):
-    """The other control. Receipts without signatures already report themselves; no `limits` noise."""
+    """The other control, and the decision behind it: a store that never claimed a key must not be
+    lectured on every call. Advice that fires unconditionally is advice that gets trained away.
+
+    This docstring used to say receipts without signatures "already report themselves". Measured
+    2026-08-16, they did not: this tool returned {"ok": True} with nothing at all, so a user who
+    wanted tamper-evidence could not tell from the primary surface that their chain catches an editor
+    of one file and nothing more. The answer is a FIELD, not prose -- `signed` is always present and
+    says "0/1" -- with the explanation reserved for `require_signed=True`, which is asked for.
+    """
     path = os.path.join(store_dir, "mcp.json")
     st = Inspeximus(path=path, receipts=True)
     st.remember(HONEST[0][0], key="limit", object="50000")
     st.flush()
     res = _load(monkeypatch, path).verify_writes()
     assert "limits" not in res, res.get("limits")
+    assert res["signed"] == "0/1", "the fact must be stated even though the nag must not be"
 
 
 # ── the auditor-facing surface, one level up ──────────────────────────────────────────────────────────

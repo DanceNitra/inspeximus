@@ -924,6 +924,24 @@ def verify_writes(expected_pubkey: str = "") -> dict:
     ok, problems = _MEM.verify_writes(expected_pubkey=pin)
     out = {"ok": bool(ok), "problems": problems, "expected_pubkey": pin}
     limits = _key_binding_limits(pin)
+    # WHETHER THE CHAIN IS SIGNED, as a FACT in the result rather than as silence.
+    #
+    # An unsigned chain is legitimate and must not fail, so it cannot go in `problems` -- and that
+    # left this tool, the one an agent actually calls, returning {"ok": true} on a chain that stops
+    # an editor of ONE file and nothing more. `governance_report` and the audit bundle both said so;
+    # the primary surface did not, which is the same one-surface-of-two shape as the check itself.
+    _chain = list(getattr(_MEM, "_receipts", None) or ()) + list(getattr(_MEM, "_tombstones", None) or ())
+    _signed = sum(1 for r in _chain if r.get("sig"))
+    out["signed"] = f"{_signed}/{len(_chain)}" if _chain else "no chain"
+    # A FACT, NOT A NAG, and the distinction is a decision this repo already made: a store that never
+    # claimed a key must not be lectured on every call, because advice that fires unconditionally is
+    # advice that gets trained away (test_an_unsigned_store_is_not_nagged_about_a_key_it_never_had).
+    # One field answering "what do I actually have" costs nothing and repeats nothing; the prose
+    # belongs in `require_signed=True`, which an operator asks for.
+    #
+    # That test's docstring said receipts without signatures "already report themselves". Measured
+    # 2026-08-16, they did not -- this tool returned {"ok": true} and nothing else -- which is how the
+    # gap stayed invisible. The docstring is corrected in the same change as the field.
     if limits:
         out["limits"] = limits
     return out

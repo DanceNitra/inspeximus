@@ -3,6 +3,61 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.10.4 - UPGRADE IF YOUR RECEIPT CHAIN IS SIGNED. An unsigned entry appended to it verified clean.
+
+2.10.3 closed the audit-bundle side of this and left a residual: on an **unsigned** chain, an
+attacker who can write the `.receipts` sidecar mints a receipt for their planted record and it reads
+as ordinary growth. Closing that was said to be what signing buys. Measured — it wasn't.
+
+### A chain signed in places is not signed
+
+`verify_writes()` verified signatures when present and demanded one only when `expected_pubkey` was
+passed, so an **unsigned entry appended to a signed chain** fell through and nothing was said:
+
+```
+plant a record + hand-mint a well-formed unsigned receipt for it
+  UNSIGNED store  -> verify_writes (True, [])     correct; the documented limit
+  SIGNED store    -> verify_writes (True, [])     NOT correct
+```
+
+The equivalent check already existed in `verify_bundle` and had never reached the tool an agent
+calls. It is the shape the append attack produces, so it is now a problem with no opt-in.
+
+**The underlying limit is unchanged and is not a bug.** An attacker who writes every byte with no
+secret and no third party involved rewrites everything consistently, and nothing can tell. That is
+information-theoretic. What changed is that signing now *pays* at the surface people use.
+
+### The condition is stated where it can be found
+
+`verify_writes(require_signed=True)` makes an unsigned chain a verdict, and the MCP tool now returns
+`signed: "0/1"` as a field. Deliberately a **fact, not a nag**: this repo already decided a store
+that never claimed a key must not be lectured on every call, because advice that fires
+unconditionally gets trained away. (The test enforcing that carried a docstring saying unsigned
+receipts "already report themselves" — measured, they did not, which is how the gap stayed
+invisible. Corrected in the same change.)
+
+### Signing is one line, and the key lands somewhere useful
+
+```python
+from inspeximus import Inspeximus, receipt_key_for
+
+m = Inspeximus(path="mem.json", receipts=True, receipt_key=receipt_key_for("mem.json"))
+m.remember("the deploy key rotates every 90 days", key="rotation", object="90d")
+ok, problems = m.verify_writes(require_signed=True)
+print(ok, problems)
+# -> True []
+```
+
+The key is minted on first use **outside the store's directory** (`INSPEXIMUS_RECEIPT_KEY`, else
+`INSPEXIMUS_KEY_HOME`, else the per-user config dir), 0600, never clobbered. It **refuses** to place
+the key inside the store's own directory: `docs/ERASURE.md` showed a one-liner writing `receipt.key`
+into the working directory, which for the common case *is* the data directory — and a key beside the
+store buys nothing against the attacker it exists to stop, while looking like protection.
+
+**Honest scope.** This raises the bar from one directory to two locations. It is not a KMS: an
+attacker with the user's home directory has the key, and the **operator always does**. For the
+operator-adversarial case, witness the anchor — `build_bundle(witnesses=[...])`, shipped in 2.10.3.
+
 ## 2.10.3 - UPGRADE IF YOU HAND AUDIT BUNDLES TO ANYONE. A planted record could pass as ordinary growth.
 
 2.10.2 shipped this as a stated residual with a test pinning it open. The test is what said it had

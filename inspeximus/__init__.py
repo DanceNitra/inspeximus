@@ -9,6 +9,7 @@ from .core import (
     AmbiguousSubject,  # noqa: F401
     Inspeximus,
     new_receipt_keypair,
+    receipt_key_for,
     new_source_keypair,
     sign_revert,
     sign_support,
@@ -35,6 +36,7 @@ __all__ = [
     "Inspeximus",
     "AmbiguousSubject",
     "new_receipt_keypair",
+    "receipt_key_for",
     "new_source_keypair",
     "sign_revert",
     "sign_support",
