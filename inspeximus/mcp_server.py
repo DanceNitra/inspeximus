@@ -1007,19 +1007,39 @@ def detect_split_view(anchor_a: dict, cosigs_a: list, anchor_b: dict, cosigs_b: 
 
 
 @mcp.tool()
-def witness() -> dict:
+def witness(record_ids: list | None = None, bind_sources: bool = False) -> dict:
     """HYDRATION WITNESS: a compact, deterministic receipt of the store state your answer was derived from —
     "this answer reflects store state as of revision X". Call it right after recall() and attach the result to
     the answer; any later write/supersession/revert/erasure changes the digest, and verify_witness() makes that
-    visible. When write receipts are enabled it is anchored to the tamper-evident write chain. No LLM."""
-    return _MEM.witness()
+    visible. When write receipts are enabled it is anchored to the tamper-evident write chain. No LLM.
+
+    `bind_sources=True` also pins the SOURCES the answer came from, closing the VERIFY → USE window: the store
+    can be untouched while the world the memory describes has moved. Pass `record_ids` — the ids recall()
+    returned — so the pin covers what the answer actually used rather than every source in the store.
+    verify_witness then returns `stale_at_use`.
+
+    THIS ARGUMENT DID NOT EXIST UNTIL NOW, and that is the point of adding it. 2.11.0 shipped the window and
+    wired it to nothing an agent can call: `witness()` took no arguments, so the feature was reachable only
+    from Python — which is not how this server is used. Same shape as `attest()` one release earlier, found
+    the same way, by asking whether the mechanism has an input rather than whether the code is correct."""
+    return _MEM.witness(record_ids, bind_sources=bool(bind_sources))
 
 
 @mcp.tool()
 def verify_witness(witness: dict) -> dict:
     """Check a hydration witness against the store as it is NOW. digest_match=true means the store is still in
     the exact state the witness pinned; false means the answer that carried it predates a change (stale serve
-    made visible instead of silent). Deterministic re-computation, no LLM."""
+    made visible instead of silent). Deterministic re-computation, no LLM.
+
+    A witness taken with `bind_sources=True` also re-reads its pinned sources: `stale_at_use` is True when one
+    moved between the check and this call. The store answer (`digest_match`) and the world answer
+    (`sources_match`) stay separate, because a moved source wants revalidation and a changed digest wants
+    re-derivation.
+
+    LIMIT, stated because it decides a verdict: a custom `resolver` cannot cross this boundary — it is a
+    Python callable — so only sources readable as local files are re-read here. A pinned URL comes back in
+    `sources_orphaned`, which is neither a match nor a mismatch and does NOT read as clean. For non-file
+    sources call `verify_witness(w, resolver=...)` in-process."""
     return _MEM.verify_witness(witness)
 
 

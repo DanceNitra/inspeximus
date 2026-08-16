@@ -3,6 +3,53 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.12.1 - UPGRADE IF YOU USE THE MCP SERVER. 2.11.0's window was reachable only from Python.
+
+`witness(bind_sources=True)` — the whole VERIFY → USE window, announced the day it shipped — reached
+the MCP server as `witness()` with **no arguments**. The code was correct, tested and documented, and
+an agent could not call it. Nothing else changes; if you use the library directly you already had it.
+
+```python
+import hashlib, os, tempfile
+d = tempfile.mkdtemp()
+os.environ["INSPEXIMUS_PATH"] = os.path.join(d, "m.json")
+from inspeximus import mcp_server as mcp
+
+src = os.path.join(d, "policy.txt")
+body = b"deployment needs two approvers"
+open(src, "wb").write(body)
+mem = mcp._MEM
+mem.remember("deployment needs two approvers", key="policy", object="two",
+             source={"doc": src, "observed_sha256": hashlib.sha256(body).hexdigest()})
+
+ids = [r["id"] for r in mem.recall("approvers")]
+w = mcp.witness(ids, bind_sources=True)                  # the tool an agent calls
+open(src, "wb").write(b"deployment needs ONE approver")  # the world moves before it acts
+v = mcp.verify_witness(w)
+print(v["stale_at_use"], v["digest_match"], w["sources_bound"])
+# -> True True 1/1
+```
+
+The middle `True` is the point again: the store never changed, so `digest_match` is right to say so.
+
+**LIMIT, stated because it decides a verdict:** a custom `resolver` is a Python callable and cannot
+cross a JSON tool boundary, so over MCP only sources readable as local files are re-read. A pinned
+URL comes back in `sources_orphaned` — neither a match nor a mismatch, and it does not read as clean.
+For non-file sources, call `verify_witness(w, resolver=...)` in-process.
+
+### The fourth time in one day, so it is a test now
+
+`Witness.attest()`, then `strict` / `require_authenticated_state`, then `--expected-pubkey` on the
+wrong side of the audit, then this. Every one was correct code reachable from nothing anyone uses,
+and every one was found by asking *does the mechanism have an input* rather than by reading it.
+
+`tests/test_a_feature_needs_an_input_on_a_shipped_surface.py` asks that mechanically: when a core
+method grows a parameter, the tool an agent calls must grow one too, or declare an exemption **with
+its reason** and state the limit in the tool's own docstring. It caught an undeclared rename on its
+first run. A second test asserts every exemption still names a real parameter, because a declaration
+pointing at something deleted stops guarding anything and the next parameter to take that name
+inherits an exemption nobody granted it.
+
 ## 2.12.0 - UPGRADE IF YOU READ `check_sources()` COVERAGE NUMBERS. Two of them change meaning, and one can now be `None`.
 
 `refetch_verification_coverage` and `declared_observation_binding_coverage` are now computed over
