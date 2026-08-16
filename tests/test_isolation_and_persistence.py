@@ -537,8 +537,22 @@ def test_locator_and_refetch_coverage_are_different_numbers(tmp_path):
     assert cov["locator_coverage"] > cov["refetch_verification_coverage"], (
         "locator and refetch coverage came out equal (%r) -- on a store holding a writer-label source "
         "they cannot be, so one of them is no longer measuring its own question" % cov)
-    assert abs(cov["locator_coverage"] - 2 / 3) < 1e-3, cov      # reported rounded to 4 dp
-    assert abs(cov["refetch_verification_coverage"] - 1 / 3) < 1e-3, cov
+
+    # THEY RUN ON DIFFERENT DENOMINATORS SINCE 2.12.0, and that is deliberate rather than an
+    # oversight, so it is asserted here instead of being left for a reader to infer from two
+    # adjacent percentages.
+    #
+    # `locator_coverage` asks "does a record name a source AT ALL", so a record with no source is
+    # exactly what it measures and must stay in its denominator: 2 of 3.
+    # `refetch_verification_coverage` asks "of the sources that CAN be re-read, how many did we
+    # check", so the record with no anchor is not a shortfall and comes out: 1 of 2.
+    assert cov["not_bindable"] == 1 and cov["bindable"] == 2
+    assert abs(cov["locator_coverage"] - 2 / 3) < 1e-3, cov      # over all 3 records
+    assert abs(cov["refetch_verification_coverage"] - 1 / 2) < 1e-3, cov   # over the 2 bindable
+
+    # the writer label is still the point of the fixture: it NAMES something and cannot be fetched,
+    # so it stays inside the bindable denominator as an honest, backfillable shortfall.
+    assert ix.check_sources()["counts"]["UNCHECKABLE"] == 1
 
 
 def test_enumeration_coverage_is_UNKNOWN_not_zero(tmp_path):

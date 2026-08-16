@@ -3,6 +3,73 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.12.0 - UPGRADE IF YOU READ `check_sources()` COVERAGE NUMBERS. Two of them change meaning, and one can now be `None`.
+
+`refetch_verification_coverage` and `declared_observation_binding_coverage` are now computed over
+**bindable** sources rather than all records, and return `None` — not `0.0` — when nothing in the
+store can be bound at all. A new `NOT_BINDABLE` count and a `bindable` / `not_bindable` pair sit
+beside them. If you parse these as floats, guard for `None`; if you chart them, the line will step.
+
+```python
+import os, tempfile
+from inspeximus import Inspeximus
+
+d = tempfile.mkdtemp()
+mem = Inspeximus(path=os.path.join(d, "m.json"))
+mem.remember("we chose Postgres because the ops team already runs it", key="db", object="postgres")
+mem.remember("deployment needs two approvers", key="policy", object="two", source={"doc": "PROJ-1234"})
+out = mem.check_sources()
+print(out["counts"]["NOT_BINDABLE"], out["counts"]["UNCHECKABLE"], out["coverage"]["bindable"])
+# -> 1 1 1
+```
+
+The decision has no source document and never will; the ticket names one and simply has no
+fingerprint yet. The first is not a backlog. The second is.
+
+### Why
+
+[@Stratogain](https://github.com/Stratogain) made the argument on
+[anthropics/claude-code#34556](https://github.com/anthropics/claude-code/issues/34556): a coverage
+number containing sources that *cannot* be bound can never reach 100%, so a team either chases it
+forever or quietly redefines the denominator. We conceded it, then measured it on our own store:
+
+```
+.inspeximus/coding_memory.json    11,165 records
+  no anchor at all                11,108   99.5%   <- unbindable in every window
+  carries a source_sha256              0    0.0%
+```
+
+That is a store of DECISIONS, and "we chose X because Y" having no source document is its correct
+state, not a deficiency. The old number reported 0% coverage over 11,165 records and made a healthy
+store look permanently broken. The honest reading is 0% over 57 — and 57 is a backlog someone can
+actually clear.
+
+**The refinement is ours and it is why `NOT_BINDABLE` is not a per-record label keyed on anchor
+type.** Bindability is a property of the **window**, not the source kind. A URL or a ticket is
+bindable for `VERIFY → USE` (pin the digest now, re-fetch at use — the past is never needed) and
+unbindable for `OBSERVE → CAPTURE` (the past state is gone). So the only class removed from the
+denominator is the narrow one that is unbindable in *every* window: no document anchor at all.
+[@SinghAbhinav04](https://github.com/SinghAbhinav04) took the same cut into OmniMemory 0.9.27.
+
+### What did not get relaxed
+
+* **A bindable store that checked nothing still fails.** "0 drifted over 0 checked" reads like a
+  clean store, and that rule is older than this change. Only the *nothing was checkable* case is
+  exempt, and it is reported rather than passed silently.
+* `ORPHANED` did not collapse into `NOT_BINDABLE`. A source that was there and is gone is a
+  different fact from one that never existed, and it still fails.
+* The hydration witness makes the same split (`sources_not_bindable` beside `sources_unbound`) with
+  distinct limits saying which gap is backfillable.
+
+### Found by the adversarial pass, on this release's own fix
+
+Making "nothing checkable" return `None` instead of `False` immediately created a way to forge it:
+a courier who empties a witness's `sources` map produced exactly the shape of an honest
+decisions-only witness, and bought a clean verdict. The two are separable only because the witness
+declares its own denominator — an honest empty says `0/0`, a tampered one still claims `1/1` while
+presenting zero pins. `verify_witness` now refuses that contradiction outright. Without it this
+release would have traded one vacuous pass for another.
+
 ## 2.11.0 - UPGRADE IF AN AGENT ACTS ON A RECALLED MEMORY SOME TIME AFTER CHECKING IT, or if you run a MULTI-TENANT store and use `witness()` / `python -m inspeximus.audit_bundle verify`.
 
 Nothing here changes existing behaviour for a single-tenant caller who does not pass the new

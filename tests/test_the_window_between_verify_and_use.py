@@ -85,9 +85,13 @@ def test_a_witness_that_bound_nothing_does_not_report_a_clean_world():
     nothing could be bound, the answer is "nothing was checked", never "everything is fine"."""
     d = tempfile.mkdtemp()
     ix = Inspeximus(path=os.path.join(d, "s.json"), receipts=True)
-    ix.remember("a record with no source at all", key="bare", object="x")
+    # NAMES a document and carries no fingerprint -- the unmet request. A record with NO anchor is a
+    # different empty (nothing was ever checkable) and is covered in
+    # tests/test_not_bindable_is_not_a_backlog.py; that distinction arrived one release later, and
+    # this test used to conflate them.
+    ix.remember("names a doc, never fingerprinted", key="bare", object="x", source={"doc": "PROJ-1"})
     ix.flush()
-    w = ix.witness(ix.recall("record"), bind_sources=True)
+    w = ix.witness(ix.recall("doc"), bind_sources=True)
     assert w["sources_bound"] == "0/1"
     out = ix.verify_witness(w)
     assert out["sources_match"] is False and out["valid"] is False
@@ -127,12 +131,12 @@ def test_a_write_time_hash_is_bound_but_not_confused_with_an_observed_one():
 def test_an_unbindable_record_is_named_not_skipped():
     """RULE 2. Dropping it would make a half-covered answer read exactly like a fully covered one."""
     d, src, ix = _scene()
-    ix.remember("a record with no source at all", key="bare", object="x")
+    ix.remember("names a doc, never fingerprinted", key="bare", object="x", source={"doc": "PROJ-1"})
     ix.flush()
-    w = ix.witness(ix.recall("", k=10) or [{"id": r["id"]} for r in ix.items], bind_sources=True)
-    assert w["sources_bound"].split("/")[0] != w["sources_bound"].split("/")[1]
+    w = ix.witness(bind_sources=True)
+    assert w["sources_bound"] == "1/2", "the half-covered answer must not read as fully covered"
     assert w.get("sources_unbound"), "the unbindable record vanished from the witness"
-    assert any("could not be bound" in x for x in ix.verify_witness(w)["limits"])
+    assert any("backfillable kind" in x for x in ix.verify_witness(w)["limits"])
 
 
 def test_a_source_that_cannot_be_re_read_is_neither_fresh_nor_moved():

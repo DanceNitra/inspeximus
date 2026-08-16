@@ -984,7 +984,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.11.0"
+__version__ = "2.12.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2766,7 +2766,8 @@ class Inspeximus:
         default reads local files only -- deliberately, because guessing how to fetch an arbitrary
         identifier is how a checker starts inventing ORPHANED verdicts.
         """
-        counts = {"FRESH": 0, "DRIFTED": 0, "ORPHANED": 0, "UNCHECKABLE": 0, "UNBOUND_CAPTURE": 0}
+        counts = {"FRESH": 0, "DRIFTED": 0, "ORPHANED": 0, "UNCHECKABLE": 0, "UNBOUND_CAPTURE": 0,
+                  "NOT_BINDABLE": 0}
         #
         drifted, orphaned, unbound_capture = [], [], []
         bound = 0
@@ -2785,7 +2786,22 @@ class Inspeximus:
             # whose sources had all moved reported binding 0 while every record was bound.
             if (r.get("meta") or {}).get("observation_bound"):
                 bound += 1
-            if not fp or not doc:
+            if not doc:
+                # NOT BINDABLE IN ANY WINDOW, and that is different from unchecked. A record with no
+                # document anchor has nothing to re-read, ever -- no fingerprint can be taken now,
+                # next week, or after any amount of backfill. Counting it as UNCHECKABLE put it in a
+                # bucket that looks like a migration backlog, and inside a denominator the number
+                # could never escape.
+                #
+                # It is the majority state for a DECISION store and correctly so: "we chose X
+                # because Y" has no source document. Measured on our own: 11,108 of 11,165 records.
+                # A metric that reads those as un-fingerprinted material reports a healthy store as
+                # permanently broken.
+                counts["NOT_BINDABLE"] += 1
+                continue
+            if not fp:
+                # A document IS named and we have no fingerprint for it. THIS is the backlog, and it
+                # is the number worth chasing, because backfilling it is possible.
                 counts["UNCHECKABLE"] += 1
                 continue
             try:
@@ -2828,6 +2844,11 @@ class Inspeximus:
         # question. Collapsing them is how a schema gets reported as a guarantee: our own deployment has
         # 98.3% locator coverage and 0.01% that re-fetches. Four numbers, four different remedies.
         _n = len(self.items) or 0
+        # THE DENOMINATOR IS BINDABLE SOURCES, and `not_bindable` is reported BESIDE it, never
+        # inside. Same move as splitting `declared` out of `observed` rather than averaging them,
+        # applied one level up: @Stratogain's framing, conceded on claude-code#34556.
+        _nb = counts["NOT_BINDABLE"]
+        _bindable = _n - _nb
         _with_locator = 0
         _bound_env = 0
         for _r in self.items:
@@ -2839,7 +2860,8 @@ class Inspeximus:
             # can the evidence point back to an origin at all?
             "locator_coverage": round(_with_locator / _n, 4) if _n else 0.0,
             # can that origin be re-read and deterministically compared? (fingerprint present AND read)
-            "refetch_verification_coverage": round(checked / _n, 4) if _n else 0.0,
+            "refetch_verification_coverage": (round(checked / _bindable, 4)
+                                              if _bindable else None),
             # is the fingerprint of the bytes the agent ACTUALLY OBSERVED, or merely of the file as it
             # stood when remember() ran? A FIFTH number because it is a fifth question, and because
             # one can be 100% while the other is 0: safal207's point on claude-code#34556, made about
@@ -2853,14 +2875,23 @@ class Inspeximus:
             # itself from. That is inherent: only the reader knows what it read. What the library
             # CAN check is disagreement, and it does; what it cannot check is a caller that lies in
             # the agreeing direction, so the number is named for what it measures.
-            "declared_observation_binding_coverage": round(bound / _n, 4) if _n else 0.0,
+            "declared_observation_binding_coverage": (round(bound / _bindable, 4)
+                                                      if _bindable else None),
             # Kept under the old name too for one release: renaming a published metric out from under
             # a caller is its own kind of silent breakage.
-            "observation_binding_coverage": round(bound / _n, 4) if _n else 0.0,
+            "observation_binding_coverage": (round(bound / _bindable, 4)
+                                             if _bindable else None),
             # can the AUTHORITATIVE source be enumerated, so deletions are detectable at all? An
             # index-side scan can never answer this: it reports what is present, and a deleted document
             # emits exactly one event that nothing later mentions. Without an enumerator this is not a
             # low number, it is an UNKNOWN, and it says so rather than reporting 0.0 as if measured.
+            # BESIDE THE RATIOS, NEVER INSIDE THEM. Without these two a reader cannot tell a
+            # coverage of 0.0 over 57 bindable records from 0.0 over 11,165, and those call for
+            # completely different reactions. `None` rather than 0.0 when NOTHING is bindable: a
+            # ratio with an empty denominator is undefined, and printing 0.0 there would say "we
+            # measured, and it is bad" about a store where there was nothing to measure.
+            "not_bindable": _nb,
+            "bindable": _bindable,
             "source_enumeration_coverage": None,
             # is the record bound to an environment (repo/commit/tenant/policy/model/TTL)? We do not
             # write that binding anywhere yet, so this is honestly 0.0 rather than absent -- the
@@ -2878,7 +2909,18 @@ class Inspeximus:
             # to bytes that are not on disk and never will be again, so nothing here can re-verify
             # what produced it. Folding it into `ok` is the difference between reporting the state
             # and flattering it.
-            "ok": bool(checked) and not drifted and not orphaned and not unbound_capture,
+            # `ok` still requires something to have been CHECKED -- an empty check is not a
+            # passing one -- but a store of pure decisions has nothing checkable by construction,
+            # and calling that False forever is the same "permanently broken" reading the
+            # denominator fix removes. So: nothing bindable at all is reported through `limits`
+            # and `not_bindable`, and does not by itself make the verdict False.
+            # AN EMPTY STORE IS NOT A DECISIONS-ONLY STORE, and my first version of this exemption
+            # collapsed them: `_bindable == 0` is true of both, so a store with NO RECORDS AT ALL
+            # started reporting ok. An existing test said so in one line -- "no records is not a
+            # division by zero, and it is not a clean bill either" -- and it was right. A store
+            # whose records are decisions has something to be right about; an empty one does not.
+            "ok": (not drifted and not orphaned and not unbound_capture
+                   and (bool(checked) or (_bindable == 0 and _n > 0))),
         }
         if not checked:
             report["problem"] = (
@@ -5893,7 +5935,7 @@ class Inspeximus:
             ids = [r.get("id") if isinstance(r, dict) else r for r in records]
 
         by_id = {r.get("id"): r for r in self.items}
-        bound, unbound, unknown = {}, [], []
+        bound, unbound, unknown, not_bindable = {}, [], [], []
         for rid in ids:
             rec = by_id.get(rid)
             if rec is None:
@@ -5914,12 +5956,20 @@ class Inspeximus:
                 # feature exists to undo, so the kind travels with the pin.
                 bound[rid] = {"doc": doc, "sha256": fp,
                               "observation_bound": bool(meta.get("observation_bound"))}
+            elif doc:
+                unbound.append(rid)          # a document we simply have no fingerprint for
             else:
-                unbound.append(rid)
+                not_bindable.append(rid)     # nothing to re-read, in any window
         _obs = sum(1 for v in bound.values() if v["observation_bound"])
+        _denom = len(bound) + len(unbound) + len(unknown)
         out = {"sources": bound,
-               "sources_bound": f"{len(bound)}/{len(bound) + len(unbound) + len(unknown)}",
+               # NOT_BINDABLE is out of the denominator here too, for the reason it is out of
+               # check_sources': an answer assembled entirely from decisions would otherwise report
+               # 0/N binding and read as a failure, when there was never anything to bind.
+               "sources_bound": f"{len(bound)}/{_denom}" if _denom else "0/0",
                "sources_observation_bound": f"{_obs}/{len(bound)}"}
+        if not_bindable:
+            out["sources_not_bindable"] = not_bindable
         if unbound:
             out["sources_unbound"] = unbound
         if unknown:
@@ -5991,20 +6041,65 @@ class Inspeximus:
             out["sources_moved"] = moved
             out["sources_orphaned"] = orphaned
             out["stale_at_use"] = bool(moved)
-            # EMPTY IS NOT CLEAN. A witness that bound nothing has attested nothing, and the caller
-            # asked for source binding, so reporting True here would be the exact vacuous pass this
-            # method exists to remove.
-            out["sources_match"] = bool(pinned) and not moved and not orphaned
-            if not pinned:
+            # EMPTY IS NOT CLEAN -- but "nothing was checked" and "nothing was CHECKABLE" are two
+            # different empties, and collapsing them is the same mistake one level down from the
+            # NOT_BINDABLE split. A caller who asked to bind sources and got none from records that
+            # NAME documents has an unmet request: False. A caller whose answer is made of decisions
+            # never had anything to bind: None, with a limit saying so, matching check_sources'
+            # verdict on a pure-decision store. False there would make an honest answer read as a
+            # failed check forever, which is precisely what this release is fixing above.
+            # THE WITNESS DECLARES ITS OWN DENOMINATOR, and that is what makes the two empties
+            # distinguishable to a verifier holding a document someone else may have edited.
+            #
+            # Measured the moment the None case landed: an attacker who empties `sources` produced
+            # exactly the shape of "nothing was ever bindable", so the tamper bought a pass. The
+            # honest empty carries `sources_bound: "0/0"`; the tampered one still says "1/1" while
+            # presenting zero pins, and that contradiction is the tell.
+            try:
+                _db, _dd = (int(x) for x in str(w.get("sources_bound", "0/0")).split("/", 1))
+            except Exception:
+                _db = _dd = -1
+            if _db != len(pinned) or _dd < 0:
+                out["sources_match"] = False
                 limits.append(
-                    "this witness asked to bind sources and bound NONE, so sources_match is False "
-                    "because nothing was checked, not because something moved. Records need "
-                    "source={'doc': ..., 'observed_sha256': ...} to be bindable.")
+                    f"this witness says it bound {w.get('sources_bound')} sources and presents "
+                    f"{len(pinned)}: the two disagree, so it has been edited or truncated since it "
+                    f"was issued. Refusing to read it as a clean world.")
+                out["valid"] = False
+                out["sources_checked"] = len(pinned)
+                out["sources_matched"] = matched
+                out["sources_moved"] = moved
+                out["sources_orphaned"] = orphaned
+                out["stale_at_use"] = bool(moved)
+                if limits:
+                    out["limits"] = limits
+                return out
+            _askable = _dd > 0
+            if not _askable:
+                out["sources_match"] = None
+                limits.append(
+                    "nothing in this answer could be bound to a source in any window -- these are "
+                    "decisions, not derived facts. sources_match is undefined rather than False: "
+                    "there was nothing to check, which is not the same as a check that failed.")
+            elif not pinned:
+                out["sources_match"] = False
+                limits.append(
+                    "this witness asked to bind sources and bound NONE, though some records DO name "
+                    "a document, so sources_match is False because nothing was checked rather than "
+                    "because something moved. Those records need an observed_sha256 to be bindable.")
+            else:
+                out["sources_match"] = not moved and not orphaned
             if w.get("sources_unbound"):
                 limits.append(
-                    f"{len(w['sources_unbound'])} record(s) in this answer carry no source "
-                    f"fingerprint and could not be bound, so the VERIFY->USE window is open for "
-                    f"them however this verdict reads: {w['sources_unbound'][:5]}")
+                    f"{len(w['sources_unbound'])} record(s) in this answer NAME a source and carry "
+                    f"no fingerprint for it, so the VERIFY->USE window is open for them however "
+                    f"this verdict reads. This is the backfillable kind: {w['sources_unbound'][:5]}")
+            if w.get("sources_not_bindable"):
+                limits.append(
+                    f"{len(w['sources_not_bindable'])} record(s) have no document anchor at all and "
+                    f"can never be bound in any window -- a decision, not a derived fact. They are "
+                    f"NOT counted against coverage, and chasing them is wasted effort: "
+                    f"{w['sources_not_bindable'][:5]}")
             if w.get("sources_unknown"):
                 limits.append(
                     f"{len(w['sources_unknown'])} id(s) the witness names are not in this store: "
@@ -6022,7 +6117,8 @@ class Inspeximus:
                 limits.append(
                     f"{len(_wt)} pinned source(s) rest on a WRITE-TIME hash, not an observed one, "
                     f"so VERIFY->USE is covered for them while OBSERVE->CAPTURE is not: {_wt[:5]}")
-            out["valid"] = out["valid"] and out["sources_match"]
+            # None (nothing was bindable) must not drag `valid` down; False must.
+            out["valid"] = out["valid"] and (out["sources_match"] is not False)
         if limits:
             out["limits"] = limits
         return out
