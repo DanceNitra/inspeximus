@@ -16,8 +16,13 @@ No LLM, no GPU, no network dependency in the core logic (a witness can be local,
 HTTP by the caller). Zero new dependencies beyond `cryptography` (already the signed-store dependency).
 """
 from __future__ import annotations
-import json, os, tempfile
-from .core import new_ed25519_keypair, witness_cosign, _HAVE_ED
+import json, os, tempfile, time
+from .core import new_ed25519_keypair, witness_cosign, _HAVE_ED, _canon, _sha256_hex
+if _HAVE_ED:                     # OPTIONAL, exactly as in core: the Ed25519 names exist only when
+    from .core import (          # `cryptography` is installed, and importing them unconditionally
+        _Ed25519SK, _Ed25519PK)  # broke `import inspeximus.witness_pool` on a base install -- which
+else:                            # the examples suite caught, because a zero-dependency package that
+    _Ed25519SK = _Ed25519PK = None   # cannot be imported without an extra is not zero-dependency.
 
 
 def _public_from_secret(secret_hex: str) -> str:
@@ -27,6 +32,11 @@ def _public_from_secret(secret_hex: str) -> str:
     from cryptography.hazmat.primitives import serialization as _ser
     sk = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(secret_hex))
     return sk.public_key().public_bytes(_ser.Encoding.Raw, _ser.PublicFormat.Raw).hex()
+
+
+#: Newest-last bound on the refusal log. A witness watching a flapping operator must not grow its
+#: state file without limit, and the oldest refusal is the least useful one to keep.
+_MAX_REFUSALS = 200
 
 
 class Witness:
@@ -47,6 +57,7 @@ class Witness:
         self._strict = bool(strict)
         self._bootstrapped: set = set()
         self._last: dict[str, dict] = {}
+        self._refusals: list = []
         # AN AMNESIAC WITNESS MUST NOT CO-SIGN. This used to swallow (OSError, ValueError) and carry
         # on with `self._last = {}` -- so writing garbage into one JSON file made the witness forget
         # every head it had ever signed, and it then co-signed a rollback that
@@ -62,7 +73,16 @@ class Witness:
         if state_path and os.path.exists(state_path):
             try:
                 with open(state_path, "r", encoding="utf-8") as f:
-                    self._last = json.load(f)
+                    _st = json.load(f)
+                # The file used to be the bare `_last` mapping. A 2.10.5 file is
+                # {"heads": ..., "refusals": ...}; an older one is read as heads-only rather than
+                # rejected, because refusing to start on a valid older state file would take a
+                # witness offline on upgrade -- and a witness that will not start co-signs nothing.
+                if isinstance(_st, dict) and ("heads" in _st or "refusals" in _st):
+                    self._last = _st.get("heads") or {}
+                    self._refusals = list(_st.get("refusals") or [])
+                else:
+                    self._last = _st
             except (OSError, ValueError) as e:
                 raise ValueError(
                     f"the witness fork-memory at {state_path} exists but could not be read ({e}). "
@@ -85,7 +105,7 @@ class Witness:
         fd, tmp = tempfile.mkstemp(dir=d, suffix=".tmp")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:
-                json.dump(self._last, f)
+                json.dump({"heads": self._last, "refusals": self._refusals}, f)
             os.replace(tmp, self._state_path)          # atomic; the fork-memory must not half-write
         except OSError:
             try: os.unlink(tmp)
@@ -111,9 +131,36 @@ class Witness:
                 f"strict witness has no record of store {store_id!r}. Either this is genuinely its "
                 f"first anchor -- call bootstrap({store_id!r}) to say so deliberately -- or the "
                 f"fork-memory was deleted, in which case co-signing now would launder a rollback.")
-        sig = witness_cosign(self._secret, anchor, prior_anchor=prior)   # raises on fork/rollback
+        try:
+            sig = witness_cosign(self._secret, anchor, prior_anchor=prior)   # raises on fork/rollback
+        except ValueError as e:
+            # A REFUSAL IS EVIDENCE AND IT MUST NOT LIVE WITH THE PARTY BEING AUDITED.
+            #
+            # Until 2.10.5 this simply propagated: `collect_cosignatures` caught it and
+            # `build_bundle` recorded it in the bundle -- an artifact the OPERATOR builds. Measured
+            # 2026-08-16: the operator deletes `witness_refusals`, reseals the (advisory) bundle
+            # hash, and an auditor who does not already hold the witness allowlist sees an ordinary
+            # SELF-CERTIFIED bundle with no hint that three witnesses said no. The record helped an
+            # honest operator prove diligence and did not bind a dishonest one, which is the wrong
+            # way round for the only operator-adversarial check in the product.
+            #
+            # An honest witness refuses only a fork or a rollback, so this log is the highest-value
+            # thing it holds. Bounded, newest-last: a witness under a flapping operator must not grow
+            # a state file without limit, and the oldest refusal is the least useful one to keep.
+            self._refusals.append({
+                "store_id": str(store_id), "ts": time.time(), "reason": str(e),
+                "offered": {k: anchor.get(k) for k in ("n_writes", "writes_tip")},
+                "last_seen": dict(prior) if prior else None,
+            })
+            del self._refusals[:-_MAX_REFUSALS]
+            self._persist()
+            raise
         self._last[str(store_id)] = {k: anchor.get(k) for k in
                                      ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip", "sth_hash")}
+        # WHEN, so SILENCE becomes visible. Without a timestamp an operator who rewrote history and
+        # then simply stopped submitting heads is indistinguishable from an idle store -- an attack
+        # whose entire cost is doing nothing.
+        self._last[str(store_id)]["seen_ts"] = time.time()
         self._persist()
         return self.public, sig
 
@@ -125,8 +172,97 @@ class Witness:
         """
         self._bootstrapped.add(str(store_id))
 
+    def attest(self, store_id: str) -> dict:
+        """A SIGNED statement of what this witness has seen for `store_id`, for a third party.
+
+        The point of a witness is that it is not the operator, and until 2.10.5 nothing carried that
+        across: every path to the witness's knowledge ran through an artifact the operator built and
+        could edit. This is the surface an auditor asks directly. It answers three questions the
+        operator cannot answer honestly about themselves:
+
+          * WHAT was the last head I co-signed, and at what height. A bundle whose anchor does not
+            match it is either stale or a fork.
+          * WHEN did I last see this store. An operator who rewrote history and then stopped
+            submitting is otherwise indistinguishable from an idle one.
+          * WHAT DID I REFUSE. An honest witness refuses only a fork or a rollback.
+
+        Signed over the canonical statement, so it survives the trip and cannot be edited by whoever
+        carries it. Verify with `verify_attestation(statement, witness_pubkey)`.
+
+        HONEST SCOPE, and it is a deployment fact rather than something this can assert: if the
+        operator never submitted this store to any witness, there is nothing to ask, and an empty
+        attestation from a witness that never saw the store looks the same as one from a store that
+        never existed. The auditor has to know WHICH witnesses should have seen it. `seen` is False
+        in that case rather than absent, so the question at least has an answer.
+        """
+        sid = str(store_id)
+        head = self._last.get(sid)
+        stmt = {
+            "kind": "inspeximus-witness-attestation/1",
+            "store_id": sid,
+            "witness": self.public,
+            "issued_ts": time.time(),
+            "seen": head is not None,
+            "last_head": dict(head) if head else None,
+            "refusals": [r for r in self._refusals if r.get("store_id") == sid],
+        }
+        core = _canon({k: stmt[k] for k in
+                       ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals")})
+        stmt["hash"] = _sha256_hex(core)
+        if _HAVE_ED:
+            sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._secret))
+            stmt["sig"] = sk.sign(bytes.fromhex(stmt["hash"])).hex()
+        return stmt
+
+    def refusals(self, store_id: str | None = None) -> list:
+        """What this witness declined to co-sign, and why. Unsigned; use `attest()` to hand it on."""
+        return [r for r in self._refusals
+                if store_id is None or r.get("store_id") == str(store_id)]
+
     def last_head(self, store_id: str) -> dict | None:
         return self._last.get(str(store_id))
+
+
+def verify_attestation(statement: dict, witness_pubkey: str | None = None) -> dict:
+    """Check a witness attestation is intact and, when pinned, actually from that witness.
+
+    Returns {ok, signed, problems, statement}. `witness_pubkey` PINS it: unpinned, the signature is
+    checked against the key carried inside the statement, which whoever handed it to you could have
+    replaced along with the signature -- the same footgun `verify_writes` grew `warn_unpinned` for,
+    so it is reported rather than assumed away.
+    """
+    problems: list = []
+    if not isinstance(statement, dict) or statement.get("kind") != "inspeximus-witness-attestation/1":
+        return {"ok": False, "signed": False, "problems": ["not a witness attestation"],
+                "statement": statement}
+    core = _canon({k: statement.get(k) for k in
+                   ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals")})
+    if _sha256_hex(core) != statement.get("hash"):
+        problems.append("attestation hash does not match its own fields (edited in transit)")
+    signed = False
+    pk = witness_pubkey or statement.get("witness")
+    if statement.get("sig") and pk and _HAVE_ED:
+        try:
+            _Ed25519PK.from_public_bytes(bytes.fromhex(pk)).verify(
+                bytes.fromhex(statement["sig"]), bytes.fromhex(statement["hash"]))
+            signed = True
+        except Exception:
+            problems.append("attestation signature does not verify")
+    elif not statement.get("sig"):
+        problems.append("attestation carries no signature: it is a claim, not evidence")
+    if witness_pubkey and statement.get("witness") != witness_pubkey:
+        problems.append("attestation is from a different witness than the one pinned")
+    # THE WHOLE REASON TO ASK. A refusal recorded here cannot be deleted by the operator, because
+    # this statement did not come from them.
+    if statement.get("refusals"):
+        problems.append(
+            f"this witness REFUSED to co-sign {len(statement['refusals'])} time(s) for this store: "
+            f"{[r.get('reason', '')[:70] for r in statement['refusals'][:3]]}. An honest witness "
+            f"refuses only a fork or a rollback.")
+    if not statement.get("seen"):
+        problems.append("this witness has never seen this store, so it vouches for nothing about it "
+                        "-- check you are asking the witnesses that should have")
+    return {"ok": not problems, "signed": signed, "problems": problems, "statement": statement}
 
 
 def collect_cosignatures(store_id: str, anchor: dict, witnesses) -> dict:

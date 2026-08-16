@@ -3,6 +3,55 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.10.5 - UPGRADE IF YOU RUN OR RELY ON WITNESSES. Ask the witness, not the operator.
+
+2.10.3 made a bundle witnessable and recorded refusals in it. Measured 2026-08-16, that helps an
+**honest** operator prove diligence and does not bind a dishonest one:
+
+```
+operator exports over a rewritten store   -> 3 witnesses refuse, recorded, verify FAILS
+operator deletes `witness_refusals`, reseals
+  auditor WITH the witness allowlist      -> still caught
+  auditor WITHOUT it                      -> ok, "SELF-CERTIFIED", three refusals invisible
+```
+
+No further check *inside* the bundle can fix that, because the bundle is built by the party being
+audited. The witness knew the whole time and had no way to say so.
+
+### `Witness.attest(store_id)` — a signed statement for a third party
+
+```python
+from inspeximus.witness_pool import Witness, verify_attestation
+
+w = Witness(state_path="witness.json")
+w.bootstrap("prod")                                # first contact with this store, stated
+statement = w.attest("prod")                       # hand this to an auditor
+print(verify_attestation(statement, witness_pubkey=w.public)["signed"])
+# -> True
+```
+
+It answers three things an operator cannot answer honestly about themselves:
+
+* **what head did I last co-sign, and at what height** — a stale or forked bundle becomes visible;
+* **when did I last see this store** — so **silence** stops being invisible. An operator who rewrote
+  history and then simply stopped submitting heads was previously indistinguishable from an idle
+  store: an attack whose entire cost is doing nothing;
+* **what did I refuse** — durable across restarts, and not deletable by the operator.
+
+`verify_bundle(attestations=[...])` compares them to the anchor in front of you. A head the witness
+has not seen yet is a **note** (the operator may legitimately have written more); a head that
+contradicts theirs at the same or lower height is a **problem**; a witness that has never seen the
+store says `seen: False` rather than passing quietly.
+
+**Honest scope, and it is a deployment fact this cannot assert:** if the operator never submitted the
+store to any witness, there is nothing to ask. The auditor has to know *which* witnesses should have
+seen it.
+
+The refusal log is bounded (newest-last) so a witness watching a flapping operator does not grow its
+state file without limit, and an older state file still starts the witness — refusing to start on a
+valid pre-2.10.5 file would take a witness offline on upgrade, and a witness that will not start
+co-signs nothing.
+
 ## 2.10.4 - UPGRADE IF YOUR RECEIPT CHAIN IS SIGNED. An unsigned entry appended to it verified clean.
 
 2.10.3 closed the audit-bundle side of this and left a residual: on an **unsigned** chain, an

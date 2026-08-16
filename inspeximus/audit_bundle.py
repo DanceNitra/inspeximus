@@ -27,7 +27,7 @@ check co-signatures) -- the append-only guarantee comes from that external witne
 from __future__ import annotations
 import json
 import os
-from .core import Inspeximus, _sha256_hex, _canon, _GENESIS, __version__, sth_hash_of
+from .core import Inspeximus, _sha256_hex, _canon, _GENESIS, __version__, sth_hash_of, _int_or
 
 BUNDLE_KIND = "inspeximus.audit_bundle/1"
 
@@ -265,7 +265,7 @@ def bind_content(bundle: dict, store_items: list) -> dict:
 
 def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1,
                   require_signed: bool = False, store_receipts: list | None = None,
-                  require_witnessed: bool = False,
+                  require_witnessed: bool = False, attestations: list | None = None,
                   store_items: list | None = None) -> dict:
     """STANDALONE offline verification of an audit bundle -- needs only the file (no store, no receipt key).
     Checks, in order: (1) the bundle's own hash; (2) the write chain re-walks from genesis and its tip+count
@@ -423,6 +423,35 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             "operator's own record-keeping verified against itself -- an operator holding receipt_key "
             "can rewrite the whole history and re-sign it so it verifies internally. Only a witnessed "
             "anchor is adversarial against the operator. Pass require_witnessed=True to refuse this.")
+    # (5b) WHAT THE WITNESSES SAY, asked of THEM rather than read out of this artifact.
+    #
+    # Everything above is checked against a bundle the OPERATOR built. 2.10.3 recorded witness
+    # refusals in it, which helps an honest operator prove diligence and does not bind a dishonest
+    # one: measured 2026-08-16, deleting `witness_refusals` and resealing left an auditor without the
+    # allowlist looking at an ordinary SELF-CERTIFIED bundle, with three refusals invisible.
+    #
+    # An attestation comes from the witness. Pass what they hand you and this compares it to the
+    # anchor in front of you: a refusal they recorded, a head they last saw that is NOT this one, or
+    # a store they have never seen at all.
+    for _att in (attestations or []):
+        from .witness_pool import verify_attestation
+        _v = verify_attestation(_att)
+        if not _v["signed"]:
+            limits.append(f"an attestation from {str(_att.get('witness'))[:12]}... is unsigned, so it "
+                          f"is a claim rather than evidence")
+        for _pr in _v["problems"]:
+            bad(f"witness {str(_att.get('witness'))[:12]}...: {_pr}")
+        _seen = (_att.get("last_head") or {})
+        if _seen.get("writes_tip") and anchor.get("writes_tip")                 and _seen["writes_tip"] != anchor.get("writes_tip"):
+            # Not automatically a fork -- the operator may simply have written more since the witness
+            # last looked -- but the auditor must be told which head the third party actually stands
+            # behind, because a WITNESSED-BUT-STALE bundle is what a rewrite looks like from here.
+            _newer = _int_or(anchor.get("n_writes"), 0) > _int_or(_seen.get("n_writes"), 0)
+            (limits.append if _newer else bad)(
+                f"witness {str(_att.get('witness'))[:12]}... last saw head "
+                f"{str(_seen.get('writes_tip'))[:12]}... at n_writes={_seen.get('n_writes')}, "
+                f"{'which this bundle extends (they have not seen the current head)' if _newer else 'which this bundle CONTRADICTS at the same or lower height'}")
+
     if anchor.get("witness_refusals"):
         # An honest witness refuses only a fork or a rollback, so a refusal recorded at export time is
         # the loudest signal in the artifact -- louder than any check here, because it comes from
