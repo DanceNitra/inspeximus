@@ -34,6 +34,7 @@ from inspeximus.audit_bundle import build_bundle, verify_bundle
 from inspeximus.core import new_ed25519_keypair
 from inspeximus.witness_pool import Witness
 
+from conftest import fork_of
 SK, _PUB = new_ed25519_keypair()
 
 
@@ -86,7 +87,19 @@ def test_an_operator_holding_the_key_cannot_get_a_rewritten_history_witnessed(po
     honest = _store(d, "s.json", "two approvers")
     build_bundle(honest, witnesses=ws, store_id="store-1")          # witnessed at time T
 
-    forged = _store(d, os.path.join("rw", "s.json"), "ONE approver")
+    # A REAL FORK: same genesis receipt, divergent after it. This used to build a second store
+    # from scratch, which after the derived-id fix is a DIFFERENT store rather than a rewrite of
+    # this one -- so the witnesses had nothing to refuse and the test passed on an attack it was no
+    # longer performing.
+    # SAME HEIGHT, different tip. One record too many and the fork is TALLER than the victim, which
+    # the witness reads as ordinary growth and co-signs -- correctly, since a taller chain is what
+    # honest writing looks like. Rewrite-then-grow is caught by the bundle's chain-prefix check and
+    # by the attestation, not here; this test is about the equal-height fork.
+    #
+    # The genesis record survives, because it must: identity IS the genesis receipt hash, so a
+    # rewrite that reaches back that far produces a different store rather than a forked one.
+    forged = fork_of(honest, os.path.join(d, "rw"),
+                     [("deployment needs ONE approver", "pol", "one")], receipt_key=SK)
     assert forged.verify_writes()[0] is True, "the rewrite must verify internally, or this proves nothing"
     assert verify_bundle(build_bundle(forged))["ok"] is True, "same"
 
@@ -115,8 +128,10 @@ def test_a_refusal_is_surfaced_even_when_the_auditor_passes_no_witnesses(pool):
     loudest signal in the artifact -- louder than any check inside it, because it came from outside.
     It must not depend on the auditor remembering to pass an allowlist."""
     d, ws, _pks = pool
-    build_bundle(_store(d, "s.json", "two approvers"), witnesses=ws, store_id="store-1")
-    b = build_bundle(_store(d, os.path.join("rw", "s.json"), "ONE approver"),
+    honest = _store(d, "s.json", "two approvers")
+    build_bundle(honest, witnesses=ws, store_id="store-1")
+    b = build_bundle(fork_of(honest, os.path.join(d, "rw"),
+                             [("deployment needs ONE approver", "pol", "one")], receipt_key=SK),
                      witnesses=ws, store_id="store-1")
     out = verify_bundle(b)                                   # no witnesses= at all
     assert not out["ok"] and any("REFUSED" in x for x in out["problems"]), out["problems"]

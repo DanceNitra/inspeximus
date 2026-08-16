@@ -158,7 +158,45 @@ def test_the_env_var_accepts_a_raw_key_and_a_path(monkeypatch):
     d = tempfile.mkdtemp()
     monkeypatch.setenv("INSPEXIMUS_RECEIPT_KEY", SK)
     assert receipt_key_for(os.path.join(d, "s.json")) == SK
-    kf = os.path.join(d, "elsewhere.key")
+    # OUTSIDE the store's directory, because that is the only correct place for it. The first
+    # version of this test wrote `elsewhere.key` next to the store and passed -- the location guard
+    # covered only the directory the helper CHOOSES, so the env-path route walked straight past the
+    # footgun the helper exists to prevent. The guard now covers both routes and refused this
+    # fixture, which is the guard working.
+    elsewhere = tempfile.mkdtemp()
+    kf = os.path.join(elsewhere, "receipt.key")
     open(kf, "w", encoding="utf-8").write(SK + "\n")
     monkeypatch.setenv("INSPEXIMUS_RECEIPT_KEY", kf)
     assert receipt_key_for(os.path.join(d, "s.json")) == SK
+
+
+def test_the_env_var_route_is_guarded_too(monkeypatch):
+    """The half that was open: a key path inside the store's own directory, reached through the
+    helper written to stop exactly that."""
+    d = tempfile.mkdtemp()
+    kf = os.path.join(d, "receipt.key")
+    open(kf, "w", encoding="utf-8").write(SK + "\n")
+    monkeypatch.setenv("INSPEXIMUS_RECEIPT_KEY", kf)
+    with pytest.raises(ValueError, match="inside the store's own directory"):
+        receipt_key_for(os.path.join(d, "s.json"))
+
+
+def test_a_case_variant_of_the_store_directory_is_still_inside_it(monkeypatch):
+    """`startswith` on `abspath` normalises neither case nor links, and Windows/macOS filesystems are
+    case-insensitive, so the same directory in different case walked past the guard."""
+    d = tempfile.mkdtemp()
+    monkeypatch.delenv("INSPEXIMUS_RECEIPT_KEY", raising=False)
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", d.upper())
+    with pytest.raises(ValueError, match="inside the store's own directory"):
+        receipt_key_for(os.path.join(d, "s.json"))
+
+
+def test_a_sibling_directory_is_not_inside_the_store_directory(monkeypatch):
+    """The false refusal a prefix test causes: `.../AgentDataBackups` is not inside `.../AgentData`,
+    and a guard that refuses honest locations is a guard someone switches off."""
+    d = tempfile.mkdtemp()
+    sib = d + "Backups"
+    os.makedirs(sib, exist_ok=True)
+    monkeypatch.delenv("INSPEXIMUS_RECEIPT_KEY", raising=False)
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", sib)
+    assert len(receipt_key_for(os.path.join(d, "s.json"))) == 64

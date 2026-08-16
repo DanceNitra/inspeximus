@@ -1128,7 +1128,8 @@ def audit_bundle(expected_pubkey: str = "") -> dict:
 
 @mcp.tool()
 def verify_audit_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 1,
-                        store_path: str = "") -> dict:
+                        store_path: str = "", expected_pubkey: str = "",
+                        require_signed: bool = False) -> dict:
     """OFFLINE verification of an audit_bundle() — needs only the bundle (no store, no key). Re-walks both
     hash-chains from genesis, matches the tips/counts to the signed anchor, and (with `witnesses`) checks
     external co-signatures. Returns {ok, checks, problems, limits, summary}; any post-export tamper fails it.
@@ -1142,8 +1143,14 @@ def verify_audit_bundle(bundle: dict, witnesses: list | None = None, threshold: 
     This surface had no way to pass it: `limits` told the auditor to "pass store_items=", a parameter that
     did not exist here, so over MCP the answer was always the content-blind one. A missing `store_path` is
     REFUSED rather than silently downgraded — opening a store creates it, so a mistyped path would
-    otherwise hand back a clean verdict over an empty store the call had just made."""
-    from .audit_bundle import verify_bundle, load_store_items
+    otherwise hand back a clean verdict over an empty store the call had just made.
+
+    `expected_pubkey` is the key you hold OUT OF BAND. Without it the chain signatures can only be
+    checked against a key carried inside this same artifact, which proves the writer owned a keypair
+    and not which one — so the verdict says PRESENT BUT UNVERIFIED rather than passing. This
+    parameter did not exist here either, so over MCP the pinned check was unreachable in both
+    directions. `require_signed=True` turns an unsigned or unverified chain into a failure."""
+    from .audit_bundle import verify_bundle, load_store_items, load_store_receipts
     items = None
     if store_path:
         items = load_store_items(store_path)
@@ -1152,7 +1159,13 @@ def verify_audit_bundle(bundle: dict, witnesses: list | None = None, threshold: 
                                                             "refusing to verify content against a store this "
                                                             "call would have had to create"],
                     "limits": [], "summary": {"content_checked": False}}
-    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items)
+    # store_receipts too: the LIVE chain is what separates ordinary growth from an injected record
+    # without trusting `ts`, a field the writer controls. The CLI passed it and this did not, so the
+    # same bundle got a weaker verdict depending on which surface asked.
+    receipts = load_store_receipts(store_path) if store_path else None
+    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items,
+                         store_receipts=receipts, require_signed=require_signed,
+                         expected_pubkey=(expected_pubkey or None))
 
 
 @mcp.tool()

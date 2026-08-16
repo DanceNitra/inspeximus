@@ -271,7 +271,8 @@ def _witness_cmd(a) -> int:
         with open(a.key, encoding="utf-8") as f:
             sk = f.read().strip()
         state = a.state or (a.key + ".state.json")
-        w = Witness(secret_hex=sk, state_path=state)
+        w = Witness(secret_hex=sk, state_path=state, strict=a.strict,
+                    require_authenticated_state=a.require_authenticated_state)
         try:
             pk, sig = w.cosign(a.store_id, anchor)
         except ValueError as e:
@@ -297,13 +298,28 @@ def _witness_cmd(a) -> int:
             print(f"  -> {a.out}")
         return 0
 
+    if a.witness_cmd == "bootstrap":
+        # WHY THIS COMMAND EXISTS. `--strict` refuses a store the witness has no memory of, which is
+        # the amnesia defence -- and without a way to declare a genuine first contact it is not a
+        # defence, it is a brick. The help text for --strict named this command before it existed.
+        from .witness_pool import Witness
+        with open(a.key, encoding="utf-8") as f:
+            sk = f.read().strip()
+        w = Witness(secret_hex=sk, state_path=(a.state or (a.key + ".state.json")), strict=True)
+        w.bootstrap(a.store_id)
+        print(f"  bootstrapped {a.store_id} for witness {w.public[:16]}...")
+        print(f"  persisted to {a.state or (a.key + '.state.json')}")
+        return 0
+
     if a.witness_cmd == "serve":
         from .witness_server import serve
         sk = None
         if a.key:
             with open(a.key, encoding="utf-8") as f:
                 sk = f.read().strip()
-        serve(a.port, a.host, a.state, sk)
+        serve(a.port, a.host, a.state, sk, strict=a.strict,
+              require_authenticated_state=a.require_authenticated_state,
+              bootstrap_token=a.bootstrap_token)
         return 0
 
     # verify / split-view only: both are CLIENT-side trust decisions and both need the allowlist.
@@ -594,6 +610,18 @@ def main(argv=None):
     av.add_argument("--store", default=None,
                     help="the store file the bundle came from; binds the receipts to the CONTENT it "
                          "serves today. Without it a clean chain over substituted text still reads PASS.")
+    # PINNING BELONGS HERE, AND ONLY HERE. `audit-build --expected-pubkey` has existed since 2.10.2
+    # and is nearly useless: the operator builds the bundle, so an operator checking their own key
+    # against their own artifact learns nothing. The auditor is the party who holds a key from out of
+    # band, and the auditor runs THIS command -- which had no way to supply it. So over the shell,
+    # the strongest attribution check in the package was reachable only from the side that does not
+    # need it.
+    av.add_argument("--expected-pubkey", default=None,
+                    help="pin the chain signatures to a key you got OUT OF BAND. Without it they can "
+                         "only be checked against a key carried inside the bundle itself, which "
+                         "proves the writer owned a keypair -- not which one.")
+    av.add_argument("--require-signed", action="store_true",
+                    help="refuse a bundle whose chain is unsigned or only present-but-unverified")
 
     # ── tamper-evident / transparency-log surface: anchor + the witness network ──────────────────────────
     # These existed as Python + an HTTP server since 1.34.0 and were reachable from no shell command at all,
@@ -623,6 +651,12 @@ def main(argv=None):
                           "and is never optional: each CLI call is a fresh process, so a witness with no "
                           "state file has no memory and can never refuse anything")
     wcs.add_argument("--out", default=None, help="write {pubkey,sig} here (default: stdout)")
+    wcs.add_argument("--strict", action="store_true",
+                     help="refuse a store this witness has no memory of. Record a genuine first "
+                          "contact with `inspeximus witness bootstrap` first -- the declaration is "
+                          "persisted in the same state file")
+    wcs.add_argument("--require-authenticated-state", action="store_true",
+                     help="refuse a state file carrying no MAC")
 
     wvf = wsub.add_parser("verify", help="CLIENT side: k-of-n check that allowlisted INDEPENDENT witnesses "
                                          "co-signed this exact head (exit 1 below threshold)")
@@ -646,6 +680,25 @@ def main(argv=None):
     wsr.add_argument("--port", type=int, default=9700); wsr.add_argument("--host", default="127.0.0.1")
     wsr.add_argument("--state", default=None, help="json file persisting the per-store last-signed head")
     wsr.add_argument("--key", default=None, help="witness SECRET key file (omit to mint an ephemeral key)")
+    wsr.add_argument("--strict", action="store_true",
+                     help="refuse a store this witness has no memory of. Deleting the state file is "
+                          "otherwise a way to launder a rollback: an amnesiac witness co-signs one")
+    wsr.add_argument("--require-authenticated-state", action="store_true",
+                     help="refuse a fork-memory file carrying no MAC. Turn this on once the witness "
+                          "has started (and so re-persisted) at least once on 2.10.6+")
+    wsr.add_argument("--bootstrap-token", default=None,
+                     help="shared secret enabling POST /bootstrap (needs --strict). Callers send it "
+                          "as X-Bootstrap-Token. Without this the route is 403: an unauthenticated "
+                          "bootstrap would defeat --strict, since anyone could declare any store id")
+
+    wbs = wsub.add_parser("bootstrap", help="declare a legitimate FIRST CONTACT with a store, for a "
+                                            "strict witness. Persisted in the state file")
+    wbs.add_argument("--store-id", required=True, help="the store id this witness may see for the "
+                                                       "first time (the bundle's store_id_derived)")
+    wbs.add_argument("--key", required=True, help="the witness SECRET key file (from `witness keygen`)")
+    wbs.add_argument("--state", default=None,
+                     help="the state file this witness persists to; defaults to <key>.state.json, "
+                          "and must be the SAME file the witness serves from")
 
     ins = sub.add_parser("install", help="register the MCP server in an editor's own config file")
     ins.add_argument("--ide", required=True,
@@ -694,7 +747,9 @@ def main(argv=None):
                       f"verifying, because an empty one verifies clean")
                 return 1
         res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,
-                        store_items=items, store_receipts=receipts)
+                            store_items=items, store_receipts=receipts,
+                            expected_pubkey=a.expected_pubkey,
+                            require_signed=a.require_signed)
         if a.json:
             _out(res, True)
         else:

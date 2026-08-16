@@ -3,6 +3,225 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.10.6 - SECURITY. UPGRADE IF YOU USE WITNESSES, AUDIT BUNDLES, OR `source={'doc': <path>}`.
+
+**Three** adversarial passes were run against this release before it was published — the previous
+five patch releases each existed because the pass ran *after*, and found a hole in the one before.
+2.10.1 through 2.10.5 all shipped on a single day for that reason.
+
+| pass | target | confirmed | refuted |
+|---|---|---|---|
+| one | 2.10.5 as released | 11 | 3 |
+| two | pass one's own fixes | 11 | — |
+| three | pass two's own fixes | 2 | 8 |
+| four | pass three's own fixes | 3 | 9 |
+| five | pass four's own fixes | 1 | 9 |
+
+Two of pass one's findings were critical, and both defeated the single guarantee in this product
+that does not come from the party being audited. **Three of pass two's eleven were false claims
+written into this changelog and into code comments while fixing pass one** — statements that
+something was closed when it was not. Those are corrected below rather than quietly dropped; a
+wrong assurance is worse than a missing one, and it survives every test suite ever written.
+
+### Critical
+
+* **A witness's fork memory was keyed on the store's file path.** Roll history back, copy the store
+  to another path, and every witness co-signed it as a first contact — with the verdict printing
+  `operator-adversarial`. No test caught it: all 14 call sites passed `store_id=` explicitly, so the
+  default was exercised by nothing. Identity is now **derived from the log** (the genesis receipt
+  hash), which survives copying and renaming and cannot be altered without breaking the chain every
+  other check walks.
+* **The refusal log was one global FIFO on a caller-chosen key.** Refuse a fork, *extend* the forked
+  chain so the rollback guard has nothing to compare, then flood 200 refusals under invented store
+  ids and the real evidence falls off the front — after which the witness's own signed attestation
+  reported none. Now bounded **per store**, with whole-store eviction that **never** touches a
+  poisoned store and takes the rest **newest-first**, so a flood pushes out its own entries.
+
+  *Pass two corrected two claims made here.* The fix first shipped **oldest-first** eviction under a
+  comment promising it would "never evict the first refusal of a store this witness is actually
+  watching" — exactly backwards, and measured so: the genuine victim is refused *first*, so it holds
+  the oldest timestamp and goes *first*. 520 unauthenticated POSTs in 5.5 seconds emptied the
+  victim's refusals and flipped the verdict from fail to pass. And the **poison marker originally
+  blocked co-signing**, which turned an unauthenticated endpoint into a weapon: one POST carrying a
+  self-consistent conflicting anchor (`sth_hash_of` is public — no store and no key needed)
+  permanently disabled witnessing for any store whose id you knew, across restarts, until a human
+  ran `clear_poison`. **Poison is advisory now**: a co-signature is a *fact* ("I saw this head") and
+  the judgement lives in `attest()` and `verify_bundle(attestations=…)`, which is where the auditor
+  reads it and acts on it. Blocking bought nothing the auditor did not already get, and added a
+  denial channel a stranger could pull.
+
+### High
+
+* **`verify_bundle` never verified a signature** — it counted `sig` keys, and the bundle did not even
+  export `pubkey`. Re-sign a rewritten chain with a key you minted, or with the literal string
+  `deadbeef`, and the offline verdict was PASS with `require_signed=True`. It now verifies Ed25519
+  over each entry, takes `expected_pubkey=`, and reports **PRESENT BUT UNVERIFIED** when no key is
+  pinned — because a signature checked against the key carried next to it proves only that the writer
+  owned a keypair. *This makes the 2.10.4 changelog's "signing now pays" true at this surface; it was
+  true only at `verify_writes` before.*
+* **A taller bundle was assumed to be honest growth.** Rewrite a record, append two ordinary writes,
+  and a witness attestation *exonerated* the fork in words that were false. The bundle carries its
+  chain, so the claim is checkable: if the witness signed tip T at height n, entry n−1 must hash to T.
+* **Attestations were unpinned and unbound** — a statement from a key not on the allowlist was
+  accepted silently, and one issued for a different store read as a clean bill of health. Now pinned,
+  bound to the store (by name **or** by the chain linking, so an operator who names a store
+  inconsistently is not accused of forking), and an allowlisted witness that produced **no**
+  attestation is reported.
+* **The witness state file was unauthenticated.** An unparseable one was a hard error; a well-formed
+  one was believed, so a crafted low prior head defeated `strict=True` and deleting the refusal list
+  made `attest()` sign a statement reporting none. Now MACed with the witness's own key.
+
+  *Pass two corrected the claim made here.* The fix said "one MAC per persist closes it". **It does
+  not.** An attacker editing the file deletes the `mac` key too, lands in the pre-2.10.6 upgrade
+  branch, and is believed — and the flag recording that (`_unauthenticated_load`) was written in
+  four places, **read in zero**, and cleared again by the next persist, so nobody was ever told. It
+  cannot be closed by refusing, because a stripped file and a genuinely old one are identical by
+  inspection and refusing every old file takes existing witnesses offline. So the fact is made
+  **durable and signed** instead: an unauthenticated load is recorded inside the MACed body and
+  reported in **every attestation the witness issues** (`memory_authenticated: false`), inside the
+  signed core so the courier cannot strip it. An attacker can remove the MAC; they cannot remove the
+  witness's key. Operators who have finished migrating close it outright with
+  `Witness(require_authenticated_state=True)` — or `--require-authenticated-state` on the CLI.
+* **A second `Witness` over one state file silently destroyed the first's fork memory** — and that
+  was the *documented* way to reach `attest()` on a running server. Single-writer guard added.
+* **The audit bundle carried every other tenant's receipts and GDPR request ids** while describing
+  itself as content-free and fit for a DPO. `build_bundle` now **refuses** a tenant-bound store
+  unless `cross_tenant_chain=True`, and discloses it in the artifact. Filtering the chain is not an
+  option — it breaks the `prev` links that make re-walking from genesis possible.
+
+### And the one that was not a bug in any line
+
+`Witness.attest()` — 2.10.5's headline, *"the surface an auditor asks directly"* — was reachable from
+**no shipped interface**. The remote witness the module recommends could not be asked; the only
+caller who could reach it held the `Witness` object, i.e. the operator. **`GET /attest?store_id=`**
+now exists on the witness server.
+
+### Medium
+
+* An honest store that turned receipts on part-way was told, in text **identical** to a genuine
+  plant, that its records "were inserted out of band" — which makes the genuine signal unreadable.
+* `receipt_key_for`'s location guard was a case-sensitive, link-blind `startswith`: the same
+  directory in different case passed, a junction passed, and a *sibling* directory sharing a prefix
+  was falsely refused. It also covered only the default route, so `INSPEXIMUS_RECEIPT_KEY=<path
+  inside the store dir>` walked past the exact footgun the helper exists to prevent. Now
+  `realpath` + `normcase` + `commonpath`, on both routes.
+* **Observation binding** (the 2.10.6 work this release started as): `source={"doc": path,
+  "observed_sha256": <what you read>}` binds a memory to the bytes the agent actually observed, with
+  `UNBOUND_CAPTURE` as a fifth verdict and a fifth coverage number. Found by taking
+  [@safal207](https://github.com/safal207)'s bug report on
+  [anthropics/claude-code#34556](https://github.com/anthropics/claude-code/issues/34556) and running
+  it against ourselves: we hashed at **write** time, so a memory claiming `value='A'`, captured after
+  the file became `'B'`, recorded B's digest and reported FRESH. Four further gaps in that work were
+  found by the same pass — a malformed digest silently destroyed the fingerprint, resolver-backed
+  sources were inert, an unbound capture suppressed the drift comparison forever, and the coverage
+  number is a **declaration** and is now named one.
+
+### Refuted, and reported as refuted
+
+A `Witness.cosign` race is real at the API level (297/300 double-signed with a widened switch
+interval) but **0/400 through the shipped HTTP server** — a latent correctness defect worth a lock,
+not a demonstrated remote exploit. Forging `observation_bound` through `meta=` does not work; the
+reserved keyspace holds. The chain-prefix check is sound under partial receipts.
+
+### Pass two: attacking pass one's fixes
+
+Beyond the three corrections folded in above:
+
+* **The pin was reachable only from the side that does not need it.** `audit-build
+  --expected-pubkey` has existed since 2.10.2; the operator *builds* the bundle, so checking their
+  own key against their own artifact tells them nothing. The auditor holds a key from out of band
+  and runs `audit-verify`, **which had no way to accept one** — and neither did the MCP
+  `verify_audit_bundle`. Both now take `--expected-pubkey` / `expected_pubkey=` and
+  `--require-signed` / `require_signed=`. The MCP surface also passes `store_receipts` now, so the
+  same bundle no longer gets a weaker verdict depending on which surface asked.
+* **"Cannot check" was reported as "does not match".** On a base install (no `cryptography`) every
+  signature was skipped and the verdict read *"only 0 of N chain signatures verify against the
+  pinned key"* — an accusation of forgery manufactured by a missing optional dependency. It now says
+  **CANNOT CHECK** and names the install. The half that needs no crypto — comparing the key each
+  entry *names* — still runs, so a chain naming the wrong key is still caught.
+* **An unpinned attestation carried the whole operator-adversarial verdict** with none of the
+  caveat the chain signatures get. With no allowlist the statement is verified against the key
+  printed inside it, so a consistently forged attestation verifies exactly like a real one. Now
+  reported as **SIGNED BUT UNPINNED** — and the caveat disappears when you pass `witnesses=`, because
+  a caveat that fires unconditionally is one nobody reads.
+* **Observation-binding coverage rose as sources went missing.** The count was taken *after* the
+  branch that skips unresolvable sources, so a store whose sources had all moved reported binding
+  `0.0` while every record in it was bound. It is a fact about the record, not about the file.
+* **A hardlink defeats the receipt-key location guard** and is **not fixed** — `realpath` resolves
+  symlinks and junctions, but a hardlink is one inode with two names and there is nothing in the
+  path to resolve. Documented at the guard and pinned by a test, because a guard that lists only its
+  wins reads as complete. It stops the documented `receipt.key`-in-the-working-directory accident;
+  it does not stop an attacker who is already inside.
+
+### Pass three: attacking pass two's fixes
+
+* **The witness hardening was reachable from nothing we ship.** `strict` (refuse a store this
+  witness has no memory of — *amnesia is the attack*) and the new `require_authenticated_state` were
+  `Witness` constructor arguments that no shipped interface passed: not the CLI, not the HTTP
+  server, not MCP. The same shape as `attest()` one pass earlier. Both are now on `witness serve`,
+  `witness cosign`, and `witness_server.serve()`.
+* **A receipts-disabled store could be witnessed, and its identity was its filename.** With receipts
+  off, a store holding three records still reports `n_writes=0` and `writes_tip=000…0` — so the
+  witness cannot tell it from an empty store, nor from any *other* receipts-disabled store, and has
+  nothing to compare on the next submission. What came back was a valid signature over zeros, under
+  which the bundle printed *"external witnesses co-signed the anchor (operator-adversarial)"* in
+  green. `_derived_store_id` fell back to the **path** while its own docstring claimed "saying so
+  beats inventing one" — it did not say so; it returned the operator-chosen filename, which is
+  precisely the scheme pass one replaced, leaving the `cp` bypass fully open for every store without
+  receipts. The fallback is now marked `unkeyed:`, `build_bundle` **refuses** to witness one, and
+  `verify_bundle` refuses a hand-built bundle that claims co-signatures over one.
+
+*Eight further probes in pass three came back clean.* The one that nearly did not count is worth
+recording: the first version of the identity probe asked whether two stores **collide** on one id.
+They do not — every receipts-disabled store carried its own distinct path — and it reported clean
+while the `cp` bypass was wide open. The property is whether an id **survives a copy**, which is the
+entire reason the derived id replaced the filename. A criterion narrower than the property is how a
+green suite measures nothing.
+
+### Pass four: attacking pass three's fixes
+
+* **`--strict` would have bricked the witness, and the fix was one hour old.** Pass three exposed
+  `strict` on the CLI because it was reachable from nothing we ship; the help text told operators to
+  run `inspeximus witness bootstrap`, **a command that did not exist**. Nothing anywhere reached
+  `Witness.bootstrap`. A strict witness refuses every store it has no memory of, so the flag added
+  to fix a class of unreachable-mechanism defects was a fresh instance of that class, and a worse
+  one, because it reads as protection. `inspeximus witness bootstrap` now exists.
+* **`bootstrap()` was never persisted**, which is why a command alone would not have been enough. It
+  added to an in-memory set and returned: a CLI witness is a fresh process per call, so the
+  declaration was gone before the next invocation, and a server lost every bootstrap on restart.
+  `strict=True` had never been usable outside one long-lived Python process. It lives in the MACed
+  state body now, so an operator also cannot add one by editing the file without stripping the MAC,
+  which every attestation then reports.
+* **An early HTTP refusal reset the connection instead of arriving.** `BaseHTTPRequestHandler` does
+  not consume the request body, and a response sent with unread bytes in flight makes the client see
+  `ConnectionResetError` rather than the response. Measured on the new route: the 403 explaining how
+  to enable `/bootstrap` (the whole value of that branch) was never delivered. Every POST path
+  drains the body first now.
+
+`POST /bootstrap` is the one **authenticated** write endpoint on the witness server
+(`--bootstrap-token`, sent as `X-Bootstrap-Token`), because it is the only one that can *weaken* a
+witness: unauthenticated, anyone could declare any store id and the witness would co-sign the
+rollback it had been made to forget. `/cosign` needs no token, because the worst an unauthenticated
+caller does there is record a head or a refusal, and both are facts.
+
+### Pass five: attacking pass four's fixes
+
+One finding: **a malformed body on the new route was a 500, not a 400.** Both handlers parsed inside
+a broad `except Exception` that answered `500 {type}: {message}`, so `not json` from an
+unauthenticated caller produced a server error carrying an exception class and its text. On the one
+endpoint a stranger can reach, that is a free error-shaped oracle and an ops alarm they can pull at
+will. Nine further probes came back clean: a planted `bootstrapped` entry is usable but the witness
+reports its own memory as unauthenticated (and `require_authenticated_state` refuses the file
+outright); a bootstrap is scoped to the store it names; it admits a first contact without forgiving
+a later rollback; re-bootstrapping does not erase a refusal already recorded; and near-miss tokens
+are refused, `hmac.compare_digest` doing what `startswith` would not.
+
+*One of those ten was a false alarm I raised against myself, and the reason is worth the line.* The
+probe for `require_authenticated_state` reused a state file that an earlier step had already
+co-signed against — and co-signing re-persists, **with a fresh MAC**. The guard was handed an
+authentic file, correctly started, and I read that as the guard failing. A probe whose earlier step
+repairs the damage its later step tests for measures the repair.
+
 ## 2.10.5 - UPGRADE IF YOU RUN OR RELY ON WITNESSES. Ask the witness, not the operator.
 
 2.10.3 made a bundle witnessable and recorded refusals in it. Measured 2026-08-16, that helps an

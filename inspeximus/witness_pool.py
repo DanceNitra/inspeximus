@@ -16,7 +16,7 @@ No LLM, no GPU, no network dependency in the core logic (a witness can be local,
 HTTP by the caller). Zero new dependencies beyond `cryptography` (already the signed-store dependency).
 """
 from __future__ import annotations
-import json, os, tempfile, time
+import json, os, tempfile, threading, time
 from .core import new_ed25519_keypair, witness_cosign, _HAVE_ED, _canon, _sha256_hex
 if _HAVE_ED:                     # OPTIONAL, exactly as in core: the Ed25519 names exist only when
     from .core import (          # `cryptography` is installed, and importing them unconditionally
@@ -36,6 +36,11 @@ def _public_from_secret(secret_hex: str) -> str:
 
 #: Newest-last bound on the refusal log. A witness watching a flapping operator must not grow its
 #: state file without limit, and the oldest refusal is the least useful one to keep.
+#: Per-STORE bound. The first refusal for a store is never evicted -- it is the fork evidence.
+_MAX_REFUSALS_PER_STORE = 50
+#: How many distinct stores may hold refusals. Eviction is whole-store, oldest-first, so a flood of
+#: invented store ids can only push out other floods.
+_MAX_REFUSAL_STORES = 500
 _MAX_REFUSALS = 200
 
 
@@ -46,7 +51,7 @@ class Witness:
     could restart the witness and get a fork past it."""
 
     def __init__(self, secret_hex: str | None = None, state_path: str | None = None,
-                 strict: bool = False):
+                 strict: bool = False, require_authenticated_state: bool = False):
         if secret_hex is None:
             secret_hex, public = new_ed25519_keypair()
         else:
@@ -58,6 +63,21 @@ class Witness:
         self._bootstrapped: set = set()
         self._last: dict[str, dict] = {}
         self._refusals: list = []
+        self._poisoned: set = set()
+        # ONE LOCK for cosign's read-modify-write and for _persist's
+        # load-compare-write. All handler threads of the shipped ThreadingHTTPServer
+        # share one Witness, so the single-writer guard fired against ITSELF: measured,
+        # 20 of 96 concurrent /cosign requests succeeded with the guard versus 81 of 96
+        # without it. A guard that turns a working server into a 20%-availability one is
+        # not protecting anybody.
+        self._lock = threading.RLock()
+        self._require_auth_state = bool(require_authenticated_state)
+        # DURABLE, NOT A FLAG. This was `self._unauthenticated_load`: written in four places, read in
+        # ZERO, and cleared again by the next _persist. Nobody was ever told, so the MAC below
+        # protected nothing an attacker could not also strip. It is a list of timestamps now, it
+        # lives inside the MAC'd body, and every signed attestation carries it.
+        self._unauth_loads: list = []
+        self._loaded_sig: str | None = None
         # AN AMNESIAC WITNESS MUST NOT CO-SIGN. This used to swallow (OSError, ValueError) and carry
         # on with `self._last = {}` -- so writing garbage into one JSON file made the witness forget
         # every head it had ever signed, and it then co-signed a rollback that
@@ -79,10 +99,62 @@ class Witness:
                 # rejected, because refusing to start on a valid older state file would take a
                 # witness offline on upgrade -- and a witness that will not start co-signs nothing.
                 if isinstance(_st, dict) and ("heads" in _st or "refusals" in _st):
+                    # AUTHENTICATED. An unparseable file was already a hard error; a WELL-FORMED one
+                    # was believed verbatim, and that defeats everything above it. Measured on the
+                    # candidate: a crafted state file with a low prior head satisfied `prior is not
+                    # None`, so strict=True co-signed a rollback; and deleting the refusal list made
+                    # attest() return a signed statement reporting zero refusals -- contradicting
+                    # verify_attestation's own claim that a refusal here "cannot be deleted by the
+                    # operator". The witness already holds an Ed25519 key; one MAC per persist closes
+                    # it, and a bad MAC is treated exactly like an unparseable file.
+                    # WHAT THE MAC ACTUALLY BUYS, stated correctly. The comment above used to
+                    # end "one MAC per persist closes it". It does not: an attacker who edits the
+                    # file also DELETES the `mac` key, lands in the legacy branch below, and is
+                    # believed. Nothing distinguishes a genuinely pre-2.10.6 file from a stripped
+                    # one by inspection, and refusing every un-MAC'd file takes existing witnesses
+                    # offline on upgrade.
+                    #
+                    # What it does buy: the cost goes from "edit the file" to "edit the file and
+                    # accept that this witness's own signed statements will report that its memory
+                    # was not authenticated" -- durable, covered by the MAC from the next write on,
+                    # and signed by a key the attacker does not hold. An operator who has finished
+                    # migrating closes it outright with require_authenticated_state=True.
+                    if _HAVE_ED and _st.get("mac"):
+                        try:
+                            _Ed25519PK.from_public_bytes(bytes.fromhex(self.public)).verify(
+                                bytes.fromhex(_st["mac"]),
+                                bytes.fromhex(_sha256_hex(_canon(
+                                    {k: _st.get(k) for k in ("heads", "refusals", "poisoned",
+                                                             "unauthenticated_loads",
+                                                             "bootstrapped")}))))
+                        except Exception:
+                            raise ValueError(
+                                f"the witness fork-memory at {state_path} does not authenticate "
+                                f"against this witness's own key. Refusing to start: a state file "
+                                f"someone else wrote will make this witness co-sign a rollback it "
+                                f"would otherwise refuse.") from None
+                    elif _HAVE_ED:
+                        # A pre-2.10.6 file carries no MAC -- and neither does one an attacker
+                        # stripped it from. Accepted, and RECORDED: refusing would take every
+                        # existing witness offline on upgrade, but accepting SILENTLY is precisely
+                        # what made the MAC decorative.
+                        self._note_unauthenticated(state_path)
                     self._last = _st.get("heads") or {}
                     self._refusals = list(_st.get("refusals") or [])
+                    self._poisoned = set(_st.get("poisoned") or [])
+                    self._unauth_loads = (list(_st.get("unauthenticated_loads") or [])
+                                          + self._unauth_loads)[-20:]
+                    # A BOOTSTRAP IS A DECISION, SO IT HAS TO OUTLIVE THE PROCESS THAT MADE IT.
+                    # This was an in-memory set: a CLI witness is a fresh process per call, so it had
+                    # forgotten before the next one started, and a server lost every bootstrap on
+                    # restart. `strict=True` was therefore unusable anywhere except inside one
+                    # long-lived Python process -- which is not the deployment it is written for.
+                    self._bootstrapped = set(_st.get("bootstrapped") or [])
                 else:
                     self._last = _st
+                    self._note_unauthenticated(state_path)
+                # WHAT WE LOADED, for the single-writer guard in _persist.
+                self._loaded_sig = _sha256_hex(_canon(_st))
             except (OSError, ValueError) as e:
                 raise ValueError(
                     f"the witness fork-memory at {state_path} exists but could not be read ({e}). "
@@ -98,21 +170,91 @@ class Witness:
             # the overclaim this review keeps finding. `strict=True` is what closes deletion.
             self._persist()
 
-    def _persist(self) -> None:
+    def _persist_locked(self) -> None:
         if not self._state_path:
             return
+        # SINGLE WRITER. This loaded the whole file once at construction and wrote its own snapshot
+        # back on every persist, with no re-read and no lock -- the stale-reader class that cost this
+        # project 290 records through the MCP server. Measured on the candidate: a second Witness over
+        # one state file silently destroyed the first's fork memory for an entire store, and that is
+        # not an exotic setup -- building a second Witness over a running server's --state file is
+        # the ONLY way to reach attest() today.
+        # A VANISHED FILE IS A CONFLICT. `and os.path.exists(...)` skipped the whole check when the
+        # file was gone, so deleting it between load and persist silently dropped another Witness's
+        # heads -- the guard failing open on the one input it cannot examine.
+        if self._loaded_sig is not None and not os.path.exists(self._state_path):
+            raise RuntimeError(
+                f"the witness fork-memory at {self._state_path} has been DELETED since this Witness "
+                f"loaded it. Refusing to recreate it from memory: whatever another writer put there "
+                f"is gone, and writing our own snapshot would make that loss permanent and silent.")
+        if self._loaded_sig is not None and os.path.exists(self._state_path):
+            try:
+                with open(self._state_path, "r", encoding="utf-8") as _f:
+                    _cur = _sha256_hex(_canon(json.load(_f)))
+            except Exception:
+                _cur = None
+            if _cur is not None and _cur != self._loaded_sig:
+                raise RuntimeError(
+                    f"the witness fork-memory at {self._state_path} changed since this Witness "
+                    f"loaded it -- another Witness or process is writing the same file. Refusing to "
+                    f"overwrite it: the heads and refusals it gained would be lost silently, which "
+                    f"is exactly how a witness forgets a fork it already refused.")
+
+        _body = {"heads": self._last, "refusals": self._refusals,
+                 "poisoned": sorted(self._poisoned),
+                 "unauthenticated_loads": self._unauth_loads[-20:],
+                 "bootstrapped": sorted(self._bootstrapped)}
+        if _HAVE_ED:
+            _sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._secret))
+            _body["mac"] = _sk.sign(bytes.fromhex(_sha256_hex(_canon(_body)))).hex()
         d = os.path.dirname(os.path.abspath(self._state_path)) or "."
         fd, tmp = tempfile.mkstemp(dir=d, suffix=".tmp")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:
-                json.dump({"heads": self._last, "refusals": self._refusals}, f)
+                json.dump(_body, f)
             os.replace(tmp, self._state_path)          # atomic; the fork-memory must not half-write
+            self._loaded_sig = _sha256_hex(_canon(_body))   # our own write is not a conflict
         except OSError:
             try: os.unlink(tmp)
             except OSError: pass
             raise
 
+    def _note_unauthenticated(self, state_path) -> None:
+        """This witness started from fork-memory it could not authenticate.
+
+        A durable fact rather than a line in a log nobody reads: it goes into the MAC'd body, so
+        from the next write it cannot be removed without stripping the MAC again, and into every
+        signed attestation, so the auditor who asks is told. An attacker with file access cannot
+        suppress it without the witness's key -- and holding that key, they would not need the file.
+        """
+        if self._require_auth_state:
+            raise ValueError(
+                f"the witness fork-memory at {state_path} carries no MAC, and this witness was "
+                f"started with require_authenticated_state=True. Either the file predates 2.10.6 -- "
+                f"start once without the flag to migrate it -- or someone stripped the MAC to edit "
+                f"the heads and refusals it holds.")
+        self._unauth_loads = (self._unauth_loads + [time.time()])[-20:]
+
     def cosign(self, store_id: str, anchor: dict) -> tuple[str, str]:
+        """Co-sign `anchor` for `store_id`. See _cosign_locked for the rules; this is the lock.
+
+        Every handler thread of the shipped ThreadingHTTPServer shares ONE Witness, so the
+        read-modify-write in here and the load-compare-write in _persist raced each other. Measured
+        on the candidate, 3 x 32 concurrent requests: 20 of 96 succeeded, 32 of them failing on the
+        single-writer guard firing against its own process, against 81 of 96 with the guard removed.
+        A guard that turns a working server into a 20%-availability one is not protecting anybody --
+        it is the availability half of the same mistake it was written to prevent.
+
+        RLock, not Lock: cosign calls _persist, which takes the same lock.
+        """
+        with self._lock:
+            return self._cosign_locked(store_id, anchor)
+
+    def _persist(self) -> None:
+        with self._lock:
+            return self._persist_locked()
+
+    def _cosign_locked(self, store_id: str, anchor: dict) -> tuple[str, str]:
         """Co-sign `anchor` for `store_id`. Raises ValueError if it forks/rolls back the last head this witness
         signed for that store (the refusal is the split-view defense). On success, records the new head and
         returns (public_hex, signature_hex) — pass to verify_cosigned_anchor / detect_split_view."""
@@ -126,6 +268,18 @@ class Witness:
         #
         # Default OFF: a witness pool that refuses every new store on upgrade is a worse outcome than
         # the attack it prevents, and the operators who need this are the ones who will read it.
+        # POISON IS ADVISORY. It is RECORDED and REPORTED, and it does not block co-signing.
+        #
+        # The first version blocked, and that turned an unauthenticated endpoint into a weapon:
+        # measured, ONE POST with a self-consistent conflicting anchor (sth_hash_of is public; no
+        # store and no key needed) permanently disabled witnessing for any store whose id you knew,
+        # across restarts, until a human ran clear_poison. A stranger must not be able to do that.
+        #
+        # Blocking was never what caught the extended fork anyway. A co-signature is a FACT -- "I saw
+        # this head" -- and the judgement lives in attest(), which reports the refusal, and in
+        # verify_bundle(attestations=...), which fails on it. The guarantee runs through the
+        # attestation; making the co-signature also a veto added a denial channel and bought nothing
+        # the auditor did not already get.
         if self._strict and prior is None and str(store_id) not in self._bootstrapped:
             raise ValueError(
                 f"strict witness has no record of store {store_id!r}. Either this is genuinely its "
@@ -134,6 +288,12 @@ class Witness:
         try:
             sig = witness_cosign(self._secret, anchor, prior_anchor=prior)   # raises on fork/rollback
         except ValueError as e:
+            # ONLY FOR A STORE THIS WITNESS HAS ACTUALLY SEEN. Without `prior`, anyone who can POST
+            # can have a refusal recorded against any id they invent -- and attest() would then
+            # report a fork alarm for a store the witness knows nothing about. A rejection is still
+            # a rejection; it is just not evidence about a history this witness never witnessed.
+            if prior is None:
+                raise
             # A REFUSAL IS EVIDENCE AND IT MUST NOT LIVE WITH THE PARTY BEING AUDITED.
             #
             # Until 2.10.5 this simply propagated: `collect_cosignatures` caught it and
@@ -152,7 +312,43 @@ class Witness:
                 "offered": {k: anchor.get(k) for k in ("n_writes", "writes_tip")},
                 "last_seen": dict(prior) if prior else None,
             })
-            del self._refusals[:-_MAX_REFUSALS]
+            # BOUNDED PER STORE, NEVER GLOBALLY, and a store's FIRST refusal is never evicted.
+            #
+            # A single global FIFO on a caller-chosen `store_id` is floodable: measured on the
+            # candidate, 200 refusals under invented junk ids pushed the real fork evidence off the
+            # front, the witness's own signed attestation then reported zero refusals, and the
+            # verdict came back ok=True with `operator-adversarial` printed. Raising the bound does
+            # not help -- the list is attacker-writable, so ANY global bound floods.
+            _mine = [i for i, x in enumerate(self._refusals) if x.get("store_id") == str(store_id)]
+            if len(_mine) > _MAX_REFUSALS_PER_STORE:
+                # keep the first (the fork that matters) and the most recent ones
+                _drop = set(_mine[1:len(_mine) - _MAX_REFUSALS_PER_STORE + 1])
+                self._refusals = [x for i, x in enumerate(self._refusals) if i not in _drop]
+            _stores = {}
+            for x in self._refusals:
+                _stores.setdefault(x.get("store_id"), []).append(x)
+            if len(_stores) > _MAX_REFUSAL_STORES:
+                # NEVER A POISONED STORE, AND NEWEST-FIRST FOR THE REST.
+                #
+                # The previous version evicted oldest-first and its comment claimed it would "never
+                # [evict] the first refusal of a store this witness is actually watching". That was
+                # exactly backwards and measured so: the genuine victim is refused FIRST, so it has
+                # the oldest timestamp and goes FIRST. 520 unauthenticated POSTs in 5.5 seconds made
+                # attest() report zero refusals for the victim and flipped verify_attestation from
+                # ok=False to ok=True with no problems.
+                #
+                # A poisoned store is the one thing here that is definitely evidence, so it is never
+                # evicted; among the rest, newest-first means a flood pushes out its own entries.
+                _evictable = [k for k in _stores
+                              if k not in self._poisoned and k != str(store_id)]
+                _order = sorted(_evictable, key=lambda k: _stores[k][-1].get("ts", 0), reverse=True)
+                for _k in _order[:max(0, len(_stores) - _MAX_REFUSAL_STORES)]:
+                    self._refusals = [x for x in self._refusals if x.get("store_id") != _k]
+            # POISONED. A witness that has refused a store must not later co-sign that fork's
+            # descendant -- measured: refuse at height 2, extend the fork to height 4, and the
+            # rolled-back guard cannot see it because the log is no longer shorter. Once a fork is
+            # seen, the store is compromised until an operator says otherwise.
+            self._poisoned.add(str(store_id))
             self._persist()
             raise
         self._last[str(store_id)] = {k: anchor.get(k) for k in
@@ -164,13 +360,42 @@ class Witness:
         self._persist()
         return self.public, sig
 
+    def clear_poison(self, store_id: str, basis: str) -> None:
+        """Deliberately un-poison a store this witness refused. `basis` is required and recorded.
+
+        Not an escape hatch with a default: a poisoned store is a witness saying it saw two histories,
+        and the only honest way past that is a human deciding which one is real and saying why.
+        """
+        if not str(basis or "").strip():
+            raise ValueError("clear_poison(basis=...) needs a stated reason: clearing a fork alarm "
+                             "without one leaves no record of who decided the history was sound")
+        self._poisoned.discard(str(store_id))
+        self._refusals.append({"store_id": str(store_id), "ts": time.time(),
+                               "reason": "POISON CLEARED: " + str(basis).strip()[:200],
+                               "cleared": True})
+        self._persist()
+
+    def poisoned(self) -> list:
+        """Stores this witness has refused and that have not been deliberately cleared."""
+        return sorted(self._poisoned)
+
     def bootstrap(self, store_id: str) -> None:
         """Declare that this witness is legitimately seeing `store_id` for the first time.
 
         The deliberate act `strict=True` demands, so "I have never seen this store" and "someone
         deleted what I knew about it" stop looking alike.
+
+        PERSISTED, and it has to be. This added to an in-memory set and returned, so the declaration
+        died with the process: `inspeximus witness cosign --strict` is a fresh process per call and
+        would have forgotten before the next one ran, and a server lost every bootstrap on restart.
+        It goes into the MACed state body now, beside the heads and the refusals, which also means
+        an operator cannot add one by editing the file without stripping the MAC -- and that is
+        reported in every attestation.
         """
-        self._bootstrapped.add(str(store_id))
+        with self._lock:
+            self._bootstrapped.add(str(store_id))
+            if self._state_path:
+                self._persist()
 
     def attest(self, store_id: str) -> dict:
         """A SIGNED statement of what this witness has seen for `store_id`, for a third party.
@@ -204,10 +429,25 @@ class Witness:
             "issued_ts": time.time(),
             "seen": head is not None,
             "last_head": dict(head) if head else None,
-            "refusals": [r for r in self._refusals if r.get("store_id") == sid],
+            # CLEARS ARE NOT REFUSALS. `clear_poison` appends to the same list, so a routine clear
+            # was reported to an auditor as "this witness REFUSED to co-sign 1 time(s)" under the
+            # banner "an honest witness refuses only a fork or a rollback" -- a fork alarm raised by
+            # housekeeping.
+            "refusals": [r for r in self._refusals
+                         if r.get("store_id") == sid and not r.get("cleared")],
+            "poison_clears": [r for r in self._refusals
+                              if r.get("store_id") == sid and r.get("cleared")],
+            "poisoned": sid in self._poisoned,
+            # THE WITNESS REPORTING ON ITS OWN MEMORY. Every other field here is a claim about the
+            # store; this is the claim about whether this witness's knowledge of the store can be
+            # trusted at all -- and it is the half that an attacker with file access goes for first.
+            "memory_authenticated": not self._unauth_loads,
+            "unauthenticated_loads": len(self._unauth_loads),
         }
         core = _canon({k: stmt[k] for k in
-                       ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals")})
+                       ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals",
+                        "poison_clears", "poisoned", "memory_authenticated",
+                        "unauthenticated_loads")})
         stmt["hash"] = _sha256_hex(core)
         if _HAVE_ED:
             sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._secret))
@@ -236,7 +476,9 @@ def verify_attestation(statement: dict, witness_pubkey: str | None = None) -> di
         return {"ok": False, "signed": False, "problems": ["not a witness attestation"],
                 "statement": statement}
     core = _canon({k: statement.get(k) for k in
-                   ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals")})
+                   ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals",
+                    "poison_clears", "poisoned", "memory_authenticated",
+                    "unauthenticated_loads")})
     if _sha256_hex(core) != statement.get("hash"):
         problems.append("attestation hash does not match its own fields (edited in transit)")
     signed = False
@@ -259,6 +501,12 @@ def verify_attestation(statement: dict, witness_pubkey: str | None = None) -> di
             f"this witness REFUSED to co-sign {len(statement['refusals'])} time(s) for this store: "
             f"{[r.get('reason', '')[:70] for r in statement['refusals'][:3]]}. An honest witness "
             f"refuses only a fork or a rollback.")
+    if statement.get("memory_authenticated") is False:
+        problems.append(
+            f"this witness started {statement.get('unauthenticated_loads')} time(s) from fork-memory "
+            f"it could not authenticate. Everything else in this statement rests on that memory, so "
+            f"treat it as UNVERIFIED: either the file predates 2.10.6, or someone stripped the MAC "
+            f"in order to edit the heads and refusals it reports.")
     if not statement.get("seen"):
         problems.append("this witness has never seen this store, so it vouches for nothing about it "
                         "-- check you are asking the witnesses that should have")

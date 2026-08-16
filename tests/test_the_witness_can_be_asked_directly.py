@@ -20,11 +20,20 @@ asks, signed, answering three things the operator cannot answer honestly about t
 HONEST SCOPE, and it is a deployment fact this cannot assert: if the operator never submitted the
 store to any witness, there is nothing to ask. `seen: False` makes that an answer rather than an
 absence, but the auditor still has to know WHICH witnesses should have seen it.
+
+WHICH ID YOU ASK FOR. `store_id="prod"` is a DISPLAY LABEL and nothing more -- the operator chooses
+it, so keying witness memory on it let a rolled-back store be `cp`-ed elsewhere and re-witnessed as
+a first contact. The witness keys on the genesis receipt hash instead, and the auditor asks for
+`bundle["store_id_derived"]`. That also makes "fork" mean something: the fixture below had to be
+rebuilt, because a separately-created second store is a DIFFERENT store, not a fork of the first,
+and every test here that built its fork that way had quietly stopped reaching the victim's history.
 """
 from __future__ import annotations
 
 import copy
+import json
 import os
+import shutil
 import tempfile
 
 import pytest
@@ -32,10 +41,17 @@ import pytest
 from inspeximus import Inspeximus
 from inspeximus.audit_bundle import _bundle_hash, build_bundle, verify_bundle
 from inspeximus.core import new_ed25519_keypair
+from conftest import fork_of
 from inspeximus.witness_pool import Witness, verify_attestation
 
 SK, _PUB = new_ed25519_keypair()
-SID = "prod"
+SID = "prod"          # the DISPLAY label; the witness is asked for the derived id
+
+
+def _rewrite(ix, dest, policy):
+    """The operator's rewrite: same genesis receipt, divergent history -- see conftest.fork_of."""
+    return fork_of(ix, dest, [(f"deployment needs {policy}", "pol", policy.split()[0])],
+                   receipt_key=SK)
 
 
 @pytest.fixture
@@ -44,18 +60,14 @@ def scene():
     d = tempfile.mkdtemp()
     ws = [Witness(state_path=os.path.join(d, f"w{i}.json")) for i in range(3)]
 
-    def store(sub, policy):
-        os.makedirs(os.path.join(d, sub), exist_ok=True)
-        ix = Inspeximus(path=os.path.join(d, sub, "s.json"), receipts=True, receipt_key=SK)
-        ix.remember(f"deployment needs {policy}", key="pol", object=policy.split()[0])
-        ix.remember("the deploy key rotates every 90 days", key="rot", object="90d")
-        ix.flush()
-        return ix
-
-    honest = store("a", "two approvers")
-    build_bundle(honest, witnesses=ws, store_id=SID)
-    forged = store("b", "ONE approver")
-    return d, ws, honest, forged
+    os.makedirs(os.path.join(d, "a"), exist_ok=True)
+    honest = Inspeximus(path=os.path.join(d, "a", "s.json"), receipts=True, receipt_key=SK)
+    honest.remember("deployment needs two approvers", key="pol", object="two")
+    honest.remember("the deploy key rotates every 90 days", key="rot", object="90d")
+    honest.flush()
+    wid = build_bundle(honest, witnesses=ws, store_id=SID)["store_id_derived"]
+    forged = _rewrite(honest, os.path.join(d, "b"), "ONE approver")
+    return d, ws, honest, forged, wid
 
 
 def _stripped(forged, ws):
@@ -73,21 +85,21 @@ def test_the_operator_can_still_hide_a_refusal_inside_their_own_artifact(scene):
     """Pinned deliberately. This is NOT fixed and cannot be: the bundle is built by the audited
     party. If it ever starts failing, someone has added a check inside the artifact and believes it
     binds a dishonest operator -- it does not, and this test is the reminder."""
-    _d, ws, _honest, forged = scene
+    _d, ws, _honest, forged, wid = scene
     assert verify_bundle(_stripped(forged, ws))["ok"] is True
 
 
 # ─────────────────────────────────────────────── asking the witness instead
 def test_asking_the_witness_surfaces_the_refusal_the_operator_deleted(scene):
-    _d, ws, _honest, forged = scene
+    _d, ws, _honest, forged, wid = scene
     t = _stripped(forged, ws)
-    out = verify_bundle(t, attestations=[w.attest(SID) for w in ws])
+    out = verify_bundle(t, attestations=[w.attest(wid) for w in ws])
     assert not out["ok"] and any("REFUSED" in x for x in out["problems"]), out["problems"]
 
 
 def test_an_attestation_is_signed_and_pinnable(scene):
-    _d, ws, _honest, _forged = scene
-    a = ws[0].attest(SID)
+    _d, ws, _honest, _forged, wid = scene
+    a = ws[0].attest(wid)
     assert verify_attestation(a, witness_pubkey=ws[0].public)["signed"] is True
     assert any("different witness" in x
                for x in verify_attestation(a, witness_pubkey=ws[1].public)["problems"])
@@ -96,9 +108,9 @@ def test_an_attestation_is_signed_and_pinnable(scene):
 def test_an_edited_attestation_does_not_verify(scene):
     """Whoever carries the statement must not be able to edit it -- including the operator, who is
     the likeliest courier."""
-    _d, ws, _honest, forged = scene
+    _d, ws, _honest, forged, wid = scene
     build_bundle(forged, witnesses=ws, store_id=SID)          # make the witness refuse, so there is
-    a = ws[0].attest(SID)                                     # something to delete
+    a = ws[0].attest(wid)                                     # something to delete
     assert a["refusals"], "nothing to strip: this test would pass on an unchanged statement"
     a["refusals"] = []
     out = verify_attestation(a, witness_pubkey=ws[0].public)
@@ -108,17 +120,17 @@ def test_an_edited_attestation_does_not_verify(scene):
 def test_the_refusal_survives_a_witness_restart(scene):
     """A refusal held only in memory is evidence until the process restarts, which an operator can
     arrange."""
-    _d, ws, _honest, forged = scene
+    _d, ws, _honest, forged, wid = scene
     build_bundle(forged, witnesses=ws, store_id=SID)
     reborn = Witness(ws[0]._secret, state_path=ws[0]._state_path)
-    assert reborn.refusals(SID), "the refusal did not survive"
+    assert reborn.refusals(wid), "the refusal did not survive"
 
 
 def test_silence_is_visible(scene):
     """An operator who rewrote history and then simply stopped submitting heads is otherwise
     indistinguishable from an idle store -- an attack whose entire cost is doing nothing."""
-    _d, ws, _honest, _forged = scene
-    assert (ws[0].attest(SID)["last_head"] or {}).get("seen_ts")
+    _d, ws, _honest, _forged, wid = scene
+    assert (ws[0].attest(wid)["last_head"] or {}).get("seen_ts")
 
 
 # ─────────────────────────────────────────────── the controls
@@ -134,7 +146,7 @@ def test_control_a_clean_pool_on_an_honest_bundle_reports_nothing():
     ix.flush()
     b = build_bundle(ix, witnesses=ws, store_id=SID)
     out = verify_bundle(b, witnesses=[w.public for w in ws], threshold=2,
-                        attestations=[w.attest(SID) for w in ws])
+                        attestations=[w.attest(b["store_id_derived"]) for w in ws])
     assert out["ok"], out["problems"]
 
 
@@ -147,10 +159,10 @@ def test_control_ordinary_growth_past_the_witness_is_a_note_not_a_failure():
     ix = Inspeximus(path=os.path.join(d, "s.json"), receipts=True, receipt_key=SK)
     ix.remember("first", key="a", object="1")
     ix.flush()
-    build_bundle(ix, witnesses=ws, store_id=SID)
+    wid = build_bundle(ix, witnesses=ws, store_id=SID)["store_id_derived"]
     ix.remember("a later honest write", key="b", object="2")
     ix.flush()
-    out = verify_bundle(build_bundle(ix), attestations=[ws[0].attest(SID)])
+    out = verify_bundle(build_bundle(ix), attestations=[ws[0].attest(wid)])
     assert out["ok"], out["problems"]
     assert any("last saw head" in x for x in out["limits"])
 
@@ -178,3 +190,55 @@ def test_an_older_state_file_still_starts_the_witness():
     w = Witness(state_path=sp)
     assert (w.last_head(SID) or {}).get("n_writes") == 1
     assert w.refusals() == []
+
+
+# ─────────────────────────────────────────── it has to be REACHABLE to be a feature
+def test_a_remote_witness_can_actually_be_asked():
+    """THE finding that mattered most in the 2.10.6 round, and it was not a bug in any line of code.
+
+    `attest()` -- "the surface an auditor asks directly" -- was reachable from NO shipped interface:
+    not the CLI, not the MCP server, not the witness HTTP server, which served only /pubkey and
+    /cosign. The only caller who could reach it held the Witness object, i.e. an in-process or
+    co-located witness, i.e. the operator -- exactly the party the whole feature exists to bind. The
+    remote witness the module recommends could not be asked.
+
+    The documented workaround was worse than no route: constructing a second Witness over a running
+    server's --state file silently destroyed the first's fork memory until the single-writer guard
+    landed in the same release.
+    """
+    import threading
+    import time
+    import urllib.request
+
+    import inspeximus.witness_server as wsrv
+
+    d = tempfile.mkdtemp()
+    sp = os.path.join(d, "w.json")
+    w = Witness(state_path=sp)
+    port = 9741
+    threading.Thread(target=wsrv.serve,
+                     kwargs={"port": port, "state_path": sp, "secret_hex": w._secret},
+                     daemon=True).start()
+    time.sleep(1.2)
+
+    def get(path):
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}{path}", timeout=10) as r:
+            return json.load(r)
+
+    pub = get("/pubkey")["pubkey"]
+    ix = Inspeximus(path=os.path.join(d, "m.json"), receipts=True)
+    for i in range(3):
+        ix.remember(f"r{i}", key=f"k{i}", object=str(i))
+    ix.flush()
+    from inspeximus.witness_pool import http_witness
+    http_witness(f"http://127.0.0.1:{port}")("prod", ix.anchor())
+
+    a = get("/attest?store_id=prod")
+    v = verify_attestation(a, witness_pubkey=pub)
+    assert v["signed"] and a["seen"] and (a["last_head"] or {}).get("n_writes") == 3
+
+    # A store it never saw answers `seen: False` rather than passing quietly -- asking the wrong
+    # witness must not look like a clean bill of health.
+    b = get("/attest?store_id=never-seen")
+    assert b["seen"] is False
+    assert not verify_attestation(b, witness_pubkey=pub)["ok"]

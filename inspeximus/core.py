@@ -244,6 +244,13 @@ _RESERVED_META = frozenset({
     "rederived_to", "reopened_contradiction", "reopened_meta", "reopened_reason",
     "reopened_surfaced_prior", "retracted_reason", "revert_nonce", "session_seq",
     "source_seen_at", "source_sha256",
+    # Reserved for the same reason as the fingerprint itself: a writer that could set these could
+    # declare its own memory observation-bound, which is exactly the trust-tier hole this keyspace
+    # exists to close. `observed_sha256` arrives through source=, is copied here by remember(), and
+    # is compared against the library's own read -- a claim that is checked, not a claim that is
+    # believed.
+    "observed_sha256", "observation_bound", "source_moved_before_capture",
+    "source_at_capture_sha256",
     "slashed", "superseded_by_policy", "superseded_by_toggle", "truncated_from",
 
     # Read by check_sources() for environment_binding_coverage, so the library owns it: a caller
@@ -411,6 +418,53 @@ def new_ed25519_keypair() -> tuple[str, str]:
 _STH_FIELDS = ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")
 
 
+def _guard_key_location(kdir, store_path) -> None:
+    """Refuse a key directory that is inside the store's own directory.
+
+    A key an attacker with the data directory can read buys nothing against the attacker it exists
+    to stop, and producing one is worse than refusing because it LOOKS like protection.
+
+    `startswith` on `abspath` was the whole check and it was wrong three ways, all measured:
+      * CASE. `abspath` does not normalise case and Windows/macOS filesystems are case-insensitive,
+        so the same directory in different case walked past it.
+      * LINKS. `abspath` does not resolve them; a junction pointing at the store's directory (no
+        admin rights needed on Windows) walked past it too.
+      * SIBLINGS. A prefix test refuses `.../AgentDataBackups` because `.../AgentData` is a prefix of
+        it -- a false refusal on the availability side, which is how a guard gets turned off.
+
+    `realpath` + `normcase` + `commonpath` answers the question that was actually being asked:
+    is one directory INSIDE the other, rather than does one string begin with the other.
+
+    WHAT THIS DOES NOT CLOSE, stated because a guard that lists only its wins reads as complete.
+    A HARDLINK is one inode with two names, and `realpath` resolves symlinks and junctions but not
+    hardlinks -- there is nothing in the path to resolve. So `ln keyfile <store_dir>/k` (or the
+    reverse) leaves the key readable from inside the data directory while this check, asked about
+    the other name, correctly answers "outside". A directory hardlink is not creatable on Windows or
+    Linux, so this is a FILE-level bypass: it needs the attacker to already have write access to the
+    store directory AND a path to the key, which is close to the position the guard assumes they do
+    not have. Detecting it means comparing st_ino/st_dev of every entry in the store directory
+    against the key on every call -- a directory walk per key read -- and the honest trade is to say
+    so rather than to pay it and still miss the case where the link is made afterwards.
+
+    THE GUARD IS ABOUT ACCIDENTS, and that is the correct way to read it. It stops the documented
+    one-liner that put `receipt.key` in the working directory; it does not stop an attacker who is
+    already inside. Signing exists for the attacker who holds the DATA and not the key -- if they
+    hold both, the chain says nothing, which is the limit written up in
+    tests/test_an_unsigned_chain_is_a_stated_condition.py.
+    """
+    _k = os.path.normcase(os.path.realpath(str(kdir)))
+    _s = os.path.normcase(os.path.realpath(os.path.dirname(str(store_path)) or "."))
+    try:
+        _inside = os.path.commonpath([_k, _s]) == _s
+    except ValueError:                     # different drives: cannot be inside
+        _inside = False
+    if _inside:
+        raise ValueError(
+            f"refusing to keep the receipt key at {kdir}: it resolves inside the store's own "
+            f"directory ({_s}), so an attacker who can edit the store can read the key and sign "
+            f"whatever they like. Set INSPEXIMUS_KEY_HOME to somewhere else.")
+
+
 def receipt_key_for(store_path, create: bool = True) -> str:
     """The receipt signing key for `store_path`, minted on first use, kept OUTSIDE the store's directory.
 
@@ -448,6 +502,11 @@ def receipt_key_for(store_path, create: bool = True) -> str:
         if len(env) == 64 and all(c in "0123456789abcdefABCDEF" for c in env):
             return env.lower()                                   # the key itself
         if os.path.exists(env):
+            # THE SAME GUARD AS THE DEFAULT ROUTE. It only covered the directory this function
+            # chooses, so `INSPEXIMUS_RECEIPT_KEY=<a path inside the store dir>` walked straight past
+            # it -- the exact docs/ERASURE.md footgun this helper's docstring names, still reachable
+            # through the helper written to prevent it.
+            _guard_key_location(os.path.dirname(os.path.abspath(env)), store_path)
             return open(env, encoding="utf-8").read().strip()
         raise ValueError(f"INSPEXIMUS_RECEIPT_KEY is set to {env!r}, which is neither a 64-hex key "
                          f"nor a path that exists. Refusing to guess and silently sign with a "
@@ -459,14 +518,7 @@ def receipt_key_for(store_path, create: bool = True) -> str:
     tag = _h.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
     kf = os.path.join(kdir, f"{tag}.key")
 
-    # THE GUARD THIS EXISTS FOR. A key inside the store's own directory is readable by the attacker
-    # it is meant to stop, so producing one would be worse than refusing -- it would look like
-    # protection.
-    if os.path.abspath(kdir).startswith(os.path.abspath(os.path.dirname(str(store_path)) or ".")):
-        raise ValueError(
-            f"refusing to keep the receipt key at {kdir}: it is inside the store's own directory, "
-            f"so an attacker who can edit the store can read the key and sign whatever they like. "
-            f"Set INSPEXIMUS_KEY_HOME to somewhere else.")
+    _guard_key_location(kdir, store_path)
 
     if os.path.exists(kf):
         return open(kf, encoding="utf-8").read().strip()
@@ -932,7 +984,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.10.5"
+__version__ = "2.10.6"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2158,13 +2210,68 @@ class Inspeximus:
                "links": [], "meta": dict(meta or {})}
         # SOURCE FINGERPRINT (see check_sources): only when the doc is a path that exists right now.
         # Reserved keyspace, so a later writer cannot forge freshness for content it changed.
+        #
+        # TWO PROPERTIES, NOT ONE, and we were reporting one as if it were both. Named by safal207 on
+        # anthropics/claude-code#34556, where OmniMemory recorded `git rev-parse HEAD:<path>` -- the
+        # COMMITTED blob -- while the agent read the WORKING TREE:
+        #
+        #   REFETCHABILITY      can the source be resolved again?
+        #   OBSERVATION BINDING is the fingerprint of the exact bytes the agent actually observed?
+        #
+        # We never had the git version -- we hash the file on disk, which IS the working tree -- and
+        # that made it easy to conclude this did not apply. It does, one layer in: we hash at WRITE
+        # time, and an agent reads, reasons, and only then calls remember(). Measured 2026-08-16: read
+        # value='A', let the file become 'B', write the memory claiming A, and the recorded digest is
+        # B's while check_sources reports FRESH. A wrong-but-resolvable fingerprint is worse than none
+        # -- it is false confidence rather than an absence.
+        #
+        # `observed_sha256` lets a caller bind what it READ. It is a caller CLAIM and cannot be
+        # otherwise -- only the reader knows what it read -- so it does not replace the library's own
+        # hash, it is compared against it. Disagreement means the source moved between observation
+        # and capture, which is neither FRESH nor later drift and must not be filed as either.
         _sdoc = Inspeximus._raw_source(rec)
+        _obs = (source or {}).get("observed_sha256") if isinstance(source, dict) else None
+        if _obs is not None:
+            # VALIDATED, AND IT RAISES. `observed_sha256=12345` used to be stored as-is and then
+            # blow up on `.lower()` inside the blanket `except Exception: pass` below, dropping
+            # `source_sha256` entirely -- so a content-only writer could make its own memory
+            # permanently un-drift-checkable while the record looked ordinary. Silently losing the
+            # fingerprint is the worst of the three possible behaviours; refusing the write is the
+            # only one that tells the caller they got it wrong.
+            _obs = str(_obs).strip().lower()
+            if len(_obs) != 64 or any(c not in "0123456789abcdef" for c in _obs):
+                raise ValueError(
+                    f"remember(source={{'observed_sha256': ...}}) must be a 64-character hex sha256 "
+                    f"of the bytes you actually read; got {str(_obs)[:24]!r}. Refusing rather than "
+                    f"storing it, because an unusable fingerprint reads as an unverifiable memory.")
+            rec["meta"]["observed_sha256"] = _obs
+        if _sdoc and isinstance(_sdoc, str) and _obs and not (
+                os.path.exists(_sdoc) and os.path.isfile(_sdoc)):
+            # A NON-FILE SOURCE THE CALLER VOUCHED FOR. The capture block below is gated on
+            # `os.path.isfile`, so for an `https://` doc -- the case `check_sources(resolver=)` exists
+            # for -- `observed_sha256` was stored and then ignored: no fingerprint, verdict
+            # UNCHECKABLE, coverage 0.0. But a caller-declared observation needs no local file; that
+            # is the whole point of declaring it. The library cannot compare it here, and
+            # check_sources will when the resolver fetches.
+            rec["meta"]["source_sha256"] = _obs
+            rec["meta"]["source_seen_at"] = now
+            rec["meta"]["observation_bound"] = True
         if _sdoc and isinstance(_sdoc, str):
             try:
                 if os.path.exists(_sdoc) and os.path.isfile(_sdoc):
                     with open(_sdoc, "rb") as _fh:
-                        rec["meta"]["source_sha256"] = hashlib.sha256(_fh.read()).hexdigest()
+                        _at_write = hashlib.sha256(_fh.read()).hexdigest()
+                    rec["meta"]["source_sha256"] = _obs.lower() if _obs else _at_write
                     rec["meta"]["source_seen_at"] = now
+                    # The claim is bound to the bytes the caller says it read ONLY when it said so.
+                    # Absent, this is a write-time hash and must not be counted as observation-bound
+                    # -- that is the whole point of keeping the two numbers apart.
+                    rec["meta"]["observation_bound"] = bool(_obs)
+                    if _obs and _obs.lower() != _at_write:
+                        # Recorded, not raised: the write is legitimate and the memory may well be
+                        # right about what it read. What is NOT legitimate is calling it FRESH.
+                        rec["meta"]["source_moved_before_capture"] = True
+                        rec["meta"]["source_at_capture_sha256"] = _at_write
             except Exception:
                 pass                       # an unreadable source is UNCHECKABLE, never a failed write
         if not rec_asserts_change:
@@ -2659,8 +2766,10 @@ class Inspeximus:
         default reads local files only -- deliberately, because guessing how to fetch an arbitrary
         identifier is how a checker starts inventing ORPHANED verdicts.
         """
-        counts = {"FRESH": 0, "DRIFTED": 0, "ORPHANED": 0, "UNCHECKABLE": 0}
-        drifted, orphaned = [], []
+        counts = {"FRESH": 0, "DRIFTED": 0, "ORPHANED": 0, "UNCHECKABLE": 0, "UNBOUND_CAPTURE": 0}
+        #
+        drifted, orphaned, unbound_capture = [], [], []
+        bound = 0
         # SCOPED, unlike verify_attestations. That one is store-level because relocation between
         # tenants is only visible whole-store; drift is per-record and per-source, so a tenant's
         # report is complete inside its own slice -- and the report carries record ids, which is
@@ -2668,6 +2777,14 @@ class Inspeximus:
         for r in self.items:
             fp = (r.get("meta") or {}).get("source_sha256")
             doc = Inspeximus._raw_source(r)
+            # BEFORE THE RESOLVE, because it is a fact about the RECORD and not about the source.
+            # `observation_bound` says the fingerprint was taken from the bytes this memory was
+            # actually derived from. Counting it after the ORPHANED branch meant every record whose
+            # source cannot be resolved today was quietly dropped from the count -- so the reported
+            # binding coverage rose as sources went missing, which is exactly backwards, and a store
+            # whose sources had all moved reported binding 0 while every record was bound.
+            if (r.get("meta") or {}).get("observation_bound"):
+                bound += 1
             if not fp or not doc:
                 counts["UNCHECKABLE"] += 1
                 continue
@@ -2680,15 +2797,32 @@ class Inspeximus:
                 counts["ORPHANED"] += 1
                 orphaned.append(r.get("id"))
                 continue
-            if hashlib.sha256(blob).hexdigest() == fp:
+            # THE SOURCE MOVED BETWEEN OBSERVATION AND CAPTURE, which is neither of the other two and
+            # must not be filed as either. FRESH would say the bytes still match what produced this
+            # memory; DRIFTED would say they changed AFTERWARDS. Here they changed BEFORE, so the
+            # memory may be perfectly right about what it read while the file on disk was already
+            # something else. Named separately because the remedy differs: re-read and re-capture,
+            # not re-derive. See remember() and claude-code#34556.
+            # BOTH FACTS, not one. `source_moved_before_capture` used to preempt the comparison, so
+            # a record with that flag could never ALSO be reported as DRIFTED -- and since the flag
+            # lives in the reserved keyspace no caller can clear it, one such record pinned `ok` to
+            # False permanently while hiding whether its source had since changed as well. They are
+            # independent questions with different remedies.
+            if (r.get("meta") or {}).get("source_moved_before_capture"):
+                counts["UNBOUND_CAPTURE"] += 1
+                unbound_capture.append(r.get("id"))
+                if hashlib.sha256(blob).hexdigest() != fp:
+                    drifted.append(r.get("id"))
+            elif hashlib.sha256(blob).hexdigest() == fp:
                 counts["FRESH"] += 1
             else:
                 counts["DRIFTED"] += 1
                 drifted.append(r.get("id"))
-        checked = counts["FRESH"] + counts["DRIFTED"] + counts["ORPHANED"]
+        checked = counts["FRESH"] + counts["DRIFTED"] + counts["ORPHANED"]             + counts["UNBOUND_CAPTURE"]
         total = sum(counts.values())
 
-        # ---- THE FOUR COVERAGE METRICS, kept separate on purpose (CML / claude-code#34556).
+        # ---- THE COVERAGE METRICS, kept separate on purpose (CML / claude-code#34556). It said
+        # FOUR while listing five, which is the kind of drift a reader trusts and should not.
         # safal207 measured his own corpus at 5/5 records carrying a source locator and declined to call
         # that "stale-check coverage", because a locator you cannot RE-FETCH answers a different
         # question. Collapsing them is how a schema gets reported as a guarantee: our own deployment has
@@ -2706,6 +2840,23 @@ class Inspeximus:
             "locator_coverage": round(_with_locator / _n, 4) if _n else 0.0,
             # can that origin be re-read and deterministically compared? (fingerprint present AND read)
             "refetch_verification_coverage": round(checked / _n, 4) if _n else 0.0,
+            # is the fingerprint of the bytes the agent ACTUALLY OBSERVED, or merely of the file as it
+            # stood when remember() ran? A FIFTH number because it is a fifth question, and because
+            # one can be 100% while the other is 0: safal207's point on claude-code#34556, made about
+            # HEAD-vs-working-tree and true here about read-time-vs-write-time. Measured on ourselves
+            # 2026-08-16 before the fix: a memory claiming value='A', captured after the file had
+            # become 'B', recorded B's digest and reported FRESH. A wrong-but-resolvable fingerprint
+            # is worse than none -- it is false confidence rather than an absence.
+            # DECLARED, not proven, and the name has to say so. A caller that never opened the file,
+            # hashed it at write time and passed that as `observed_sha256` scores 1.0 here -- the
+            # metric cannot distinguish itself from the write-time hash it exists to distinguish
+            # itself from. That is inherent: only the reader knows what it read. What the library
+            # CAN check is disagreement, and it does; what it cannot check is a caller that lies in
+            # the agreeing direction, so the number is named for what it measures.
+            "declared_observation_binding_coverage": round(bound / _n, 4) if _n else 0.0,
+            # Kept under the old name too for one release: renaming a published metric out from under
+            # a caller is its own kind of silent breakage.
+            "observation_binding_coverage": round(bound / _n, 4) if _n else 0.0,
             # can the AUTHORITATIVE source be enumerated, so deletions are detectable at all? An
             # index-side scan can never answer this: it reports what is present, and a deleted document
             # emits exactly one event that nothing later mentions. Without an enumerator this is not a
@@ -2722,7 +2873,12 @@ class Inspeximus:
             "checkable_fraction": round(checked / total, 4) if total else 0.0,
             "coverage": coverage,
             "drifted": drifted[:200], "orphaned": orphaned[:200],
-            "ok": bool(checked) and not drifted and not orphaned,
+            "unbound_capture": unbound_capture[:200],
+            # A capture whose source had already moved is a finding, not a note: the memory is bound
+            # to bytes that are not on disk and never will be again, so nothing here can re-verify
+            # what produced it. Folding it into `ok` is the difference between reporting the state
+            # and flattering it.
+            "ok": bool(checked) and not drifted and not orphaned and not unbound_capture,
         }
         if not checked:
             report["problem"] = (
