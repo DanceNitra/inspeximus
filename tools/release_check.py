@@ -505,6 +505,28 @@ def check_tests(rep, root=ROOT, skip=False):
         return
     rep.add("test suite", PASS, summary)
 
+    # THE MUTATION SET IS DESELECTED FROM THE DEFAULT RUN, so the leg above never saw it and this
+    # gate said READY on a tree the RELEASE workflow then refused. Measured 2026-08-16 on 2.12.0: a
+    # `check_sources` edit moved a line one mutation targets, `release_check` passed 3131 tests, and
+    # the release run died with "1 of 175 mutation target(s) are absent or ambiguous" -- after the
+    # tag was already pushed. A pre-release gate that cannot see a check the release runs is not a
+    # pre-release gate; it is a slower way to be surprised.
+    #
+    # `-n 0` because these edit source in place and cannot share a tree with xdist workers.
+    proc = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-rfE", "-n", "0",
+                           "-m", "mutation"], cwd=str(root), capture_output=True, text=True,
+                          errors="replace")
+    mtail = [ln for ln in (proc.stdout or "").strip().splitlines() if ln.strip()]
+    msummary = mtail[-1] if mtail else "no output"
+    if proc.returncode != 0:
+        named = [ln.strip() for ln in mtail if ln.startswith(("FAILED ", "ERROR "))]
+        d = "the mutation set exited %d: %s" % (proc.returncode, msummary)
+        if named:
+            d += "\n" + "\n".join("      " + n for n in named[:10])
+        rep.add("mutation set", FAIL, d)
+        return
+    rep.add("mutation set", PASS, msummary)
+
 
 # --------------------------------------------------------------------------- main
 

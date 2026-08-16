@@ -1553,8 +1553,8 @@
   {
     "name": "check_sources calls a store with nothing checkable OK (empty check reads clean)",
     "file": "inspeximus/core.py",
-    "old": "            \"ok\": bool(checked) and not drifted and not orphaned and not unbound_capture,",
-    "new": "            \"ok\": not drifted and not orphaned and not unbound_capture,",
+    "old": "            \"ok\": (not drifted and not orphaned and not unbound_capture\n                   and (bool(checked) or (_bindable == 0 and _n > 0))),",
+    "new": "            \"ok\": (not drifted and not orphaned and not unbound_capture),",
     "tests": [
       "tests/test_isolation_and_persistence.py"
     ]
