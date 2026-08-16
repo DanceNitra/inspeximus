@@ -226,3 +226,33 @@ def test_an_emptied_sources_map_cannot_impersonate_nothing_to_bind():
     ix2.remember("a decision", key="b", object="2")
     ix2.flush()
     assert ix2.verify_witness(ix2.witness(bind_sources=True))["sources_match"] is None
+
+
+def test_recall_does_not_reinforce_by_default():
+    """A CONTRACT TWO COMMENTS IN OUR OWN SOURCE GOT WRONG, in opposite directions.
+
+    `state_digest`'s docstring justified excluding `value` from the digest because "recall() itself
+    bumps value and last_access ... on every READ", and a comment beside `why_recalled` said
+    "recall() defaults reinforce=True". The signature says `reinforce: bool = False`, and measured:
+    25 default recalls left value at 1.0, last_access bit-identical, digest unchanged, while
+    `reinforce=True` moved value 1.0 -> 2.25 in five.
+
+    Neither comment was load-bearing on behaviour, which is exactly why they survived -- a wrong
+    reason attached to correct code is invisible to every test in the suite. This one is not."""
+    d, ix = _store()
+    ix.remember("the staging database is db-7", key="db", object="db-7")
+    ix.flush()
+    before = dict(ix.items[0])
+    digest = ix.state_digest()
+
+    for _ in range(10):
+        assert ix.recall("staging database"), "the fixture stopped matching; this would prove nothing"
+    after = ix.items[0]
+    assert after["value"] == before["value"], "recall reinforced without being asked"
+    assert after["last_access"] == before["last_access"]
+    assert ix.state_digest() == digest, "a default read moved the digest a witness pins"
+
+    # ...and the opt-in still works, or the exclusion above would be guarding nothing
+    for _ in range(5):
+        ix.recall("staging database", reinforce=True)
+    assert ix.items[0]["value"] > before["value"]

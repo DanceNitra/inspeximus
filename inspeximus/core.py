@@ -5852,8 +5852,13 @@ class Inspeximus:
         "any out-of-band edit changes the digest", which was false in exactly the two fields that decide
         which fact wins.
 
-        This is a deliberate trade, not an oversight: `recall()` itself bumps `value` and `last_access`, so a
-        digest covering them would change on every READ and a witness could never match anything. If you need
+        This is a deliberate trade, not an oversight, and the reason is narrower than this used to claim.
+        It said "`recall()` itself bumps `value` and `last_access`, so a digest covering them would change
+        on every READ" -- measured 2026-08-16 and FALSE by default: `reinforce` defaults to False, and 25
+        consecutive recalls left `value` at 1.0, `last_access` bit-identical and the digest unchanged. With
+        `reinforce=True` the bump is real (1.0 -> 2.25 over five recalls), so the exclusion is still right:
+        a store that reinforces would churn its digest on every REINFORCING read and a witness could never
+        match anything. The missing word was doing all the work. If you need
         ranking-state integrity, pin it separately — the write receipts commit to content and attribution,
         not to standing."""
         h = hashlib.sha256()
@@ -10143,9 +10148,13 @@ class Inspeximus:
         now = time.time()
         qvec = self._qvec(query) if self.embed else None
         qtok = _tokens(query)
-        # reinforce=False: this is documented "Read-only", but recall() defaults reinforce=True,
-        # so every inspection bumped value/last_access on the very records it was reporting
-        # on -- an instrument that changes the state it measures.
+        # reinforce=False, passed EXPLICITLY. The reason written here was wrong: it said
+        # "recall() defaults reinforce=True", and the signature two thousand lines up says
+        # `reinforce: bool = False`. Measured 2026-08-16 -- the default does not bump -- so this
+        # call was never fixing a live defect. Keeping it explicit is still right: this method is
+        # documented "Read-only", and an instrument must not rely on a default staying what it is
+        # today to avoid changing the state it measures. What changes is the justification, which
+        # asserted the opposite of the signature it was describing.
         ranked = self.recall(query, k=k, reinforce=False)
         rank_of = {r["id"]: i + 1 for i, r in enumerate(ranked)}
         _full = {x["id"]: x for x in self._tenant_rows()}          # recall() may return vec-less projections
