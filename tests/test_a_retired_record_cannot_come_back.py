@@ -16,10 +16,17 @@ and needs no amendment, and it adds zero receipts. It lives in the RECEIPT, not 
 first version stored it as `rec["retires"]` and a test caught that within the run, because it holds
 random surrogate ids, so two identically-built stores stopped comparing equal.
 
-HONEST LIMIT, pinned by a test below so nobody reads more into it than it says: this catches
-RESURRECTION, not CONCEALMENT. Demoting the current record to hide it still passes, because closing
-that needs every retiring path to declare itself and `consolidate()` and capacity eviction retire
-records without emitting a receipt at all.
+BOTH DIRECTIONS ARE CLOSED NOW, and the second one cost something. `retires` catches un-retiring an
+old record and is free. CONCEALMENT -- hiding the current record instead -- needed every retirement
+path to declare itself, which for the five that have no "newer" record to hang it on means one
+receipt each (`_declare_retired`). Plus `born_status`, so a record retired ON ARRIVAL by the echo,
+objectless or back-fill guards is not mistaken for a hidden one.
+
+The test that pinned the concealment gap as OPEN is the one that told me it had closed: it asserted
+`ok is True` and carried a message telling whoever closed it to come here. Both false-alarm controls
+below are load-bearing -- the first version of the skip condition tested "born recallable" instead of
+"born live", and since `superseded` IS in `_RECALLABLE`, every honest echo was reported as
+concealment.
 """
 from __future__ import annotations
 
@@ -85,17 +92,43 @@ def test_ordinary_supersession_adds_no_receipts():
     assert ix.verify_writes() == (True, [])
 
 
-def test_the_concealment_half_is_documented_as_open_not_claimed_as_closed():
-    """A test that pins a KNOWN GAP, so the guarantee cannot quietly be read as wider than it is.
+def test_the_concealment_half_is_closed_too():
+    """The mirror image: hide the CURRENT record instead of un-retiring an old one.
 
-    If someone closes concealment later, this test fails and they update it deliberately -- which is
-    the point. A limit nobody wrote down is a limit that gets forgotten and then over-claimed.
+    This test previously PINNED THE GAP AS OPEN -- it asserted `ok is True` and carried an error
+    message telling whoever closed it to come here and update it. That is what happened, in the same
+    session: `_declare_retired` gives every legitimate retirement path a receipt, and `born_status`
+    tells a record retired ON ARRIVAL from one that was live and got hidden. So the assertion is
+    inverted now, deliberately and in writing, rather than a limit quietly outgrowing its comment.
     """
     p, _ix = _corrected()
     _edit(p, lambda rows: [r.update(status="superseded") for r in rows if r["status"] == "active"])
     ix2 = Inspeximus(path=p, receipts=True)
     assert [r for r in ix2.items if r["status"] == "active"] == []
-    ok, _problems = ix2.verify_writes()
-    assert ok is True, (
-        "concealment is now DETECTED -- good. Update this test and the HONEST LIMIT comments in "
-        "verify_writes and _supersede_by_key, which currently tell readers it is not.")
+    ok, problems = ix2.verify_writes()
+    assert not ok and any("hidden" in x for x in problems), problems
+
+
+def test_a_record_retired_on_arrival_is_not_reported_as_hidden():
+    """The false-alarm control that makes the check usable. The echo guard, the objectless guard and
+    the back-fill rule all retire the INCOMING record, so a store doing ordinary work is full of
+    records that are `superseded` and were never live. `born_status` is what separates them; without
+    it this check would fire on every honest store that ever rejected an echo."""
+    d = tempfile.mkdtemp()
+    ix = Inspeximus(path=os.path.join(d, "s.json"), receipts=True)
+    ix.remember("the rate is 5%", key="rate", object="5")
+    ix.remember("the rate is 7%", key="rate", object="7")
+    ix.remember("the rate is 5%", key="rate", object="5")      # an echo: retired on arrival
+    assert any(r["status"] == "superseded" for r in ix.items)
+    assert ix.verify_writes() == (True, [])
+
+
+def test_ordinary_housekeeping_does_not_trip_it():
+    """The other false-alarm control: a keep-budget demotion is legitimate and now declares itself.
+    If `_declare_retired` were dropped from that path, this fires."""
+    d = tempfile.mkdtemp()
+    ix = Inspeximus(path=os.path.join(d, "s.json"), receipts=True)
+    for i in range(12):
+        ix.remember(f"an unrelated observation number {i} worth keeping around")
+    ix.consolidate(keep=4)
+    assert ix.verify_writes() == (True, [])

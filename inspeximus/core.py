@@ -2443,6 +2443,13 @@ class Inspeximus:
                 # the tombstone chain already meets. Inside the receipt hash, so trimming the list
                 # breaks the chain link instead of shrinking the check.
                 "retires": sorted(retires or ()),
+                # THE STATUS AT BIRTH, write-once and so bindable for life with no churn. It is what
+                # separates "retired ON ARRIVAL" -- the echo guard, the objectless guard and the
+                # back-fill rule all do that, and the record's own receipt is then the whole
+                # explanation -- from "this was live and something retired it later", which has to be
+                # accounted for. Without it the concealment check cannot tell a legitimately
+                # stillborn record from a hidden one.
+                "born_status": rec.get("status") or "active",
                 # WHEN THE FACT BECAME TRUE, since 2.10.2. `valid_from` decides every `as_of()`
                 # answer -- "what did the agent believe when it acted, provably" -- and it was in no
                 # commitment at all. Measured 2026-08-15: edit it on disk and verify_writes,
@@ -2462,6 +2469,26 @@ class Inspeximus:
                 "time_sha256": _sha256_hex(_canon({"valid_from": rec.get("valid_from"),
                                                    "valid_from_source": rec.get("valid_from_source")})),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
+
+    def _declare_retired(self, rec: dict, reason: str) -> None:
+        """Record in the chain that THIS record has been retired, and why.
+
+        `retires` (on the retiring write) covers keyed supersession, where a newer record replaces an
+        older one. The other retirement paths have no "newer" record to hang it on -- a keep-budget
+        demotion, a lineage retraction, a merge resolution -- and a state toggle happens outside
+        remember() entirely. Undeclared, all of them are indistinguishable from CONCEALMENT: an
+        attacker marking the CURRENT record `superseded` on disk so the store serves an older value,
+        or nothing at all. Measured 2026-08-15: recall returned [], no active record for the key, and
+        verify_writes, verify_bundle and bind_content all reported clean.
+
+        The cost, stated rather than discovered: one receipt per demoted record, and a keep-budget
+        pass can demote many at once. That is a deliberate operator call with an explicit budget, so
+        the churn is bounded and attributable -- unlike committing the raw `status`, which would put
+        an amendment on every mechanical supersession forever. Silent when receipts are off, like
+        every other chain write.
+        """
+        if self.receipts_enabled:
+            self._emit_write_receipt(rec, amends=("status_sha256",), reason=reason)
 
     def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "",
                             retires=()) -> dict:
@@ -2989,11 +3016,10 @@ class Inspeximus:
         # same edit on a `provisional` record WAS caught, which is what makes it a coverage hole in
         # that commitment rather than a missing mechanism.
         #
-        # HONEST LIMIT, and the reason this is a ONE-DIRECTIONAL rule. It catches RESURRECTION -- a
-        # retired record made current again, which is the injection attack. It does NOT catch
-        # DEMOTION, silently marking the current record superseded to hide it, because closing that
-        # needs every retiring path to declare itself and `consolidate()` and capacity eviction retire
-        # records without emitting a receipt at all. Claiming both would be the vacuous half.
+        # This is the RESURRECTION direction -- a retired record made current again. The mirror
+        # image, CONCEALMENT, is handled by the block below it: it needed every retiring path to
+        # declare itself, which `_declare_retired` now does for the five that had no newer record to
+        # hang a declaration on.
         if self.receipts_enabled and self._receipts:
             _live = {r["id"] for r in self._items if r.get("status") == "active"}
             for _rid in sorted({rid for rc in self._receipts
@@ -3002,6 +3028,58 @@ class Inspeximus:
                 problems.append(
                     f"memory {_rid}: a later write RETIRED this record and it is ACTIVE again -- the "
                     f"store is serving a value that was corrected away (edited after write)")
+            # THE OTHER DIRECTION: CONCEALMENT. `retires` catches un-retiring an old record; hiding
+            # the CURRENT one is the mirror image, and it was still open after that fix. Measured
+            # 2026-08-15: mark the live record `superseded` on disk and recall returns [], there is
+            # no active record for the key, and verify_writes, verify_bundle and bind_content are all
+            # clean. Composed with the injection hole it became a controlled SUBSTITUTION -- conceal
+            # the true payment policy, inject a replacement, and the agent is served the forgery.
+            #
+            # THE RULE: a record that was BORN recallable and is not recallable today must be
+            # accounted for -- by a later receipt (its own retirement declaration, or another write's
+            # `retires`), or by a tombstone. Every legitimate path now declares itself; see
+            # _declare_retired for the five that had nothing to hang a declaration on.
+            #
+            # `born_status` is what makes this possible without false alarms: a record retired ON
+            # ARRIVAL by the echo, objectless or back-fill guards was never recallable, so its own
+            # birth receipt is the whole explanation and it is not swept.
+            _first: dict = {}
+            _later: dict = {}
+            for rc in self._receipts:
+                mid = rc.get("memory_id")
+                if mid not in _first:
+                    _first[mid] = rc
+                else:
+                    _later[mid] = rc
+            _tombed = {t.get("memory_id") for t in (self._tombstones or ())}
+            _named = {rid for rc in self._receipts
+                      for rid in ((rc.get("commit") or {}).get("retires") or ())}
+            _hidden = []
+            for r in self._items:
+                mid = r["id"]
+                rc = _first.get(mid)
+                if rc is None:
+                    continue                      # uncovered: the coverage sweep above owns that case
+                born = (rc.get("commit") or {}).get("born_status")
+                if born is None:
+                    continue                      # pre-2.10.2 receipt: nothing to compare against
+                # BORN AS THE LIVE VALUE, which is the only thing that can be HIDDEN. Not "born
+                # recallable": `superseded` is in `_RECALLABLE` (history is readable with
+                # include_superseded), so the first version of this line skipped nothing for a record
+                # retired ON ARRIVAL and reported every honest echo as concealment. `hub` counts --
+                # it is a ranking demotion, not a retirement.
+                if born not in ("active", "hub"):
+                    continue                      # never the current value, so never hidden
+                if r.get("status") in ("active", "hub"):
+                    continue                      # still current, or demoted in RANKING only
+                if mid in _later or mid in _named or mid in _tombed:
+                    continue                      # accounted for
+                _hidden.append(mid)
+            for mid in sorted(_hidden):
+                problems.append(
+                    f"memory {mid}: born ACTIVE and is no longer current, with nothing accounting for "
+                    f"it -- no retirement declared, no later write claiming it, no tombstone. A live "
+                    f"record was hidden (edited after write)")
         return (len(problems) == 0, problems)
 
     def recommit(self, ids=None) -> dict:
@@ -3327,6 +3405,10 @@ class Inspeximus:
                 # binds for life and needs no amendment: this write DID retire those ids, permanently.
                 # It therefore costs ZERO extra receipts, so the churn objection that ruled out
                 # committing the raw status does not apply to it.
+                #
+                # This half is free. The CONCEALMENT half -- hiding the current record rather than
+                # un-retiring an old one -- is not: it needs the retirement paths that have no newer
+                # record to emit their own declaration, one receipt each. See _declare_retired.
                 #
                 # RETURNED, not written onto the record. The first version stored it as `rec["retires"]`
                 # and a test caught the mistake within the run: it holds RANDOM SURROGATE IDS, so two
@@ -4636,6 +4718,7 @@ class Inspeximus:
                     continue                      # a restatement of the same value, kept by design
                 r["status"] = "superseded"
                 r.setdefault("meta", {})["superseded_by_policy"] = "reload_merge_lww"
+                self._declare_retired(r, "reload merge: a newer value for this key won")
                 demoted += 1
         self._file_sig = self._stat_sig()
         self._items_view_rev = None
@@ -6037,6 +6120,7 @@ class Inspeximus:
             meta = r.setdefault("meta", {})
             meta["retracted_reason"] = reason
             meta["needs_rederivation"] = True
+            self._declare_retired(r, f"lineage retracted: {reason}")
             ids.append(r["id"])
         if ids:
             self._mat = None; self._mat_built_n = -1        # status change alters the recall pool
@@ -9669,6 +9753,7 @@ class Inspeximus:
         # the one that corrected the record.
         older["bad"] = float(older.get("bad", 0) or 0) + 1.0
         newer["good"] = float(newer.get("good", 0) or 0) + 1.0
+        self._declare_retired(older, f"state toggle: contradicted by {newer['id']}")
         return ("toggled", older)
 
     def consolidate(self, keep: int | None = None, dup_threshold: float = 0.82,
@@ -9795,6 +9880,7 @@ class Inspeximus:
             for r in drop:
                 r["status"] = "superseded"; r["superseded_ts"] = time.time(); staled += 1
                 r.setdefault("meta", {})["superseded_by_policy"] = "keep_budget"
+                self._declare_retired(r, "keep-budget: outside the retained set")
         self._save()
         # `kept` used to be `keep` — the REQUEST echoed back, never measured. It sat in the same dict as
         # `active`, so a run that left 0 active still reported `kept: 10` and the two contradicted each
@@ -9872,6 +9958,7 @@ class Inspeximus:
                 for r in act[keep_per_cluster:]:
                     r["status"] = "superseded"; r["superseded_ts"] = time.time(); staled += 1
                     r.setdefault("meta", {})["superseded_by_policy"] = "keep_budget"
+                    self._declare_retired(r, "keep-budget: outside the cluster's retained set")
         self._save()
         return {"clusters_total": len(clusters), "clusters_fired": fired, "threshold": threshold,
                 "linked_pairs": linked, "toggled": toggled, "staled": staled}
