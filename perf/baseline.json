@@ -6,11 +6,11 @@
    "replace_tombstones": 0,
    "replace_receipts": 0,
    "full_serializations": 1000,
-   "serialized_bytes": 147642011
+   "serialized_bytes": 158652048
   },
-  "seconds_median": 6.0387,
-  "seconds_min": 5.1585,
-  "seconds_max": 6.602
+  "seconds_median": 8.184,
+  "seconds_min": 7.796,
+  "seconds_max": 9.2949
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -21,9 +21,9 @@
    "full_serializations": 0,
    "serialized_bytes": 0
   },
-  "seconds_median": 0.5578,
-  "seconds_min": 0.4588,
-  "seconds_max": 0.7242
+  "seconds_median": 0.7592,
+  "seconds_min": 0.6918,
+  "seconds_max": 0.7786
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -32,11 +32,11 @@
    "replace_tombstones": 1,
    "replace_receipts": 0,
    "full_serializations": 1,
-   "serialized_bytes": 552251
+   "serialized_bytes": 596239
   },
-  "seconds_median": 0.0956,
-  "seconds_min": 0.0742,
-  "seconds_max": 0.1141
+  "seconds_median": 0.1361,
+  "seconds_min": 0.1305,
+  "seconds_max": 0.1383
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -45,10 +45,10 @@
    "replace_tombstones": 1,
    "replace_receipts": 500,
    "full_serializations": 501,
-   "serialized_bytes": 36607471
+   "serialized_bytes": 39361907
   },
-  "seconds_median": 4.1473,
-  "seconds_min": 3.9771,
-  "seconds_max": 4.2031
+  "seconds_median": 9.6864,
+  "seconds_min": 9.5674,
+  "seconds_max": 9.883
  }
 }

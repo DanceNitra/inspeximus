@@ -103,6 +103,10 @@ def test_the_mcp_surface_states_the_signature_state_as_a_field(monkeypatch):
     lectured on every call -- advice that fires unconditionally gets trained away. One field costs
     nothing and repeats nothing, and the prose lives behind `require_signed=True`."""
     import importlib
+    # OPTIONAL DEPENDENCY. The `test (3.x)` jobs install the zero-dependency core and nothing else,
+    # by design -- that is what they exist to prove. Importing the MCP surface there is an
+    # ImportError, not a failure of this claim, and the `integrations` job runs this for real.
+    pytest.importorskip("mcp", reason="the MCP SDK is an optional extra; `integrations` covers this")
     d = tempfile.mkdtemp()
     monkeypatch.setenv("INSPEXIMUS_PATH", os.path.join(d, "s.json"))
     monkeypatch.setenv("INSPEXIMUS_RECEIPTS", "1")
@@ -181,10 +185,33 @@ def test_the_env_var_route_is_guarded_too(monkeypatch):
         receipt_key_for(os.path.join(d, "s.json"))
 
 
+def _fs_is_case_insensitive(d):
+    """Ask the filesystem, do not infer it from sys.platform.
+
+    A case-sensitive mount on Windows and a case-insensitive one on Linux both exist, and the
+    question here is about the MOUNT the test is running on, not the OS it was compiled for.
+    """
+    probe = os.path.join(d, "CaseProbe")
+    open(probe, "w", encoding="utf-8").write("x")
+    return os.path.exists(os.path.join(d, "caseprobe"))
+
+
 def test_a_case_variant_of_the_store_directory_is_still_inside_it(monkeypatch):
     """`startswith` on `abspath` normalises neither case nor links, and Windows/macOS filesystems are
-    case-insensitive, so the same directory in different case walked past the guard."""
+    case-insensitive, so the same directory in different case walked past the guard.
+
+    THE SKIP BELOW IS A CLAIM, so it says what it means. On a CASE-SENSITIVE filesystem `/tmp/x` and
+    `/TMP/X` are two different directories and this defect cannot arise at all -- there is no case
+    variant of a path that reaches the same place. The first version of this test did not check, so
+    on Linux CI it uppercased a tempdir into a path that does not exist and the guard never ran:
+    `PermissionError: [Errno 13] Permission denied: '/TMP'`, three jobs red. It was measuring the
+    filesystem's opinion of `mkdir /TMP`, not the guard.
+    """
     d = tempfile.mkdtemp()
+    if not _fs_is_case_insensitive(d):
+        pytest.skip("this filesystem is case-SENSITIVE, so a case variant of the store directory is "
+                    "a different directory and the defect cannot arise here at all; the guard's "
+                    "other routes are covered by the tests around this one")
     monkeypatch.delenv("INSPEXIMUS_RECEIPT_KEY", raising=False)
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", d.upper())
     with pytest.raises(ValueError, match="inside the store's own directory"):

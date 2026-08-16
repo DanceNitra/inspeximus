@@ -150,6 +150,7 @@ def test_the_cli_can_pin_the_key_at_verify_time():
 def test_the_mcp_surface_can_pin_it_too(monkeypatch):
     """The same gap on the surface an agent actually calls."""
     import importlib
+    pytest.importorskip("mcp", reason="the MCP SDK is an optional extra; `integrations` covers this")
     monkeypatch.setenv("INSPEXIMUS_PATH", os.path.join(tempfile.mkdtemp(), "s.json"))
     import inspeximus.mcp_server as m
     m = importlib.reload(m)
