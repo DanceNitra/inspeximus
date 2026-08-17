@@ -27,8 +27,20 @@ import pytest
 
 from inspeximus import Inspeximus
 
-mcp_server = pytest.importorskip(
-    "inspeximus.mcp_server", reason="the MCP SDK is an optional extra; `integrations` covers this")
+# `importorskip` alone is NOT enough here, and CI proved it across at least two releases while the
+# local suite stayed green. It skips on a ModuleNotFoundError for the module it was asked for.
+# `inspeximus.mcp_server` imports fine and then RAISES a deliberately helpful ImportError of its own
+# ("the inspeximus MCP server needs the MCP SDK: pip install ..."). That is not the requested module
+# going missing, so pytest re-raises it and the whole file ERRORS instead of skipping.
+#
+# The good error message is what defeated the guard. Catching ImportError explicitly is the fix, and
+# the shape generalises: an optional-dependency skip must catch what the import ACTUALLY raises, not
+# what the dependency being absent would raise if nobody had improved the message.
+try:
+    import inspeximus.mcp_server as mcp_server
+except ImportError as exc:                      # noqa: BLE001
+    pytest.skip(f"the MCP SDK is an optional extra; `integrations` covers this ({exc})",
+                allow_module_level=True)
 
 
 # core method -> (mcp tool, {core param: mcp param}, {params the tool CANNOT take, and why})

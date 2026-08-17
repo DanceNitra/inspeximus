@@ -554,6 +554,54 @@ def _tree_fingerprint(root):
     return (head, tuple(dirty))
 
 
+def check_ci_on_head(rep, root=ROOT):
+    """Is the LAST PUSHED commit green in CI? This gate cannot answer that by running tests.
+
+    MEASURED 2026-08-17, and it is the reason this exists. This checklist reported READY 9/9 and
+    2.13.0 shipped -- while the `tests` workflow had been FAILING on main across two releases. Not a
+    flaky runner: CI installs only `pytest pytest-xdist cryptography pyyaml`, so the optional `mcp`
+    extra is absent there and present here. Every leg above runs in THIS environment, so a defect
+    that exists only where the optional dependency is missing is invisible to all of them, by
+    construction. The same blindness covers any CI-only difference: python 3.9, a stricter pytest, a
+    Linux path.
+
+    It reports what it can see and never invents comfort:
+      * no `gh`, or no remote, or an unpushed HEAD -> SKIP, saying so. "I could not look" must not
+        read as "it is green" -- that equivalence is the defect this whole file exists against.
+      * a FAILING conclusion on the newest completed run for HEAD's commit -> FAIL, with the URL.
+    """
+    head = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True,
+                          cwd=str(root)).stdout.strip()
+    if not head:
+        rep.add("ci on HEAD", SKIP, "not a git tree; CI status is UNKNOWN, not clear")
+        return
+    try:
+        raw = subprocess.run(
+            ["gh", "run", "list", "--commit", head, "--limit", "20",
+             "--json", "name,status,conclusion,url"],
+            capture_output=True, text=True, cwd=str(root), timeout=60,
+            encoding="utf-8", errors="replace")
+        runs = json.loads(raw.stdout or "[]")
+    except Exception as ex:                                            # noqa: BLE001
+        rep.add("ci on HEAD", SKIP, "could not reach GitHub (%s); CI status is UNKNOWN, not clear"
+                % type(ex).__name__)
+        return
+
+    done = [r for r in runs if r.get("status") == "completed"]
+    if not done:
+        rep.add("ci on HEAD", SKIP,
+                "no completed run for %s yet -- push and wait, or accept that this is UNVERIFIED"
+                % head[:7])
+        return
+    bad = [r for r in done if r.get("conclusion") not in ("success", "skipped", "neutral")]
+    if bad:
+        rep.add("ci on HEAD", FAIL, "; ".join(
+            "%s=%s %s" % (r["name"], r["conclusion"], r["url"]) for r in bad[:3]))
+        return
+    rep.add("ci on HEAD", PASS, "%d completed run(s) on %s, all green (%s)"
+            % (len(done), head[:7], ", ".join(sorted({r["name"] for r in done}))))
+
+
 def run(root=ROOT, skip_tests=False):
     print("pre-release checklist for inspeximus %s" % pyproject_version(root))
     print("  tree: %s\n" % root)
@@ -569,6 +617,7 @@ def run(root=ROOT, skip_tests=False):
         check_audits(rep, root)
         check_release_notes(rep, root)
         check_tests(rep, root, skip=skip_tests)
+        check_ci_on_head(rep, root)
     finally:
         # Reported, never silent: a guard that quietly repairs something teaches nobody it fired.
         restored = restore_probe_snapshot(snapshot)

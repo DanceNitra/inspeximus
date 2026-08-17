@@ -309,8 +309,22 @@ if __name__ == "__main__":
     # exited 1, so a release could be blocked by its own release notes rendering. The guard is
     # IMPORTED rather than re-implemented -- two copies of one decision is how the first one stops
     # getting fixed.
-    import sys, os
+    #
+    # AND THE IMPORT IS OPTIONAL, which the first version got wrong and CI caught the same day.
+    # Importing coupled this tool to the package layout: run detached from the repo -- which is
+    # exactly what `test_release_notes_check_exits_non_zero_on_a_defect` does -- and
+    # `ModuleNotFoundError: No module named 'inspeximus.cli'` killed the tool before it produced any
+    # output, so a test asserting on that output failed with an empty string.
+    #
+    # The lesson is not "copy it after all". It is that a HARDENING must never be able to break the
+    # thing it hardens: a guard against a console that cannot print must not itself stop the program
+    # from printing. Import it when it is there, do without it when it is not.
+    import os
+    import sys
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from inspeximus.cli import _survive_a_narrow_console
-    _survive_a_narrow_console()
+    try:
+        from inspeximus.cli import _survive_a_narrow_console
+        _survive_a_narrow_console()
+    except Exception:                      # noqa: BLE001 -- a nicety, never a precondition
+        pass
     raise SystemExit(main())
