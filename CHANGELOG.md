@@ -1,3 +1,85 @@
+## 2.14.0 - UPGRADE IF YOU RELY ON ANY verify_*/check_* HERE: two surfaces that check the checkers
+
+Built from a day in which ten of this project's own checks returned PASS for reasons unrelated to
+the property they named, and from @Stratogain's reply on
+[safal207/Causal-Memory-Layer#289](https://github.com/safal207/Causal-Memory-Layer/issues/289).
+
+### `admissibility_preconditions()` — the layer is @Stratogain's
+
+We had reported collector-silence and identifier-mismatch as two unrelated cases. The generalisation
+is theirs: *"liveness is a fact about the store rather than the record; key agreement is the same
+sentence with a different noun"* — along with the property that makes both dangerous in the same
+way: **a verdict is produced, so nothing upstream looks broken.**
+
+| precondition | asserts |
+|---|---|
+| `key_agreement` | every key the store holds resolves through the read path |
+| `observation_channel_alive` | if records carry locators, some carry a read-time observation |
+| `receipt_chain_covers_records` | if the store WAS written with receipts, the chain covers its records |
+
+The first two are theirs. The third is the same shape found here while implementing them: **a
+mechanism present and producing nothing.**
+
+```python
+import os, tempfile
+from inspeximus import Inspeximus
+
+d = tempfile.mkdtemp()
+m = Inspeximus(path=os.path.join(d, "m.json"), embed=False, receipts=True)
+m.remember("deployment needs two approvers", key="policy", object="two",
+           source={"doc": os.path.join(d, "policy.txt")})     # a locator, never observed
+m.flush()
+
+r = m.admissibility_preconditions()
+oc = [p for p in r["preconditions"] if p["id"] == "observation_channel_alive"][0]
+print(r["ok"], "|", oc["locators"], oc["observations"], "|", oc["holds"])
+# -> False | 1 0 | False
+```
+
+**A precondition that cannot apply reports `applicable: false` and does NOT count as holding.** A
+store of pure decisions has no locators, so that question does not arise — and a question that did
+not arise has not been answered.
+
+### `audit_the_audits()` — can these 24 surfaces actually fail, on YOUR store?
+
+Corrupts a temporary **copy** (never your store) in ways each surface claims to detect. Four
+verdicts, and the last two are the ones worth reading:
+
+- **`SUMMARY_HIDES_DETAIL`** — the boolean stayed clean while the report said otherwise. `ok=True`
+  beside `"…so this verified NOTHING"` is not a lie and not a catch; monitoring reads booleans.
+- **`CONTROL_FAILED`** — the surface was already unhappy *before* the corruption, so its reaction
+  proves nothing. Not scored. This is a finding about your store, not about the check.
+
+Five probes against 24 surfaces: the rest are **UNTESTED, which is not the same as working**, and
+the report says so in `limits`.
+
+**Prior art, because the principle is not ours.** "Prove your checks can fail" is mutation testing
+(Lipton 1971; DeMillo, Lipton & Sayward 1978), and `promtool test rules` and Semgrep's
+`ruleid:`/`ok:` fixtures are the living siblings. What we did not find in promtool, Semgrep, amcheck
+or Netflix's ChAP: corrupting a copy of the **caller's own live data** rather than a synthetic
+fixture, and the `SUMMARY_HIDES_DETAIL` / `CONTROL_FAILED` split. Those two are the contribution.
+
+### What it found here, after a red-team pass corrected us
+
+On this project's own 450-record decision store, `observation_channel_alive` **fails**: 107 records
+carry a locator and **zero** carry a read-time observation. @Stratogain's invariant firing on real
+data the day it was proposed.
+
+**And a retraction, because the first version of this entry was wrong.** We reported "receipts
+enabled, chain empty, nothing covered by a write receipt". That was our own probe's constructor
+argument: `receipts_enabled` is set at construction and never read from the file, so opening a
+never-receipted store with `receipts=True` created the state we then reported. Same file, three ways
+of opening it, three different verdicts. Two gate passes caught it before it was published.
+
+It was a **bug in the precondition**, not a wording problem — it would have fired on any healthy
+never-receipted store the moment a caller passed that flag. It now asks whether a receipt sidecar
+EXISTS, which is the store's own property; the verdict is identical however the store is opened, and
+a store that has a chain and lost it still fails. Both directions pinned by tests.
+
+The surviving finding is smaller and still worth having: **the integrity feature this library sells
+has never been switched on for the store its own author writes decisions to.** An adoption gap, not
+a broken mechanism.
+
 # Changelog
 
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver

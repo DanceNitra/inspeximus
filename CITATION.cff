@@ -6,7 +6,7 @@ authors:
 repository-code: "https://github.com/DanceNitra/inspeximus"
 url: "https://dancenitra.github.io/inspeximus/"
 license: MIT
-version: 2.13.0
+version: 2.14.0
 keywords:
   - LLM
   - agent memory
