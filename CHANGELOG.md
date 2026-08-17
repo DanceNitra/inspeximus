@@ -16,10 +16,12 @@ UnicodeEncodeError: 'charmap' codec can't encode character '́'
 
 The write had already succeeded. The crash was in the line printing the confirmation — one of 153
 `print()` calls with no stdout reconfiguration anywhere, and `--json` dumps with
-`ensure_ascii=False` in six places, so the machine-readable surface carried the same characters. An operator sees
-a traceback and a non-zero exit, concludes the write failed, and writes it again: the exact
-duplicate that supersession exists to prevent. **A successful write reported as a failure is worse
-than a refusal, because a refusal is honest about what happened.**
+`ensure_ascii=False` in six places, so the machine-readable surface carried the same characters. The plausible response to that traceback and
+exit code is to conclude the write failed and retry -- we have not observed an operator do it, it
+follows from the exit code -- producing the duplicate supersession exists to prevent. **A successful write reported as a failure is worse
+than a refusal HERE specifically, because supersession turns the duplicate into a no-op while the
+false signal costs the operator their trust in the exit code.** That is not true of every
+refusal/false-failure pair -- an unretried refusal can be silent permanent loss, which is worse.
 
 Fixed by reconfiguring stdout/stderr with `errors="backslashreplace"` — not `"replace"`, which
 would print `sed?cia` and destroy the identifier the operator has to read, silently, which is the
@@ -81,8 +83,9 @@ Measured on two of our own live stores, 2026-08-17:
 
 Read the second row before quoting the first: those keys are **file paths**, so they share long
 prefixes and an 8-character fold puts 412 of 434 into a single bucket. That is the point rather than
-a curiosity — the fold's cost is a property of the DATA, not of the fold, and the same eight
-characters are harmless on a store of UUIDs. Which is why the method measures instead of asserting.
+a curiosity: across just these two stores the same fold swings from 1 merged group to 599 depending
+on key shape, which is evidence against judging a fold safe from the fold alone rather than a
+general law. Hence measuring instead of asserting a threshold.
 Neither store declares an identifier policy in any field.
 
 Available on the library, over MCP, and scoped per tenant (the report names keys, and a key is

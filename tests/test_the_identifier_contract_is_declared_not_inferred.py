@@ -114,8 +114,10 @@ def test_control_the_same_fold_is_invertible_on_a_store_that_does_not_collide():
 
 
 def test_a_prefix_fold_is_measured_because_that_is_the_one_that_bit_a_peer():
-    """@SinghAbhinav04 stored session_id.slice(0, 8) and compared the full id. On our own store an
-    8-character prefix fold would lose 1,365 keys, which is the number that makes it concrete."""
+    """A hook on anthropics/claude-code#34556 stored a truncated session id and compared the full
+    one. No handle here on purpose: two of our own files credited that case to two different people,
+    which is its own small lesson about restating someone else's bug in your words. On our coding
+    store an 8-character prefix fold would lose 1,373 of 11,501 keys, which makes it concrete."""
     c = _store(["session-abcdefgh-alpha", "session-abcdefgh-omega"]).identifier_contract()
     assert c["measured"]["prefix_8"]["invertible_on_this_store"] is False
     assert c["measured"]["prefix_12"]["keys_that_would_be_lost"] >= 1
