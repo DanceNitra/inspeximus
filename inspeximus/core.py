@@ -2733,6 +2733,331 @@ class Inspeximus:
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
         return r
 
+    def admissibility_preconditions(self) -> dict:
+        """Is this store in a state where an applicability question can be ANSWERED at all?
+
+        `evaluate_applicability` asks whether a record is admissible now. This asks the question
+        underneath it, and the two are different: a store can answer the first one confidently while
+        the machinery the answer rests on has quietly stopped working.
+
+        THE LAYER IS @Stratogain's, named on safal207/Causal-Memory-Layer#289 (2026-08-17). We had
+        reported collector-silence and identifier-mismatch as two separate cases; the generalisation
+        is theirs:
+
+            "Liveness is a fact about the store rather than the record. Case 4 is the same sentence
+             with a different noun: key agreement is a fact about the store rather than the record."
+
+        and the property that makes both dangerous in the same way:
+
+            "a verdict is produced, so nothing upstream looks broken."
+
+        Their two invariants are 1 and 2 below. The third is the same shape found in our own store
+        while implementing theirs, which is what suggests the shape generalises: **a mechanism that
+        is ENABLED and PRODUCING NOTHING**. Each is store-scoped, none needs a new status anywhere,
+        and none is expressible on a single record -- which is the evidence that the boundary is real.
+
+        A precondition that cannot apply is reported as `applicable: False`, never as holding. A
+        store with no keys has not passed the key-agreement check; it has not taken it.
+
+        Returns {"ok", "preconditions": [...], "limits": [...]}.
+        """
+        rows = self._tenant_rows()
+        out = []
+
+        # ── 1 · KEY AGREEMENT. The key a store writes under must be the key it queries by. ────────
+        # @Stratogain's case: a hook wrote `session_id[:8]` and the lookup compared the full id, so
+        # a session could not find its OWN observations -- and a verdict came back every time,
+        # computed from a write-time hash instead. Checked from the outside: take each key the store
+        # holds and ask the read path for it.
+        keys = [r.get("key") for r in rows if r.get("key")]
+        unreachable = []
+        for k in dict.fromkeys(keys):
+            try:
+                if not self.history(k):
+                    unreachable.append(k)
+            except Exception:                                              # noqa: BLE001
+                unreachable.append(k)
+        out.append({
+            "id": "key_agreement", "asserts": "every key the store holds resolves through the read path",
+            "applicable": bool(keys), "holds": bool(keys) and not unreachable,
+            "checked": len(set(keys)), "failed": unreachable[:5],
+            "why_it_matters": "a key that does not resolve produces a fallback answer, not an error",
+        })
+
+        # ── 2 · OBSERVATION CHANNEL ALIVE. reads > 0 implies observations > 0. ───────────────────
+        # Translated to this store's shape: a record carries a LOCATOR when the writer said where it
+        # came from, and an `observed_sha256` when something actually read those bytes. Locators
+        # accumulating with no observations means the channel that supplies them is producing
+        # nothing while writing continues -- and coverage does not move, because new records get no
+        # observation either.
+        with_locator = [r for r in rows if (r.get("source") or {}).get("doc")]
+        with_observation = [r for r in with_locator if (r.get("source") or {}).get("observed_sha256")]
+        out.append({
+            "id": "observation_channel_alive",
+            "asserts": "if records carry locators, some carry a read-time observation",
+            "applicable": bool(with_locator),
+            "holds": bool(with_locator) and bool(with_observation),
+            "locators": len(with_locator), "observations": len(with_observation),
+            "why_it_matters": "with the channel dead, honest captures degrade to write-time hashes "
+                              "and every call still returns a result",
+        })
+
+        # ── 3 · RECEIPTS COVER THE RECORDS. Enabled and producing nothing. ───────────────────────
+        # FOUND ON OUR OWN STORE while building this: 450 records, receipts enabled, chain EMPTY --
+        # nothing covered by a write receipt, and `verify_writes` had been saying so to nobody. Same
+        # shape as 2 with a different mechanism, which is why it is here rather than in a changelog.
+        chain = len(getattr(self, "_receipts", []) or [])
+        enabled = bool(getattr(self, "receipts_enabled", False))
+        out.append({
+            "id": "receipt_chain_covers_records",
+            "asserts": "if receipts are enabled and records exist, the chain is not empty",
+            "applicable": enabled and bool(rows),
+            "holds": (not enabled) or (not rows) or chain > 0,
+            "records": len(rows), "chain_entries": chain, "receipts_enabled": enabled,
+            "why_it_matters": "an enabled-but-empty chain verifies nothing while reading as enabled",
+        })
+
+        applicable = [p for p in out if p["applicable"]]
+        return {
+            "ok": all(p["holds"] for p in applicable) and bool(applicable),
+            "preconditions": out,
+            "limits": [
+                "A precondition reported `applicable: False` has NOT passed -- it did not run. "
+                "Three of these can be inapplicable on a legitimate store and that is not a clean bill.",
+                "These are store-level and say nothing about whether any individual record is "
+                "admissible; that is what evaluate_applicability is for, and it is the layer above.",
+                "The layer and invariants 1 and 2 are @Stratogain's "
+                "(safal207/Causal-Memory-Layer#289); invariant 3 is the same shape found here.",
+            ],
+        }
+
+    def audit_the_audits(self, probes: list | None = None) -> dict:
+        """CAN THIS LIBRARY'S OWN VERIFICATION SURFACES ACTUALLY FAIL -- on THIS store?
+
+        Every `verify_*`, `check_*` and `*_audit` here answers a question about your data. None of
+        them answers the question one level up: *would this check have noticed if the thing it
+        guards against had actually happened?* A check that cannot fail on your store is not
+        protecting you; it is producing a reassuring string.
+
+        This corrupts a COPY of your store in a way each surface claims to detect, and reports
+        whether the surface noticed. Three outcomes per probe, and the third is the one to read:
+
+          NOTICED         the surface was clean before and reported a problem after. Working.
+          MISSED          clean before, clean after. The corruption happened and it said nothing.
+          SUMMARY_HIDES_DETAIL
+                          the top-level boolean stayed clean while the report itself said otherwise.
+                          Not a lie and not a catch: a caller reading `ok` is reassured, a caller
+                          reading the report is not, and monitoring reads booleans.
+          CONTROL_FAILED  the surface was ALREADY reporting a problem on the clean copy, so its
+                          reaction to the corruption proves nothing. Not scored -- a probe whose
+                          control fails has measured its own setup, not the surface.
+
+        WHY THIS EXISTS, and every entry below is a defect we shipped or nearly shipped:
+
+          * `slash(scope='source')` was our accountability lever and its default scope resolved on
+            a field no writer ever set: 0.000% coverage across 261,673 records, returning ok on
+            every call, for months.
+          * A probe of ours scored 14 of 14 over a store that had received nothing, because each
+            check carried an escape on its own precondition.
+          * A coverage gate could not see the writer's own store. An absence test was satisfied by
+            nothing at all. A guard with half recall reported safe.
+
+        The pattern is one thing, ten times: a check returning PASS for a reason unrelated to the
+        property it names. That is not a bug in any one check -- it is a property of checks, and it
+        needs a check of its own.
+
+        SAFETY. Everything runs against a temporary COPY. The live store is opened read-only and
+        never written, because a harness that corrupts the thing it is auditing is the failure mode
+        with the worst blast radius, and we have watched two of our own tools fight over one file.
+
+        Returns {"probes": [...], "noticed": n, "missed": [...], "control_failed": [...],
+        "surfaces_covered": n, "surfaces_available": n, "limits": [...]}.
+        """
+        import copy as _copy
+        import json as _json
+        import shutil as _shutil
+        import tempfile as _tempfile
+
+        cls = type(self)
+        available = sorted(
+            n for n in dir(cls)
+            if not n.startswith("_") and callable(getattr(cls, n, None))
+            and (n.startswith(("verify", "check", "detect"))
+                 or n.endswith(("audit", "_report", "certificate", "integrity", "coherence"))))
+
+        def _writes(store):                      # -> (clean?, detail)
+            ok, problems = store.verify_writes()
+            return bool(ok), list(problems)[:2]
+
+        def _sources_ok(store):
+            r = store.check_sources()
+            return bool(r.get("ok")), r
+
+        def _sources_drift(store):
+            r = store.check_sources()
+            c = r.get("counts") or {}
+            return not (c.get("DRIFTED") or c.get("ORPHANED")), {"counts": c}
+
+        def _coherent(store):
+            r = store.index_coherence()
+            return bool(r.get("coherent", True)), {"missing_vecs": r.get("missing_vecs")}
+
+        # (name, corrupt(path, rows) -> rows|None, surface name, reader, what it should catch)
+        catalogue = [
+            ("value_tampered_after_write", "verify_writes", _writes,
+             lambda rows: ([dict(r, text="TAMPERED BY audit_the_audits") for r in rows[:1]] + rows[1:])
+             if rows else None,
+             "a record's text edited in the file after its write receipt was sealed"),
+            ("key_tampered_after_write", "verify_writes", _writes,
+             lambda rows: ([dict(r, key=(r.get("key") or "k") + "-TAMPERED") for r in rows[:1]]
+                           + rows[1:]) if rows else None,
+             "a record's key edited in the file after its write receipt was sealed"),
+            ("source_bytes_moved", "check_sources", _sources_drift, "MUTATE_SOURCE",
+             "the bytes behind a recorded locator changed after capture"),
+            ("source_deleted", "check_sources", _sources_drift, "DELETE_SOURCE",
+             "the locator no longer resolves at all"),
+            ("every_source_stripped", "check_sources", _sources_ok,
+             lambda rows: [{k: v for k, v in r.items() if k != "source"} for r in rows] or None,
+             "no record carries a source at all -- the 261,673-record instance"),
+        ]
+
+        def _open_copy(path):
+            """Open the copy the way the LIVE store was opened.
+
+            The first version re-serialised `self.items` into a bare file and opened it with
+            defaults. Four of five probes came back CONTROL_FAILED, correctly: without
+            `receipts=True` the copy reads as a receipts-DISABLED store and `verify_writes` answers
+            "there is nothing to verify -- which is not the same as verified" before any corruption
+            is applied. A copy that does not inherit its original's construction is a different
+            store, and measuring it tells you nothing about the one you have.
+            """
+            return type(self)(path=path, embed=False,
+                              receipts=bool(getattr(self, "receipts_enabled", False)))
+
+        live_rows = _json.loads(_json.dumps(self.items, default=str))
+        results, limits = [], []
+        if not live_rows:
+            limits.append("this store is EMPTY, so every probe below is unreachable and the run "
+                          "reports nothing rather than a clean bill -- which is itself the first "
+                          "defect in the list above.")
+            return {"probes": [], "noticed": 0, "missed": [], "control_failed": [],
+                    "surfaces_covered": 0, "surfaces_available": len(available), "limits": limits}
+
+        for name, surface, read, mutate, catches in (probes or catalogue):
+            work = _tempfile.mkdtemp()
+            path = os.path.join(work, "copy.json")
+            docs = os.path.join(work, "docs")
+            os.makedirs(docs, exist_ok=True)
+
+            # File-level copy, sidecars included: the receipt chain lives in `<store>.receipts.json`
+            # and a store without it is a different store.
+            import glob as _glob
+            for f in _glob.glob(str(self.path) + "*"):
+                try:
+                    _shutil.copy(f, os.path.join(work, os.path.basename(f)))
+                except Exception:                                          # noqa: BLE001
+                    pass
+            path = os.path.join(work, os.path.basename(str(self.path)))
+            rows = _copy.deepcopy(live_rows)
+            # Source-bearing probes need a source that EXISTS locally, so they build one rather than
+            # depending on the caller's filesystem: a probe that silently tests nothing because the
+            # locator was a URL is the defect, not a limitation.
+            doc = os.path.join(docs, "probe_source.txt")
+            with open(doc, "wb") as fh:
+                fh.write(b"the bytes this record was derived from")
+            needs_source = mutate in ("MUTATE_SOURCE", "DELETE_SOURCE")
+            if not needs_source:
+                with open(path, "w", encoding="utf-8") as fh:
+                    _json.dump(rows, fh, default=str)
+            else:
+                # WRITE the source-bearing record THROUGH THE API rather than hand-building a row.
+                # The first version injected a `source` dict into a copied record and check_sources
+                # reported DRIFTED on the untouched copy: a record written by the library carries
+                # commitments a hand-assembled dict does not. Both source probes came back
+                # CONTROL_FAILED and were right to. Constructing fixtures by hand instead of through
+                # the product is the same defect this method exists to find, one layer out.
+                import hashlib as _h
+                seed = _open_copy(path)
+                seed.remember(
+                    "a record whose source this probe controls",
+                    key="__audit_the_audits_probe__", object="probe",
+                    source={"doc": doc,
+                            "observed_sha256": _h.sha256(
+                                b"the bytes this record was derived from").hexdigest()})
+                seed.flush()
+
+            try:
+                before_clean, before_detail = read(_open_copy(path))
+            except Exception as ex:                                        # noqa: BLE001
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "why": f"the surface raised on the clean copy: {type(ex).__name__}"})
+                continue
+            if not before_clean:
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "why": "already reported a problem BEFORE the corruption, so its "
+                                       "reaction proves nothing", "detail": before_detail})
+                continue
+
+            if mutate == "MUTATE_SOURCE":
+                with open(doc, "wb") as fh:
+                    fh.write(b"DIFFERENT BYTES")
+            elif mutate == "DELETE_SOURCE":
+                os.unlink(doc)
+            else:
+                changed = mutate(rows)
+                if not changed:
+                    results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                    "why": "the corruption did not change the store, so it tests "
+                                           "nothing"})
+                    continue
+                with open(path, "w", encoding="utf-8") as fh:
+                    _json.dump(changed, fh, default=str)
+
+            try:
+                after_clean, after_detail = read(_open_copy(path))
+            except Exception:                                              # noqa: BLE001
+                after_clean, after_detail = False, {"raised": True}
+            # THREE outcomes, not two, and the third came from running this against ourselves.
+            # `check_sources` on a store whose every source was stripped returns ok=True -- for a
+            # reasoned purpose: a store of pure DECISIONS has nothing bindable by construction and
+            # calling it False forever would be wrong. But the same report also carries
+            # `problem: "... so this verified NOTHING"`. The surface is honest in its detail and
+            # reassuring in its boolean, and monitoring reads booleans.
+            #
+            # Scoring that as MISSED would have been my reader trusting a summary over the contents
+            # it summarises -- the exact defect this method exists to find. So it gets its own name.
+            hidden = None
+            if after_clean and isinstance(after_detail, dict):
+                if after_detail.get("problem"):
+                    hidden = str(after_detail["problem"])[:200]
+                elif after_detail.get("limits"):
+                    hidden = str(after_detail["limits"])[:200]
+            outcome = ("NOTICED" if not after_clean
+                       else "SUMMARY_HIDES_DETAIL" if hidden else "MISSED")
+            row = {"probe": name, "surface": surface, "catches": catches, "outcome": outcome,
+                   "clean_before": True, "clean_after": bool(after_clean)}
+            if hidden:
+                row["the_boolean_said_clean_but"] = hidden
+            elif outcome == "MISSED":
+                row["detail"] = after_detail
+            results.append(row)
+
+        missed = [r for r in results if r["outcome"] == "MISSED"]
+        hides = [r for r in results if r["outcome"] == "SUMMARY_HIDES_DETAIL"]
+        cfail = [r for r in results if r["outcome"] == "CONTROL_FAILED"]
+        covered = sorted({r["surface"] for r in results if r["outcome"] == "NOTICED"})
+        limits += [
+            "%d of this class's %d verification surfaces have a probe here; the rest are UNTESTED, "
+            "which is not the same as working." % (len({r['surface'] for r in results}), len(available)),
+            "A NOTICED verdict says the surface reacted to THIS corruption on THIS store. It is not "
+            "a claim that the surface is correct, nor that it would catch a different corruption.",
+            "Everything ran on a temporary copy; the live store was not written.",
+        ]
+        return {"probes": results, "noticed": sum(1 for r in results if r["outcome"] == "NOTICED"),
+                "missed": missed, "summary_hides_detail": hides,
+                "control_failed": cfail, "surfaces_covered": covered,
+                "surfaces_available": len(available), "limits": limits}
+
     def identifier_contract(self) -> dict:
         """What are this store's identifiers, and which folds over them would LOSE information?
 
@@ -11741,6 +12066,15 @@ class _TenantView:
         # which is the same bar `merkle_root`/`inclusion_proof` are listed under below. It is still swept
         # by the tenant and agent leak tests, not exempted.
         "verify_attestations",
+        # `audit_the_audits` grades the LIBRARY's surfaces, not a tenant's slice: it corrupts a
+        # temporary copy of the whole store and returns verdicts, counts and the surfaces' own
+        # problem strings -- never record text. Scoped to one tenant it would answer a question
+        # nobody asked ("can these checks fail on this slice"), while the honest question is whether
+        # they can fail at all on this file. Swept by the tenant/agent leak tests like the rest.
+        "audit_the_audits",
+        # Store-scoped by definition: all three invariants are facts about the STORE rather than
+        # about any record, which is precisely @Stratogain's argument for why the layer exists.
+        "admissibility_preconditions",
         "detect_split_view", "check_self_narration",
         "revert_capability",
         # `believed_at` is NOT store-level: it is a read surface that returns a record's plaintext as of a

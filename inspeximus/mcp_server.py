@@ -893,6 +893,46 @@ def governance_report(expected_pubkey: str = "") -> dict:
 
 
 @mcp.tool()
+def admissibility_preconditions() -> dict:
+    """Is this store in a state where an applicability question can be ANSWERED at all?
+
+    The layer BELOW applicability. `evaluate_applicability` asks whether a record is admissible now;
+    this asks whether the machinery that answer rests on is still working. Three store-scoped
+    invariants, no new statuses:
+
+      key_agreement                  every key the store holds resolves through the read path
+      observation_channel_alive      if records carry locators, some carry a read-time observation
+      receipt_chain_covers_records   if receipts are enabled and records exist, the chain is not empty
+
+    A precondition that cannot apply reports `applicable: false` and does NOT count as holding -- a
+    question that did not arise has not been answered.
+
+    The layer and the first two invariants are @Stratogain's (safal207/Causal-Memory-Layer#289); the
+    third is the same shape found in our own 450-record store, which had receipts enabled, an empty
+    chain, and 107 locators with zero observations."""
+    return _MEM.admissibility_preconditions()
+
+
+@mcp.tool()
+def audit_the_audits() -> dict:
+    """CAN THIS LIBRARY'S OWN CHECKS ACTUALLY FAIL -- on THIS store?
+
+    Every verify_*/check_*/*_audit tool here answers a question about your data. None answers the
+    one above it: would this check have noticed if the thing it guards against had happened? A check
+    that cannot fail on your store is not protecting you, it is producing a reassuring string.
+
+    Corrupts a temporary COPY (never your store) in ways each surface claims to detect, and reports
+    NOTICED / MISSED / SUMMARY_HIDES_DETAIL / CONTROL_FAILED per probe. Read the third and fourth:
+    SUMMARY_HIDES_DETAIL means the boolean stayed clean while the report said otherwise, and
+    monitoring reads booleans; CONTROL_FAILED means the surface was ALREADY unhappy before the
+    corruption, which is a finding about your store rather than about the check.
+
+    On its first run against our own 450-record decision store it returned three CONTROL_FAILEDs and
+    the reason was worth having: receipts enabled, chain empty, nothing covered by a write receipt."""
+    return _MEM.audit_the_audits()
+
+
+@mcp.tool()
 def identifier_contract() -> dict:
     """WHAT ARE THIS STORE'S IDENTIFIERS, and which folds over them would LOSE information?
 
