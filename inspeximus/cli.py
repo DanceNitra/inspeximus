@@ -386,7 +386,38 @@ def _witness_cmd(a) -> int:
     return 2
 
 
+def _survive_a_narrow_console() -> None:
+    """A console that cannot render a key must never turn a SUCCESSFUL write into a failure.
+
+    Measured 2026-08-16 on a cp1250 console, which is the Windows default here:
+
+        inspeximus remember "a value" --key "sedácia"     # the accented key in NFD form
+        -> UnicodeEncodeError: 'charmap' codec can't encode character '\\u0301'
+        -> rc 1 ... and the record IS on disk
+
+    The write had already succeeded; the crash was in the line PRINTING the confirmation. So the
+    user sees a traceback and a non-zero exit, concludes the write failed, and writes it again --
+    producing exactly the duplicate that supersession exists to prevent. A successful write
+    reported as a failure is worse than a refusal, because a refusal is honest.
+
+    There are 153 print() calls in this file and `--json` uses ensure_ascii=False, so any of them
+    can carry a character the console cannot encode. Guarding them one at a time is the shape that
+    leaves the 153rd unguarded; this is the choke point.
+
+    `backslashreplace`, not `replace`: `replace` substitutes `?` and destroys the very identifier
+    the operator needs to see, silently. `backslashreplace` prints `sedaÌ\\u0301cia` -- ugly, lossless,
+    and never a crash. The bytes on disk are UTF-8 either way; only the terminal echo changes.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            if (getattr(stream, "encoding", "") or "").lower() not in ("utf-8", "utf8"):
+                stream.reconfigure(errors="backslashreplace")
+        except Exception:
+            pass          # a redirected or exotic stream is not worth failing a command over
+
+
 def main(argv=None):
+    _survive_a_narrow_console()
     ap = argparse.ArgumentParser(prog="inspeximus", description="inspeximus — the self-correcting memory layer (CLI).")
     ap.add_argument("--path", help="store file (default: $INSPEXIMUS_PATH or ./inspeximus_memory.json)")
     ap.add_argument("--json", action="store_true", help="emit JSON")

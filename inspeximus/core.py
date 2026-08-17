@@ -984,7 +984,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.12.1"
+__version__ = "2.13.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2732,6 +2732,81 @@ class Inspeximus:
                 # store certified an integrity it could no longer demonstrate.
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
         return r
+
+    def identifier_contract(self) -> dict:
+        """What are this store's identifiers, and which folds over them would LOSE information?
+
+        THE QUESTION THIS ANSWERS is the one a store outlives its writer to face. Someone holds the
+        file six months on, the version that wrote it is gone and the maintainer may be too. They
+        cannot run anyone's conformance suite; whatever deformation happened is already in the
+        bytes. What they need to decide is narrower and harder: which identifiers are canonical,
+        which folds were DELIBERATE, and which are INVERTIBLE.
+
+        Detection-time taxonomies do not help there. At remediation time the partition that matters
+        is invertible versus collapsing: a deformation that is injective is a backfill job, while a
+        fold that maps two distinct keys onto one cannot be undone, because you cannot un-merge.
+
+        Measured on our own decision store before this existed: 11,438 records, zero fields
+        declaring any policy, and an eight-character prefix fold would have merged 594 groups and
+        lost 1,365 keys. A reader had no way to tell a deliberate case-insensitive lookup from an
+        accidental casefold, so `declared` below is the writer SAYING which it is -- and `measured`
+        is the store's own keys answering what each fold would cost, independently of the claim.
+
+        HONEST SCOPE. `declared` is a statement by the code that is running now; it cannot speak for
+        the version that wrote a record last year. `measured` covers only the keys present -- a fold
+        that already collapsed two keys is invisible here, because the evidence of the second one is
+        gone. That asymmetry is the reason to emit the declaration at write time rather than infer
+        it at read time, and it is the open half of this.
+        """
+        import unicodedata as _ud
+        rows = self._tenant_rows()
+        keys = [r.get("key") for r in rows if r.get("key")]
+
+        folds = {
+            "unicode_nfc": lambda k: _ud.normalize("NFC", k),
+            "casefold": lambda k: k.casefold(),
+            "strip_whitespace": lambda k: k.strip(),
+            "prefix_8": lambda k: k[:8],
+            "prefix_12": lambda k: k[:12],
+        }
+        measured = {}
+        for name, fn in folds.items():
+            groups: dict = {}
+            for k in keys:
+                groups.setdefault(fn(k), []).append(k)
+            merging = {g: v for g, v in groups.items() if len({*v}) > 1}
+            lost = sum(len({*v}) - 1 for v in merging.values())
+            measured[name] = {
+                "groups_that_would_merge": len(merging),
+                "keys_that_would_be_lost": lost,
+                # INVERTIBLE means: applying this fold to this store's keys loses nothing, so if it
+                # were ever applied the original is recoverable. It is a property of the DATA, not
+                # of the fold -- the same fold is destructive on a different store.
+                "invertible_on_this_store": lost == 0,
+                "example": next(iter(sorted(merging.values(), key=len, reverse=True)), [])[:3],
+            }
+
+        non_ascii = [k for k in keys if any(ord(c) > 127 for c in k)]
+        return {
+            # WHAT THE WRITER PROMISES. Stated, so a reader does not have to infer it from data that
+            # cannot distinguish a policy from an accident.
+            "declared": {
+                "keys_stored": "byte-exact as supplied; no normalisation, casefolding or truncation",
+                "lookup": "exact string equality, case-sensitive",
+                "unicode_normalisation": None,
+                "declared_by_version": __version__,
+            },
+            "measured": measured,
+            "keys": len(keys),
+            "non_ascii_keys": len(non_ascii),
+            "mixed_normalisation": sum(1 for k in non_ascii if _ud.normalize("NFC", k) != k),
+            "limits": [
+                "`declared` describes the code running now, not the version that wrote any given "
+                "record. A store written by several versions can carry several contracts.",
+                "`measured` sees only surviving keys: a fold that already collapsed two of them "
+                "left no trace of the second, so absence of merging is not proof none occurred.",
+            ],
+        }
 
     def check_sources(self, resolver=None) -> dict:
         """Has the SOURCE each memory came from changed, or gone? Returns a report, never a boolean.
@@ -11788,6 +11863,10 @@ class _TenantView:
     def erasure_certificate(self, *a, **k):   return Inspeximus.erasure_certificate(self, *a, **k)
     def sleep(self, *a, **k):           return Inspeximus.sleep(self, *a, **k)
     def check_sources(self, *a, **k):  return Inspeximus.check_sources(self, *a, **k)
+    # Rebound rather than passed through: the report NAMES KEYS (in `example`, for the folds that would
+    # merge them), and a key is exactly the thing that must not cross a tenant boundary. `declared` is
+    # store-wide -- one writer, one policy -- but `measured` is a property of the rows in scope.
+    def identifier_contract(self, *a, **k):  return Inspeximus.identifier_contract(self, *a, **k)
     def remember(self, *a, **k):        return Inspeximus.remember(self, *a, **k)
     def history(self, *a, **k):             return Inspeximus.history(self, *a, **k)
     def provenance(self, *a, **k):          return Inspeximus.provenance(self, *a, **k)

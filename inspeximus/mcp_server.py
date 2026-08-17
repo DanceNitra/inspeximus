@@ -893,6 +893,27 @@ def governance_report(expected_pubkey: str = "") -> dict:
 
 
 @mcp.tool()
+def identifier_contract() -> dict:
+    """WHAT ARE THIS STORE'S IDENTIFIERS, and which folds over them would LOSE information?
+
+    The question a store outlives its writer to face: someone holds the file months later, the version
+    that wrote it is gone, and whatever deformation happened is already in the bytes. They cannot run a
+    conformance suite. What they need is narrower — which keys are canonical, which folds were DELIBERATE,
+    and which are INVERTIBLE. At remediation time that last distinction is the one that matters: an
+    injective deformation is a backfill job, a fold that maps two keys onto one cannot be undone.
+
+    Returns `declared` (what the running writer promises — byte-exact, case-sensitive, no normalisation)
+    beside `measured` (what each candidate fold would actually cost on THIS store's keys, independently
+    of the claim). Measured on our own decision store: an 8-character prefix fold would merge 594 groups
+    and lose 1,365 keys, and no field declared any policy at all.
+
+    HONEST SCOPE, in `limits`: `declared` speaks for the code running now, not for the version that wrote
+    a record last year; and `measured` sees only surviving keys, so a fold that ALREADY collapsed two of
+    them left no trace of the second. Absence of merging is not proof that none occurred."""
+    return _MEM.identifier_contract()
+
+
+@mcp.tool()
 def check_sources() -> dict:
     """CAUSAL staleness: has the SOURCE each memory came from CHANGED, or gone? Returns a report, not a boolean.
 

@@ -89,7 +89,7 @@ not the benchmark being kind to us.
 inspeximus install --ide claude     # also: cursor, windsurf, codex, cline
 ```
 
-That wires an MCP server with **68 tools** and three hooks. From the next session on, your agent starts
+That wires an MCP server with **69 tools** and three hooks. From the next session on, your agent starts
 knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 
 - **SessionStart** injects the decisions still in force

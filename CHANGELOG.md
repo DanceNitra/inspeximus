@@ -3,6 +3,103 @@
 All notable changes to inspeximus (`inspeximus`). Format loosely follows Keep a Changelog; versioning is semver
 (MAJOR = stable/breaking, MINOR = features, PATCH = fixes).
 
+## 2.13.0 - UPGRADE IF YOU RUN THE CLI ON WINDOWS OR ANY NON-UTF-8 TERMINAL: a successful write exited 1
+
+### UPGRADE IF YOU RUN THE CLI ON WINDOWS OR IN ANY NON-UTF-8 TERMINAL
+
+`inspeximus remember "..." --key "sedácia"` **stored the record and then exited 1**, on this
+machine's default cp1250 console and on any `ascii` terminal:
+
+```
+UnicodeEncodeError: 'charmap' codec can't encode character '́'
+```
+
+The write had already succeeded. The crash was in the line printing the confirmation — one of 153
+`print()` calls with no stdout reconfiguration anywhere, and `--json` dumps with
+`ensure_ascii=False` in six places, so the machine-readable surface carried the same characters. An operator sees
+a traceback and a non-zero exit, concludes the write failed, and writes it again: the exact
+duplicate that supersession exists to prevent. **A successful write reported as a failure is worse
+than a refusal, because a refusal is honest about what happened.**
+
+Fixed by reconfiguring stdout/stderr with `errors="backslashreplace"` — not `"replace"`, which
+would print `sed?cia` and destroy the identifier the operator has to read, silently, which is the
+same defect one layer down. The key now prints as `sedácia`: ugly and reversible. **Bytes on
+disk are untouched** either way, and encodable output is byte-identical to before.
+
+Why it survived: our own probes forced `PYTHONUTF8=1` into the child environment. That is not test
+hygiene, it is the mitigation — the suite applied the fix and then measured with the fix applied.
+Found only when a review ran the probe without the forcing.
+
+**One command had already worked this out and fixed it locally.** `recall-iterative` carries the
+comment *"ASCII-only output: this prints to a Windows console that is not UTF-8 (cp1250 here), where
+a non-ASCII character can raise UnicodeEncodeError and take down the command that produced it"* — a
+correct diagnosis of the whole class, applied to one caller out of 153. The knowledge was in the
+repository the entire time and did not generalise, which is the more useful half of this entry.
+
+**And it caught our own release tooling while this entry was being written.** `tools/release_notes.py`
+raised the identical `UnicodeEncodeError` printing these notes — on the very character the example
+below uses — so a release could be blocked by its own release notes rendering. It now IMPORTS the
+CLI's guard rather than carrying a second copy of it: two copies of one decision is how the first one
+stops getting fixed.
+
+### `identifier_contract()` — new
+
+What a store says about its own keys, for the party who has no one left to ask. Someone holds the
+file six months on, the writing version is gone and the maintainer may be too; whatever deformation
+happened is already in the bytes and no conformance suite can be run against a system that no longer
+exists. At that point the useful partition is not detection's. It is **invertible versus
+collapsing**: an injective deformation is a backfill job, while a fold mapping two distinct keys
+onto one cannot be undone, because you cannot un-merge.
+
+```python
+import os, tempfile
+from inspeximus import Inspeximus
+
+m = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "m.json"))
+for k in ("session-a1b2c3d4-login", "session-a1b2c3d4-logout", "Acme-Corp", "acme-corp"):
+    m.remember(f"note for {k}", key=k, object="x")
+
+c = m.identifier_contract()
+print(c["declared"]["lookup"], "|", c["measured"]["prefix_8"]["keys_that_would_be_lost"],
+      c["measured"]["prefix_8"]["invertible_on_this_store"], "|",
+      c["measured"]["casefold"]["example"])
+# -> exact string equality, case-sensitive | 1 False | ['Acme-Corp', 'acme-corp']
+```
+
+`declared` is what the running writer promises (byte-exact, case-sensitive, no normalisation),
+stated rather than left to inference, because **data cannot distinguish a deliberate policy from an
+accident** — a case-insensitive lookup and a casefolding bug leave the same rows. `measured` is what
+each fold would actually cost on this store's keys, so the claim and the evidence sit side by side.
+Folds measured: `unicode_nfc`, `casefold`, `strip_whitespace`, `prefix_8`, `prefix_12`.
+
+Measured on two of our own live stores, 2026-08-17:
+
+| store | keys | `prefix_8` would lose | `prefix_12` would lose | `casefold` |
+|---|---|---|---|---|
+| `agora/.inspeximus/coding_memory.json` | 11,501 | **1,373** (599 groups) | 684 (36 groups) | 0, invertible |
+| `~/.inspeximus/mcp_memory.json` (decisions) | 434 | **412** (1 group) | 313 (62 groups) | 0, invertible |
+
+Read the second row before quoting the first: those keys are **file paths**, so they share long
+prefixes and an 8-character fold puts 412 of 434 into a single bucket. That is the point rather than
+a curiosity — the fold's cost is a property of the DATA, not of the fold, and the same eight
+characters are harmless on a store of UUIDs. Which is why the method measures instead of asserting.
+Neither store declares an identifier policy in any field.
+
+Available on the library, over MCP, and scoped per tenant (the report names keys, and a key is
+exactly what must not cross a tenant boundary).
+
+Two limits ship inside the return value rather than in prose: `declared` speaks for the code running
+now, not for the version that wrote a record last year; and `measured` sees only **surviving** keys,
+so a fold that already collapsed two of them left no trace of the second. Absence of merging is not
+proof that none occurred.
+
+### The guard caught the author, twenty minutes after he wrote it
+
+`identifier_contract` was added to `Inspeximus` and the first tenant test raised: *"not classified
+for tenant views ... could read or delete another tenant's records."* That is the fail-closed
+classification added in 1.90.0 doing its job on the person who added it, which is the only test of
+such a guard that counts. It was rebound with a comment saying why, not waved through.
+
 ## 2.12.1 - UPGRADE IF YOU USE THE MCP SERVER. 2.11.0's window was reachable only from Python.
 
 `witness(bind_sources=True)` — the whole VERIFY → USE window, announced the day it shipped — reached

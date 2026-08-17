@@ -304,4 +304,13 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    # This tool hit the exact defect 2.13.0 fixes in the CLI, on the character 2.13.0's own changelog
+    # entry uses as its example: printing the notes raised UnicodeEncodeError on a cp1250 console and
+    # exited 1, so a release could be blocked by its own release notes rendering. The guard is
+    # IMPORTED rather than re-implemented -- two copies of one decision is how the first one stops
+    # getting fixed.
+    import sys, os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from inspeximus.cli import _survive_a_narrow_console
+    _survive_a_narrow_console()
     raise SystemExit(main())
