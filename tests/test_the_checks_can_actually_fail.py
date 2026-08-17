@@ -126,9 +126,125 @@ def test_an_empty_store_reports_nothing_rather_than_a_clean_bill():
 
 
 def test_it_states_how_much_of_the_surface_it_does_not_cover():
-    """Five probes against 24 surfaces. Reporting the covered ones without the denominator is the
-    shape of every overclaim this repository has had to correct."""
+    """Six probes over three surfaces, against 24. Reporting the covered ones without the denominator
+    is the shape of every overclaim this repository has had to correct -- and it happened FROM this
+    return value: a handoff read the probe count as a surface count and wrote "covers 5 of 24
+    surfaces" when the tool's own limits string said 2. Hence `surfaces` below, where the numbers are
+    named individually and cannot be mistaken for one another."""
     r = _store().audit_the_audits()
     assert r["surfaces_available"] >= 20
     assert any("UNTESTED" in x for x in r["limits"])
     assert len(r["surfaces_covered"]) < r["surfaces_available"]
+
+
+def test_the_coverage_numbers_cannot_disagree_with_each_other():
+    """The previous shape returned three counts that all read like coverage -- a NOTICED-only list, a
+    probed count buried in a prose limit, and the total -- and something downstream duly conflated
+    two of them. Probed and unprobed must partition the available surfaces exactly."""
+    s = _store().audit_the_audits()["surfaces"]
+    assert s["probed"] + len(s["unprobed"]) == s["available"]
+    assert s["probed"] >= 3, "verify_writes, check_sources and index_coherence all have probes"
+    for name in s["demonstrated_on_your_store"]:
+        assert name not in s["unprobed"]
+
+
+# ───────────────────────────────────── unreachable-here is not unhealthy, and not a clean bill
+def test_a_store_that_cannot_reach_a_surface_is_not_reported_as_unhappy():
+    """Measured on our own 451-record decision store, which has receipts off and nothing re-checkable:
+    all THREE of its CONTROL_FAILEDs were this. "Already reported a problem" reads as *your data is
+    unhappy* when the truth was *this question cannot be asked here* -- so the precondition is asked
+    first, and the answer is moved to a fixture where it can be answered."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), embed=False, receipts=False)
+    ix.remember("a", key="a", object="a")
+    ix.remember("b", key="b", object="b")
+    ix.flush()
+    out = ix.audit_the_audits()
+    unreach = {p["probe"]: p for p in out["not_reachable_here"]}
+    assert "value_tampered_after_write" in unreach, out["probes"]
+    assert unreach["value_tampered_after_write"]["on_a_fixture"] == "NOTICED", \
+        "the surface works; only this store cannot demonstrate it"
+    assert not out["control_failed"], \
+        "a store that merely lacks receipts has no health finding to report"
+    assert "verify_writes" in out["surfaces"]["working_but_unreachable_here"]
+    assert "verify_writes" not in out["surfaces"]["demonstrated_on_your_store"], \
+        "a fixture pass must never be reported as demonstrated on the caller's data"
+
+
+def test_a_surface_blind_even_on_a_fixture_is_the_loudest_verdict():
+    """MUST-FAIL CONTROL. The whole point of the fixture tier is that it can convict the LIBRARY. If a
+    blinded surface can hide behind "your store cannot reach this", the tier has turned every
+    unreachable surface into an excuse -- which is this feature's own failure mode, one level up."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), embed=False, receipts=False)
+    ix.remember("a", key="a", object="a")
+    ix.flush()
+
+    class Blinded(type(ix)):
+        def verify_writes(self, *a, **k):
+            return True, []                      # clean on the fixture too
+
+    out = Blinded(path=str(ix.path), embed=False, receipts=False).audit_the_audits()
+    blind = {b["probe"] for b in out["blind_even_on_a_fixture"]}
+    assert "value_tampered_after_write" in blind, out["probes"]
+    assert "verify_writes" in out["surfaces"]["blind_even_on_a_fixture"]
+    assert "LIBRARY" in [p for p in out["probes"]
+                         if p["probe"] == "value_tampered_after_write"][0]["read_this_as"]
+
+
+def test_a_real_health_problem_is_not_laundered_into_a_coverage_gap():
+    """CONTROL ON THE PRECONDITION ITSELF. A store whose sources have genuinely DRIFTED must still
+    come back CONTROL_FAILED -- if a precondition can absorb a real finding and re-emit it as "this
+    question cannot be asked here", it is a check that cannot fail wearing a new name. The first
+    version of `_needs_bindable_source` asked whether anything was *bindable* (107 records on our
+    store) rather than whether the surface had *checked* anything (0), so it passed the precondition
+    and CONTROL_FAILED anyway: a criterion narrower than its property."""
+    d = tempfile.mkdtemp()
+    ix = Inspeximus(path=os.path.join(d, "s.json"), embed=False, receipts=True)
+    src = os.path.join(d, "doc.txt")
+    with open(src, "wb") as fh:
+        fh.write(b"original bytes")
+    ix.remember("bound", key="bound", object="x",
+                source={"doc": src,
+                        "observed_sha256": hashlib.sha256(b"original bytes").hexdigest()})
+    ix.remember("beta", key="b", object="b")
+    ix.flush()
+    with open(src, "wb") as fh:                  # drifted BEFORE the audit runs
+        fh.write(b"DRIFTED ALREADY")
+    out = ix.audit_the_audits()
+    row = [p for p in out["probes"] if p["probe"] == "every_source_stripped"][0]
+    assert row["outcome"] == "CONTROL_FAILED", row
+    assert row["probe"] not in {p["probe"] for p in out["not_reachable_here"]}
+
+
+# ───────────────────────────────────── the harness must not be the thing that blinds a surface
+def test_the_coherence_probe_is_not_defeated_by_the_harness_own_embedder():
+    """`_open_copy` deliberately does NOT inherit the caller's embedder -- it may be a network call,
+    and one per record is a stall. The consequence: with no embedder there is no index to fall behind,
+    so a naive probe of `index_coherence` reports the SURFACE as blind when the blindness belongs to
+    the harness. That is why this probe declares `_needs_embedder` and runs on a fixture. A reader
+    written for this surface sat unwired in the file for a release; wiring it without this would have
+    manufactured a library defect."""
+    out = _store().audit_the_audits()
+    row = [p for p in out["probes"] if p["surface"] == "index_coherence"]
+    assert row, "index_coherence has no probe at all"
+    row = row[0]
+    assert row["outcome"] != "MISSED", \
+        "the harness disabled the embedder and then blamed the surface for it"
+    assert row["tier"] == "fixture" and row["on_a_fixture"] == "NOTICED", row
+
+
+def test_embed_false_and_embed_none_mean_the_same_thing():
+    """THE CLASS, not the instance. `embed=None` is the parameter default but `embed=False` is what
+    this suite and the audit's copy-opener pass, and the class read the two differently: six sites
+    truthily, four by identity. `index_coherence` therefore reported `embedder_configured: true` and
+    `coherent: false` on a store deliberately opened WITHOUT an embedder -- an index convicted of
+    lagging when none exists -- the load-path realign guard called `False(text)` and wrote `vec=None`
+    over every persisted vector, and `reembed()` said `failed: N` instead of naming the real cause."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), embed=False)
+    ix.remember("beta", key="b", object="b")
+    ix.flush()
+    assert ix.embed is None, "embed=False must normalise to the one sentinel for 'no embedder'"
+    c = ix.index_coherence()
+    assert c["embedder_configured"] is False
+    assert c["coherent"] is True and c["missing_vecs"] == 0, \
+        "a store with no embedder has no index that could be behind it"
+    assert ix.reembed().get("error") == "no embedder configured"

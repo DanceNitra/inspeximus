@@ -1398,9 +1398,28 @@ class Inspeximus:
                 self.path.parent.mkdir(parents=True, exist_ok=True)
             except OSError:
                 pass                     # unwritable parent: _save records it and flush() raises
-        self.embed = embed
-        self.embed_query = embed_query        # asymmetric query embedder (e.g. nomic search_query:); None -> use self.embed
-        self.embed_id = embed_id              # opaque fingerprint of the embed recipe (model+prefix); guards persisted vecs
+        # ONE sentinel for "no embedder", because this class was reading two. The parameter defaults
+        # to None, but `embed=False` is what the test suite and `audit_the_audits`'s own copy-opener
+        # pass, and both are falsy -- so six sites read it truthily (`if self.embed:`, correct) while
+        # four read it by identity (`self.embed is not None`, which calls False an embedder). The
+        # divergence was not cosmetic:
+        #   * `index_coherence` reported `embedder_configured: true` and `coherent: false` on a store
+        #     deliberately opened WITHOUT one -- an index blamed for lagging when none exists.
+        #   * the load-path realign guard called `False(text)`, caught the TypeError and wrote
+        #     `vec = None`, DROPPING every persisted vector instead of skipping the realign.
+        #   * `reembed()` returned `failed: N` rather than `error: no embedder configured`.
+        # Coercing here fixes the class rather than the four instances, and keeps the two readings
+        # from drifting apart again. An embedder is a callable and therefore always truthy, so no
+        # legitimate value is lost.
+        self.embed = embed or None
+        self.embed_query = embed_query or None  # asymmetric query embedder (e.g. nomic search_query:); None -> use self.embed
+        # Same coercion, same reason: the save path guards the recipe sidecar with `embed_id is not
+        # None` and its own comment explains why a BLANK recipe must not be written ("blanking it here
+        # would make the next semantic open see ''->recipe and realign for nothing") -- `embed_id=""` is
+        # falsy and slips past an identity check, overwriting a real recipe with empty and causing
+        # exactly the pointless realign the comment warns about. Found by re-auditing the class after
+        # fixing `embed`, which is why that rule is a rule.
+        self.embed_id = embed_id or None       # opaque fingerprint of the embed recipe (model+prefix); guards persisted vecs
         # OPT-IN vector persistence (default False -> legacy: vecs are a RAM-only cache, STRIPPED on save
         # to keep the file small and dodge the frozen-world GIL stall on big stores). Set True for a SMALL
         # store (e.g. the Claude Code coding memory, a few hundred items) whose process is short-lived and
@@ -2933,27 +2952,94 @@ class Inspeximus:
             r = store.index_coherence()
             return bool(r.get("coherent", True)), {"missing_vecs": r.get("missing_vecs")}
 
-        # (name, corrupt(path, rows) -> rows|None, surface name, reader, what it should catch)
+        # ── PRECONDITIONS: does THIS store have the shape the surface needs to be exercised at all?
+        # Without these, a store that simply lacks receipts reports its receipt checks as
+        # CONTROL_FAILED -- which reads as "your data is unhappy" when the truth is "this question
+        # cannot be asked here". Measured on our own 451-record decision store: all three of its
+        # CONTROL_FAILEDs were this, and none of them was a health finding.
+        def _needs_receipt_chain(store):
+            if not getattr(store, "receipts_enabled", False):
+                return False, ("this store was not opened with receipts, so no write chain exists to "
+                               "tamper with")
+            if not getattr(store, "_receipts", None):
+                return False, ("receipts are enabled but the chain is EMPTY, so nothing is sealed to "
+                               "compare a tampered record against")
+            return True, ""
+
+        def _needs_bindable_source(store):
+            """Did `check_sources` actually CHECK anything -- not merely find something bindable.
+
+            The first version of this asked `coverage.bindable`, which counts records carrying a
+            locator: 107 of them on our own store, so the precondition passed and the probe went
+            straight to CONTROL_FAILED anyway, because none of the 107 carried a re-checkable
+            FINGERPRINT and the surface had verified nothing. A criterion narrower than the property
+            it stands for reports the wrong thing confidently, which is the defect this whole method
+            exists to find -- committed here, in the fix for it.
+            """
+            r = store.check_sources()
+            # `checked` is the whole criterion, and it must not be widened "for safety". A real health
+            # finding on the caller's data must NOT be laundered into a coverage gap -- but DRIFTED and
+            # ORPHANED are only ever counted for records the surface actually checked, so `checked > 0`
+            # already subsumes them and an explicit `if DRIFTED or ORPHANED` early-return here could
+            # not fire on any store that can be constructed (measured: both arrive with checked=1).
+            # It was written, and then deleted, because a guard that cannot fire is the exact thing
+            # this method exists to find and keeping it would have read as protection.
+            if not (r.get("checked") or 0):
+                return False, ("no record here carries a re-checkable source fingerprint, so "
+                               "`check_sources` verified nothing before any corruption -- stripping "
+                               "sources removes nothing it was reading")
+            return True, ""
+
+        def _needs_embedder(store):
+            # Truthiness, not identity -- the whole reason `self.embed` is coerced in __init__.
+            if not getattr(store, "embed", None):
+                return False, ("no embedder is configured, so there is no derived index that could fall "
+                               "behind the store")
+            if not getattr(store, "_persist_vectors", False):
+                return False, ("vectors are a RAM-only cache on this store (persist_vectors=False), so "
+                               "there is no persisted index in the file to fall behind it")
+            return True, ""
+
+        # (name, surface, reader, corrupt, what it should catch, precondition, fixture shape)
         catalogue = [
             ("value_tampered_after_write", "verify_writes", _writes,
              lambda rows: ([dict(r, text="TAMPERED BY audit_the_audits") for r in rows[:1]] + rows[1:])
              if rows else None,
-             "a record's text edited in the file after its write receipt was sealed"),
+             "a record's text edited in the file after its write receipt was sealed",
+             _needs_receipt_chain, {"receipts": True}),
             ("key_tampered_after_write", "verify_writes", _writes,
              lambda rows: ([dict(r, key=(r.get("key") or "k") + "-TAMPERED") for r in rows[:1]]
                            + rows[1:]) if rows else None,
-             "a record's key edited in the file after its write receipt was sealed"),
+             "a record's key edited in the file after its write receipt was sealed",
+             _needs_receipt_chain, {"receipts": True}),
             ("source_bytes_moved", "check_sources", _sources_drift, "MUTATE_SOURCE",
-             "the bytes behind a recorded locator changed after capture"),
+             "the bytes behind a recorded locator changed after capture", None, None),
             ("source_deleted", "check_sources", _sources_drift, "DELETE_SOURCE",
-             "the locator no longer resolves at all"),
+             "the locator no longer resolves at all", None, None),
             ("every_source_stripped", "check_sources", _sources_ok,
              lambda rows: [{k: v for k, v in r.items() if k != "source"} for r in rows] or None,
-             "no record carries a source at all -- the 261,673-record instance"),
+             "no record carries a source at all -- the 261,673-record instance",
+             _needs_bindable_source, {"source": True}),
+            ("index_behind_store", "index_coherence", _coherent,
+             lambda rows: [{k: v for k, v in r.items() if k != "vec"} for r in rows] or None,
+             "every persisted vector dropped while an embedder is configured -- semantic recall "
+             "ranking against an index that no longer matches the store",
+             _needs_embedder, {"embedder": True}),
         ]
 
-        def _open_copy(path):
-            """Open the copy the way the LIVE store was opened.
+        def _stub_embed(text):
+            """A deterministic, offline stand-in for an embedder.
+
+            Only ever used on a FIXTURE, and only to make `embed is not None` true so that
+            `index_coherence` has an index to be behind. It is not the caller's recipe and no probe
+            here claims anything about their embedding quality -- what is under test is whether the
+            surface reacts when the index stops matching the store.
+            """
+            import hashlib as _h
+            return [b / 255.0 for b in _h.sha256(text.encode("utf-8")).digest()[:16]]
+
+        def _open_copy(path, shape=None):
+            """Open the copy the way the LIVE store was opened, unless a fixture asks otherwise.
 
             The first version re-serialised `self.items` into a bare file and opened it with
             defaults. Four of five probes came back CONTROL_FAILED, correctly: without
@@ -2961,9 +3047,52 @@ class Inspeximus:
             "there is nothing to verify -- which is not the same as verified" before any corruption
             is applied. A copy that does not inherit its original's construction is a different
             store, and measuring it tells you nothing about the one you have.
+
+            `embed` is deliberately NOT inherited: the caller's embedder may be a network call, and
+            an audit that fires one per record is a stall, not an audit. That has a consequence worth
+            stating rather than discovering -- with no embedder, `index_coherence` sees no index and
+            cannot fall behind, so a naive probe of it would report the SURFACE as blind when the
+            blindness belongs to this harness. That is why the coherence probe declares
+            `_needs_embedder` and runs on a fixture carrying `_stub_embed` instead.
             """
-            return type(self)(path=path, embed=False,
-                              receipts=bool(getattr(self, "receipts_enabled", False)))
+            shape = shape or {}
+            kw = {}
+            if shape.get("embedder"):
+                # persist_vectors, or the index lives in RAM only and "the index fell behind the
+                # file" is not a state this store can be in -- the probe would corrupt nothing.
+                kw = {"embed": _stub_embed, "persist_vectors": True, "embed_id": "audit-stub-v1"}
+            return type(self)(
+                path=path,
+                receipts=bool(shape["receipts"]) if "receipts" in shape
+                else bool(getattr(self, "receipts_enabled", False)),
+                **({"embed": None} if not kw else kw))
+
+        def _build_fixture(work, shape):
+            """The smallest store in which a surface's precondition HOLDS.
+
+            The point is to separate two things `CONTROL_FAILED` used to say at once: *your store is
+            already unhappy* and *your store cannot ask this question*. Only the first is a finding
+            about your data. For the second, the question is still worth answering -- just somewhere
+            the precondition is true -- and the answer there is a fact about the LIBRARY: a surface
+            that stays clean on a store built to trigger it is blind, and that is the loudest thing
+            this method can report.
+            """
+            import hashlib as _h
+            path = os.path.join(work, "fixture.json")
+            fx = _open_copy(path, shape)
+            src = None
+            if shape.get("source"):
+                src = os.path.join(work, "fixture_source.txt")
+                with open(src, "wb") as fh:
+                    fh.write(b"the bytes the fixture record was derived from")
+                fx.remember("a fixture record whose source this probe controls",
+                            key="__fixture_source__", object="fixture",
+                            source={"doc": src, "observed_sha256": _h.sha256(
+                                b"the bytes the fixture record was derived from").hexdigest()})
+            fx.remember("a fixture record", key="__fixture__", object="fixture")
+            fx.remember("a second fixture record", key="__fixture2__", object="fixture")
+            fx.flush()
+            return path, src
 
         live_rows = _json.loads(_json.dumps(self.items, default=str))
         results, limits = [], []
@@ -2971,10 +3100,19 @@ class Inspeximus:
             limits.append("this store is EMPTY, so every probe below is unreachable and the run "
                           "reports nothing rather than a clean bill -- which is itself the first "
                           "defect in the list above.")
-            return {"probes": [], "noticed": 0, "missed": [], "control_failed": [],
-                    "surfaces_covered": 0, "surfaces_available": len(available), "limits": limits}
+            return {"probes": [], "noticed": 0, "missed": [], "summary_hides_detail": [],
+                    "control_failed": [], "not_reachable_here": [], "blind_even_on_a_fixture": [],
+                    "surfaces": {"available": len(available), "probed": 0, "unprobed": available,
+                                 "demonstrated_on_your_store": [],
+                                 "working_but_unreachable_here": [],
+                                 "blind_even_on_a_fixture": [], "unanswerable_here": []},
+                    "surfaces_covered": [], "surfaces_available": len(available), "limits": limits}
 
-        for name, surface, read, mutate, catches in (probes or catalogue):
+        for entry in (probes or catalogue):
+            name, surface, read, mutate, catches = entry[:5]
+            needs = entry[5] if len(entry) > 5 else None
+            fixture_shape = entry[6] if len(entry) > 6 else None
+
             work = _tempfile.mkdtemp()
             path = os.path.join(work, "copy.json")
             docs = os.path.join(work, "docs")
@@ -2990,6 +3128,38 @@ class Inspeximus:
                     pass
             path = os.path.join(work, os.path.basename(str(self.path)))
             rows = _copy.deepcopy(live_rows)
+
+            # ── TIER. Ask the precondition BEFORE corrupting anything, on the caller's own copy.
+            # A precondition that does not hold is not a health finding and must not be dressed as
+            # one; it means the question belongs on a store where it CAN be asked, and the answer
+            # there is about the library rather than about this store.
+            tier, tier_why, shape, open_fn = "your store", "", None, _open_copy
+            if needs is not None:
+                try:
+                    reachable, why_not = needs(_open_copy(path))
+                except Exception as ex:                                     # noqa: BLE001
+                    reachable, why_not = False, f"the precondition raised {type(ex).__name__}"
+                if not reachable:
+                    if not fixture_shape:
+                        results.append({
+                            "probe": name, "surface": surface, "catches": catches,
+                            "outcome": "NOT_REACHABLE_HERE", "why": why_not,
+                            "on_a_fixture": None,
+                            "read_this_as": "a gap in what YOUR store can demonstrate, not a "
+                                            "defect in the surface and not a clean bill"})
+                        continue
+                    tier, tier_why, shape = "fixture", why_not, fixture_shape
+                    fwork = _tempfile.mkdtemp()
+                    try:
+                        path, fsrc = _build_fixture(fwork, shape)
+                    except Exception as ex:                                # noqa: BLE001
+                        results.append({
+                            "probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                            "why": f"the fixture for this surface could not be built: "
+                                   f"{type(ex).__name__}: {ex}"})
+                        continue
+                    rows = _json.loads(open(path, encoding="utf-8").read())
+                    open_fn = lambda p, _s=shape: _open_copy(p, _s)         # noqa: E731
             # Source-bearing probes need a source that EXISTS locally, so they build one rather than
             # depending on the caller's filesystem: a probe that silently tests nothing because the
             # locator was a URL is the defect, not a limitation.
@@ -2997,7 +3167,12 @@ class Inspeximus:
             with open(doc, "wb") as fh:
                 fh.write(b"the bytes this record was derived from")
             needs_source = mutate in ("MUTATE_SOURCE", "DELETE_SOURCE")
-            if not needs_source:
+            if tier == "fixture":
+                # `_build_fixture` already wrote this store through the API, sidecars and all.
+                # Re-serialising `rows` over it would hand the probe a file the library did not
+                # write -- the defect the seed branch below exists to avoid.
+                pass
+            elif not needs_source:
                 with open(path, "w", encoding="utf-8") as fh:
                     _json.dump(rows, fh, default=str)
             else:
@@ -3017,16 +3192,20 @@ class Inspeximus:
                                 b"the bytes this record was derived from").hexdigest()})
                 seed.flush()
 
+            where = "the clean copy" if tier == "your store" else "the clean FIXTURE"
             try:
-                before_clean, before_detail = read(_open_copy(path))
+                before_clean, before_detail = read(open_fn(path))
             except Exception as ex:                                        # noqa: BLE001
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "why": f"the surface raised on the clean copy: {type(ex).__name__}"})
+                                "tier": tier,
+                                "why": f"the surface raised on {where}: {type(ex).__name__}"})
                 continue
             if not before_clean:
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "why": "already reported a problem BEFORE the corruption, so its "
-                                       "reaction proves nothing", "detail": before_detail})
+                                "tier": tier,
+                                "why": f"already reported a problem on {where}, BEFORE the "
+                                       f"corruption, so its reaction proves nothing",
+                                "detail": before_detail})
                 continue
 
             if mutate == "MUTATE_SOURCE":
@@ -3045,7 +3224,7 @@ class Inspeximus:
                     _json.dump(changed, fh, default=str)
 
             try:
-                after_clean, after_detail = read(_open_copy(path))
+                after_clean, after_detail = read(open_fn(path))
             except Exception:                                              # noqa: BLE001
                 after_clean, after_detail = False, {"raised": True}
             # THREE outcomes, not two, and the third came from running this against ourselves.
@@ -3063,30 +3242,78 @@ class Inspeximus:
                     hidden = str(after_detail["problem"])[:200]
                 elif after_detail.get("limits"):
                     hidden = str(after_detail["limits"])[:200]
-            outcome = ("NOTICED" if not after_clean
+            verdict = ("NOTICED" if not after_clean
                        else "SUMMARY_HIDES_DETAIL" if hidden else "MISSED")
-            row = {"probe": name, "surface": surface, "catches": catches, "outcome": outcome,
-                   "clean_before": True, "clean_after": bool(after_clean)}
+            if tier == "your store":
+                row = {"probe": name, "surface": surface, "catches": catches, "outcome": verdict,
+                       "tier": tier, "clean_before": True, "clean_after": bool(after_clean)}
+            else:
+                # The surface could not be exercised on the caller's data, so the OUTCOME is about
+                # their store (a coverage gap) and the fixture verdict is about the LIBRARY. Keeping
+                # them in one field would have merged a question nobody could ask with an answer
+                # nobody checked.
+                row = {"probe": name, "surface": surface, "catches": catches,
+                       "outcome": "NOT_REACHABLE_HERE", "tier": tier, "why": tier_why,
+                       "on_a_fixture": verdict,
+                       "read_this_as": (
+                           "the surface WORKS -- your store simply cannot demonstrate it"
+                           if verdict == "NOTICED" else
+                           "the surface stayed clean on a store built to trigger it: a defect in "
+                           "THIS LIBRARY, not in your data"
+                           if verdict == "MISSED" else
+                           "on a store built to trigger it the boolean stayed clean while the "
+                           "report did not; monitoring reads booleans")}
             if hidden:
                 row["the_boolean_said_clean_but"] = hidden
-            elif outcome == "MISSED":
+            elif verdict == "MISSED":
                 row["detail"] = after_detail
             results.append(row)
 
-        missed = [r for r in results if r["outcome"] == "MISSED"]
-        hides = [r for r in results if r["outcome"] == "SUMMARY_HIDES_DETAIL"]
-        cfail = [r for r in results if r["outcome"] == "CONTROL_FAILED"]
+        def _sel(*outcomes):
+            return [r for r in results if r["outcome"] in outcomes]
+
+        missed = _sel("MISSED")
+        hides = _sel("SUMMARY_HIDES_DETAIL")
+        cfail = _sel("CONTROL_FAILED")
+        unreach = _sel("NOT_REACHABLE_HERE")
+        # THE LOUDEST BUCKET: clean on a store built to trigger it. Not a fact about the caller.
+        blind = [r for r in unreach if r.get("on_a_fixture") == "MISSED"]
         covered = sorted({r["surface"] for r in results if r["outcome"] == "NOTICED"})
+        works_on_fixture = sorted({r["surface"] for r in unreach
+                                   if r.get("on_a_fixture") == "NOTICED"})
+        probed = sorted({r["surface"] for r in results})
+        unprobed = [s for s in available if s not in set(probed)]
+        # ONE place the coverage is stated, because the previous shape returned three numbers that
+        # all read like coverage -- a NOTICED-only list, a probed count buried in a limits string,
+        # and the total -- and a handoff written from it reported the PROBE count as a surface count.
+        surfaces = {
+            "available": len(available),
+            "probed": len(probed),
+            "unprobed": unprobed,
+            "demonstrated_on_your_store": covered,
+            "working_but_unreachable_here": works_on_fixture,
+            "blind_even_on_a_fixture": sorted({r["surface"] for r in blind}),
+            "unanswerable_here": sorted({r["surface"] for r in cfail}),
+        }
         limits += [
-            "%d of this class's %d verification surfaces have a probe here; the rest are UNTESTED, "
-            "which is not the same as working." % (len({r['surface'] for r in results}), len(available)),
+            "%d of this class's %d verification surfaces have a probe here; the other %d are "
+            "UNTESTED, which is not the same as working -- they are named in "
+            "surfaces['unprobed']." % (len(probed), len(available), len(unprobed)),
             "A NOTICED verdict says the surface reacted to THIS corruption on THIS store. It is not "
             "a claim that the surface is correct, nor that it would catch a different corruption.",
-            "Everything ran on a temporary copy; the live store was not written.",
+            "NOT_REACHABLE_HERE is neither a pass nor a failure of your store: the surface's "
+            "precondition does not hold on your data, so it was re-probed on a minimal fixture and "
+            "`on_a_fixture` carries that answer. A fixture verdict of MISSED is a LIBRARY defect.",
+            "The coherence fixture uses a deterministic offline stand-in embedder, so it measures "
+            "whether the surface reacts to an index that stopped matching the store -- never "
+            "anything about your own embedding recipe.",
+            "Everything ran on a temporary copy or a fixture; the live store was not written.",
         ]
         return {"probes": results, "noticed": sum(1 for r in results if r["outcome"] == "NOTICED"),
                 "missed": missed, "summary_hides_detail": hides,
-                "control_failed": cfail, "surfaces_covered": covered,
+                "control_failed": cfail, "not_reachable_here": unreach,
+                "blind_even_on_a_fixture": blind,
+                "surfaces": surfaces, "surfaces_covered": covered,
                 "surfaces_available": len(available), "limits": limits}
 
     def identifier_contract(self) -> dict:
