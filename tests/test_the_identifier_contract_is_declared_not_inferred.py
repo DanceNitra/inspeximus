@@ -62,6 +62,49 @@ def test_a_collapsing_fold_is_reported_as_not_invertible():
     assert len(m["example"]) == 2, "a lossy fold must name the keys it would merge"
 
 
+def test_groups_and_lost_keys_are_different_numbers_and_must_diverge():
+    """MUTANT-KILLER, added after a red-team pass found every other fixture in this file used exactly
+    one two-key merge -- so `groups_that_would_merge` and `keys_that_would_be_lost` were numerically
+    identical (1 and 1) everywhere, and a mutation replacing the second with the first PASSED ALL
+    EIGHT TESTS. The suite reached the code and never reached the input region where the bug shows.
+
+    That is this file's own subject matter committed inside this file: Reachability is the first RIPR
+    condition (Ammann & Offutt, "Introduction to Software Testing" 2nd ed., 2017) and a cover on the
+    antecedent does not supply it -- the antecedent WAS covered, the discriminating input was not.
+
+    Real data diverges by more than 2x: on our coding store `prefix_8` merges 599 groups and loses
+    1,373 keys. So the fixture below is the ordinary case, not a corner one."""
+    # one group of THREE keys: 1 group, 2 keys lost -- the two fields must not be equal
+    c = _store(["prefix-x-alpha", "prefix-x-beta", "prefix-x-gamma", "different"]).identifier_contract()
+    m = c["measured"]["prefix_8"]
+    assert m["groups_that_would_merge"] == 1
+    assert m["keys_that_would_be_lost"] == 2
+    assert m["groups_that_would_merge"] != m["keys_that_would_be_lost"], \
+        "a store where these two coincide cannot tell the two definitions apart"
+
+
+def test_lost_keys_sum_across_several_groups():
+    """The other half of the same hole: several groups, each losing a different amount. A mutant
+    that returned `max` or the first group's loss instead of the sum survives the test above."""
+    c = _store(["aaaaaaaa-1", "aaaaaaaa-2", "aaaaaaaa-3",     # 1 group, loses 2
+                "bbbbbbbb-1", "bbbbbbbb-2",                    # 1 group, loses 1
+                "solitary-key"]).identifier_contract()
+    m = c["measured"]["prefix_8"]
+    assert m["groups_that_would_merge"] == 2
+    assert m["keys_that_would_be_lost"] == 3, "losses must SUM over groups, not max or first"
+
+
+def test_two_rows_sharing_one_key_are_not_a_collision():
+    """The same key written twice is one identifier, not two colliding ones. Without this, ordinary
+    supersession would inflate every fold's cost and the whole report would read as alarming."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"))
+    ix.remember("first", key="same-key", object="1")
+    ix.remember("second", key="same-key", object="2")
+    ix.flush()
+    m = ix.identifier_contract()["measured"]["casefold"]
+    assert m["keys_that_would_be_lost"] == 0 and m["invertible_on_this_store"] is True
+
+
 def test_control_the_same_fold_is_invertible_on_a_store_that_does_not_collide():
     """THE OTHER DIRECTION, and the reason this is a property of the DATA rather than of the fold.
     Without it, a checker that always answered 'not invertible' would pass the test above."""
