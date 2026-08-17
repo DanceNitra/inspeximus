@@ -103,17 +103,58 @@ def test_a_store_with_no_locators_at_all_is_NOT_APPLICABLE_rather_than_passing()
 
 # ── 3 · receipts enabled and producing nothing ───────────────────────────────────────────────
 def test_receipts_enabled_with_an_empty_chain_fails():
-    """FOUND ON OUR OWN STORE while implementing @Stratogain's two: 450 records, receipts enabled,
-    chain empty, nothing covered by a write receipt -- and `verify_writes` had been saying so to
-    nobody. Same shape as the collector case with a different mechanism."""
+    """A store that HAS a chain file and whose chain is empty. Same shape as the collector case
+    with a different mechanism: a mechanism present and producing nothing.
+
+    NOT what we first reported about our own store. That claim -- "450 records, receipts enabled,
+    chain empty" -- was our probe's own constructor argument, retracted below."""
     d = tempfile.mkdtemp()
     ix = Inspeximus(path=os.path.join(d, "s.json"), embed=False, receipts=True)
     ix.remember("a", key="a", object="a")
     ix.flush()
-    ix._receipts = []                                      # the chain our live store actually had
+    assert os.path.exists(str(ix.path) + ".receipts.json"), "the store must really have a chain"
+    ix._receipts = []
     p = _by_id(ix.admissibility_preconditions())["receipt_chain_covers_records"]
     assert p["applicable"] and not p["holds"]
     assert p["records"] >= 1 and p["chain_entries"] == 0
+
+
+def test_the_callers_own_flag_cannot_manufacture_a_failure():
+    """REGRESSION, and it was a real bug shipped for about an hour.
+
+    `receipts_enabled` is a CONSTRUCTOR flag -- bool(receipts or receipt_key or receipt_signer) --
+    never inferred from the file. The first version keyed this precondition on it, so opening a
+    never-receipted store with receipts=True set it True, found an empty chain, and reported a
+    failure the caller had just created. On our own 450-record decision store the same file returned
+    FAILS / n/a / n/a depending only on the constructor argument.
+
+    The precondition now asks whether a receipt sidecar EXISTS, which is the store's property. The
+    assertion is that the verdict is IDENTICAL however the store is opened."""
+    d = tempfile.mkdtemp()
+    ix = Inspeximus(path=os.path.join(d, "s.json"), embed=False, receipts=False)
+    ix.remember("a", key="a", object="a")
+    ix.flush()
+    assert not os.path.exists(str(ix.path) + ".receipts.json"), "this store must have no chain file"
+
+    verdicts = set()
+    for kw in ({"receipts": True}, {"receipts": False}, {}):
+        p = _by_id(Inspeximus(path=str(ix.path), embed=False,
+                              **kw).admissibility_preconditions())["receipt_chain_covers_records"]
+        verdicts.add((p["applicable"], p["holds"]))
+    assert verdicts == {(False, True)},         f"the verdict changed with the caller's constructor argument: {verdicts}"
+
+
+def test_a_store_that_HAS_a_chain_and_lost_it_still_fails():
+    """The other direction, without which the fix above could be 'never report anything'."""
+    d = tempfile.mkdtemp()
+    ix = Inspeximus(path=os.path.join(d, "s.json"), embed=False, receipts=True)
+    ix.remember("a", key="a", object="a")
+    ix.flush()
+    assert os.path.exists(str(ix.path) + ".receipts.json")
+    live = Inspeximus(path=str(ix.path), embed=False, receipts=True)
+    live._receipts = []
+    p = _by_id(live.admissibility_preconditions())["receipt_chain_covers_records"]
+    assert p["applicable"] and not p["holds"], p
 
 
 def test_receipts_disabled_is_not_a_failure():

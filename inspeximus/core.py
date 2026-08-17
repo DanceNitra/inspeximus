@@ -2802,19 +2802,40 @@ class Inspeximus:
                               "and every call still returns a result",
         })
 
-        # ── 3 · RECEIPTS COVER THE RECORDS. Enabled and producing nothing. ───────────────────────
-        # FOUND ON OUR OWN STORE while building this: 450 records, receipts enabled, chain EMPTY --
-        # nothing covered by a write receipt, and `verify_writes` had been saying so to nobody. Same
-        # shape as 2 with a different mechanism, which is why it is here rather than in a changelog.
+        # ── 3 · RECEIPTS COVER THE RECORDS. A mechanism present and producing nothing. ───────────
+        # WHAT WE ACTUALLY FOUND on our own 450-record decision store, after a red-team pass
+        # corrected the first version of this claim: the store was never written with receipts at
+        # all -- no sidecar, nothing to cover the records. The first report said "receipts enabled,
+        # chain empty", which was our own probe's constructor argument and not a property of the
+        # store. The smaller surviving finding is the one worth keeping: the integrity feature this
+        # library sells has never been switched on for the store its own author writes decisions to.
+        # THIS ASKS THE STORE, NOT THE CALLER, and the first version did the opposite.
+        #
+        # `receipts_enabled` is a CONSTRUCTOR flag -- `bool(receipts or receipt_key or
+        # receipt_signer)` -- never inferred from the file. So opening a never-receipted store with
+        # `receipts=True` set it True, found an empty chain, and reported a failure that the caller
+        # had just created. Measured on our own decision store: the same file returns FAILS / n/a /
+        # n/a depending only on the argument passed to the constructor. A red-team pass caught it
+        # before it was published, and it is the third time in one day that an artefact of how
+        # something was opened was about to be reported as a defect in the thing.
+        #
+        # The store's own property is whether a receipt sidecar EXISTS. A store written without
+        # receipts has not failed this precondition -- it never took it, whoever opens it and
+        # however. A store that HAS a chain and left it empty or short has.
+        side = getattr(self, "_receipts_path", None)
+        has_chain_file = bool(side) and Path(str(side)).exists()
         chain = len(getattr(self, "_receipts", []) or [])
-        enabled = bool(getattr(self, "receipts_enabled", False))
         out.append({
             "id": "receipt_chain_covers_records",
-            "asserts": "if receipts are enabled and records exist, the chain is not empty",
-            "applicable": enabled and bool(rows),
-            "holds": (not enabled) or (not rows) or chain > 0,
-            "records": len(rows), "chain_entries": chain, "receipts_enabled": enabled,
-            "why_it_matters": "an enabled-but-empty chain verifies nothing while reading as enabled",
+            "asserts": "if this store was WRITTEN with receipts, the chain covers its records",
+            "applicable": has_chain_file and bool(rows),
+            "holds": (not has_chain_file) or (not rows) or chain > 0,
+            "records": len(rows), "chain_entries": chain,
+            "chain_file_on_disk": has_chain_file,
+            "opened_with_receipts": bool(getattr(self, "receipts_enabled", False)),
+            "why_it_matters": "a chain that exists and is empty verifies nothing while reading as "
+                              "enabled; a store that never had one has a different problem, and "
+                              "conflating them lets the caller's own flag manufacture a finding",
         })
 
         applicable = [p for p in out if p["applicable"]]
@@ -2865,6 +2886,16 @@ class Inspeximus:
         The pattern is one thing, ten times: a check returning PASS for a reason unrelated to the
         property it names. That is not a bug in any one check -- it is a property of checks, and it
         needs a check of its own.
+
+        PRIOR ART, because "prove your checks can fail" is old and this is a recombination rather
+        than an invention. The parent is MUTATION TESTING (Lipton 1971; DeMillo, Lipton & Sayward
+        1978): inject a fault, see whether the suite notices, and require a clean baseline first --
+        which is `CONTROL_FAILED` at coarser grain. Closest living siblings are `promtool test rules`
+        and Semgrep's `ruleid:`/`ok:` fixtures, both of which pair every rule with a must-fire and a
+        must-not-fire case. What we did not find in any of them, having checked promtool, Semgrep,
+        amcheck and Netflix's ChAP: corrupting a copy of the CALLER'S OWN LIVE DATA rather than a
+        synthetic fixture, and the `SUMMARY_HIDES_DETAIL` / `CONTROL_FAILED` split. Those two are the
+        contribution; the principle is not ours to claim.
 
         SAFETY. Everything runs against a temporary COPY. The live store is opened read-only and
         never written, because a harness that corrupts the thing it is auditing is the failure mode
