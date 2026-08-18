@@ -9311,6 +9311,28 @@ class Inspeximus:
                   "reliability": round(self._reliability(r), 3),
                   "source": r.get("source"),    # re-checkable origin (provenance), surfaced so a recalled fact can be traced back
                   "stale_derived": bool(r.get("_stale_derived"))}
+            if (r.get("status") or "") == "superseded":
+                # A row returned by an explicit `include_superseded` ask arrived INDISTINGUISHABLE
+                # from a current fact: `status` was absent from the hit and `stale_derived` was False
+                # on retired and active rows alike, and no other read surface closed the gap (there
+                # is no get(id); provenance()/history() take a KEY, not a record id;
+                # supersession_report() returns aggregate counts). The only way to tell was to hold
+                # the store and match ids against .items -- not something a consumer of recall() can
+                # do. So the caller could not label, reorder, or even count them.
+                #
+                # MEASURED 2026-08-18 (540 probes, deterministic word-boundary scoring, no judge).
+                # Handed the SAME retrieved rows, an answerer scored:
+                #     presentation                          current-value Q    history Q
+                #     retired rows last, unlabelled              0.075           0.333
+                #     same rows moved to the front              0.906           0.852
+                #     same rows MARKED as superseded            1.000           1.000
+                # Unlabelled, it answers a history question with the CURRENT value on 100% of probes
+                # and a current-value question with a RETIRED one on 90.6%. A label fixes both
+                # outright, and it was the one fix the public surface did not permit.
+                #
+                # Same contract as `under_review` and `resolved_over`: present only when true, so an
+                # ordinary hit keeps its shape and a consumer comparing keys sees nothing new.
+                _o["superseded"] = True
             if r.get("reopened"):
                 # A read-path review-trigger (observe()) reopened this settled record on a corroborated
                 # contradiction: recall still returns it as the current best guess, but the CONSUMER must know
