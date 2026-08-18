@@ -201,6 +201,13 @@ def _serving_class(rec: dict) -> str:
 # widening it further is a deliberate change to what the chain guarantees, not a parameter.
 # Enforced rather than described: verify_writes intersects with it, _emit_write_receipt raises on it.
 _AMENDABLE = frozenset({"mtype", "status_sha256"})
+#: Shortest retired value that value-level suppression will act on. A two-character value matches
+#: everywhere, so suppressing on it would withhold half the store -- but the rule was a bare `4`
+#: inside _retired_values() and a second, independent `4` inside erasure_residue, with only the
+#: erasure side telling the caller it had applied it. Named once so the threshold and the diagnostic
+#: that reports it cannot drift apart, which is exactly how one subsystem came to be mute about a
+#: rule the other documented.
+_MIN_SUPPRESSIBLE_VALUE = 4
 #: The code-guard keyspace, named once so the reservation in remember() and the exemption in
 #: _is_guard_record cannot drift apart -- they were two string literals and only one was enforced.
 _CODE_GUARD_PREFIX = "code::symbol::"
@@ -8363,7 +8370,54 @@ class Inspeximus:
                 continue
             p = (r.get("meta") or {}).get("superseded_by_policy") or "unstamped"
             counts[p] = counts.get(p, 0) + 1
-        return {"superseded_total": sum(counts.values()), "by_policy": counts}
+        return {"superseded_total": sum(counts.values()), "by_policy": counts,
+                "values_too_short_to_suppress": self._short_values_suppression_cannot_see()}
+
+    def _short_values_suppression_cannot_see(self) -> dict:
+        """Which keys hold a retired value that value-level suppression is blind to, and why.
+
+        `_retired_values()` skips any value under 4 characters, and the rule is right -- a two-character
+        value matches everywhere, so suppressing on it would withhold half the store. What was wrong is
+        that it happened SILENTLY. `recall(suppress_stale_values=True)` returned a byte-identical
+        context and no diagnostic, so a caller could not tell "nothing was stale" from "suppression
+        could not see these values at all".
+
+        The ERASURE path applies the identical rule and says so: `erasure_residue` documents it and
+        emits a `problems` entry ("no values were searchable (all empty or under 4 characters), so
+        nothing was compared -- an empty search is not a clean result"). One property, two subsystems,
+        and only one of them spoke. Measured 2026-08-18 on a generated corpus: of six contested keys,
+        the one whose values were currency codes (EUR/GBP/JPY) was the only one suppression did
+        nothing for, and nothing in the API said why.
+
+        Mirrors `_retired_values()` deliberately -- same `self.items` source, same current-value lookup,
+        same length rule -- so this reports the computation suppression actually performs rather than a
+        second implementation that could drift from it.
+        """
+        by_key: dict = {}
+        for r in self.items:
+            k = r.get("key")
+            if k:
+                by_key.setdefault(str(k), []).append(r)
+        keys: list = []
+        for k, recs in by_key.items():
+            cur = self._current_active(k)
+            if not cur:
+                continue
+            cur_v = str(cur.get("object") or "").strip()
+            if not cur_v:
+                continue
+            for r in recs:
+                v = str(r.get("object") or "").strip()
+                if not v or v.lower() == cur_v.lower():
+                    continue
+                if len(v) < _MIN_SUPPRESSIBLE_VALUE:
+                    keys.append(k)
+                    break
+        return {"count": len(keys), "keys": sorted(keys),
+                "note": "a retired value under 4 characters is skipped by value-level suppression, "
+                        "so recall(suppress_stale_values=True) cannot withhold it. Short codes -- "
+                        "currency, country, airport, yes/no, small versions -- land here. Values are "
+                        "not listed, only the keys that hold them."}
 
     # ── retrieval (value-ranked) ──────────────────────────────────────────────
     def _qvec(self, query: str, embedder=None):
@@ -8445,7 +8499,7 @@ class Inspeximus:
                 v = str(r.get("object") or "").strip()
                 # A retired value is any OTHER object ever asserted under this key — not only the rows
                 # supersession happened to mark, since marking is exactly what under-fires here.
-                if len(v) < 4 or v.lower() == cur_v.lower():
+                if len(v) < _MIN_SUPPRESSIBLE_VALUE or v.lower() == cur_v.lower():
                     continue
                 # DISTINGUISHING tokens, not the raw string. Extracted objects carry conversational
                 # tails ('Senior Data Analyst as of yesterday'), so full-string containment is the wrong
@@ -12624,6 +12678,12 @@ class _TenantView:
     def _route_chain(self, *a, **k): return Inspeximus._route_chain(self, *a, **k)
     def _route_key(self, *a, **k): return Inspeximus._route_key(self, *a, **k)
     def _retired_values(self, *a, **k): return Inspeximus._retired_values(self, *a, **k)
+    # ...and its diagnostic counterpart, rebound for the same reason. `supersession_report` IS
+    # view-bound and now calls this; an unbound helper would compute the short-value keys over
+    # the PARENT store and hand one tenant a list of another tenant's keys, which is the exact
+    # shape this block already records twice.
+    def _short_values_suppression_cannot_see(self, *a, **k):
+        return Inspeximus._short_values_suppression_cannot_see(self, *a, **k)
     def _latest_superseded_object(self, *a, **k): return Inspeximus._latest_superseded_object(self, *a, **k)
     def _narrow_to_subject(self, *a, **k): return Inspeximus._narrow_to_subject(self, *a, **k)
     def _erasure_collisions(self, *a, **k): return Inspeximus._erasure_collisions(self, *a, **k)
