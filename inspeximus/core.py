@@ -9245,6 +9245,25 @@ class Inspeximus:
             elif rb == "relevance":
                 pass                                          # explicit no-op: keep pure relevance order
             scored = pool + tail
+        # AN EXPLICIT ASK FOR HISTORY RESERVES SLOTS. `include_superseded=True` only stops FILTERING
+        # superseded rows (see the admissibility branch above); they then compete on relevance like
+        # everything else, and in a store of any size they lose to the active records that share the
+        # query's vocabulary. MEASURED 2026-08-18: a 402-record store holding exactly one superseded
+        # row returned ZERO superseded records at k=20 with the flag ON -- byte-identical to the flag
+        # OFF. The flag read as permission for history to compete, which is not what a caller asking
+        # for history means, and no test covered it. A bounded share of k (a quarter, at least one) is
+        # now reserved for superseded rows that would otherwise fall outside the cut; the reservation
+        # is capped so the current record set is never starved, and nothing changes when the flag is
+        # off or when no superseded row was excluded.
+        if include_superseded and len(scored) > k > 0:
+            _sup = [t for t in scored[k:] if (t[2].get("status") or "") == "superseded"]
+            if _sup:
+                _res = min(len(_sup), max(1, k // 4))
+                _promote = _sup[:_res]
+                _pid = {id(t) for t in _promote}
+                _rest = [t for t in scored if id(t) not in _pid]
+                _cut = max(0, k - _res)
+                scored = _rest[:_cut] + _promote + _rest[_cut:]
         out = []
         _top_sim = scored[0][1] if scored else 1.0   # normalize reinforcement by this query's best match
         for score, sim, r in scored[:k]:
