@@ -995,7 +995,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.16.0"
+__version__ = "2.17.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3477,6 +3477,26 @@ class Inspeximus:
             measured[name] = entry
 
         non_ascii = [k for k in keys if any(ord(c) > 127 for c in k)]
+        # AT-SCALE IS NOT THE SAME AS SAFE, and the case where they part is exact rather than
+        # statistical. `collides_at_length` is the LONGEST length below the fold that still merges
+        # keys, so `headroom_chars == 1` means this fold is the FIRST that does not -- one character
+        # shorter and the store collapses. A population threshold cannot see that: it answers whether
+        # a collision could have shown up by chance, not whether one character less collides in the
+        # data in front of it.
+        #
+        # Raised by @safal207 on anthropics/claude-code#34556 as monorepo paths and same-millisecond
+        # ULIDs. Measured on both: at the fold length he names -- one past the shared prefix -- the
+        # keys DO collide, so COST_MEASURED fires and the model never gets to give false comfort (3
+        # of 3 such cells, each sitting above its own threshold). One character further out his case
+        # is exactly right: 50,000 monorepo paths at a 13-character fold report ZERO_AT_SCALE with a
+        # threshold of 19,909, and one character less merges them.
+        cliffs = [n for n, m in measured.items()
+                  if m["verdict"] == "ZERO_AT_SCALE" and m.get("headroom_chars") == 1]
+        cliff_note = ([
+            "AT THE CLIFF EDGE: %s reports ZERO_AT_SCALE with one character of headroom -- it is the "
+            "shortest fold on this store that does not merge keys, and one character less does. The "
+            "population threshold cannot see this; treat the verdict as 'safe here, and nowhere "
+            "shorter'." % ", ".join(sorted(cliffs))] if cliffs else [])
         return {
             # WHAT THE WRITER PROMISES. Stated, so a reader does not have to infer it from data that
             # cannot distinguish a policy from an accident.
@@ -3490,7 +3510,8 @@ class Inspeximus:
             "keys": len(keys),
             "non_ascii_keys": len(non_ascii),
             "mixed_normalisation": sum(1 for k in non_ascii if _ud.normalize("NFC", k) != k),
-            "limits": [
+            "at_cliff_edge": sorted(cliffs),
+            "limits": cliff_note + [
                 "`declared` describes the code running now, not the version that wrote any given "
                 "record. A store written by several versions can carry several contracts.",
                 "`measured` sees only surviving keys: a fold that already collapsed two of them "

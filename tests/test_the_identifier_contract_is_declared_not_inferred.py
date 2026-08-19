@@ -252,3 +252,54 @@ def test_a_fold_with_no_threshold_model_says_so_instead_of_implying_safety():
     assert m["verdict"] == "ZERO_NO_THRESHOLD_MODEL"
     assert "threshold_population" not in m
     assert m["invertible_on_this_store"] is True, "still a true statement about the keys present"
+
+
+# ───────────────────────────────────── at-scale is not the same as safe
+#
+# Raised by @safal207 on anthropics/claude-code#34556: on a heavily prefixed population the
+# population threshold says ZERO_AT_SCALE while one character less would collapse the store. Measured
+# on both of his examples: at the fold he names -- one past the shared prefix -- the keys DO collide,
+# so COST_MEASURED fires and the model never gets to give false comfort. One character further out he
+# is exactly right, and that cell is identifiable without any statistics: it is the shortest fold
+# that does not merge, so its headroom is 1 by definition.
+
+def _prefixed():
+    """A store whose 12-character fold is the SHORTEST that does not merge, built deterministically.
+
+    The first version drew random suffixes and relied on a birthday collision landing between 11 and
+    12 characters -- which it does at 4,000 keys and does not at 400, so the fixture's meaning
+    depended on its size. Here 20 groups of 26 give exactly 20 distinct 11-prefixes and 520 distinct
+    12-prefixes, so the cliff is at 12 by construction rather than by luck.
+    """
+    import string
+    return [("grp%08d" % g) + c + "-tail" for g in range(20) for c in string.ascii_lowercase]
+
+
+def test_a_fold_at_the_cliff_edge_is_named_even_though_it_does_not_merge():
+    """ZERO_AT_SCALE with one character of headroom is the shortest safe fold on the store. The
+    verdict is true and the warning is what a reader needs beside it."""
+    c = _store(_prefixed()).identifier_contract()
+    m = c["measured"]["prefix_12"]
+    assert m["verdict"] == "ZERO_AT_SCALE" and m["keys_that_would_be_lost"] == 0
+    assert m["headroom_chars"] == 1
+    assert c["at_cliff_edge"] == ["prefix_12"]
+    assert any("CLIFF EDGE" in x for x in c["limits"]), c["limits"]
+
+
+def test_a_colliding_fold_with_the_same_headroom_is_NOT_called_a_cliff():
+    """MUST-FAIL CONTROL, and the fixture is the same store. `prefix_8` also has one character of
+    headroom, but it MERGES 400-odd keys -- it is not a cliff edge, it is over the edge, and the
+    verdict already says so. A check keyed on headroom alone would flag it, so this is the case that
+    separates 'reads the verdict' from 'reads one number'."""
+    c = _store(_prefixed()).identifier_contract()
+    assert c["measured"]["prefix_8"]["verdict"] == "COST_MEASURED"
+    assert c["measured"]["prefix_8"]["headroom_chars"] == 1, \
+        "the fixture stopped being discriminating: both folds must share the headroom"
+    assert "prefix_8" not in c["at_cliff_edge"]
+
+
+def test_control_an_ordinary_store_gets_no_cliff_warning():
+    """Without this, a checker that warned on everything would pass the test above."""
+    c = _store(["alpha", "beta", "gamma"]).identifier_contract()
+    assert c["at_cliff_edge"] == []
+    assert not any("CLIFF EDGE" in x for x in c["limits"])

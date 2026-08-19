@@ -1,3 +1,53 @@
+## 2.17.0 - UPGRADE IF YOU READ `identifier_contract()`'s VERDICT: at-scale is not the same as safe
+
+`identifier_contract()` gains `at_cliff_edge` and a matching line in `limits`. It fires when a fold
+reports ZERO_AT_SCALE with one character of headroom -- the shortest fold on that store which does
+not merge keys, where one character less does.
+
+### Where it comes from, and what measuring it changed
+
+[@safal207 on anthropics/claude-code#34556](https://github.com/anthropics/claude-code/issues/34556)
+answered a question we had asked: can the population threshold and the character headroom disagree?
+He gave two cases where the threshold says safe and the headroom says cliff -- 50,000 monorepo paths
+sharing a 20-character prefix with a 21-character fold, and 10,000 ULIDs minted in one millisecond
+sharing a 10-character timestamp with an 11-character fold.
+
+**Measured before answering, and his examples do not reproduce as stated.** At the fold length he
+names -- one character past the shared prefix -- a single character has to distinguish tens of
+thousands of keys, so they collide, and this library reports COST_MEASURED. A measured collision
+outranks the model, so the threshold never gets to give the false comfort. Three of three such cells
+in that run sat *above* their own threshold, meaning the model alone would have said ZERO_AT_SCALE in
+every one of them: his mechanism is real, and the precedence rule is what stops it biting.
+
+**One character further out he is exactly right**, and the cell is identifiable without any
+statistics. At 50,000 monorepo-shaped paths, a 13-character fold merges nothing while the threshold
+sits at 19,909 -- so ZERO_AT_SCALE -- and 12 characters merges six keys. That cell always has
+`headroom_chars == 1`, because `collides_at_length` is the longest colliding length below the fold:
+headroom of one means this is the first fold that does not collide. It is a definition, not an
+estimate, which is why it sees what a population threshold cannot.
+
+**And it is exactly the fragile state.** Adding ONE key to a 520-key fixture at the cliff flips that
+fold from ZERO_AT_SCALE to COST_MEASURED. The warning fires precisely where one more record collapses
+the answer.
+
+### Prior art, because this part is not ours
+
+The quantity is the minimal distinguishing prefix, and Git has shipped exactly this reasoning since
+2.11, when it made the abbreviated-hash length scale with repository size instead of holding at seven
+characters. What is new here is only reporting it beside a statistical threshold and noticing that
+the two part company at the cliff, in the direction that matters.
+
+### It is not noisy
+
+Measured on four live stores of ours -- 14,112, 917, 374 and 6 keys -- the warning fires on none of
+them: every fold there is COST_MEASURED or NOT_YET_MEASURABLE. It is a warning about one specific
+cell, not a banner.
+
+**Both metrics expire, and differently.** The threshold answers whether a collision could have shown
+up by chance in a population this size; the headroom answers whether one fewer character collides in
+the data in front of you right now. Neither survives the store growing, which the single-key flip
+above makes concrete.
+
 ## 2.16.0 - UPGRADE IF YOUR STORE IS TOO BIG TO READ WHOLE: an always-loaded index, measured
 
 `memory_index()` and `set_index_line()`. A store that will not fit in context is read through a small
