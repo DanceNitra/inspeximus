@@ -68,6 +68,13 @@ jobs:
           # haystack is an extra now (it was installed by hand here, and only here, while
           # `pip install "inspeximus[haystack]"` failed for everyone else).
           pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents,haystack]"
+          # The nine-extra solve settles on openai-agents 0.2.9 while a plain install gives 0.18.3, so
+          # this job was certifying an adapter against a version nobody resolves -- reporting VERIFIED
+          # for a row the ledger records BROKEN against the current one. Stating a floor in pyproject
+          # fixed that and cost autogen_core (the joint solve dropped it), so the upgrade is done here
+          # instead, after the extras, where it touches one package rather than the whole graph.
+          pip install -U "openai-agents>=0.18"
+          python -c "import autogen_core, agents; print('autogen_core and agents both import')"
       - name: Run tests
         run: python -m pytest tests/ -q -rs
       # --require-all is the point of running it HERE: this job installs every framework, so a SKIP is
