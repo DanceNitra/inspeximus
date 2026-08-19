@@ -75,6 +75,10 @@ def _args_for(name, sig, mod):
         "root": tempfile.mkdtemp(), "values": ["a-value-that-is-not-anywhere"],
         # the agent-grant ACL: a plain agent name is all the read-side tools need
         "agent": "bob",
+        # set_index_line writes the always-loaded index line for a record. Driven for real rather
+        # than declared undriveable: the whole point of this file is that a skipped tool has no
+        # coverage, and this one is reachable with the same `key` the rest of the table uses.
+        "line": "concluded the deploy channel is BLUE-9 after the RED-2 rollback",
     }
     args = []
     for pname, p in sig.parameters.items():

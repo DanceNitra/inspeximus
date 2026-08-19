@@ -933,6 +933,50 @@ def audit_the_audits() -> dict:
 
 
 @mcp.tool()
+def memory_index(budget_tokens: int = 0) -> dict:
+    """THE ALWAYS-LOADED INDEX: one line per record, budgeted, so the right one gets opened.
+
+    A store too big to hold in context is read through a small index, and the agent decides what to
+    open from those lines alone. The line is therefore the only surface a future need can reach: a
+    record whose line does not distinguish it is present, correct, and never retrieved.
+
+    MEASURED on a 316-note store, 120 questions written from the note bodies and shown to no
+    line-writer, ranking all 316 candidates. recall@3 on full questions / on the three-to-eight words
+    someone types into a search box: a hand-written title-and-hook 0.333 / 0.508; the title alone
+    0.300 / 0.450; title plus its highest-idf terms 0.350 / 0.533; a line saying what the record
+    CONCLUDED 0.683 / 0.833; the full records, as a ceiling, 0.858 / 0.967.
+
+    So the line worth having is a sentence about the conclusion, and no extraction produces one --
+    term-stuffing is a null on both registers. Which is why the useful call is not this one alone:
+    read `needs_line`, write those sentences yourself, and store them with `set_index_line`. Without
+    them this returns the fallback -- the record's opening sentence, measured through this same call
+    at 0.442 / 0.525 against 0.692 / 0.842 with written lines -- and `limits` says which you got.
+
+    `budget_tokens` shortens lines to fit and NEVER drops a record -- a record with no line cannot be
+    found at all -- so a budget too small to hold one line each is reported as exceeded rather than
+    silently met."""
+    return _MEM.memory_index(budget_tokens=budget_tokens or None)
+
+
+@mcp.tool()
+def set_index_line(key: str, line: str) -> dict:
+    """Write the index line for one record: the sentence a reader scans to decide whether to open it.
+
+    This is the half of `memory_index` that a model can do and a library cannot. Read `needs_line`
+    from `memory_index`, write what each record CONCLUDED in a sentence, and store it here; it
+    persists on the record, so the cost is paid once per record rather than once per session.
+
+    Aim for what the measurement rewards: name the specific thing and what was concluded about it,
+    around twenty words. Not the question it answers -- that variant scored higher only on
+    question-shaped queries, and lost 57% of its margin when the queries changed register, because it
+    was being scored by a writer of the same shape.
+
+    An empty line is refused rather than stored: it would make the record unreachable while making
+    the index look filled in."""
+    return _MEM.set_index_line(key, line)
+
+
+@mcp.tool()
 def identifier_contract() -> dict:
     """WHAT ARE THIS STORE'S IDENTIFIERS, and which folds over them would LOSE information?
 

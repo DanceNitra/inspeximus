@@ -171,6 +171,10 @@ def test_issuing_a_grant_does_not_change_what_the_operator_reads():
 
 # ── THE SWEEP: every public method, not a curated list of read surfaces ──────────────────────────────
 _ARGS = {
+    # set_index_line writes onto a record chosen by key, so the sweep aims it at the OTHER
+    # tenant's key: the leak it could produce is stamping an index line on a row that is not
+    # ours, or naming that row's text back in the return value.
+    "set_index_line": ("b/k", "a line aimed at another tenant's record"),
     # Same reason as the tenant sweep: these take a record id, so they are driven with an UNGRANTED
     # record's id rather than exempted. A method that refuses is a pass; one that echoes the content
     # of a record the caller may not read is the leak this test exists for.

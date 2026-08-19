@@ -247,6 +247,10 @@ def _is_acl_record(rec) -> bool:
 _RESERVED_META = frozenset({
     "acl", "asserts_change", "echo_blocked", "entries", "graduated_from_episodic", "hub",
     "hub_coverage",
+    # The always-loaded index line (see memory_index / set_index_line). Reserved for the same reason
+    # as the rest of this set: a caller who could set another record's index line could make it
+    # unfindable while the store still reports it present and correct.
+    "index_line",
     "needs_rederivation", "objectless_blocked", "pre_slash", "promoted_from_candidate",
     "rederived_to", "reopened_contradiction", "reopened_meta", "reopened_reason",
     "reopened_surfaced_prior", "retracted_reason", "revert_nonce", "session_seq",
@@ -991,7 +995,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.15.0"
+__version__ = "2.16.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -11041,6 +11045,180 @@ class Inspeximus:
             return b
         return [_brk(r) for r in ranked]
 
+    def memory_index(self, budget_tokens: int | None = None, summarise=None,
+                     max_words: int = 22, refresh: bool = False) -> dict:
+        """The ALWAYS-LOADED index: one line per record, budgeted, so the right one gets opened.
+
+        THE PROBLEM THIS IS FOR. A store that is too big to hold in context gets read through a small
+        index -- one line per record, always loaded, and the agent decides from those lines alone what
+        to open. So the line is the only surface a future need can reach, and a record whose line does
+        not distinguish it is present, correct, and never retrieved.
+
+        MEASURED, on a 316-note store with 120 questions written from the note bodies and never shown
+        to any line-writer, ranking all 316 candidates. The corpus is a private memory directory, so
+        the figures below are reported rather than offered as reproducible: there is no probe in this
+        repository behind them because there is no corpus here to point one at. recall@3, on two
+        query registers -- full questions, and the three-to-eight words someone types into a search
+        box:
+
+            index line is                     questions   search box   index tokens
+            a hand-written title + hook         0.333       0.508          3,063
+            the title alone                     0.300       0.450          1,918
+            title + its highest-idf terms       0.350       0.533          5,757
+            a written line: what it CONCLUDED   0.683       0.833          6,484
+            (ceiling: the full records)         0.858       0.967        207,512
+
+        AND THROUGH THIS FUNCTION rather than through the probe's own strings, on the same store and
+        questions, because a number measured on one assembly and quoted in another's docstring is a
+        claim about code that does not run: this default -- the record's opening sentence -- reaches
+        0.442 / 0.525, and the same call with written lines stored reaches 0.692 / 0.842. Note that
+        the default beats the hand-written index above: an opening sentence carries more than a
+        title and a hook do.
+
+        Three things in that table decided this signature. **A summariser is a parameter, not a
+        dependency**: the only variant that moved the number is a sentence saying what the record
+        concluded, and no deterministic extraction produced one -- stuffing the line with the record's
+        most distinctive terms is a null on both registers (+0.017 and +0.025, both intervals
+        containing zero). **The default is honest about being the weaker one**: with no `summarise`
+        the line falls back to the record's own opening, which is the 0.300-0.450 row. And **the
+        budget is real**: the line that works costs about twice the hand-written index, on a file
+        that is loaded every session, so `budget_tokens` truncates rather than letting it drift.
+
+        A REGISTER CONTROL is why the recommendation is "what it concluded" and not "the question it
+        answers". A question-form line scored 0.775 on question-form queries -- and both were written
+        by the same model from the same text, so the prompts converged. On search-box queries 57% of
+        that margin disappeared, while the written line did not move. The variant that wins by
+        resembling the evaluator is the one to leave out.
+
+        STABILITY. A generated line is stored on its record, so re-running does not rewrite the index
+        and only new records cost a call. `refresh=True` regenerates.
+
+        NOTHING IS EVER DROPPED to meet a budget. A record with no line is unreachable, which is worse
+        than a short one, so the budget shortens lines and reports how many it cut.
+
+        Args:
+            budget_tokens: cap for the whole index. Lines are shortened to fit, never removed.
+            summarise: callable(text) -> str. Given one, it writes the line. Without it, the
+                deterministic fallback is used and `limits` says what that costs.
+            max_words: cap per line before any budget shortening.
+            refresh: rewrite stored lines instead of reusing them.
+        """
+        rows = [r for r in self._tenant_rows()
+                if r.get("status") == "active" and not _is_guard_record(r)]
+        est = 1.35                      # words -> tokens; an estimate, and named as one in `limits`
+
+        def _first_sentence(t: str, cap: int) -> str:
+            s = re.split(r"(?<=[.!?])\s+", (t or "").strip())[0]
+            w = s.split()
+            return " ".join(w[:cap]) + ("…" if len(w) > cap else "")
+
+        generated = reused = fallback = 0
+        entries = []
+        dirty = False
+        for r in rows:
+            m = r.setdefault("meta", {})
+            stored = None if refresh else m.get("index_line")
+            if stored:
+                line, reused = stored, reused + 1
+            elif summarise is not None:
+                try:
+                    line = " ".join((summarise(r.get("text") or "") or "").split()[:max_words])
+                except Exception:                                      # noqa: BLE001
+                    line = ""
+                if line:
+                    m["index_line"] = line
+                    dirty = True
+                    generated += 1
+                else:                                   # a summariser that returned nothing must not
+                    line = _first_sentence(r.get("text"), max_words)   # leave the record unreachable
+                    fallback += 1
+            else:
+                line = _first_sentence(r.get("text"), max_words)
+                fallback += 1
+            entries.append([str(r.get("key") or r.get("id")), line])
+
+        cut = 0
+        if budget_tokens:
+            def total(es):
+                return int(sum(len((k + " " + v).split()) for k, v in es) * est)
+            cap = max_words
+            while cap > 3 and total(entries) > budget_tokens:
+                cap -= 1
+                for e in entries:
+                    w = e[1].split()
+                    if len(w) > cap:
+                        e[1] = " ".join(w[:cap]) + "…"
+            cut = sum(1 for _k, v in entries if v.endswith("…"))
+
+        if dirty:
+            self._save(force=True)
+
+        words = sum(len((k + " " + v).split()) for k, v in entries)
+        limits = [
+            "TOKENS ARE ESTIMATED at %.2f per word, not counted by a tokenizer: this library has no "
+            "dependency that could count them. Treat the figure as a budget, not a measurement." % est,
+        ]
+        if fallback:
+            limits.append(
+                "%d of %d lines came from the record's own opening rather than a summariser. Measured "
+                "THROUGH THIS FUNCTION on a 316-record store, that opening reaches recall@3 0.442 on "
+                "question-form queries and 0.525 on search-box ones, against 0.692 and 0.842 once "
+                "written lines are stored. Pass `summarise=`, or write them yourself through "
+                "set_index_line(), to close that gap." % (fallback, len(entries)))
+        if cut:
+            limits.append("%d lines were shortened to meet the budget. None were removed: a record "
+                          "with no line cannot be found at all." % cut)
+        over = int(words * est) - budget_tokens if budget_tokens else 0
+        if over > 0:
+            # The budget is a request, and the floor is one line per record. Saying so is the whole
+            # point: a caller who asked for 200 tokens and silently got 900 would plan around 200.
+            limits.append(
+                "THE BUDGET COULD NOT BE MET: %d tokens over %d, with every line already at its "
+                "floor. %d records cannot be described in that budget, and dropping them would make "
+                "them unreachable, so it is exceeded on purpose." % (over, budget_tokens, len(entries)))
+        return {
+            "lines": ["- %s — %s" % (k, v) if v else "- %s" % k for k, v in entries],
+            "records": len(entries), "words": words, "tokens_estimate": int(words * est),
+            "generated": generated, "reused": reused, "fallback": fallback, "shortened": cut,
+            "budget_tokens": budget_tokens, "over_budget": max(0, over), "limits": limits,
+            # WHAT AN AGENT NEEDS TO FIX IT. Over MCP the caller IS a model, so it cannot pass a
+            # `summarise` callable -- but it can read these and write the lines itself with
+            # set_index_line(). Capped, because this is a tool result and not a dump of the store.
+            "needs_line": [{"key": str(r.get("key") or r.get("id")),
+                            "text": (r.get("text") or "")[:600]}
+                           for r in rows if not (r.get("meta") or {}).get("index_line")][:50],
+        }
+
+    def set_index_line(self, key: str, line: str) -> dict:
+        """Store the index line for a record, which is how an agent acts as its own summariser.
+
+        `memory_index(summarise=...)` takes a callable, and a model reaching this library over MCP
+        cannot pass one. It can do better: read `needs_line`, write the sentence itself, and put it
+        here. The line then persists on the record, so the cost is paid once per record rather than
+        once per session.
+
+        The line lands in the reserved meta keyspace (see _RESERVED_META), where a caller's own
+        `meta` cannot reach -- an index line that any writer could set on any record is a way to make
+        someone else's memory unfindable, and this is the same door `grant()` uses for the same
+        reason.
+        """
+        line = " ".join((line or "").split())
+        if not line:
+            # A refusal rather than an exception, because every neighbouring surface refuses in the
+            # return value and because this one is reached over MCP, where a raise is an error and a
+            # verdict is an answer. Storing "" would make the record unreachable while making the
+            # index look filled in, so it is refused either way.
+            return {"stored": False, "key": str(key),
+                    "reason": "an empty index line would make this record unreachable; pass text"}
+        hit = [r for r in self._tenant_rows()
+               if str(r.get("key") or r.get("id")) == str(key) and r.get("status") == "active"]
+        if not hit:
+            return {"stored": False, "key": str(key), "reason": "no active record with that key here"}
+        for r in hit:
+            r.setdefault("meta", {})["index_line"] = line[:400]
+        self._save(force=True)
+        return {"stored": True, "key": str(key), "records": len(hit), "line": line[:400]}
+
     def memory_report(self, dup_threshold: float = 0.9) -> dict:
         """INSPECTOR overview — 'what is in memory, and is it clean'. Counts active/superseded, by type,
         consolidated (linked), decayed (effective value < 10% of stored), and a near-duplicate REDUNDANCY estimate
@@ -12657,6 +12835,8 @@ class _TenantView:
     def why_recalled(self, *a, **k):        return Inspeximus.why_recalled(self, *a, **k)
     def credit(self, *a, **k):              return Inspeximus.credit(self, *a, **k)
     def memory_report(self, *a, **k):       return Inspeximus.memory_report(self, *a, **k)
+    def memory_index(self, *a, **k):        return Inspeximus.memory_index(self, *a, **k)
+    def set_index_line(self, *a, **k):      return Inspeximus.set_index_line(self, *a, **k)
     def value_by_cohort(self, *a, **k):     return Inspeximus.value_by_cohort(self, *a, **k)
     def index_coherence(self, *a, **k):     return Inspeximus.index_coherence(self, *a, **k)
     # Tenant-scoped: it reads `_tenant_rows()`, so a view sees only its own decisions. Forwarding it

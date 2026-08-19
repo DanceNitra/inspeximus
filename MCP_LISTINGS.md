@@ -1,6 +1,6 @@
 # inspeximus MCP — registry listing pack
 
-`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 71 tools). Registry manifest:
+`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 73 tools). Registry manifest:
 [`server.json`](server.json). Zero code — pure distribution.
 
 *(The tool count is checked, not typed: `python claims_audit.py --numbers` counts `@mcp.tool()` in
@@ -28,14 +28,14 @@ inspeximus-mcp            # stdio; persists to ./inspeximus_memory.json (set INS
 
 Or let the CLI write it: `inspeximus install --ide claude` (also cursor, windsurf, codex, cline).
 
-**Tools (71):** provenance and verification first, because that is what people ask for; the ordinary
+**Tools (73):** provenance and verification first, because that is what people ask for; the ordinary
 memory operations follow. The count and the names are both checked against `@mcp.tool()` in
 `inspeximus/mcp_server.py` (`python claims_audit.py --numbers`, plus `tests/test_readme_capabilities.py`),
 so this list cannot drift from the server again.
 
 *Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · check_sources · identifier_contract · admissibility_preconditions · audit_the_audits · state_digest · selection_integrity · index_coherence
 
-*Memory operations:* remember · remember_decision · recall · recall_iterative · recall_followup · get · neighbors · as_of · token_report · route · observe · reopened · resolve_reopened · revert · check_conflict · contradictions · consolidate · consolidate_clusters · sleep · credit · value_by_cohort · where_am_i · projects
+*Memory operations:* remember · remember_decision · memory_index · set_index_line · recall · recall_iterative · recall_followup · get · neighbors · as_of · token_report · route · observe · reopened · resolve_reopened · revert · check_conflict · contradictions · consolidate · consolidate_clusters · sleep · credit · value_by_cohort · where_am_i · projects
 
 *Erasure & governance:* forget · forget_subject · forget_pii · erasure_certificate · erasure_residue · erasure_audit · erasure_report · retention · compliance_report · compliance_check · governance_report · pii_report · irreversible_budget_report · influence_gate_report · memory_report · verify_claim · check_self_narration
 

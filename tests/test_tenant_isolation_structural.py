@@ -55,6 +55,10 @@ def _b_id(store):
 
 # ── the sweep: every public method, not a curated list ───────────────────────────────────────────────
 _ARGS = {                                     # plausible arguments that would reach the other tenant
+    # set_index_line writes onto a record chosen by key, so the sweep aims it at the OTHER tenant's
+    # key: the leak it could produce is stamping an index line on a row that is not ours, or naming
+    # that row's text back in the return value.
+    "set_index_line": ("b/k", "a line aimed at another tenant's record"),
     # confirm()/discard_provisional() take a record id, so the sweep aims THE OTHER TENANT'S id at
     # them: the leak they could produce is promoting or rejecting a row that is not ours, and the
     # return value naming its text. `None` is what the harness substitutes for "the other side's id".

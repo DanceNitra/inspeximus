@@ -1,3 +1,67 @@
+## 2.16.0 - UPGRADE IF YOUR STORE IS TOO BIG TO READ WHOLE: an always-loaded index, measured
+
+`memory_index()` and `set_index_line()`. A store that will not fit in context is read through a small
+index -- one line per record, always loaded, and the agent decides what to open from those lines
+alone. The line is therefore the only surface a future need can reach, and a record whose line does
+not distinguish it is present, correct, and never retrieved.
+
+### The measurement came first, and it decided the signature
+
+316 notes, 120 questions written from the note bodies and shown to no line-writer, ranking all 316
+candidates on two query registers: full questions, and the three-to-eight words someone types into a
+search box. recall@3:
+
+| the index line is | questions | search box | index tokens |
+|---|---|---|---|
+| a hand-written title + hook | 0.333 | 0.508 | 3,063 |
+| the title alone | 0.300 | 0.450 | 1,918 |
+| title + its highest-idf terms | 0.350 | 0.533 | 5,757 |
+| **a written line: what it CONCLUDED** | **0.683** | **0.833** | 6,484 |
+| ceiling: the full records | 0.858 | 0.967 | 207,512 |
+
+**The summariser is a parameter, not a dependency**, because the only variant that moved the number
+is a written sentence. Term-stuffing -- the obvious deterministic answer -- is a null on both
+registers, +0.017 and +0.025 with both intervals containing zero. This library has no model and is
+not about to grow one, so `memory_index(summarise=...)` takes a callable, and an agent reaching it
+over MCP does the same job through `needs_line` and `set_index_line()`.
+
+**A register control chose the wording.** A question-form line scored 0.775 on question-form queries
+and looked like the winner -- but both had been written by the same model from the same text, so the
+two prompts converged. On search-box queries 57% of that margin vanished while the written line did
+not move, and on the shorter queries the written line overtakes it outright, 0.833 to 0.700. The
+recommendation in the docstring is "say what it concluded" rather than "ask what it answers" because
+of that control, not despite it.
+
+**And the numbers are re-measured through the shipped function**, not through the experiment's own
+strings: the library prefixes a key, joins with an em dash and caps the words, which is a different
+assembly. Through `memory_index()` the default reaches 0.442 / 0.525 and stored written lines reach
+0.692 / 0.842. The first draft of the docstring quoted 0.300 for the default -- that is the
+experiment's `title alone` row, and this default is the record's opening sentence, which is a
+different thing and a better one.
+
+**A reader cannot re-run any of it, and that is said rather than implied.** The corpus is a private
+memory directory of 316 notes; there is no probe in this repository behind these figures because
+there is no corpus here to point one at. What IS runnable here is the behaviour the numbers argue
+for -- the budget that shortens instead of deleting, the fallback that reports which variant you were
+handed, the reserved keyspace -- in
+`tests/test_the_index_line_is_the_only_surface_a_need_can_reach.py`.
+
+### Two rules the implementation enforces
+
+**Nothing is ever dropped to meet a budget.** A record with no line cannot be found at all, which is
+strictly worse than a short one, so `budget_tokens` shortens lines to their floor and then reports
+`over_budget` rather than silently deleting. A caller who asked for 200 tokens and quietly received
+900 would plan around 200; one who is told is not surprised.
+
+**A failing summariser costs a line, never the index.** An index is read at the start of a session,
+so a model call raising there would take the whole store dark for the sake of one entry: exceptions
+and empty returns fall back to the record's own opening.
+
+Generated lines persist on the record, so re-reading an index costs nothing and only new records
+cost a call. `refresh=True` regenerates. Both surfaces are per-tenant, and `set_index_line` writes
+into the reserved meta keyspace -- an index line any writer could set on any record is a way to make
+someone else's memory unfindable.
+
 ## 2.15.0 - UPGRADE IF YOU ACT ON `identifier_contract()`: a zero cost has two causes and only one of them was reported
 
 Credit: [@Stratogain on anthropics/claude-code#34556](https://github.com/anthropics/claude-code/issues/34556),
