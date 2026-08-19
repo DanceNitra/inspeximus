@@ -60,7 +60,11 @@ autogen = ["autogen-agentchat", "autogen-core"]
 # instead of patching each pip line, which is how the release workflow kept a copy of the bug after ci.yml
 # was fixed.
 google-adk = ["google-adk>=2"]
-openai-agents = ["openai-agents"]
+# Same shape as the google-adk note above, found the same way: the nine-extra CI install settled on
+# openai-agents 0.2.9 while a plain install gives 0.18.3, so CI was certifying an adapter against a
+# version nobody runs -- and reporting VERIFIED for a row the ledger records BROKEN against the
+# current one. The floor makes the resolver either give a modern version or fail loudly.
+openai-agents = ["openai-agents>=0.18"]
 pydantic-ai = ["pydantic-ai"]
 crewai = ["crewai"]
 # `haystack-ai` had NO extra at all, though the adapter, its parity script (haystack_audit.py) and two
