@@ -6,13 +6,13 @@
     "url": "https://github.com/DanceNitra/inspeximus",
     "source": "github"
   },
-  "version": "2.14.0",
+  "version": "2.15.0",
   "websiteUrl": "https://pypi.org/project/inspeximus/",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "inspeximus",
-      "version": "2.14.0",
+      "version": "2.15.0",
       "transport": {
         "type": "stdio"
       },

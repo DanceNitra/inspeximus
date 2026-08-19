@@ -947,6 +947,15 @@ def identifier_contract() -> dict:
     of the claim). Measured on our own decision store: an 8-character prefix fold would merge 594 groups
     and lose 1,365 keys, and no field declared any policy at all.
 
+    A ZERO COST HAS TWO CAUSES and they render identically, so each fold also carries a `verdict`.
+    COST_MEASURED means keys demonstrably merge. NOT_YET_MEASURABLE means the population is too small
+    for zero to mean anything — 13 UUID keys against an 8-hex-character fold collide with probability
+    ~1e-8, so a zero there is the absence of a signal rather than a clean bill of health. ZERO_AT_SCALE
+    is the only one that says the fold is harmless on keys like these. Prefix folds also carry
+    `threshold_population` (how many more keys before a collision is expected, from the per-position
+    perplexity of this store's own keys) and `collides_at_length` / `headroom_chars`, which need no
+    model at all: how many characters shorter the fold would have to be before it started merging.
+
     HONEST SCOPE, in `limits`: `declared` speaks for the code running now, not for the version that wrote
     a record last year; and `measured` sees only surviving keys, so a fold that ALREADY collapsed two of
     them left no trace of the second. Absence of merging is not proof that none occurred."""

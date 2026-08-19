@@ -991,7 +991,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.14.0"
+__version__ = "2.15.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1026,6 +1026,46 @@ def _cosine(a, b) -> float:
     na = math.sqrt(sum(x * x for x in a)) or 1.0
     nb = math.sqrt(sum(y * y for y in b)) or 1.0
     return dot / (na * nb)
+
+
+def _prefix_collision_threshold(keys, length: int, p: float = 0.01):
+    """How many keys before a prefix fold of `length` would be EXPECTED to collide here?
+
+    A zero collision count is two different statements. On a big population it says the fold is
+    harmless; on a small one it says nothing at all, because a collision was never likely -- and the
+    two render identically. This returns the population at which the difference starts to exist, so
+    a caller can tell them apart instead of reading a green flag.
+
+    THE SPACE IS MEASURED, NOT ASSUMED. A hex birthday bound would be wrong for keys that are file
+    paths sharing a directory. Instead each position's effective alphabet is the PERPLEXITY of the
+    characters observed there -- a position that is 'a' nine times in ten counts as ~1, not as its
+    alphabet size -- and the space is their product. On hex keys this reproduces the analytic answer
+    (8 characters -> ~9,292 keys at p=0.01); on path-like keys it collapses toward the real one.
+
+    TWO BIASES, in opposite directions, and they are why the two verdicts are not equally strong.
+    Positions are treated as INDEPENDENT; shared prefixes violate that and inflate the space. And a
+    plug-in entropy from n samples cannot see an alphabet wider than n, so on a small store the
+    space is UNDER-estimated. The second bias dominates exactly where it matters: on a small
+    population the threshold is a LOWER BOUND, so `keys < threshold` (NOT_YET_MEASURABLE) is sound --
+    if the population is below even the lower bound it is below the true one -- while
+    `keys >= threshold` is only "at or above a lower bound", which is the weaker claim. Callers who
+    need to know how badly the alphabet is unresolved get `positions_saturated` beside this.
+
+    Returns None when there is nothing to measure (no keys, or none long enough to reach `length`).
+    """
+    usable = [k for k in keys if k]
+    if not usable or length < 1:
+        return None
+    space = 1.0
+    for i in range(length):
+        counts: dict = {}
+        for k in usable:
+            c = k[i] if i < len(k) else ""          # a key shorter than the fold: its own symbol
+            counts[c] = counts.get(c, 0) + 1
+        n = sum(counts.values())
+        h = -sum((c / n) * math.log(c / n) for c in counts.values() if c)
+        space *= math.exp(h)
+    return math.ceil(math.sqrt(2.0 * space * math.log(1.0 / (1.0 - p))))
 
 
 class AmbiguousSubject(ValueError):
@@ -3359,6 +3399,14 @@ class Inspeximus:
             "prefix_8": lambda k: k[:8],
             "prefix_12": lambda k: k[:12],
         }
+
+        def _lost_at(length: int) -> int:
+            """Keys this store would lose to a prefix fold of `length`."""
+            g: dict = {}
+            for k in keys:
+                g.setdefault(k[:length], []).append(k)
+            return sum(len({*v}) - 1 for v in g.values() if len({*v}) > 1)
+
         measured = {}
         for name, fn in folds.items():
             groups: dict = {}
@@ -3366,15 +3414,63 @@ class Inspeximus:
                 groups.setdefault(fn(k), []).append(k)
             merging = {g: v for g, v in groups.items() if len({*v}) > 1}
             lost = sum(len({*v}) - 1 for v in merging.values())
-            measured[name] = {
+
+            plen = int(name.split("_")[1]) if name.startswith("prefix_") else None
+            thr = _prefix_collision_threshold(keys, plen) if plen else None
+            # A position where the observed characters number as many as the keys themselves has
+            # told us only that the store is small: the sample cannot distinguish "this IS the
+            # alphabet" from "we have seen n of it". While that holds anywhere in the fold, the
+            # space estimate is the sample size in disguise and no claim of scale rests on it.
+            saturated = sum(
+                1 for i in range(plen or 0)
+                if len({(k[i] if i < len(k) else "") for k in keys}) >= len({*keys}))
+
+            if lost:
+                verdict = "COST_MEASURED"
+            elif thr is None:
+                # No free parameter to reason about, so no population at which zero would MEAN
+                # something. Saying "invertible" here would be a claim we cannot support.
+                verdict = "ZERO_NO_THRESHOLD_MODEL"
+            elif len(keys) < thr or saturated:
+                verdict = "NOT_YET_MEASURABLE"
+            else:
+                verdict = "ZERO_AT_SCALE"
+
+            entry = {
                 "groups_that_would_merge": len(merging),
                 "keys_that_would_be_lost": lost,
-                # INVERTIBLE means: applying this fold to this store's keys loses nothing, so if it
-                # were ever applied the original is recoverable. It is a property of the DATA, not
-                # of the fold -- the same fold is destructive on a different store.
+                # TWO FIELDS BECAUSE THERE ARE TWO QUESTIONS, and the boolean silently answered only
+                # the first. `invertible_on_this_store` is a true statement about the keys PRESENT:
+                # applying this fold to them loses nothing. `verdict` answers the one a reader
+                # actually acts on -- whether that zero will survive the store growing.
+                #
+                # Raised by @Stratogain on anthropics/claude-code#34556, measuring his own store: 13
+                # UUID keys against an 8-hex-character fold collide with probability ~1e-8, so a
+                # zero there is the ABSENCE OF A SIGNAL and renders identically to a clean bill of
+                # health. It is our own "a frozen integer about a growing population is a claim with
+                # an expiry date nobody printed on it", turned on our own instrument. The boolean was
+                # never false; it was true and due to stop being true without saying so.
+                "verdict": verdict,
                 "invertible_on_this_store": lost == 0,
                 "example": next(iter(sorted(merging.values(), key=len, reverse=True)), [])[:3],
             }
+            if plen:
+                # ASSUMPTION-FREE COMPANION to the threshold: the threshold answers "how many more
+                # keys", which needs a model of where keys come from; this answers "how many fewer
+                # characters", which needs nothing but the store in front of you. Prefix collisions
+                # are monotone in length, so the longest colliding length is the edge of the cliff.
+                collides_at = max((L for L in range(1, plen) if _lost_at(L)), default=0)
+                entry["threshold_population"] = thr
+                entry["threshold_model"] = (
+                    "per-position character perplexity of this store's own keys (positions assumed "
+                    "independent), birthday bound at p=0.01. It is a LOWER bound on a small store, "
+                    "because n samples cannot reveal an alphabet wider than n -- so "
+                    "NOT_YET_MEASURABLE is sound and ZERO_AT_SCALE is the weaker of the two."
+                )
+                entry["positions_saturated"] = saturated
+                entry["collides_at_length"] = collides_at
+                entry["headroom_chars"] = plen - collides_at
+            measured[name] = entry
 
         non_ascii = [k for k in keys if any(ord(c) > 127 for c in k)]
         return {

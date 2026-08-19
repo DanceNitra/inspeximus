@@ -154,3 +154,101 @@ def test_control_an_empty_store_does_not_claim_invertibility_it_cannot_have():
     assert c["keys"] == 0
     assert all(m["keys_that_would_be_lost"] == 0 for m in c["measured"].values())
     assert any("only surviving keys" in x for x in c["limits"])
+
+
+# ───────────────────────────────────────── a zero has two causes, and they render identically
+#
+# Raised by @Stratogain on anthropics/claude-code#34556, against his own store first and then
+# against ours: 13 UUID keys folded to 8 hex characters collide with probability ~1e-8, so the
+# zero he measured was the ABSENCE OF A SIGNAL. `invertible_on_this_store` was never false there --
+# it was true, and about to stop being true without saying so. That is our own "a frozen integer
+# about a growing population is a claim with an expiry date nobody printed on it", turned around.
+
+def _uuidish(n):
+    import uuid
+    return [uuid.uuid4().hex[:8] for _ in range(n)]
+
+
+def test_a_zero_on_a_population_too_small_to_collide_is_not_a_clean_bill_of_health():
+    """The boolean stays true, because it is true. The verdict is what a reader should act on."""
+    m = _store(_uuidish(13)).identifier_contract()["measured"]["prefix_8"]
+    assert m["keys_that_would_be_lost"] == 0
+    assert m["invertible_on_this_store"] is True, "on the keys present, this fold loses nothing"
+    assert m["verdict"] == "NOT_YET_MEASURABLE", \
+        "13 keys against an 8-character fold cannot demonstrate anything about the fold"
+    assert m["threshold_population"] > 13
+
+    # MUST-FAIL CONTROL: the pre-fix rule derived everything from `lost`, so it would have called
+    # this store measured-and-clean. If a refactor ever collapses the two, this fixture says so.
+    old_rule = "COST_MEASURED" if m["keys_that_would_be_lost"] else "ZERO_AT_SCALE"
+    assert old_rule != m["verdict"], \
+        "the fixture stopped discriminating: it no longer separates the old rule from the new one"
+
+
+def test_control_a_store_past_its_threshold_does_claim_scale():
+    """THE OTHER DIRECTION. Without it, a checker that answered NOT_YET_MEASURABLE to everything
+    would pass the test above, which is the failure mode that test is about."""
+    import itertools
+    keys = ["".join(b) for b in itertools.islice(itertools.product("01", repeat=8), 40)]
+    m = _store(keys).identifier_contract()["measured"]["prefix_8"]
+    assert m["keys_that_would_be_lost"] == 0
+    assert m["positions_saturated"] == 0, "a 2-character alphabet is resolved by 40 keys"
+    assert m["verdict"] == "ZERO_AT_SCALE"
+    assert m["threshold_population"] <= 40
+
+
+def test_control_a_colliding_store_still_reports_the_cost():
+    """The new verdict must not swallow the measurement it was added beside."""
+    m = _store(["src/agora/mod_%03d.py" % i for i in range(60)]).identifier_contract()["measured"]["prefix_8"]
+    assert m["verdict"] == "COST_MEASURED"
+    assert m["keys_that_would_be_lost"] == 59 and m["invertible_on_this_store"] is False
+
+
+def test_the_threshold_reproduces_the_analytic_birthday_bound_on_hex_keys():
+    """POSITIVE CONTROL on the estimator itself. The space is measured from the keys rather than
+    assumed from an alphabet, precisely so it can handle file paths -- but where the closed form
+    does apply, the measurement has to agree with it or it is measuring something else."""
+    import math
+    import uuid
+
+    from inspeximus.core import _prefix_collision_threshold
+    keys = [uuid.uuid4().hex for _ in range(4000)]
+    for length in (4, 6, 8):
+        got = _prefix_collision_threshold(keys, length)
+        want = math.ceil(math.sqrt(2 * (16 ** length) * math.log(1 / 0.99)))
+        assert abs(got - want) / want < 0.02, \
+            f"prefix_{length}: measured {got} against analytic {want}"
+
+
+def test_saturated_positions_block_a_claim_of_scale_even_above_the_threshold():
+    """Three short words sit above their own estimated threshold, and the estimate is the sample
+    size in disguise: every key differs at position 0, so the store cannot tell an alphabet of
+    three from an alphabet of thirty. It must not read as scale."""
+    m = _store(["alpha", "beta", "gamma"]).identifier_contract()["measured"]["prefix_8"]
+    assert m["positions_saturated"] > 0
+    assert m["threshold_population"] <= 3, "the fixture must be ABOVE its threshold, or it proves nothing"
+    assert m["verdict"] == "NOT_YET_MEASURABLE"
+
+
+def test_the_headroom_is_measured_rather_than_modelled():
+    """The threshold answers 'how many more keys', which needs a model of where keys come from.
+    This answers 'how many fewer characters', which needs nothing but the store in front of you."""
+    # 'abd1x'/'abd2y' must separate at 4 so that 3 is the LONGEST colliding length, not merely a
+    # colliding one -- prefix collisions are monotone in length and the report gives the edge.
+    keys = ["abc" + s for s in ("Xq1", "Yq2", "Zq3")] + ["abd1x", "abd2y"]
+    m = _store(keys).identifier_contract()["measured"]["prefix_8"]
+    assert m["keys_that_would_be_lost"] == 0, "distinct at 8 characters"
+    assert m["collides_at_length"] == 3, "but 'abc'/'abd' merge at 3, and nothing merges at 4"
+    assert m["headroom_chars"] == 5
+    # THE TWO-NUMBERS RULE: these two sum to the fold length, so a reader can confuse them and a
+    # mutant returning one for the other must die. No fixture here may leave them equal.
+    assert m["collides_at_length"] != m["headroom_chars"]
+
+
+def test_a_fold_with_no_threshold_model_says_so_instead_of_implying_safety():
+    """Casefold has no length to reason about, so there is no population at which its zero starts
+    to mean something. Claiming scale there would be the same vacuity one level over."""
+    m = _store(["alpha", "beta", "gamma"]).identifier_contract()["measured"]["casefold"]
+    assert m["verdict"] == "ZERO_NO_THRESHOLD_MODEL"
+    assert "threshold_population" not in m
+    assert m["invertible_on_this_store"] is True, "still a true statement about the keys present"

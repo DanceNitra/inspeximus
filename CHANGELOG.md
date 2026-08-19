@@ -1,3 +1,59 @@
+## 2.15.0 - UPGRADE IF YOU ACT ON `identifier_contract()`: a zero cost has two causes and only one of them was reported
+
+Credit: [@Stratogain on anthropics/claude-code#34556](https://github.com/anthropics/claude-code/issues/34556),
+who measured it on his own store first and then pointed it at ours.
+
+`identifier_contract()` reports what each fold would cost on a store's own keys. On a store of 13
+UUID-derived keys it returned `keys_that_would_be_lost: 0` and `invertible_on_this_store: true` for
+an 8-character prefix fold. **That boolean was never false.** Applying the fold to those keys really
+does lose nothing. It was true, and due to stop being true without saying so: 13 keys against 32 bits
+collide with probability ~1e-8, so the zero was the absence of a signal and rendered identically to a
+clean bill of health. It is this project's own "a frozen integer about a growing population is a
+claim with an expiry date nobody printed on it", committed by the code that argued it.
+
+### What is new, beside the boolean rather than instead of it
+
+Each fold now carries a `verdict`, because the number a reader acts on is not the same as the number
+that is true:
+
+| verdict | means |
+|---|---|
+| `COST_MEASURED` | keys demonstrably merge — the measurement, which always outranks the model |
+| `NOT_YET_MEASURABLE` | zero, on a population too small for zero to mean anything |
+| `ZERO_AT_SCALE` | zero, at a population where that is a property of the fold |
+| `ZERO_NO_THRESHOLD_MODEL` | zero, and no free parameter on which "large enough" could be defined |
+
+Prefix folds also carry `threshold_population` — how many more keys before a collision is expected —
+and, needing no model at all, `collides_at_length` / `headroom_chars`: how many characters *shorter*
+the fold would have to be before it started merging on the keys already present.
+
+### The threshold is measured, not assumed
+
+A hex birthday bound is wrong for keys that are file paths sharing a directory. The space is the
+product of each position's character **perplexity** in this store's own keys, so a position that is
+`a` nine times in ten counts as ~1 rather than as its alphabet size.
+
+* POSITIVE CONTROL, 4,000 UUIDs: measured thresholds 37 / 578 / 9,233 at 4 / 6 / 8 characters against
+  the analytic 37 / 581 / 9,292 — agreement within 0.6% where the closed form applies.
+* On path-like keys sharing an 8-character prefix it collapses to 1, which is the point.
+
+**Two biases, named because they make the verdicts unequal.** Positions are assumed independent, and
+shared prefixes inflate the estimate; a plug-in entropy from n samples cannot see an alphabet wider
+than n, and that deflates it. So the threshold is a LOWER bound on a small store, which makes
+`keys < threshold` sound and `keys >= threshold` the weaker claim. `positions_saturated` reports how
+much of the estimate is the sample size in disguise, and a saturated position blocks `ZERO_AT_SCALE`
+outright — three short words sat above their own threshold and were calling it scale.
+
+### On our own stores
+
+Coding memory, **13,890 keys** (11,501 when this was last published — the population it describes
+grew 21% while the argument was being written): `prefix_8` COST_MEASURED, 1,773 keys lost across 850
+groups. `prefix_12` also COST_MEASURED at 774 keys lost **while the model puts the threshold at
+53,277** — positional dependence inflating it exactly as documented, and the measurement outranking
+the model is what keeps that from becoming a false all-clear.
+
+Backwards compatible: `invertible_on_this_store` keeps its meaning and its value.
+
 ## 2.14.0 - UPGRADE IF YOU RELY ON ANY verify_*/check_* HERE: two surfaces that check the checkers
 
 Built from a day in which ten of this project's own checks returned PASS for reasons unrelated to
