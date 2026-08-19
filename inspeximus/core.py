@@ -995,7 +995,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.17.0"
+__version__ = "2.17.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -11102,8 +11102,12 @@ class Inspeximus:
         most distinctive terms is a null on both registers (+0.017 and +0.025, both intervals
         containing zero). **The default is honest about being the weaker one**: with no `summarise`
         the line falls back to the record's own opening, which is the 0.300-0.450 row. And **the
-        budget is real**: the line that works costs about twice the hand-written index, on a file
-        that is loaded every session, so `budget_tokens` truncates rather than letting it drift.
+        budget is real**, though smaller than it first looked: the full written line costs about twice
+        the hand-written index, but cut to the SAME budget the hand-written one already spends it
+        keeps most of the gain -- 0.733 against 0.508, two thirds of the distance, at seven words a
+        line and no extra tokens. At half that budget, four words a line and 1,706 tokens, it still
+        reaches 0.625 and so beats the hand-written index at twice its size. `budget_tokens` is
+        therefore a dial worth turning rather than a cost to accept.
 
         A REGISTER CONTROL is why the recommendation is "what it concluded" and not "the question it
         answers". A question-form line scored 0.775 on question-form queries -- and both were written

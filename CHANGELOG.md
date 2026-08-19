@@ -1,3 +1,25 @@
+## 2.17.1 - AFFECTS NOBODY'S CODE: the token cost of `memory_index()` was overstated, by us, one release ago
+
+2.17.0 and 2.16.0 both described the written index line as roughly twice the price of a hand-written
+one -- 6,484 tokens against 3,063 -- and left it there, as a trade a reader would have to accept.
+Measured since, on the same 316-note store and the same held-out questions, cutting the written lines
+to the budget the hand-written index ALREADY spends:
+
+| budget | tokens | questions@3 | search-box@3 | words per line |
+|---|---|---|---|---|
+| 1,918 | 1,706 | 0.500 | **0.625** | 4 |
+| 3,063 | 2,986 | 0.542 | **0.733** | 7 |
+| 6,484 | 6,393 | 0.667 | 0.842 | 15 |
+| the hand-written index | 3,063 | 0.333 | 0.508 | — |
+| ceiling: the full notes | ~207,000 | 0.858 | 0.967 | — |
+
+At the same budget it keeps two thirds of the gain for no extra tokens, and at HALF that budget it
+still beats the hand-written index at full size. So `budget_tokens` is a dial rather than a cost, and
+the earlier framing understated the feature by describing only its widest setting.
+
+Docs and docstring only; no behaviour changed. Recorded as its own release because the claim it
+corrects went out in two of them.
+
 ## 2.17.0 - UPGRADE IF YOU READ `identifier_contract()`'s VERDICT: at-scale is not the same as safe
 
 `identifier_contract()` gains `at_cliff_edge` and a matching line in `limits`. It fires when a fold
