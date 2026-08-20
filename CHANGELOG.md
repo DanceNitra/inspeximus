@@ -67,10 +67,12 @@ the wrong order and is recorded as such -- turned up three things the first draf
 not mention.
 
 **Cost.** Finding the cliff means asking which fold lengths merge keys. Done as a linear sweep that
-was 0.404 s on 14,000 path-shaped keys of 157 characters -- the very shape this release exists to
-serve -- on the DEFAULT path, where 2.17.1 did two fixed folds. Prefix collisions are monotone in
-length, so it is now a binary search: **0.027 s, a 13x speedup, and a test asserts it agrees with the
-exhaustive sweep** on four shapes including a cliff at the last character and a store with no cliff.
+was a median 0.648 s over five repeats (range 0.543-0.677) on 14,000 path-shaped keys of 157
+characters -- the very shape this release exists to serve -- on the DEFAULT path, where 2.17.1 did
+two fixed folds. Prefix collisions are monotone in length, so it is now a binary search: **a median
+0.047 s, 14x, and a test asserts it agrees with the exhaustive sweep** on four shapes including a
+cliff at the last character and a store with no cliff. Quoted as a median because the first draft of
+this note cited one draw at 0.404 s, which was below the range.
 
 **Shape.** Two keys are ADDED to the report -- `cliff` and `population_commitment` -- and `measured`
 gains an entry for every length passed to `prefix_folds`. Nothing is removed or renamed. Code doing
@@ -82,7 +84,23 @@ point, and that makes it a membership test for anyone who can enumerate a candid
 store whose keys come from a small guessable vocabulary, treat it as identifying. Now a line in
 `limits` rather than an assumption.
 
-Eleven tests, five mutants, each mutant killing a named test and a no-op control killing none.
+### WHICH population the commitment binds to, which is not the same question as WHEN
+
+@Stratogain's ledger is append-only and path-keyed: deleting a file does not remove its key. So it
+carries two candidate "current populations" -- 562 keys in the store, 557 sources still on disk --
+and they disagree about collision counts at 122 fold lengths. At length 122 a live key points at a
+deleted source, so a fold there would return the dead file's observation for a surviving one, while a
+scan over surviving sources calls that fold clean. His point, which is orthogonal to time-binding: a
+measurement bound to the wrong set verifies clean every time, because the population it committed to
+is exactly the one it keeps re-checking.
+
+Checked here rather than agreed with: **inspeximus is not append-only in keys.** `forget()` removes
+the key from this report, asserted by a test, so that split does not arise. But the precondition
+holds regardless and we had not stated it, so `limits` now says the commitment binds to the keys in
+THIS store -- the set a lookup here actually keys on -- and that a caller keying on something else
+would hold a commitment over the wrong set.
+
+Thirteen tests, five mutants, each mutant killing a named test and a no-op control killing none.
 
 ## 2.17.1 - AFFECTS NOBODY'S CODE: the token cost of `memory_index()` was overstated, by us, one release ago
 

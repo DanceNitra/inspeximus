@@ -447,3 +447,29 @@ def test_the_limits_warn_that_the_commitment_is_a_comparator_not_a_secret():
     joined = " ".join(c["limits"])
     assert "COMPARATOR, not a secret" in joined, c["limits"]
     assert "membership test" in joined
+
+
+def test_forget_removes_the_key_from_the_contract_so_the_two_populations_do_not_split():
+    """@Stratogain's append-only case, checked here rather than assumed. On his ledger a deleted
+    source keeps its key, so 'keys in the store' and 'sources that still exist' are different sets
+    that disagree about collisions. If inspeximus behaved that way, `population_commitment` would be
+    committing to a population the lookup path no longer matches. It does not -- and this asserts it
+    rather than trusting the docstring."""
+    ix = _store(["shared01a", "shared01b", "other999"])
+    before = ix.identifier_contract()
+    assert before["measured"]["prefix_8"]["keys_that_would_be_lost"] == 1, "fixture must collide"
+    ids = [r.get("id") for r in ix._tenant_rows() if r.get("key") == "shared01b"]
+    ix.forget(ids[0])
+    ix.flush()
+    after = ix.identifier_contract()
+    assert after["keys"] == before["keys"] - 1, "the key must leave the contract's view"
+    assert after["measured"]["prefix_8"]["keys_that_would_be_lost"] == 0
+    assert after["population_commitment"] != before["population_commitment"]
+
+
+def test_the_limits_say_which_population_the_commitment_binds_to():
+    """His precondition, stated in the product: a commitment over the wrong set verifies clean every
+    time, so which set it is taken over has to be written down rather than inferred."""
+    joined = " ".join(_store(["a1", "b2"]).identifier_contract()["limits"])
+    assert "commits to the keys IN THIS STORE" in joined, joined[:200]
+    assert "would verify clean every time" in joined

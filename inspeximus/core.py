@@ -3613,6 +3613,14 @@ class Inspeximus:
                 "version and the tenant. It does NOT bind the writer policy of individual records; "
                 "a store written by several versions still carries several contracts, and this "
                 "report cannot say which record came from which.",
+                "`population_commitment` commits to the keys IN THIS STORE -- the set a lookup "
+                "here actually keys on -- and to nothing else. @Stratogain's append-only ledger on "
+                "anthropics/claude-code#34556 has two candidate 'current populations' that differ "
+                "by five keys and disagree about collisions at 122 fold lengths, because deleting a "
+                "source does not remove its key there. Measured here: `forget()` DOES remove the "
+                "key from this report, so that split does not arise -- but a caller whose lookup "
+                "path keys on something other than these keys would hold a commitment over the "
+                "wrong set, and it would verify clean every time.",
                 "`population_commitment` is a COMPARATOR, not a secret. It is a hash over the sorted "
                 "key set, so it reveals no single key -- but it is stable across parties, which is "
                 "the point and also makes it a membership test for anyone who can enumerate a "
