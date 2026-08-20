@@ -303,3 +303,110 @@ def test_control_an_ordinary_store_gets_no_cliff_warning():
     c = _store(["alpha", "beta", "gamma"]).identifier_contract()
     assert c["at_cliff_edge"] == []
     assert not any("CLIFF EDGE" in x for x in c["limits"])
+
+
+# ───────────────────────────────────────── #34556: the two findings from the thread
+#
+# @Stratogain measured his own store and found that `at_cliff_edge` cannot fire on path-shaped keys:
+# the conjunction ZERO_AT_SCALE && headroom == 1 is not false there but UNSATISFIABLE, because the
+# threshold at a 149-character fold outruns any population. He also showed a second, unrelated way
+# the field goes quiet -- positions_saturated on a tiny store -- with nothing in the output telling
+# the two apart. @safal207 (CML #311) froze five ways a correct measurement goes stale before use;
+# four of them landed on this contract, the worst being that {A,B,C} and {A,B,D} produced a
+# byte-identical report because the only population fact carried was a count.
+
+
+def _deep_paths(n=200, depth=148):
+    """A store whose cliff is set by its deepest directory rather than its common root.
+
+    THE FIXTURE HAS TO LAND EXACTLY. A first version made the shared directory 149 characters and
+    gave two files names beginning with the same letter, so the four keys still merged at fold 149
+    and the test failed against correct code. The prefix is now exactly `depth` characters and the
+    four file names differ at their first character, so character depth+1 is the first that tells
+    them apart."""
+    base = "c:/a/" + "d" * max(0, depth - 6) + "/"
+    assert len(base) == depth, "the shared prefix must be exactly %d chars, got %d" % (depth, len(base))
+    out = [base + name for name in ("a.ts", "b.ts", "c.ts", "e.ts")]
+    out += ["c:/%03d/%03d.py" % (i, i) for i in range(n)]
+    return sorted(set(out))
+
+
+def test_the_caller_can_name_the_fold_their_store_actually_uses():
+    """8 and 12 are defaults, not a claim about anyone's keys. A cliff at 148 is outside the
+    instrument until the caller says which fold they fold on."""
+    keys = _deep_paths()
+    c = _store(keys).identifier_contract(prefix_folds=[149])
+    assert "prefix_149" in c["measured"], sorted(c["measured"])
+    assert c["measured"]["prefix_149"]["keys_that_would_be_lost"] == 0
+    assert c["measured"]["prefix_149"]["headroom_chars"] == 1
+    assert "prefix_149" in c["cliff"]["measured_folds_at_the_cliff"]
+
+
+def test_the_cliff_is_reported_even_when_no_measured_fold_is_near_it():
+    """The store's cliff is a property of its keys, not of which folds we happened to measure."""
+    c = _store(_deep_paths()).identifier_contract()
+    assert c["at_cliff_edge"] == [], "the old field keeps its old, narrow meaning"
+    assert c["cliff"]["collides_at_length"] == 148
+    assert c["cliff"]["first_clean_fold"] == 149
+
+
+def test_the_silence_carries_its_reason_and_the_reasons_differ():
+    """His sharpest point: two empty fields, opposite meanings. On paths the threshold at the clean
+    fold is unreachable; on a store no fold merges, there is simply no cliff. Same `[]` before."""
+    paths = _store(_deep_paths()).identifier_contract()
+    tiny = _store(["aaa11111", "bbb22222", "ccc33333"]).identifier_contract()
+    assert paths["at_cliff_edge"] == tiny["at_cliff_edge"] == []
+    assert paths["cliff"]["why_at_cliff_edge_is_silent"] == "threshold_unreachable_at_that_fold"
+    assert tiny["cliff"]["why_at_cliff_edge_is_silent"] == "no_fold_merges_these_keys"
+    assert paths["cliff"]["why_at_cliff_edge_is_silent"] != tiny["cliff"]["why_at_cliff_edge_is_silent"]
+
+
+def test_cliff_is_always_a_dict_never_a_falsy_sentinel():
+    """MUST-FAIL CONTROL for the bug class this very function already had once. A caller writing
+    `if report["cliff"]:` must not conflate 'no cliff' with 'not examined'."""
+    for keys in (["alpha", "beta", "gamma"], _deep_paths()):
+        c = _store(keys).identifier_contract()
+        assert isinstance(c["cliff"], dict), type(c["cliff"])
+        assert c["cliff"]["why_at_cliff_edge_is_silent"] is not None or c["at_cliff_edge"]
+
+
+def test_when_the_warning_should_fire_the_reason_is_None():
+    """The reason field is not decoration: on the fixture that DOES trip the warning it must be
+    None, or a consumer could not tell 'quiet for a reason' from 'loud'."""
+    c = _store(_prefixed()).identifier_contract()
+    if c["at_cliff_edge"]:
+        assert c["cliff"]["why_at_cliff_edge_is_silent"] is None, c["cliff"]
+
+
+def test_population_commitment_separates_two_stores_of_the_same_size():
+    """@safal207's class 1, which landed hardest: {A,B,C} and {A,B,D} are three keys either way."""
+    a = _store(["aaa11111", "bbb22222", "ccc33333"]).identifier_contract()
+    b = _store(["aaa11111", "bbb22222", "ddd44444"]).identifier_contract()
+    assert a["keys"] == b["keys"] == 3, "the fixture must keep the counts equal or it proves nothing"
+    assert a["population_commitment"] != b["population_commitment"]
+
+
+def test_population_commitment_is_stable_for_the_same_population():
+    """MUST-FAIL CONTROL: a commitment that changed on every read would pass the test above and be
+    useless, because every cached report would look stale."""
+    keys = ["aaa11111", "bbb22222", "ccc33333"]
+    assert (_store(keys).identifier_contract()["population_commitment"]
+            == _store(list(reversed(keys))).identifier_contract()["population_commitment"])
+
+
+def test_population_commitment_does_not_cross_tenants():
+    """His class 5. Identical keys in two scopes are not the same population to a consumer."""
+    keys = ["aaa11111", "bbb22222", "ccc33333"]
+    one = _store(keys, tenant="tenant-1").identifier_contract()
+    two = _store(keys, tenant="tenant-2").identifier_contract()
+    assert one["keys"] == two["keys"]
+    assert one["population_commitment"] != two["population_commitment"]
+
+
+def test_the_limits_name_what_the_commitment_still_does_not_cover():
+    """Two of his five are NOT fixed here, and saying so is the point: a deleted key takes the
+    evidence of its own collision with it, and nothing binds the writer policy of a single record."""
+    c = _store(["aaa11111", "bbb22222"]).identifier_contract()
+    joined = " ".join(c["limits"])
+    assert "cannot tell you what it lost" in joined, c["limits"]
+    assert "does NOT bind the writer policy" in joined, c["limits"]

@@ -1,3 +1,67 @@
+## 2.18.0 - UPGRADE IF YOU READ `identifier_contract()`: the warning we shipped could not fire on a whole class of stores
+
+Two people took 2.17.0 and pointed it at their own stores. Both found something, and one of them
+found that the feature announced in the last release is unsatisfiable on the keys he actually has.
+
+### The cliff warning could not fire on structured keys
+
+@Stratogain, on anthropics/claude-code#34556, answered a question we asked him -- is there a case
+where the population threshold and the character headroom disagree about whether to act -- by
+measuring his own ledger instead of a construction. `at_cliff_edge` fires when a fold reports
+ZERO_AT_SCALE with one character of headroom. On path-shaped keys the first non-merging fold sits far
+out, and the population threshold there is astronomically larger than any population, so that
+conjunction is not false but **unsatisfiable**. Reproduced here before believing it: on a 516-key
+path-shaped population, ZERO_AT_SCALE is returned at **no fold length from 1 to 166**. On a 3-key
+hash-shaped store it is unreachable too, and for an entirely different reason -- `positions_saturated`.
+Two silences, opposite meanings, one empty list, and nothing in the output telling them apart.
+
+**And a plainer defect underneath his, which is ours.** The contract measured `prefix_8` and
+`prefix_12` and nothing else, and computed `collides_at_length` by searching lengths *below* the
+fold. His cliff is at character 148. It was outside the instrument before any argument about
+thresholds was reached. Two lengths we picked are not a claim about anyone's keys, and a store keyed
+by file paths has its cliff set by its deepest directory rather than by its common root.
+
+So:
+
+- `identifier_contract(prefix_folds=[...])` measures the folds the CALLER folds on.
+- a `cliff` block reports `collides_at_length`, `first_clean_fold` and the threshold there,
+  whatever was measured -- the cliff is a property of the keys, not of our default fold list.
+- when `at_cliff_edge` is empty the block now says WHY: `threshold_unreachable_at_that_fold`,
+  `positions_saturated`, `no_fold_merges_these_keys`, or `None` when the warning is genuinely firing.
+- `cliff` is **always a dict**, never `None`. "No cliff" is a result, not an absence, and a falsy
+  sentinel here is the exact bug class this function already had once.
+
+`at_cliff_edge` keeps its old meaning and its old silence. Additive, as the last correction to this
+function should have taught us and did.
+
+### The report was not bound to the population that produced it
+
+@safal207's CML #311 freezes five ways a correct measurement goes stale before it is used, and left
+the PR unmerged asking for a second implementation to disagree. Run against this contract, four of
+the five landed. The worst was his first: `{A,B,C}` and `{A,B,D}` produced a **byte-identical
+report**, because the only population fact we carried was a count.
+
+`population_commitment` now binds the report to the exact key set, its size, the measuring version
+and the tenant. That closes his class 1 (same count, different population) and class 5 (foreign
+scope), and makes class 2 (CHECK -> INSERT -> USE) principled rather than incidental.
+
+**What it does not reach, stated rather than implied.** A hash of the keys says nothing about which
+version wrote each record, and a deleted key takes the evidence of its own collision with it. The
+commitment changes when that key goes, so a consumer learns the population moved -- not what it lost.
+Both are now explicit lines in `limits`, where previously three of his five classes were named in
+prose a program could not act on.
+
+### Where we disagree with the proposed fix, and it is small
+
+His replacement -- `headroom_chars == 1 && keys_lost == 0` with a minimum key count, decoupled from
+the verdict -- was scored two ways. At the folds we report it fires almost nowhere. At the cliff fold,
+which is what makes it fire on his paths, it also fires on an unstructured control whose cliff sits a
+few characters in. A cliff exists somewhere in nearly every store, so neither rule is right alone:
+the quantity with meaning is the distance between the cliff and **the fold the caller actually uses**,
+which is why `prefix_folds` is the load-bearing half of this release.
+
+Nine tests, five mutants, each mutant killing a named test and a no-op control killing none.
+
 ## 2.17.1 - AFFECTS NOBODY'S CODE: the token cost of `memory_index()` was overstated, by us, one release ago
 
 2.17.0 and 2.16.0 both described the written index line as roughly twice the price of a hand-written

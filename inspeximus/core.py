@@ -995,7 +995,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.17.1"
+__version__ = "2.18.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3367,7 +3367,7 @@ class Inspeximus:
                 "surfaces": surfaces, "surfaces_covered": covered,
                 "surfaces_available": len(available), "limits": limits}
 
-    def identifier_contract(self) -> dict:
+    def identifier_contract(self, prefix_folds=None) -> dict:
         """What are this store's identifiers, and which folds over them would LOSE information?
 
         THE QUESTION THIS ANSWERS is the one a store outlives its writer to face. Someone holds the
@@ -3392,10 +3392,17 @@ class Inspeximus:
         gone. That asymmetry is the reason to emit the declaration at write time rather than infer
         it at read time, and it is the open half of this.
         """
+        import hashlib as _hashlib
         import unicodedata as _ud
         rows = self._tenant_rows()
         keys = [r.get("key") for r in rows if r.get("key")]
 
+        # THE FOLDS THE CALLER ACTUALLY USES, not only the two we guessed. 8 and 12 are defaults,
+        # not a claim about anyone's keys. @Stratogain measured his own store on #34556 and his
+        # first non-merging fold sits at character 149 -- a cliff outside this instrument entirely,
+        # before any argument about thresholds is reached. A store keyed by file paths has its cliff
+        # set by its deepest directory, and no fixed pair of lengths can know where that is.
+        _extra = sorted({int(f) for f in (prefix_folds or ()) if int(f) > 0})
         folds = {
             "unicode_nfc": lambda k: _ud.normalize("NFC", k),
             "casefold": lambda k: k.casefold(),
@@ -3403,6 +3410,8 @@ class Inspeximus:
             "prefix_8": lambda k: k[:8],
             "prefix_12": lambda k: k[:12],
         }
+        for _f in _extra:
+            folds.setdefault("prefix_%d" % _f, (lambda n: (lambda k: k[:n]))(_f))
 
         def _lost_at(length: int) -> int:
             """Keys this store would lose to a prefix fold of `length`."""
@@ -3492,6 +3501,69 @@ class Inspeximus:
         # threshold of 19,909, and one character less merges them.
         cliffs = [n for n, m in measured.items()
                   if m["verdict"] == "ZERO_AT_SCALE" and m.get("headroom_chars") == 1]
+
+        # WHERE THIS STORE'S CLIFF ACTUALLY IS, independent of which folds were measured, and WHY
+        # the warning above is silent when it is. @Stratogain's sharpest point on #34556: on his
+        # paths the conjunction `ZERO_AT_SCALE and headroom == 1` is not false but UNSATISFIABLE
+        # (the threshold at a 149-character fold is astronomically larger than any population), and
+        # on a three-key store `positions_saturated` blocks it for an entirely different reason.
+        # Same empty field, opposite meanings, and nothing in the output told them apart. Verified
+        # on our own code before writing this: ZERO_AT_SCALE was unreachable at every length 1-166
+        # on a path-shaped population, and at every length on a 3-key hash-shaped one.
+        _maxlen = max((len(k) for k in keys), default=0)
+        _collides_at = max((L for L in range(1, _maxlen + 1) if _lost_at(L)), default=0)
+        _first_clean = _collides_at + 1 if _collides_at else None
+        # ALWAYS A DICT, NEVER None. "No cliff" is a result, not an absence, and a falsy sentinel
+        # here is the exact bug class this function already had once: a caller writing
+        # `if report["cliff"]:` would silently treat a store with no cliff and a store the code
+        # failed to examine as the same thing. Shape stays constant; the reason field carries the
+        # difference.
+        _cliff = {"collides_at_length": 0, "first_clean_fold": None,
+                  "threshold_at_first_clean_fold": None, "population": len({*keys}),
+                  "measured_folds_at_the_cliff": [],
+                  "why_at_cliff_edge_is_silent": "no_fold_merges_these_keys"}
+        if _first_clean and _first_clean <= _maxlen:
+            _thr = _prefix_collision_threshold(keys, _first_clean)
+            _sat = sum(1 for i in range(_first_clean)
+                       if len({(k[i] if i < len(k) else "") for k in keys}) >= len({*keys}))
+            if _thr is None:
+                _why = "no_threshold_model_at_that_fold"
+            elif _sat:
+                _why = "positions_saturated"
+            elif len(keys) < _thr:
+                _why = "threshold_unreachable_at_that_fold"
+            else:
+                _why = None
+            _cliff = {
+                "collides_at_length": _collides_at,
+                "first_clean_fold": _first_clean,
+                "threshold_at_first_clean_fold": _thr,
+                "population": len({*keys}),
+                # A fold ONE character past the cliff is the fragile one. Reported whether or not a
+                # statistical verdict is available there, because the cliff is a property of the
+                # keys in front of you and the verdict is a claim about population size.
+                "measured_folds_at_the_cliff": sorted(
+                    n for n, m in measured.items()
+                    if m.get("collides_at_length") == _collides_at and m.get("headroom_chars") == 1),
+                "why_at_cliff_edge_is_silent": _why,
+            }
+        # NOT A COMMITMENT TO SIZE. @safal207's CML #311 freezes five ways a correct measurement
+        # goes stale before it is used; run against this contract, four of them landed. The one
+        # that landed hardest is his first: {A,B,C} and {A,B,D} produced a BYTE-IDENTICAL report,
+        # because the only population fact we carried was a count. This binds the report to the
+        # exact key set, its size, the measuring version and the tenant, so a consumer holding a
+        # cached report can tell it has stopped applying.
+        #
+        # WHAT IT STILL DOES NOT COVER, measured and stated rather than implied: it says nothing
+        # about WHICH version wrote each record (his class 4), and a deleted key takes the evidence
+        # of its own collision with it (his class 3) -- the commitment changes, so you learn the
+        # population moved, but not what it lost. Both remain in `limits`.
+        _pc = _hashlib.sha256()
+        for _k in sorted({*keys}):
+            _pc.update(_k.encode("utf-8", "replace"))
+            _pc.update(b"\x00")
+        _commitment = "%s:%d:%s:%s" % (_pc.hexdigest()[:16], len({*keys}), __version__,
+                                       getattr(self, "tenant", None) or "-")
         cliff_note = ([
             "AT THE CLIFF EDGE: %s reports ZERO_AT_SCALE with one character of headroom -- it is the "
             "shortest fold on this store that does not merge keys, and one character less does. The "
@@ -3511,11 +3583,23 @@ class Inspeximus:
             "non_ascii_keys": len(non_ascii),
             "mixed_normalisation": sum(1 for k in non_ascii if _ud.normalize("NFC", k) != k),
             "at_cliff_edge": sorted(cliffs),
+            # ADDITIVE, both of them. `at_cliff_edge` keeps its old meaning and its old silence;
+            # `cliff` says where the cliff is regardless of which folds were measured, and names
+            # the reason the warning is quiet when it is. `population_commitment` binds this whole
+            # report to the population that produced it.
+            "cliff": _cliff,
+            "population_commitment": _commitment,
             "limits": cliff_note + [
                 "`declared` describes the code running now, not the version that wrote any given "
                 "record. A store written by several versions can carry several contracts.",
                 "`measured` sees only surviving keys: a fold that already collapsed two of them "
-                "left no trace of the second, so absence of merging is not proof none occurred.",
+                "left no trace of the second, so absence of merging is not proof none occurred. "
+                "`population_commitment` will change when that key goes, so a cached report can "
+                "tell the population moved -- it cannot tell you what it lost.",
+                "`population_commitment` binds this report to the key set, its size, the measuring "
+                "version and the tenant. It does NOT bind the writer policy of individual records; "
+                "a store written by several versions still carries several contracts, and this "
+                "report cannot say which record came from which.",
             ],
         }
 
