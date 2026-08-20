@@ -3511,7 +3511,20 @@ class Inspeximus:
         # on our own code before writing this: ZERO_AT_SCALE was unreachable at every length 1-166
         # on a path-shaped population, and at every length on a 3-key hash-shaped one.
         _maxlen = max((len(k) for k in keys), default=0)
-        _collides_at = max((L for L in range(1, _maxlen + 1) if _lost_at(L)), default=0)
+        # BINARY SEARCH, not a linear sweep. Prefix collisions are MONOTONE in length -- if a fold
+        # of L merges keys then so does every fold shorter than L -- so the longest colliding length
+        # is findable in ~log2(maxlen) passes instead of maxlen. Measured before this was written:
+        # the linear version cost 0.404 s on 14,000 path-shaped keys of 157 characters, which is the
+        # very shape this release exists to serve, and it ran on the DEFAULT path where the previous
+        # release did two folds. 157 passes become 8.
+        _lo, _hi = 0, _maxlen
+        while _lo < _hi:
+            _mid = (_lo + _hi + 1) // 2
+            if _lost_at(_mid):
+                _lo = _mid
+            else:
+                _hi = _mid - 1
+        _collides_at = _lo
         _first_clean = _collides_at + 1 if _collides_at else None
         # ALWAYS A DICT, NEVER None. "No cliff" is a result, not an absence, and a falsy sentinel
         # here is the exact bug class this function already had once: a caller writing
@@ -3600,6 +3613,11 @@ class Inspeximus:
                 "version and the tenant. It does NOT bind the writer policy of individual records; "
                 "a store written by several versions still carries several contracts, and this "
                 "report cannot say which record came from which.",
+                "`population_commitment` is a COMPARATOR, not a secret. It is a hash over the sorted "
+                "key set, so it reveals no single key -- but it is stable across parties, which is "
+                "the point and also makes it a membership test for anyone who can enumerate a "
+                "candidate key set. On a store whose keys come from a small guessable vocabulary, "
+                "treat it as identifying rather than opaque.",
             ],
         }
 

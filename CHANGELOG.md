@@ -60,7 +60,29 @@ few characters in. A cliff exists somewhere in nearly every store, so neither ru
 the quantity with meaning is the distance between the cliff and **the fold the caller actually uses**,
 which is why `prefix_folds` is the load-bearing half of this release.
 
-Nine tests, five mutants, each mutant killing a named test and a no-op control killing none.
+### What this costs you, and what it changes in the report's shape
+
+Said because an adversarial pass on this release -- run after the code was already on main, which is
+the wrong order and is recorded as such -- turned up three things the first draft of these notes did
+not mention.
+
+**Cost.** Finding the cliff means asking which fold lengths merge keys. Done as a linear sweep that
+was 0.404 s on 14,000 path-shaped keys of 157 characters -- the very shape this release exists to
+serve -- on the DEFAULT path, where 2.17.1 did two fixed folds. Prefix collisions are monotone in
+length, so it is now a binary search: **0.027 s, a 13x speedup, and a test asserts it agrees with the
+exhaustive sweep** on four shapes including a cliff at the last character and a store with no cliff.
+
+**Shape.** Two keys are ADDED to the report -- `cliff` and `population_commitment` -- and `measured`
+gains an entry for every length passed to `prefix_folds`. Nothing is removed or renamed. Code doing
+`report["at_cliff_edge"]` is unaffected; code asserting the report's exact key set is not.
+
+**Disclosure.** `population_commitment` is a comparator, not a secret. It is a hash over the sorted
+key set, so no single key is recoverable from it -- but it is stable across parties, which is the
+point, and that makes it a membership test for anyone who can enumerate a candidate key set. On a
+store whose keys come from a small guessable vocabulary, treat it as identifying. Now a line in
+`limits` rather than an assumption.
+
+Eleven tests, five mutants, each mutant killing a named test and a no-op control killing none.
 
 ## 2.17.1 - AFFECTS NOBODY'S CODE: the token cost of `memory_index()` was overstated, by us, one release ago
 

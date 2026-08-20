@@ -410,3 +410,40 @@ def test_the_limits_name_what_the_commitment_still_does_not_cover():
     joined = " ".join(c["limits"])
     assert "cannot tell you what it lost" in joined, c["limits"]
     assert "does NOT bind the writer policy" in joined, c["limits"]
+
+
+def test_the_binary_search_for_the_cliff_agrees_with_a_linear_sweep():
+    """CONTROL FOR AN OPTIMISATION. The cliff is found by binary search on the monotonicity of
+    prefix collisions -- if a fold of L merges keys, every shorter fold does too. A speedup that
+    quietly disagrees with the exhaustive answer is worse than the cost it saves, so this checks the
+    two against each other on four shapes, including one where the cliff is at the very last
+    character and one where there is no cliff at all."""
+    shapes = {
+        "deep paths": _deep_paths(),
+        "prefixed": _prefixed(),
+        "no cliff": ["alpha", "beta", "gamma"],
+        "cliff at the end": ["ab" + "%04d" % i + "xy" for i in range(60)] + ["ab0000zz", "ab0000zw"],
+    }
+    for name, keys in shapes.items():
+        keys = sorted(set(keys))
+
+        def lost_at(length):
+            g = {}
+            for k in keys:
+                g.setdefault(k[:length], []).append(k)
+            return sum(len({*v}) - 1 for v in g.values() if len({*v}) > 1)
+
+        exhaustive = max((L for L in range(1, max(len(k) for k in keys) + 1) if lost_at(L)), default=0)
+        reported = _store(keys).identifier_contract()["cliff"]["collides_at_length"]
+        assert reported == exhaustive, "%s: binary search said %d, sweep said %d" % (
+            name, reported, exhaustive)
+
+
+def test_the_limits_warn_that_the_commitment_is_a_comparator_not_a_secret():
+    """It is a hash over the sorted key set: no single key is recoverable, but it is a stable
+    cross-party value, which makes it a membership test against a guessable candidate set. Said in
+    the product, because a reader will otherwise assume a hash is opaque."""
+    c = _store(["alpha-1", "beta-2"]).identifier_contract()
+    joined = " ".join(c["limits"])
+    assert "COMPARATOR, not a secret" in joined, c["limits"]
+    assert "membership test" in joined
