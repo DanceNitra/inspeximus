@@ -576,8 +576,25 @@ def test_environment_binding_coverage_is_an_honest_zero(tmp_path):
 
 
 def test_coverage_survives_an_empty_store(tmp_path):
-    """No records is not a division by zero, and it is not a clean bill either."""
+    """No records is not a division by zero, and it is not a clean bill either.
+
+    CHANGED IN 2.19.1, and the original intent is what decides it. This asserted `== 0.0`, chosen so
+    an empty store would not read as fine. That property is carried by `ok is False`, which still
+    holds -- the number was never what delivered it. Meanwhile 0.0 was indistinguishable from a
+    coverage of zero measured over a full store, which is a real reading of ours: 210,499 records,
+    0.01% re-checkable. So the empty case now returns None and the key stays present, because an
+    absent key reads as "not applicable" while None reads as "not measured".
+
+    @Stratogain raised the shape on safal207/Causal-Memory-Layer#311, asking whether a vacuous 1.0
+    can be told apart from a basis never enumerated. Ours was the same defect with the sign flipped,
+    in two of six fields, beside four that already returned None."""
     ix = Inspeximus(path=str(tmp_path / "s.json"))
     r = ix.check_sources()
-    assert r["ok"] is False
-    assert r["coverage"]["locator_coverage"] == 0.0
+    assert r["ok"] is False, "an empty store is still not a clean bill -- this is the load-bearing half"
+    cov = r["coverage"]
+    assert cov["locator_coverage"] is None
+    assert "locator_coverage" in cov, "None, not absent: absent would read as not-applicable"
+
+    ix.remember("a record with no source at all")
+    assert ix.check_sources()["coverage"]["locator_coverage"] == 0.0, (
+        "the control: a MEASURED zero must still be 0.0, or the field has stopped measuring")

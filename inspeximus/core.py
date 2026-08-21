@@ -995,7 +995,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.19.0"
+__version__ = "2.19.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3837,7 +3837,16 @@ class Inspeximus:
                 _bound_env += 1
         coverage = {
             # can the evidence point back to an origin at all?
-            "locator_coverage": round(_with_locator / _n, 4) if _n else 0.0,
+            #
+            # None ON AN EMPTY POPULATION, not 0.0. @Stratogain asked @safal207 on
+            # Causal-Memory-Layer#311 whether a vacuous 1.0 can be told apart from a measured one,
+            # citing our own 2.15.0 split as the precedent. Asked of ourselves, two fields here had
+            # the same defect with the sign flipped: 0/0 rendered as 0.0, which is indistinguishable
+            # from a real 0.0 measured over a full store -- and we PUBLISHED a real 0.0 (0.01%
+            # re-checkable on 210,499 records) as a finding, so a vacuous one reads as a
+            # catastrophe rather than as an absence. Three neighbouring fields already returned None
+            # for exactly this reason; these two did not, inside the same dict.
+            "locator_coverage": round(_with_locator / _n, 4) if _n else None,
             # can that origin be re-read and deterministically compared? (fingerprint present AND read)
             "refetch_verification_coverage": (round(checked / _bindable, 4)
                                               if _bindable else None),
@@ -3873,9 +3882,11 @@ class Inspeximus:
             "bindable": _bindable,
             "source_enumeration_coverage": None,
             # is the record bound to an environment (repo/commit/tenant/policy/model/TTL)? We do not
-            # write that binding anywhere yet, so this is honestly 0.0 rather than absent -- the
-            # REVALIDATE half of the contract is unbuilt here.
-            "environment_binding_coverage": round(_bound_env / _n, 4) if _n else 0.0,
+            # write that binding anywhere yet, so on a NON-EMPTY store this is honestly 0.0 rather
+            # than absent -- the REVALIDATE half of the contract is unbuilt here, and an absent key
+            # would read as "not applicable". On an EMPTY store it is None, because 0/0 is not a
+            # measurement of anything. The two zeros mean different things and now look different.
+            "environment_binding_coverage": round(_bound_env / _n, 4) if _n else None,
         }
 
         report = {

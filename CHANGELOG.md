@@ -1,3 +1,38 @@
+## 2.19.1 - UPGRADE IF YOU READ `check_sources()` COVERAGE ON A SMALL OR EMPTY STORE: 0/0 rendered as 0.0 in two of six fields
+
+@Stratogain asked @safal207 a question on safal207/Causal-Memory-Layer#311 -- can a coverage of 1.0
+be told apart from a basis that was never enumerated? -- and cited 2.15.0's four-valued split as the
+precedent. Asked of ourselves, the same defect was here with the sign flipped.
+
+`check_sources()` returns six coverage numbers. Four already returned `None` on an empty denominator,
+for exactly this reason. `locator_coverage` and `environment_binding_coverage` returned **0.0**,
+inside the same dict, on a store with no records.
+
+That is worse for us than a vacuous 1.0, because we published a real 0.0 as a finding: 210,499
+records, 98.3% carrying a source field, **0.01%** resolving to anything re-checkable. Against that
+background a vacuous 0.0 does not read as "nothing was measured". It reads as a catastrophe.
+
+```
+empty store          locator_coverage: None    nothing was measured
+records, no source   locator_coverage: 0.0     measured, and the answer is zero
+```
+
+The keys stay present in both cases. An absent key reads as "not applicable"; `None` reads as "not
+measured", and those are different facts with different remedies.
+
+```python
+import tempfile, os
+from inspeximus import Inspeximus
+
+m = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"))
+empty = m.check_sources()["coverage"]["locator_coverage"]
+m.remember("a record with no source at all")
+print(empty, m.check_sources()["coverage"]["locator_coverage"])
+# -> None 0.0
+```
+
+Ten tests, and reverting either field kills two of them.
+
 ## 2.19.0 - UPGRADE IF YOU CACHE OR PASS AROUND A `identifier_contract()` REPORT OR A `witness()`: a commitment can verify perfectly and still be the wrong instrument for the question asked of it
 
 @safal207 and @Stratogain converged on this from opposite ends of anthropics/claude-code#34556, and
