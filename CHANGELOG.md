@@ -1,3 +1,87 @@
+## 2.19.0 - UPGRADE IF YOU CACHE OR PASS AROUND A `identifier_contract()` REPORT OR A `witness()`: a commitment can verify perfectly and still be the wrong instrument for the question asked of it
+
+@safal207 and @Stratogain converged on this from opposite ends of anthropics/claude-code#34556, and
+the compact form is @safal207's: **cryptographic validity is not evidentiary sufficiency. A
+commitment must cover exactly the fields the claimed predicate depends on.**
+
+@Stratogain found it on his own store and named the failure with numbers. A commitment over the KEY
+SET reports valid for every one of the **226 of 634** paths whose CONTENT changed. For headroom that
+is correct -- headroom is a property of the keys, and content cannot touch it. For "is this
+observation still good" it is exactly wrong. Same hash, same store, opposite verdicts, and nothing in
+the artifact said which question it had been minted for.
+
+**It is our defect too, and it was already written down.** `identifier_contract()` has returned
+`population_commitment` since 2.18.0, and its own `limits` prose said a caller keying on something
+else "would hold a commitment over the wrong set, and it would verify clean every time." That is the
+finding, sitting in a paragraph no verifier can query. A field can be asked; a paragraph cannot.
+
+### Both artifacts now declare what they cover
+
+```
+identifier_contract()          commitment_scope: ["key"]
+                               verifies:         ["population_identity", "headroom"]
+                               does_not_verify:  ["observation_current", "store_unchanged"]
+
+witness()                      commitment_scope: ["store"]
+witness(bind_sources=True)     commitment_scope: ["store", "source_digest"]
+```
+
+The witness scope **grows** with `bind_sources` rather than being relabelled, because the two calls
+answer different questions and a caller holding the receipt afterwards has to be able to tell them
+apart. The behaviour was already split -- `digest_match` for the store, `sources_match` for the world
+-- and was never declared in the artifact.
+
+### Scope subsumption, which neither sketch of this had
+
+A commitment over the whole **store** necessarily pins the key set inside it, so a store-scoped
+receipt answers key-scoped questions too: `SCOPE_IMPLIES = {"store": {"key"}}`. It does **not** run
+the other way -- a key-scoped commitment says nothing about the rest of the store, which is the
+asymmetry the feature exists to express.
+
+Measured rather than reasoned. Adding a key moves `state_digest()`; a real `forget()` moves it too
+(2 active to 1, digest changed). The first attempt at that second measurement called
+`forget("beta")` positionally, so `ids` was the string "beta", nothing matched, and the digest
+correctly did not move -- which reads exactly like *erasure is invisible to the witness* and was one
+sentence from being written down as a finding about the product.
+`test_THE_MEASUREMENT_THE_SUBSUMPTION_RESTS_ON` is the test that would have caught it, and it
+asserts the no-op shape as well as the real one.
+
+### The second question, answerable without the store
+
+`Inspeximus.commitment_supports(artifact, predicate)` answers the question that is not "does it
+verify": is this commitment sufficient for what I am about to conclude?
+
+```python
+import tempfile, os
+from inspeximus import Inspeximus
+
+m = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"))
+m.remember("the staging host is db-old", key="runbook.md")
+
+c = m.identifier_contract()
+# right for the question it was minted for, and refused for the one it cannot see
+print(Inspeximus.commitment_supports(c, "headroom")["sufficient"],
+      Inspeximus.commitment_supports(c, "observation_current")["reason"])
+# -> True scope_too_narrow
+```
+
+**It fails closed on an undeclared scope**, which is the case that decides whether the feature is
+worth having. A report cached before this version carries a commitment and no `commitment_scope`,
+and the tempting reading is "no declared limits, so no limits". An artifact that does not say what it
+covers is sufficient for **nothing**, with `reason: "undeclared_scope"` so a caller can tell that
+apart from a real mismatch and re-mint rather than hunt a bug. An unknown predicate returns False
+rather than raising.
+
+### Boundary, stated rather than implied
+
+`commitment_supports` reads the artifact's **declaration**. It answers whether the commitment claims
+enough for the predicate -- not whether the claim is honest. A hand-widened `commitment_scope`
+passes, and the suite asserts that it passes, because a helper that appeared to detect lying scopes
+would be worse than one that openly does not. Verifying the commitment itself is the other question.
+
+The `limits` prose that predicted all of this stays. The fields are additive; deleting the paragraph
+would lose the reasoning that produced them.
+
 ## 2.18.0 - UPGRADE IF YOU READ `identifier_contract()`: the warning we shipped could not fire on a whole class of stores
 
 Two people took 2.17.0 and pointed it at their own stores. Both found something, and one of them

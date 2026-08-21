@@ -55,6 +55,10 @@ def _b_id(store):
 
 # ── the sweep: every public method, not a curated list ───────────────────────────────────────────────
 _ARGS = {                                     # plausible arguments that would reach the other tenant
+    # commitment_supports reads an artifact dict the caller already holds. The sweep aims a
+    # HAND-BUILT artifact carrying the other side's secret in a field it is not supposed to read,
+    # so that if the helper ever started echoing its input back, this catches it.
+    "commitment_supports": ({"commitment_scope": ["key"], "leaked": SECRET}, "headroom"),
     # set_index_line writes onto a record chosen by key, so the sweep aims it at the OTHER tenant's
     # key: the leak it could produce is stamping an index line on a row that is not ours, or naming
     # that row's text back in the return value.

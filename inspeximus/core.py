@@ -995,7 +995,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.18.0"
+__version__ = "2.19.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3602,6 +3602,12 @@ class Inspeximus:
             # report to the population that produced it.
             "cliff": _cliff,
             "population_commitment": _commitment,
+            # WHAT THIS COMMITMENT COVERS, and what it therefore cannot answer. Declared as fields
+            # rather than left in `limits`, because a verifier can ask a field and cannot ask a
+            # paragraph. Pass this report to `commitment_supports(report, predicate)`.
+            "commitment_scope": ["key"],
+            "verifies": ["population_identity", "headroom"],
+            "does_not_verify": ["observation_current", "store_unchanged"],
             "limits": cliff_note + [
                 "`declared` describes the code running now, not the version that wrote any given "
                 "record. A store written by several versions can carry several contracts.",
@@ -3628,6 +3634,83 @@ class Inspeximus:
                 "treat it as identifying rather than opaque.",
             ],
         }
+
+    # WHAT EACH PREDICATE DEPENDS ON. @safal207 and @Stratogain converged on this from opposite
+    # ends of anthropics/claude-code#34556, and the compact form is @safal207's: **cryptographic
+    # validity is not evidentiary sufficiency.** A commitment can verify perfectly and still be the
+    # wrong instrument for the question asked of it.
+    #
+    # Measured on @Stratogain's ledger: 226 of 634 paths changed CONTENT, and a commitment over the
+    # key set says MEASUREMENT_VALID for every one of them. For headroom that is correct -- headroom
+    # is a property of the keys and content cannot affect it. For "is this observation still good"
+    # it is exactly wrong. Same hash, same store, opposite verdicts, and nothing in the artifact
+    # said which question it was minted for.
+    #
+    # It is our defect too, not a borrowed one: `identifier_contract()` has returned
+    # `population_commitment` since 2.18.0, the `limits` prose already said a caller keying on
+    # something else "would hold a commitment over the wrong set, and it would verify clean every
+    # time" -- and a paragraph is not something a verifier can ask.
+    # SCOPE SUBSUMPTION, which neither sketch of this had and which the artifacts need. A commitment
+    # over the whole STORE necessarily pins the key set inside it, so a store-scoped receipt answers
+    # key-scoped questions too. Measured rather than assumed, because the reasoning is exactly the
+    # kind that is wrong half the time: adding a key moves `state_digest()`, and a real `forget()`
+    # moves it as well (2 active -> 1, digest changed). My first attempt at that second measurement
+    # called `forget("beta")` positionally, so `ids` was the string "beta", nothing matched, and the
+    # digest correctly did not move -- which I nearly wrote down as "erasure is invisible to the
+    # witness". The test below is the one that would have caught me.
+    #
+    # It does NOT run the other way: a key-scoped commitment says nothing about the rest of the
+    # store, which is the asymmetry the whole feature exists to express.
+    SCOPE_IMPLIES = {"store": {"key"}}
+
+    COMMITMENT_PREDICATES = {
+        "population_identity": {"key"},           # is this the same key set it was minted over?
+        "headroom":            {"key"},           # how many characters before a fold merges them?
+        "store_unchanged":     {"store"},         # has anything in the store moved since?
+        "observation_current": {"source_digest"},  # does the source still read as it did?
+    }
+
+    @staticmethod
+    def commitment_supports(artifact: dict, predicate: str) -> dict:
+        """The SECOND question: does this commitment cover the fields the predicate depends on?
+
+        A verifier has two questions and they are not the same one. The first -- does the commitment
+        verify -- is answered by comparing it. This answers the second, and it is answerable without
+        the store: it reads the artifact's own declaration.
+
+        FAIL-CLOSED ON AN UNDECLARED SCOPE, which is the case that matters. A report cached before
+        2.19.0 carries a commitment and no `commitment_scope`, and the tempting reading is "no
+        declared limits, so no limits". That is precisely the failure being fixed, so an artifact
+        that does not say what it covers is sufficient for NOTHING here -- `sufficient: False`, with
+        `reason: "undeclared_scope"` so a caller can tell it apart from a genuine mismatch and go
+        re-mint rather than go looking for a bug.
+
+        An unknown predicate is also False rather than an exception: a consumer asking about a
+        property this version has never heard of should get a no, not a crash.
+        """
+        scope = (artifact or {}).get("commitment_scope")
+        req = Inspeximus.COMMITMENT_PREDICATES.get(predicate)
+        if req is None:
+            return {"predicate": predicate, "sufficient": False, "reason": "unknown_predicate",
+                    "known_predicates": sorted(Inspeximus.COMMITMENT_PREDICATES),
+                    "commitment_scope": scope}
+        if not scope:
+            return {"predicate": predicate, "sufficient": False, "reason": "undeclared_scope",
+                    "requires": sorted(req), "commitment_scope": None,
+                    "why": "the artifact does not say which fields its commitment covers; an "
+                           "undeclared scope is treated as covering nothing, not as covering "
+                           "everything. Re-mint it with a version that declares one."}
+        covered = set(scope)
+        for f in list(covered):
+            covered |= Inspeximus.SCOPE_IMPLIES.get(f, set())
+        missing = sorted(req - covered)
+        return {"predicate": predicate, "sufficient": not missing,
+                "reason": "covered" if not missing else "scope_too_narrow",
+                "commitment_scope": sorted(scope), "covers": sorted(covered),
+                "requires": sorted(req), "missing": missing,
+                "why": ("the commitment covers every field this predicate depends on" if not missing
+                        else "this commitment would verify clean and still tell you nothing about "
+                             "%s: it does not cover %s" % (predicate, ", ".join(missing)))}
 
     def check_sources(self, resolver=None) -> dict:
         """Has the SOURCE each memory came from changed, or gone? Returns a report, never a boolean.
@@ -6818,8 +6901,19 @@ class Inspeximus:
             w["embed_id"] = self.embed_id
         if getattr(self, "_receipts", None):
             w["receipts_tip"] = self._receipts[-1].get("hash")
+        # The witness has always answered two questions separately -- `digest_match` for the store,
+        # `sources_match` for the world -- and never said so in the artifact. Now it does, and the
+        # scope GROWS with bind_sources: without it this receipt cannot speak to whether the source
+        # still reads as it did, however cleanly it verifies.
+        w["commitment_scope"] = ["store"]
+        w["verifies"] = ["store_unchanged", "population_identity", "headroom"]
+        w["does_not_verify"] = ["observation_current"]
         if bind_sources:
             w.update(self._bind_sources(records))
+            w["commitment_scope"] = ["store", "source_digest"]
+            w["verifies"] = ["store_unchanged", "population_identity", "headroom",
+                             "observation_current"]
+            w["does_not_verify"] = []
         return w
 
     def _bind_sources(self, records=None) -> dict:
@@ -12813,6 +12907,12 @@ class _TenantView:
     #: by default. That is the whole point: the previous version forwarded EVERYTHING, and 54 of 79 public
     #: methods reached the parent as tenant=None (admin) — `A.history(B_key)` returned B's plaintext.
     _STORE_LEVEL = frozenset({
+        # `commitment_supports` is store-level because it touches no store at all: it is a
+        # @staticmethod over an artifact dict the CALLER already holds, and it reads only that
+        # artifact's own `commitment_scope`. There is no record text, no id, no key and no tenant
+        # anywhere in its inputs or its outputs, so a tenant-bound view has nothing to narrow. It
+        # is still swept by the tenant and agent leak tests rather than exempted from them.
+        "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
         "verify_attribution", "register_erasure_target", "explain_growth",
