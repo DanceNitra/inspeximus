@@ -47,12 +47,35 @@ DEFAULT_MODELS = ["gpt-4o-mini", "gpt-5.4-nano", "gpt-5.4-mini", "gpt-5.5"]
 
 
 def ask(model, prompt, usage):
-    body = json.dumps({"model": model,
-                       "messages": [{"role": "user", "content": prompt}]}).encode()
-    req = urllib.request.Request("https://api.openai.com/v1/chat/completions", data=body,
-                                 headers={"Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
-                                          "Content-Type": "application/json"})
-    r = json.loads(urllib.request.urlopen(req, timeout=120).read())
+    """TEMPERATURE IS PART OF THE INSTRUMENT, and leaving it out cost this probe its first run.
+
+    The live judge calls `openai_chat(prompt, model="gpt-4o-mini", temp=0.0)`. The first version of
+    this file sent no temperature at all, so every model answered at the API default. The pinned
+    baseline then returned 0.70 against the published 0.75 and the control failed -- correctly, and
+    before a single model comparison could be reported. Same fixture, same contexts, same prompt, one
+    unstated parameter, and the headline number moved by 0.05.
+
+    Newer models reject a non-default temperature outright. That refusal is recorded per model rather
+    than smoothed over, because a column judged at temperature 1.0 is not the same measurement as one
+    judged at 0.0, and the reader has to be able to see which is which.
+    """
+    def _post(payload):
+        req = urllib.request.Request(
+            "https://api.openai.com/v1/chat/completions", data=json.dumps(payload).encode(),
+            headers={"Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
+                     "Content-Type": "application/json"})
+        return json.loads(urllib.request.urlopen(req, timeout=180).read())
+
+    msg = {"model": model, "messages": [{"role": "user", "content": prompt}]}
+    try:
+        r = _post(dict(msg, temperature=0.0))
+        usage["temperature"] = 0.0
+    except urllib.error.HTTPError as ex:
+        detail = ex.read().decode()[:200]
+        if ex.code != 400 or "temperature" not in detail:
+            raise
+        r = _post(msg)
+        usage["temperature"] = "default (model refused 0.0)"
     u = r.get("usage") or {}
     usage["in"] += u.get("prompt_tokens", 0)
     usage["out"] += u.get("completion_tokens", 0)
@@ -116,7 +139,7 @@ def main() -> int:
                                       "tokens_in": 0, "tokens_out": 0, "seconds": 0.0}
 
     for model in [m.strip() for m in a.models.split(",") if m.strip()]:
-        usage = {"in": 0, "out": 0, "calls": 0}
+        usage = {"in": 0, "out": 0, "calls": 0, "temperature": None}
         verdicts, errors, err_note = [], 0, ""
         t = time.time()
         for (e, A, B, c) in ctx:
@@ -138,11 +161,12 @@ def main() -> int:
         rows[model] = {"rate": rate, "A": verdicts.count("A"), "B": verdicts.count("B"),
                        "other": verdicts.count("other"), "errors": errors, "error_note": err_note,
                        "tokens_in": usage["in"], "tokens_out": usage["out"],
-                       "calls": usage["calls"], "seconds": round(time.time() - t, 1)}
-        print("  %-16s rate=%-6s A=%-3d B=%-3d other=%-3d err=%-3d  in/out %6d/%-6d  %5.1fs %s"
+                       "calls": usage["calls"], "temperature": usage["temperature"],
+                       "seconds": round(time.time() - t, 1)}
+        print("  %-16s rate=%-6s A=%-3d B=%-3d other=%-3d err=%-3d  in/out %6d/%-6d  %5.1fs  T=%s %s"
               % (model, ("%.2f" % rate) if rate is not None else "n/a", verdicts.count("A"),
                  verdicts.count("B"), verdicts.count("other"), errors, usage["in"], usage["out"],
-                 rows[model]["seconds"], err_note[:40]), flush=True)
+                 rows[model]["seconds"], usage["temperature"], err_note[:40]), flush=True)
 
     base = rows.get("gpt-4o-mini", {}).get("rate")
     ok = base is not None and abs(base - PUBLISHED) < 1e-9

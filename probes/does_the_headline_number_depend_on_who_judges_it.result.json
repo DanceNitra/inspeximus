@@ -1,0 +1,83 @@
+{
+ "published": 0.75,
+ "n": 20,
+ "baseline_reproduces": true,
+ "judges": {
+  "_deterministic_control": {
+   "rate": 1.0,
+   "A": 20,
+   "B": 0,
+   "other": 0,
+   "errors": 0,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "seconds": 0.0
+  },
+  "gpt-4o-mini": {
+   "rate": 0.75,
+   "A": 15,
+   "B": 0,
+   "other": 5,
+   "errors": 0,
+   "error_note": "",
+   "tokens_in": 1175,
+   "tokens_out": 41,
+   "calls": 20,
+   "temperature": 0.0,
+   "seconds": 10.8
+  },
+  "gpt-5.4-nano": {
+   "rate": 0.8,
+   "A": 16,
+   "B": 0,
+   "other": 4,
+   "errors": 0,
+   "error_note": "",
+   "tokens_in": 1155,
+   "tokens_out": 100,
+   "calls": 20,
+   "temperature": 0.0,
+   "seconds": 11.5
+  },
+  "gpt-5.4-mini": {
+   "rate": 0.8,
+   "A": 16,
+   "B": 0,
+   "other": 4,
+   "errors": 0,
+   "error_note": "",
+   "tokens_in": 1155,
+   "tokens_out": 101,
+   "calls": 20,
+   "temperature": 0.0,
+   "seconds": 14.2
+  },
+  "gpt-5.5": {
+   "rate": 1.0,
+   "A": 20,
+   "B": 0,
+   "other": 0,
+   "errors": 0,
+   "error_note": "",
+   "tokens_in": 1155,
+   "tokens_out": 764,
+   "calls": 20,
+   "temperature": "default (model refused 0.0)",
+   "seconds": 33.9
+  },
+  "gpt-5.6-luna": {
+   "rate": 0.85,
+   "A": 17,
+   "B": 0,
+   "other": 3,
+   "errors": 0,
+   "error_note": "",
+   "tokens_in": 1155,
+   "tokens_out": 239,
+   "calls": 20,
+   "temperature": "default (model refused 0.0)",
+   "seconds": 20.0
+  }
+ },
+ "total_seconds": 90.4
+}
