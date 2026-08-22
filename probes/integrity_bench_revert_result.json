@@ -1,0 +1,34 @@
+{
+  "task": "value-obscuring revert",
+  "metric": "revert_success_rate (current answer == old value)",
+  "judge": "openai",
+  "comparable_with_published": true,
+  "results": {
+    "inspeximus": {
+      "system": "inspeximus",
+      "n": 20,
+      "revert_honored_A": 15,
+      "kept_new_B": 0,
+      "other": 5,
+      "errors": 0,
+      "revert_success_rate": 0.75,
+      "ci95": [
+        0.531,
+        0.888
+      ]
+    },
+    "mem0": {
+      "system": "mem0",
+      "n": 20,
+      "revert_honored_A": 4,
+      "kept_new_B": 13,
+      "other": 3,
+      "errors": 0,
+      "revert_success_rate": 0.2,
+      "ci95": [
+        0.081,
+        0.416
+      ]
+    }
+  }
+}
