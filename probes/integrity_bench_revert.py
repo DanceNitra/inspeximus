@@ -30,13 +30,48 @@ import os, sys, json, re, time, urllib.request, argparse
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from inspeximus import Inspeximus
 
-env = {}
-for line in open("server/.env", encoding="utf-8", errors="replace"):
-    line = line.strip()
-    if line and not line.startswith("#") and "=" in line:
-        k, v = line.split("=", 1); env[k.strip()] = v.strip().strip('"').strip("'")
-OPENAI_KEY = env.get("OPENAI_API_KEY", "")
-os.environ["OPENAI_API_KEY"] = OPENAI_KEY
+def _load_key():
+    """The process environment first, a dotenv only as a fallback, and never the other way round.
+
+    Reported by @mioimotoai-lgtm on DanceNitra/inspeximus#1, from a clean clone, and every word of it
+    reproduced 38 days later on 2.20.0. Three defects in seven lines:
+
+      * `open("server/.env")` was UNCONDITIONAL and relative to the CURRENT DIRECTORY, so the command
+        published in docs/CLAIMS.md died with FileNotFoundError before argparse ever ran. Not a
+        missing dependency -- a path. Supplying an OpenAI key did not help;
+      * it then OVERWROTE any real `OPENAI_API_KEY` already in the environment with whatever that
+        file held, including the empty string;
+      * the file it wanted has never been in this repository.
+
+    Six numbers on the published site (0.75 / 0.20 / 0.00 and the counters restating them) cite that
+    command as their reproduction, under a status that promises the command runs once you supply the
+    dependencies. It did not run at all.
+    """
+    key = os.environ.get("OPENAI_API_KEY", "")
+    if key:
+        return key
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in (os.path.join(here, "..", "server", ".env"),
+                 os.path.join(here, "..", ".env"),
+                 os.path.join(os.getcwd(), "server", ".env")):
+        if not os.path.exists(cand):
+            continue
+        try:
+            with open(cand, encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        if k.strip() == "OPENAI_API_KEY":
+                            return v.strip().strip('"').strip("'")
+        except OSError:
+            continue
+    return ""
+
+
+OPENAI_KEY = _load_key()
+if OPENAI_KEY:
+    os.environ["OPENAI_API_KEY"] = OPENAI_KEY
 
 ENTS = [("cache region", "osaka", "malmo"), ("primary shard", "delta7", "sigma2"),
         ("build target", "arm64", "riscv"), ("default currency", "forint", "guarani"),
@@ -94,9 +129,47 @@ def wilson(k, n, z=1.96):
     return (round((c - h) / d, 3), round((c + h) / d, 3))
 
 
+JUDGE = "openai"          # set once in main(); every system is read through whichever is selected
+
+
+def judge_local(entity, context_text, A, B):
+    """A DIFFERENT INSTRUMENT, not a cheaper version of the same one. Deliberately labelled.
+
+    The second half of #1: with the shared judge the "inspeximus only" run is not free, because
+    `run_inspeximus` goes through the same paid judge as its competitors -- which is correct and was
+    a deliberate fairness fix, since scoring inspeximus mechanically off its own ledger while reading
+    the others through an LLM is an asymmetric instrument. That fix is not being undone here.
+
+    So this is offered as a separate judge, applied IDENTICALLY to every system, and its verdicts
+    must never be mixed into a table with `openai` verdicts. The rule, stated rather than buried:
+    exactly one candidate present in the retrieved context wins; both present, or neither, is
+    `other`. What it measures cleanly is whether the stale value is still in the retrieved context
+    at all.
+
+    THE DIRECTION OF THE DIFFERENCE IS NOT PREDICTABLE, and the first version of this docstring got
+    it wrong in a way worth leaving on the record. It reasoned that reading strictly must score
+    LOWER, since a store returning the correction beside the superseded value lands on `other` where
+    a language model resolves it. Measured on the same fixture, n=20, inspeximus scores **1.00 here
+    against the published 0.75** -- higher, because after a safe-policy revert its recall surface
+    holds one candidate and the deterministic rule then has nothing to be unsure about, while the
+    LLM judge answered otherwise on five of twenty. A rule that removes judgement removes it in both
+    directions. That gap, 0.25 on one system, is the concrete reason these two columns never belong
+    in one table.
+    """
+    t = (context_text or "").lower()
+    a_in, b_in = A.lower() in t, B.lower() in t
+    if a_in and not b_in:
+        return "A"
+    if b_in and not a_in:
+        return "B"
+    return "other"
+
+
 def judge_current(entity, context_text, A, B):
     """Shared judge: given a system's retrieved memories, what is the CURRENT value? Never sees ground truth
     beyond the two candidate tokens (both provided so the judge can also say 'unclear')."""
+    if JUDGE == "local":
+        return judge_local(entity, context_text, A, B)
     prompt = (f"Here are an agent's stored memories about \"{entity}\":\n---\n{context_text}\n---\n"
               f"Based only on these, what is the CURRENT value of the {entity} right now? "
               f"Answer with exactly one word: the value, or 'unclear'.")
@@ -208,10 +281,29 @@ def score(name, verdicts, cases):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--systems", default="inspeximus,mem0",
-                    help="comma list: inspeximus (local/free), mem0 (OpenAI $), graphiti (OpenAI $ + neo4j). "
-                         "mem0/graphiti cost OpenAI calls — opt in explicitly.")
+                    help="comma list: inspeximus, mem0 (needs neo4j-free OpenAI $), graphiti "
+                         "(OpenAI $ + neo4j). Every system is read through the SAME judge, so "
+                         "'inspeximus' alone still costs OpenAI calls unless --judge local.")
+    ap.add_argument("--judge", choices=("openai", "local"), default="openai",
+                    help="openai: the shared LLM judge the published numbers use. "
+                         "local: a deterministic, free, DIFFERENT instrument -- see judge_local. "
+                         "Never compare scores across the two.")
     a = ap.parse_args()
+    global JUDGE
+    JUDGE = a.judge
     want = [s.strip() for s in a.systems.split(",") if s.strip()]
+
+    # FAIL FAST AND SAY WHAT TO DO, which is the whole of #1's first ask. Before this, a missing key
+    # produced either a FileNotFoundError about a path that was never in the repo, or a run that
+    # burned through every case retrying unauthenticated calls and reported the failures as scores.
+    if JUDGE == "openai" and not OPENAI_KEY:
+        print("This benchmark reads every system through a shared OpenAI judge, and no key is set.\n"
+              "  * export OPENAI_API_KEY=...   to reproduce the published numbers, or\n"
+              "  * add --judge local           for a free deterministic run, which is a DIFFERENT\n"
+              "                                instrument and is not comparable with them.\n"
+              "A dotenv at server/.env or .env beside the repo root is read only as a fallback.",
+              file=sys.stderr)
+        return 2
     cases = []
     for i in range(min(a.n, len(ENTS))):
         e, A, B = ENTS[i]
@@ -227,13 +319,23 @@ def main():
     if "graphiti" in want:
         print("\ngraphiti (native, live neo4j + OpenAI)...")
         out["graphiti"] = score("graphiti", run_graphiti(cases), cases); print(json.dumps(out["graphiti"]))
+    # THE JUDGE TRAVELS WITH THE NUMBER. A score whose instrument is not recorded beside it invites
+    # exactly the comparison judge_local warns against, and the published file carried no such field
+    # at all. A local run also writes to its own filename, so a free run cannot overwrite the
+    # artifact the site's figures cite.
+    stem = "integrity_bench_revert_result" + ("_localjudge" if JUDGE == "local" else "")
     json.dump({"task": "value-obscuring revert", "metric": "revert_success_rate (current answer == old value)",
-               "results": out}, open(os.path.join(os.path.dirname(__file__),
-               "integrity_bench_revert_result.json"), "w"), indent=2)
+               "judge": JUDGE, "comparable_with_published": JUDGE == "openai",
+               "results": out}, open(os.path.join(os.path.dirname(__file__), stem + ".json"), "w"),
+              indent=2)
+    if JUDGE == "local":
+        print("\n[judge=local] deterministic instrument, free to run, NOT comparable with the "
+              "published openai-judged figures. See judge_local for the rule and its bias.")
     print("\n=== MATRIX (revert success: does an unmarked 'go back' restore the old value?) ===")
     for k, v in out.items():
         print(f"  {k:9s} {v['revert_success_rate']:.2f}  (A={v['revert_honored_A']} B={v['kept_new_B']} other={v['other']} err={v['errors']}, n={v['n']})")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)
