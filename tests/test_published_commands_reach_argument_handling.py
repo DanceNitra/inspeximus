@@ -1,9 +1,13 @@
 """A command published as reproducible must at least START from a clean clone.
 
 WHY THIS EXISTS. @mioimotoai-lgtm cloned the repo, ran the command `docs/CLAIMS.md` gives as the
-reproduction for six figures on the site, and got `FileNotFoundError: 'server/.env'` -- a path that
-has never been in this repository -- before argparse ever ran. The report sat open for 38 days and
-every word of it still reproduced on 2.20.0.
+reproduction for rows 89, 90, 91, 99 and 100, and got `FileNotFoundError: 'server/.env'` -- a path
+that has never been in this repository -- before argparse ever ran. The report sat open for 38 days
+and every word of it still reproduced on 2.20.0.
+
+Row 42 makes it six, and nobody knew: `integrity_bench_echo.py` binds its judge from the revert cell
+at import time, so it died the same way. That one was found by the mutation control at the bottom of
+this file, not by reading, and not by the reporter.
 
 The status those six claims carry is `REPRODUCIBLE-WITH-DEPS`, defined in claims_audit.py as
 "committed command, but needs a service/dataset we cannot ship". That promise is about DEPENDENCIES.
@@ -125,3 +129,23 @@ def test_control_the_old_loader_would_still_fail(tree):
             fh.write(good)
     p = _run(tree, "--systems", "inspeximus", "--n", "20")
     assert p.returncode == 2, "the fixed entrypoint was not restored after the control"
+
+
+def test_the_echo_cell_inherited_the_same_defect_and_the_same_fix(tree):
+    """It was never named in #1 and it was broken by it. `integrity_bench_echo.py` binds
+    `judge_current` from the revert cell at import time, so the unconditional dotenv read killed
+    this entrypoint too. docs/CLAIMS.md row 42 cites it. It surfaced only because a mutation control
+    put the old loader back and TWO tests went red instead of one."""
+    entry = os.path.join("probes", "integrity_bench_echo.py")
+    env = dict(os.environ)
+    env.pop("OPENAI_API_KEY", None)
+    env["PYTHONIOENCODING"] = "utf-8"
+    refuse = subprocess.run([sys.executable, entry, "--systems", "inspeximus"], cwd=tree, env=env,
+                            capture_output=True, text=True, timeout=600)
+    assert "FileNotFoundError" not in refuse.stdout + refuse.stderr
+    assert refuse.returncode == 2, (refuse.stdout + refuse.stderr)[-800:]
+    free = subprocess.run([sys.executable, entry, "--systems", "inspeximus",
+                           "--judge", "local", "--n", "20"], cwd=tree, env=env,
+                          capture_output=True, text=True, timeout=600)
+    assert free.returncode == 0, (free.stdout + free.stderr)[-1200:]
+    assert "resurrection" in free.stdout, free.stdout[-600:]

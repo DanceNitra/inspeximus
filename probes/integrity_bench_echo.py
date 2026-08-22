@@ -120,7 +120,25 @@ def score(name, verdicts, n_cases):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--systems", default="inspeximus")
+    ap.add_argument("--judge", choices=("openai", "local"), default="openai",
+                    help="openai: the shared LLM judge the published numbers use. local: the free "
+                         "deterministic instrument from the revert cell -- a DIFFERENT instrument, "
+                         "never comparable with them. See rev.judge_local.")
     a = ap.parse_args(); want = [s.strip() for s in a.systems.split(",") if s.strip()]
+    # This cell inherited #1 without being named in it. It binds `judge_current` from the revert
+    # cell at import time, so the unconditional `open("server/.env")` there killed this entrypoint
+    # too -- reproduced at the pre-fix commit, same FileNotFoundError, same foreign-cwd conditions.
+    # docs/CLAIMS.md row 42 cites this command. One report, two published entrypoints, and the
+    # second one surfaced only because a mutation control put the old loader back and TWO tests
+    # went red.
+    rev.JUDGE = a.judge
+    if a.judge == "openai" and not rev.OPENAI_KEY:
+        print("This benchmark reads every system through a shared OpenAI judge, and no key is set.\n"
+              "  * export OPENAI_API_KEY=...   to reproduce the published numbers, or\n"
+              "  * add --judge local           for a free deterministic run, which is a DIFFERENT\n"
+              "                                instrument and is not comparable with them.",
+              file=sys.stderr)
+        return 2
     cases = [ENTS[i] for i in range(min(a.n, len(ENTS)))]
     print(f"cross-system integrity benchmark — echo resistance · n={len(cases)} · systems={want}\n")
     out = {}
@@ -140,4 +158,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)
