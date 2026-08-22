@@ -35,6 +35,11 @@ NOT_STANDALONE = {
     # of our published 0.75 is gpt-4o-mini rather than inspeximus. It exits 2 with the reason
     # when no key is set, which is the behaviour the benchmark entrypoints were given after
     # #1, so on a CI runner it declines correctly rather than failing.
+    # Same shape, same reason, and it was left out of this list when it landed -- CI caught it
+    # on main. Thirty judge calls per run against the paid API; exits 2 with the reason when
+    # no key is set, which is the post-#1 refusal behaviour rather than a failure.
+    "the_judge_is_not_deterministic_at_temperature_zero.py":
+        "needs OPENAI_API_KEY -- it replays one fixture through the judge 30 times",
     "does_the_headline_number_depend_on_who_judges_it.py":
         "needs OPENAI_API_KEY -- it replays the fixture through several paid judges",
     "locomo_composed_soft_filters.py": "needs agora_output/lab/data/locomo10.json (LoCoMo, not redistributable)",

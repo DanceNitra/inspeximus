@@ -15,20 +15,20 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **350** numeric tokens are published across the 6 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html.
-- **190** of those are quantitative claims, in **103** registry rows below.
-- **78** rows (78/103) are reproducible by a command committed to this repository
+- **361** numeric tokens are published across the 6 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html.
+- **199** of those are quantitative claims, in **105** registry rows below.
+- **80** rows (80/105) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 25 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 160 tokens are declared non-claims — citation years,
+- The other 162 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 
 Counts by status:
 
 - `REPRODUCIBLE` — 26
-- `REPRODUCIBLE-WITH-DEPS` — 52
+- `REPRODUCIBLE-WITH-DEPS` — 54
 - `PENDING-HARNESS` — 2
 - `EXTERNAL` — 21
 - `WITHDRAWN` — 2
@@ -78,7 +78,7 @@ Counts by status:
 | 39 | `docs/DEEP_DIVE.md` | `1.00` `0.17` | Same six-store fan-out measurement, restated in the four-operations table | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
 | 40 | `docs/DEEP_DIVE.md` | `0.0000` | Run-to-run determinism at a fixed instant: arm (a) divergence 0.0000 on every corpus | **REPRODUCIBLE-WITH-DEPS** | `python probes/reinforce_accuracy_ablation.py` |
 | 41 | `docs/DEEP_DIVE.md` | `20` | Pruning hub notes lifts lexical recall ~20% on a link-spammed store only | **EXTERNAL** | — |
-| 42 | `docs/DEEP_DIVE.md` | `0.00` `0.05` | In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_echo.py --systems inspeximus`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
+| 42 | `docs/DEEP_DIVE.md` | `0.00` `0.05` | In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_echo.py --systems inspeximus` |
 | 43 | `docs/DEEP_DIVE.md` | `5` `0.94` `0.25` | Lexical recall@5 decays 0.94 -> 0.25 as the store grows | **EXTERNAL** | — |
 | 44 | `docs/DEEP_DIVE.md` | `2026` `0.78` `0.65` | The superseded pair, quoted inside the note that discharges its caveat | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
 | 45 | `docs/DEEP_DIVE.md` | `0.83` `0.70` | The copy-paste command with its expected output inline | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
@@ -125,21 +125,23 @@ Counts by status:
 | 86 | `docs/DEEP_DIVE.md` | `10,000` | Contradiction detection runs in production over the ~10,000-note vault | **EXTERNAL** | — |
 | 87 | `docs/DEEP_DIVE.md` | `10,000` | inspeximus has run daily over a ~10,000-note vault | **EXTERNAL** | — |
 | 88 | `index.html` | `9` `0` | Homepage counter: 9 framework adapters | **REPRODUCIBLE** | `python -c "import pathlib;print(sorted(p.stem for p in pathlib.Path('inspeximus/integrations').glob('*.py')))"` |
-| 89 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
-| 90 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
-| 91 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
-| 92 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 93 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 94 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 95 | `index.html` | `10` `13` `3` | 10 of 13 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
-| 96 | `index.html` | `73` `0` | Homepage counter: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 97 | `index.html` | `73` | Homepage heading: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 98 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
-| 99 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
-| 100 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
-| 101 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
-| 102 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
-| 103 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
+| 89 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
+| 90 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 91 | `index.html` | `30` `26` `0.70` `0.75` `0.80` `0.7500` `0.05` | The judge is not deterministic at temperature 0.0: 30 runs on byte-identical contexts give 0.75 x26, 0.70 x2, 0.80 x2; mean 0.7500; the store is deterministic | **REPRODUCIBLE-WITH-DEPS** | `python probes/the_judge_is_not_deterministic_at_temperature_zero.py --runs 30` |
+| 92 | `index.html` | `0.80` `1.00` | Judge sensitivity among comparable judges is no larger than the same judge's run-to-run band | **REPRODUCIBLE-WITH-DEPS** | `python probes/does_the_headline_number_depend_on_who_judges_it.py --n 20` |
+| 93 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
+| 94 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 95 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 96 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 97 | `index.html` | `10` `13` `3` | 10 of 13 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
+| 98 | `index.html` | `73` `0` | Homepage counter: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 99 | `index.html` | `73` | Homepage heading: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 100 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
+| 101 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 102 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 103 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
+| 104 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
+| 105 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
 
 ## Notes
 
@@ -180,6 +182,8 @@ Counts by status:
 - **readme-vault-contradictions** — Same private deployment as the hero line.
 - **readme-vault-hero** — Our own private Obsidian vault. There is no command; the text now says so instead of implying the reader could check it.
 - **site-adapters** — Was 6 while the README said nine and the package ships nine agent-framework adapters (autogen, crewai, google_adk, haystack, langchain, langgraph, llamaindex, openai_agents, pydantic_ai).
+- **site-bench-judge-nondeterminism** — Needs OPENAI_API_KEY. Two runs an hour apart both returned 0.75 and that was written up as 'reproduces to the digit'; a third returned 0.70. The store arm is the control: 5 runs, 1 distinct context set. B=0 in every run, so the band is abstention.
+- **site-bench-judge-sensitivity** — Needs OPENAI_API_KEY. The first version of this row said 0.80-1.00 and mixed comparable with non-comparable columns: only gpt-4o-mini 0.75, gpt-5.4-nano 0.80 and gpt-5.4-mini 0.80 ran at temperature 0.0. gpt-5.5 (1.00) and gpt-5.6-luna (0.85) REFUSED temperature 0.0. The honest delta is +0.05, one case in twenty, McNemar p=1.0. B=0 in every column including the deterministic control at 1.00, so the spread is abstention, not disagreement about the revert.
 - **site-echo-row** — Replaced a STALE caveat claiming all three tie on this cell; the later run separates them.
 - **site-integration-conformance** — Read from the committed ledger docs/integration_conformance.json by _live_consistency(), not typed. The page previously said 'Drop-in for' all nine frameworks with no qualifier at all, while crewai 1.15.6, openai-agents 0.18.3 and langgraph-checkpointer 1.2.9 were recorded broken -- an unqualified capability claim contradicted by a JSON file in the same repo.
 - **site-mcp-tools-counter** — Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- which is why the scanner hoists data-count out of the tag before stripping tags.

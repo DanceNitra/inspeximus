@@ -911,8 +911,8 @@ NUMBER_CLAIMS = [
        "Needs OPENAI_API_KEY. Two runs an hour apart both returned 0.75 and that was written up as "
        "'reproduces to the digit'; a third returned 0.70. The store arm is the control: 5 runs, 1 "
        "distinct context set. B=0 in every run, so the band is abstention."),
-    _c("site-bench-judge-sensitivity", "index.html", [],
-       "no further than re-running this one does",
+    _c("site-bench-judge-sensitivity", "index.html", ["0.80", "1.00"],
+       "the figure moves to 0.80, inside that band",
        "Judge sensitivity among comparable judges is no larger than the same judge's run-to-run band",
        "REPRODUCIBLE-WITH-DEPS",
        "python probes/does_the_headline_number_depend_on_who_judges_it.py --n 20",
