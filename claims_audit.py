@@ -901,12 +901,26 @@ NUMBER_CLAIMS = [
     # contexts through five judges moves the inspeximus figure from 0.75 to 0.80-1.00 with nothing
     # about the store changing, so the caveat under the chart is itself a measurement and is
     # registered like one.
-    _c("site-bench-judge-sensitivity", "index.html", ["0.80", "1.00"],
-       "scores 0.80–1.00 for the same store", "Judge sensitivity: the same retrieved contexts score 0.80-1.00 under newer judges",
+    _c("site-bench-judge-nondeterminism", "index.html",
+       ["30", "26", "0.70", "0.75", "0.80", "0.7500", "0.05"],
+       "0.75 in 26 of 30 runs",
+       "The judge is not deterministic at temperature 0.0: 30 runs on byte-identical contexts give "
+       "0.75 x26, 0.70 x2, 0.80 x2; mean 0.7500; the store is deterministic",
+       "REPRODUCIBLE-WITH-DEPS",
+       "python probes/the_judge_is_not_deterministic_at_temperature_zero.py --runs 30",
+       "Needs OPENAI_API_KEY. Two runs an hour apart both returned 0.75 and that was written up as "
+       "'reproduces to the digit'; a third returned 0.70. The store arm is the control: 5 runs, 1 "
+       "distinct context set. B=0 in every run, so the band is abstention."),
+    _c("site-bench-judge-sensitivity", "index.html", [],
+       "no further than re-running this one does",
+       "Judge sensitivity among comparable judges is no larger than the same judge's run-to-run band",
        "REPRODUCIBLE-WITH-DEPS",
        "python probes/does_the_headline_number_depend_on_who_judges_it.py --n 20",
-       "Needs OPENAI_API_KEY. gpt-4o-mini 0.75 (the pinned baseline), gpt-5.4-nano 0.80, "
-       "gpt-5.4-mini 0.80, gpt-5.6-luna 0.85, gpt-5.5 1.00."),
+       "Needs OPENAI_API_KEY. The first version of this row said 0.80-1.00 and mixed comparable with "
+       "non-comparable columns: only gpt-4o-mini 0.75, gpt-5.4-nano 0.80 and gpt-5.4-mini 0.80 ran at "
+       "temperature 0.0. gpt-5.5 (1.00) and gpt-5.6-luna (0.85) REFUSED temperature 0.0. The honest "
+       "delta is +0.05, one case in twenty, McNemar p=1.0. B=0 in every column including the "
+       "deterministic control at 1.00, so the spread is abstention, not disagreement about the revert."),
 ]
 
 #: Every remaining numeric token, with an exact expected count and a reason it is not a claim.
@@ -1030,7 +1044,7 @@ NON_CLAIM_TOKENS = {
     },
     "index.html": {
         # A SETTING, not a measurement: the temperature the shared judge is pinned at.
-        "0.0": (1, "the judge's temperature in the benchmark caveat, a parameter not a result"),
+        "0.0": (1, "the judge's temperature in the benchmark caveat -- the temperature the shared judge is pinned at; a parameter, not a result"),
         "2026": (1, "the re-measurement date in the benchmark caveat, not a quantity"),
         "0": (1, "the schema.org offer price, '0' USD -- a JSON-LD literal"),
         "01": (1, "a section beat label"),

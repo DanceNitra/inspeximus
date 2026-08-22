@@ -261,8 +261,12 @@
           <p class="sub" style="font-size:.85em;opacity:.75">
             Every store is read through one shared judge, <code>gpt-4o-mini</code> at
             <code>temperature 0.0</code>, so the comparison is symmetric. The judge is part of the
-            instrument: replaying the same retrieved contexts through newer models scores 0.80–1.00 for the same store,
-            so these numbers are only comparable with each other. Re-measured 2026-08-22 and unchanged.
+            instrument, and it is not deterministic. Re-measured 2026-08-22: the store returns byte-identical
+            contexts every time, while the judge scored those same contexts
+            <b>0.75 in 26 of 30 runs, 0.70 twice and 0.80 twice, mean 0.7500, a ±0.05 band</b>.
+            Read the bar as that mode, not as a point. Swapping in a newer judge moves it no further than re-running this one does.
+            No judge on any model ever answered that the superseded value was current, so the band is the model
+            declining to commit on an ambiguous context, not disagreement about the revert.
             <a href="https://github.com/DanceNitra/inspeximus/blob/main/probes/does_the_headline_number_depend_on_who_judges_it.py">Judge-sensitivity probe</a>.
           </p>
         </div>

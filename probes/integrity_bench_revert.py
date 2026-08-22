@@ -324,8 +324,20 @@ def main():
     # at all. A local run also writes to its own filename, so a free run cannot overwrite the
     # artifact the site's figures cite.
     stem = "integrity_bench_revert_result" + ("_localjudge" if JUDGE == "local" else "")
+    # THE MODEL AND THE CLOCK BELONG IN THE FILE, NOT IN THE COMMIT MESSAGE. Caught in review: this
+    # artifact recorded `judge: "openai"` and nothing else, so "produced by gpt-4o-mini, on this
+    # date" survived only in prose one level up. That is the provenance defect this project
+    # publishes about, in the artifact written to fix it. An LLM-judged number also carries an
+    # expiry its author does not control, which makes the model and the timestamp part of the
+    # measurement rather than metadata beside it.
     json.dump({"task": "value-obscuring revert", "metric": "revert_success_rate (current answer == old value)",
-               "judge": JUDGE, "comparable_with_published": JUDGE == "openai",
+               "judge": JUDGE,
+               "judge_model": ("gpt-4o-mini" if JUDGE == "openai" else "deterministic, no model"),
+               "judge_temperature": (0.0 if JUDGE == "openai" else None),
+               "measured_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+               "n": len(cases),
+               "fixture": "ENTS/REVERTS in this file, deterministic and committed",
+               "comparable_with_published": JUDGE == "openai",
                "results": out}, open(os.path.join(os.path.dirname(__file__), stem + ".json"), "w"),
               indent=2)
     if JUDGE == "local":

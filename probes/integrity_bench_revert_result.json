@@ -2,32 +2,24 @@
   "task": "value-obscuring revert",
   "metric": "revert_success_rate (current answer == old value)",
   "judge": "openai",
+  "judge_model": "gpt-4o-mini",
+  "judge_temperature": 0.0,
+  "measured_at": "2026-08-22T16:58:29Z",
+  "n": 20,
+  "fixture": "ENTS/REVERTS in this file, deterministic and committed",
   "comparable_with_published": true,
   "results": {
     "inspeximus": {
       "system": "inspeximus",
       "n": 20,
-      "revert_honored_A": 15,
+      "revert_honored_A": 14,
       "kept_new_B": 0,
-      "other": 5,
+      "other": 6,
       "errors": 0,
-      "revert_success_rate": 0.75,
+      "revert_success_rate": 0.7,
       "ci95": [
-        0.531,
-        0.888
-      ]
-    },
-    "mem0": {
-      "system": "mem0",
-      "n": 20,
-      "revert_honored_A": 4,
-      "kept_new_B": 13,
-      "other": 3,
-      "errors": 0,
-      "revert_success_rate": 0.2,
-      "ci95": [
-        0.081,
-        0.416
+        0.481,
+        0.855
       ]
     }
   }
