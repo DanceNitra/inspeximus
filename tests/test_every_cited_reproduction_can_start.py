@@ -85,7 +85,25 @@ def test_cited_script_survives_import_from_a_foreign_directory(script, tmp_path)
         pytest.fail(f"{script} did not finish its module level in 300s from a foreign cwd. "
                     f"If the machine is otherwise busy this is the harness, not the script -- "
                     f"re-run it alone before believing it.")
+    if p.returncode != 0:
+        err = p.stderr or ""
+        # A MISSING THIRD-PARTY PACKAGE IS A DEPENDENCY. That is precisely what
+        # REPRODUCIBLE-WITH-DEPS promises and what a reader can fix with pip, so it is allowed and
+        # reported. `supersession_replication.py` needs numpy and a local Ollama and says so in its
+        # own docstring; a CI runner has neither.
+        #
+        # THE HOLE THIS MUST NOT OPEN. #1 was not a missing dependency: it was a hardcoded relative
+        # path, and supplying every dependency would not have fixed it. Nor is our own package a
+        # third-party dependency -- failing to import `inspeximus` from inside this repository means
+        # the script's own sys.path handling is wrong, which is how the CI layout exposed two probes
+        # inserting a stale two-level path. So both of those still fail here.
+        m = re.search(r"ModuleNotFoundError: No module named '([A-Za-z0-9_.]+)'", err)
+        third_party = m and m.group(1).split(".")[0] not in {"inspeximus", "probes"}
+        if third_party:
+            pytest.skip(f"{script} needs the optional dependency '{m.group(1)}', which a reader "
+                        f"installs; that is what REPRODUCIBLE-WITH-DEPS means")
     assert p.returncode == 0, (
-        f"{script} fails at import time from a directory that is not the repo root.\n"
+        f"{script} fails at import time from a directory that is not the repo root, and not for a "
+        f"missing third-party package.\n"
         f"It is cited in docs/CLAIMS.md as: {sorted(CITED[script])[0]}\n"
         f"{(p.stderr or '')[-900:]}")

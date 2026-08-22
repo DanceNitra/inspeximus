@@ -13,7 +13,14 @@ RUN:  python research/probes/retrieval_recall_locomo.py --k 25
 import os, sys, json, argparse, collections
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.join(HERE, "..", ".."))
+# The repo root is ONE level up from probes/, not two. The two-level form dates from when
+# this tree sat inside another checkout, and it is not merely useless now: on a layout where
+# the parent directory is itself named `inspeximus` -- which is exactly how GitHub Actions
+# checks this repo out, at work/inspeximus/inspeximus -- it puts a directory CONTAINING an
+# `inspeximus` folder on sys.path, Python binds that as a namespace package, and the real
+# one is shadowed: "cannot import name 'Inspeximus' from 'inspeximus' (unknown location)".
+# Invisible on a machine with an editable install, which is why it took CI to surface it.
+sys.path.insert(0, os.path.join(HERE, ".."))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "inspeximus_pypi"))
 import locomo_qa as LQ
 

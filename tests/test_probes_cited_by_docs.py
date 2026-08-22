@@ -31,6 +31,12 @@ PROBES = os.path.join(ROOT, "probes")
 #: Cited probes that cannot run standalone, each with the reason. A probe here is still expected to EXIST
 #: and to be importable-looking; it is the execution that is excused, and only for a stated cause.
 NOT_STANDALONE = {
+    # Reads every judge through the paid OpenAI API, which is the point: it measures how much
+    # of our published 0.75 is gpt-4o-mini rather than inspeximus. It exits 2 with the reason
+    # when no key is set, which is the behaviour the benchmark entrypoints were given after
+    # #1, so on a CI runner it declines correctly rather than failing.
+    "does_the_headline_number_depend_on_who_judges_it.py":
+        "needs OPENAI_API_KEY -- it replays the fixture through several paid judges",
     "locomo_composed_soft_filters.py": "needs agora_output/lab/data/locomo10.json (LoCoMo, not redistributable)",
     "locomo_correlated_cue_composition.py": "needs the LoCoMo dataset",
     "locomo_metadata_prefilter.py": "needs locomo10.json",
