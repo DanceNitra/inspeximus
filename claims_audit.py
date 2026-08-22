@@ -1232,13 +1232,27 @@ def _unearned_statuses(root, stats):
     import re as _re
     import subprocess as _sub
 
+    # ONLY THE SCRIPT THE COMMAND ACTUALLY EXECUTES. The first version of this check pulled every
+    # .py path out of the command string and ran it, which is the same defect it was written to
+    # catch: it did not measure what the claim promises. `readme-mcp-tools` reproduces by READING
+    # inspeximus/mcp_server.py as text and counting @mcp.tool in it -- the file is a data argument,
+    # never executed -- and the check reported the claim as unearned because that file cannot be run
+    # as a script from a foreign directory. It is not supposed to be. CI caught it on the first run.
+    #
+    # So: a command of the form `python <path.py> ...` names a script to probe. A `python -c "..."`
+    # command is self-contained and executes nothing else, whatever paths appear inside its code.
     scripts = {}
     for c in NUMBER_CLAIMS:
         if not c["status"].startswith("REPRODUCIBLE"):
             continue
-        for tok in ARTIFACT_PATH.findall(c["command"]):
-            if tok.endswith(".py") and (root / tok).exists():
-                scripts.setdefault(tok, []).append(c["id"])
+        parts = c["command"].split()
+        if len(parts) < 2 or not parts[0].startswith("python"):
+            continue
+        if parts[1] == "-c" or parts[1] == "-m":
+            continue                      # runs inline code or a module, not a script path
+        tok = parts[1]
+        if tok.endswith(".py") and (root / tok).exists():
+            scripts.setdefault(tok, []).append(c["id"])
 
     env = dict(os.environ)
     env.pop("OPENAI_API_KEY", None)
