@@ -995,7 +995,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.19.1"
+__version__ = "2.20.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3830,11 +3830,16 @@ class Inspeximus:
         _bindable = _n - _nb
         _with_locator = 0
         _bound_env = 0
+        _seen_sources: set = set()
         for _r in self.items:
-            if Inspeximus._raw_source(_r):
+            _rs = Inspeximus._raw_source(_r)
+            if _rs:
                 _with_locator += 1
+                _seen_sources.add(_rs if isinstance(_rs, str)
+                                  else str((_rs or {}).get("doc") or _rs))
             if ((_r.get("meta") or {}).get("environment_binding")):
                 _bound_env += 1
+        _distinct_sources = len(_seen_sources)
         coverage = {
             # can the evidence point back to an origin at all?
             #
@@ -3880,6 +3885,19 @@ class Inspeximus:
             # measured, and it is bad" about a store where there was nothing to measure.
             "not_bindable": _nb,
             "bindable": _bindable,
+            # DISTINCT SOURCE VALUES OVER RECORDS, and it is here because coverage alone was
+            # reporting a guarantee we did not have. Measured on our own eight agent stores
+            # 2026-08-22: 217,549 records, `source` populated on 100.0% of them, and EIGHT distinct
+            # values in total -- one per store, each the store's own name (`agent:scholar` in all
+            # 26,928 records of one). Ratio 0.000037. Nothing was broken: the schema said str, every
+            # record had one, and the check counted the non-empty ones.
+            #
+            # Near 1/N the field is a WRITER LABEL. Near 1.0 it is provenance. In between it tells
+            # you which fraction of the store is which. `locator_coverage` cannot separate those and
+            # was never meant to; this can, and it costs one pass over the sources.
+            "distinct_sources": _distinct_sources,
+            "distinct_source_ratio": (round(_distinct_sources / _with_locator, 6)
+                                      if _with_locator else None),
             "source_enumeration_coverage": None,
             # is the record bound to an environment (repo/commit/tenant/policy/model/TTL)? We do not
             # write that binding anywhere yet, so on a NON-EMPTY store this is honestly 0.0 rather

@@ -1,3 +1,46 @@
+## 2.20.0 - UPGRADE IF YOU HAVE EVER QUOTED YOUR OWN `source` COVERAGE: it can read 100% over a constant
+
+`check_sources()` gains `distinct_sources` and `distinct_source_ratio`, reported beside coverage.
+
+Measured on our own eleven live stores before adding it. 234,971 records, `source` populated on
+92.63%, and that aggregate hides two write paths failing in opposite directions:
+
+```
+store group          records   src %  distinct  distinct/sourced  re-checkable
+eight agent stores   217,549  100.00%        8          0.000037             0
+one coding store      16,131    0.63%      101          0.990196             0
+```
+
+The agent stores hold one constant each -- `agent:scholar` in all 26,928 records of one of them --
+which is the name of the process that wrote them. W3C PROV has separated `wasAttributedTo` from
+`wasDerivedFrom` since 2013; we recorded the first and read it as the second.
+
+```python
+from inspeximus import Inspeximus
+
+m = Inspeximus(path="s.json")
+for i in range(1000):
+    m.remember("observation %d" % i, source={"doc": "agent:scholar"})
+
+c = m.check_sources()["coverage"]
+# locator_coverage looks perfect; the ratio is one value over a thousand records
+print(c["locator_coverage"], c["distinct_sources"], c["distinct_source_ratio"])
+# -> 1.0 1 0.001
+```
+
+**WHAT THIS FIELD IS NOT.** It is column Distinctness -- Deequ ships it, Great Expectations ships it
+as an expectation, ydata-profiling raises CONSTANT on it automatically. It is not new and it is not a
+traceability measure. Our own coding store scores **0.990196** and resolves to nothing: its sources
+are commit ids like `git:162de50e1702`, genuinely distinct and not fetchable. A UUID per record would
+score a perfect 1.0 at zero traceability.
+
+So the field is a detector for ONE degenerate shape, documented as such in the code. The number that
+can fail is `refetch_verification_coverage`, and for us it is 0 of 234,971.
+
+`distinct_source_ratio` divides by records that HAVE a source, not by all records -- dividing by all
+records multiplies distinctness by coverage and reports neither. Returns `None` on an empty
+population, same contract as the six coverage fields since 2.19.1.
+
 ## 2.19.1 - UPGRADE IF YOU READ `check_sources()` COVERAGE ON A SMALL OR EMPTY STORE: 0/0 rendered as 0.0 in two of six fields
 
 @Stratogain asked @safal207 a question on safal207/Causal-Memory-Layer#311 -- can a coverage of 1.0
