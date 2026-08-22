@@ -28,6 +28,16 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: claims_audit
         run: python claims_audit.py --local
+      # A STATUS MUST BE EARNED BY A RUN. Every REPRODUCIBLE row used to carry a status a human typed
+      # into a constant, and BROKEN-COMMAND only checked that the named file EXISTS. @mioimotoai-lgtm
+      # found the gap from outside: the command five rows cite died on a hardcoded path before
+      # argparse, while the table certified them REPRODUCIBLE-WITH-DEPS -- a promise about
+      # dependencies that no dependency could have kept. This step executes each cited script's
+      # module level from a foreign directory with no key, so the certification is produced rather
+      # than asserted. Restoring the original defect makes it fail on three scripts, not one, because
+      # two more import the first.
+      - name: every REPRODUCIBLE status is earned by a run, not asserted
+        run: python claims_audit.py --local --numbers --verify-commands
       - name: governance_audit
         run: python governance_audit.py --local
 

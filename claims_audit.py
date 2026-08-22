@@ -1128,7 +1128,7 @@ def _repo_root():
     return pathlib.Path(__file__).resolve().parent
 
 
-def audit_numbers(root=None):
+def audit_numbers(root=None, verify_commands=False):
     """Classify every published number. Returns (problems, stats).
 
     Six independent ways to fail, because a single one would only catch a single shape of drift:
@@ -1185,8 +1185,78 @@ def audit_numbers(root=None):
                 problems.append(("BROKEN-COMMAND", c["file"],
                                  f"claim {c['id']!r} names {tok!r}, which does not exist"))
 
+    if verify_commands:
+        problems.extend(_unearned_statuses(root, stats))
+
     problems.extend(_live_consistency(root))
     return problems, stats
+
+
+
+def _unearned_statuses(root, stats):
+    """A status that says REPRODUCIBLE must be EARNED BY A RUN, not asserted by whoever wrote the row.
+
+    This exists because the hole was found from outside. @mioimotoai-lgtm cloned the repo, ran the
+    command five rows of this table give as their reproduction, and it died with FileNotFoundError
+    before argparse -- while the table certified those rows REPRODUCIBLE-WITH-DEPS, a status this
+    file defines as "committed command, but needs a service/dataset we cannot ship". That promise is
+    about DEPENDENCIES. No dependency would have fixed a hardcoded relative path.
+
+    Nothing checked it. BROKEN-COMMAND verified the command names a file that EXISTS; whether the
+    command could start was a human's opinion typed into a constant, inside the instrument this
+    project publishes as machine-checked. A claim that cannot fail is the defect we write about.
+
+    So: execute each cited script's MODULE LEVEL from a directory that is not the repo root, with no
+    OPENAI_API_KEY. `runpy` with a run_name other than `__main__` runs the imports and the body but
+    not main(), so nothing is benchmarked and nothing is billed, while the class that produced #1 is
+    exercised.
+
+    A MISSING THIRD-PARTY PACKAGE IS NOT A FAILURE HERE -- it is precisely what WITH-DEPS promises,
+    and a reader fixes it with pip. Failing to import THIS package is, because that means the
+    script's own path handling is wrong. A missing file is, because #1 was a missing file.
+    """
+    import re as _re
+    import subprocess as _sub
+
+    scripts = {}
+    for c in NUMBER_CLAIMS:
+        if not c["status"].startswith("REPRODUCIBLE"):
+            continue
+        for tok in ARTIFACT_PATH.findall(c["command"]):
+            if tok.endswith(".py") and (root / tok).exists():
+                scripts.setdefault(tok, []).append(c["id"])
+
+    env = dict(os.environ)
+    env.pop("OPENAI_API_KEY", None)
+    env["PYTHONIOENCODING"] = "utf-8"
+    tmp = tempfile.mkdtemp(prefix="claims_earned_")
+    out = []
+    for script, claim_ids in sorted(scripts.items()):
+        code = "import runpy;runpy.run_path(%r, run_name='__audit_probe__')" % str(root / script)
+        try:
+            p = _sub.run([sys.executable, "-c", code], cwd=tmp, env=env,
+                         capture_output=True, text=True, timeout=300)
+        except _sub.TimeoutExpired:
+            out.append(("UNEARNED-STATUS", script,
+                        f"{script} did not finish its module level in 300s from a foreign cwd; "
+                        f"claims {claim_ids} rest on it. If the machine is busy this is the harness, "
+                        f"not the script -- re-run it alone before believing it"))
+            continue
+        stats["commands_verified"] = stats.get("commands_verified", 0) + 1
+        if p.returncode == 0:
+            continue
+        err = p.stderr or ""
+        m = _re.search(r"ModuleNotFoundError: No module named '([A-Za-z0-9_.]+)'", err)
+        if m and m.group(1).split(".")[0] not in {"inspeximus", "probes"}:
+            stats.setdefault("deps_declined", []).append(f"{script} needs {m.group(1)}")
+            continue
+        tail = err.strip().splitlines()[-1][:160] if err.strip() else "no stderr"
+        out.append(("UNEARNED-STATUS", script,
+                    f"{script} cannot start from a directory that is not the repo root, and not for "
+                    f"a missing third-party package. Claims {claim_ids} are certified "
+                    f"REPRODUCIBLE by assertion, not by a run -- {tail}"))
+    shutil.rmtree(tmp, ignore_errors=True)
+    return out
 
 
 _COLLECTED = {}   # process-level cache: collection costs ~18s, and several tests audit the same root
@@ -1478,9 +1548,9 @@ def fetch_wheel(version, workdir):
     return wheel, pkg
 
 
-def report_numbers(root=None):
+def report_numbers(root=None, verify_commands=False):
     """Print the published-number audit. Returns the number of problems (0 = clean)."""
-    problems, stats = audit_numbers(root)
+    problems, stats = audit_numbers(root, verify_commands=verify_commands)
     n = len(NUMBER_CLAIMS)
     repro = sum(1 for c in NUMBER_CLAIMS if c["status"].startswith("REPRODUCIBLE"))
     print("=" * 92)
@@ -1510,6 +1580,10 @@ def main():
     ap.add_argument("--version", default=None, help="audit a specific released version")
     ap.add_argument("--local", action="store_true", help="audit the working tree instead of PyPI")
     ap.add_argument("--workers", type=int, default=min(12, (os.cpu_count() or 4) - 2))
+    ap.add_argument("--verify-commands", action="store_true",
+                    help="EARN the REPRODUCIBLE statuses: run each cited script's module level from "
+                         "a foreign directory with no key, and fail any claim whose command cannot "
+                         "start. Costs ~90s; see _unearned_statuses for why it exists.")
     ap.add_argument("--numbers", action="store_true",
                     help="audit only the PUBLISHED NUMBERS (offline; no wheel download)")
     ap.add_argument("--write-claims", action="store_true",
@@ -1523,10 +1597,10 @@ def main():
         out = pathlib.Path(a.root or _repo_root()) / "docs" / "CLAIMS.md"
         out.write_text(render_claims_doc(a.root), encoding="utf-8", newline="\n")
         print(f"wrote {out}")
-        return 1 if report_numbers(a.root) else 0
+        return 1 if report_numbers(a.root, verify_commands=a.verify_commands) else 0
 
     if a.numbers:
-        return 1 if report_numbers(a.root) else 0
+        return 1 if report_numbers(a.root, verify_commands=a.verify_commands) else 0
 
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="inspeximus_claims_"))
     if a.local:
